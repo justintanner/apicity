@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
+import { createEndless } from "@apicity/endless";
 import { createKie } from "@apicity/kie";
 import { createOpenLigaDB } from "@apicity/openligadb";
 import { createTheSportsDB } from "@apicity/thesportsdb";
@@ -135,6 +136,7 @@ describe("example provenance", () => {
     // Explicit map: adding a static provider without a factory must fail.
     // Construction only; none of these endpoint functions are invoked.
     const factories: Record<string, unknown> = {
+      endless: createEndless(),
       kie: createKie({ apiKey: "test-key" }),
       openligadb: createOpenLigaDB(),
       thesportsdb: createTheSportsDB({ apiKey: "test-key" }),

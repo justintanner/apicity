@@ -65,6 +65,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   dolthub: ["www.dolthub.com", "dolthub.com"],
   simplefunctions: ["docs.simplefunctions.dev"],
   thesportsdb: ["www.thesportsdb.com", "thedatadb.readme.io"],
+  endless: ["endless.app"],
 };
 
 const METHOD_LINE_RE =

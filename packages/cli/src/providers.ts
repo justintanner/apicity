@@ -191,6 +191,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/openf1",
     factoryName: "createOpenF1",
   },
+  endless: {
+    envVar: "",
+    optionKey: "apiKey",
+    importPath: "@apicity/endless",
+    factoryName: "createEndless",
+  },
   elevenlabs: {
     envVar: "ELEVENLABS_API_KEY",
     optionKey: "apiKey",
@@ -290,7 +296,7 @@ const CREDENTIAL_OPTIONAL = new Set([
 /**
  * Does this provider build without any of its variables? True for the three
  * above and for every provider whose `envVar` is empty: polymarket, whose
- * public market data needs none of its trading bundle, and the four that
+ * public market data needs none of its trading bundle, and the five that
  * read no credential at all. `isProviderConfigured` and the vault convention
  * both ask this, so discovery and the call path agree (ac-rdvquu).
  */

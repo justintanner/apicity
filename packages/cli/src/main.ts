@@ -629,6 +629,14 @@ function readPaygateSecret(path: string | undefined): string | undefined {
 }
 
 /**
+ * Providers whose `url` fields link to web pages, never to media. Each row of
+ * an Endless TikTok trends answer links to a TikTok video page, so the media
+ * walk would fetch and save one HTML page per row. Their results come back as
+ * sent.
+ */
+const LINK_URL_PROVIDERS = new Set(["endless"]);
+
+/**
  * Persist whatever the endpoint returned, at parity with the server this CLI
  * replaced (OQ-17): binary becomes a file plus `{savedTo, bytes}`, and a JSON
  * result carrying media URLs gets sibling `_savedTo` fields. An output
@@ -648,6 +656,7 @@ async function persistResult(
     return writeBinary(result, baseName, outputDir);
   }
   if (result !== null && typeof result === "object") {
+    if (LINK_URL_PROVIDERS.has(entry.provider)) return result;
     return downloadUrlsInResult(
       result,
       outputDir,

@@ -238,6 +238,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/thesportsdb/src/thesportsdb.ts"],
     factoryNames: ["createTheSportsDB"],
   },
+  {
+    name: "endless",
+    entryFiles: ["packages/provider/endless/src/endless.ts"],
+    factoryNames: ["createEndless"],
+  },
 ];
 
 const TSV_ONLY_PROVIDERS = ["b2"];

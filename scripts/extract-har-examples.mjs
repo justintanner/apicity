@@ -327,6 +327,15 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
       payload: { teamName: "Manchester United" },
     },
   },
+  // Path-parameter-only GETs leave no query or body for a recording to yield;
+  // each payload is the region its tests/integration/endless-*.test.ts
+  // recording requested.
+  endless: {
+    "GET social.tiktokTrends.public": {
+      source: "static:endless-public-tiktok-trends",
+      payload: { region: "thailand" },
+    },
+  },
 };
 
 // Curated overrides for accepted submits with unusable media (ac-fevz1c).

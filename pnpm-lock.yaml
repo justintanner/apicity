@@ -133,6 +133,9 @@ importers:
       '@apicity/elevenlabs':
         specifier: workspace:*
         version: link:../provider/elevenlabs
+      '@apicity/endless':
+        specifier: workspace:*
+        version: link:../provider/endless
       '@apicity/fal':
         specifier: workspace:*
         version: link:../provider/fal
@@ -242,6 +245,12 @@ importers:
         version: 4.6.7
 
   packages/provider/elevenlabs:
+    dependencies:
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.7
+
+  packages/provider/endless:
     dependencies:
       zod:
         specifier: ^4.6.6

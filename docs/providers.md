@@ -39,6 +39,7 @@ table includes it so the published roster stays in one place.
 | [@apicity/googleflow](../packages/provider/googleflow)               | Google Flow video generation via the useapi.net proxy              |
 | [@apicity/zaicoding](../packages/provider/zaicoding)                 | Z.ai GLM coding-plan chat completions and quota monitoring         |
 | [@apicity/openf1](../packages/provider/openf1)                       | OpenF1 Formula 1 historical and live timing data                   |
+| [@apicity/endless](../packages/provider/endless)                     | Endless public TikTok trends by country                            |
 | [@apicity/dropbox](../packages/provider/dropbox)                     | Dropbox users, files, content upload/download, and sharing         |
 | [@apicity/dolthub](../packages/provider/dolthub)                     | DoltHub SQL execution and Dolt database management                 |
 | [@apicity/youtube](../packages/provider/youtube)                     | YouTube Data API v3 video publishing                               |

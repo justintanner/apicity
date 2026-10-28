@@ -64,7 +64,8 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`, `@apicity/machgen`,
 `@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
 `@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
-`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/endless`, `@apicity/elevenlabs`, `@apicity/s3`,
+`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/endless`, `@apicity/tiktok-creative-center`,
+`@apicity/elevenlabs`, `@apicity/s3`,
 `@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
 `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
 `@apicity/free-media-upload`, `@apicity/cost`, `@apicity/har`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency

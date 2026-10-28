@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Generated READMEs no longer name a hyphenated provider's client with an invalid variable: `@apicity/free-media-upload`'s samples declared `const free-media-upload = …` and called `free-media-upload.catbox.upload(…)`; they now use `freeMediaUpload` (ac-qiac9z).
+
 - The CLI no longer saves web pages as media. A JSON result's `url` (or other media key) that answers with `text/html`, such as an OpenAI web-search citation or a docs link in an ElevenLabs answer, is left as sent with no `_savedTo` sibling, and its body is not read; it used to be saved as a `.bin` file. Downloads from one result also no longer overwrite each other: they run at once and were named to the millisecond, so a result with 40 URLs left 36 files and four `_savedTo` siblings that named another URL's file. When a result yields several files, each name now ends in its number (`-1`, `-2`, …); a single download keeps its old name (ac-ht9p12).
 
 - `apicity har report` no longer lists every successful fal `v1.queue.submit` under schema too strict. The submit sends the request's `input` member as its whole body, and that body was validated against the whole request schema (`endpoint_id`, `input`, `priority`, …), so `endpoint_id` and `input` always looked missing. The schema sections now check the annotated call input, factory defaults compare the body with `input.input`, and a legacy submit, which has no input, reports `no annotated input`. Error samples still show the wire body (ac-dvsxwf).
@@ -34,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HAR capture now scrubs generic credential body fields such as `api_key`, `apiKey`, access tokens and client secrets in requests, responses and call input, including local failures (ac-5ljiib).
 
 ### Added
+
+- Added the TikTok Creative Center provider (`@apicity/tiktok-creative-center`), keyless and free, with `ads.creativeOne.report.creativeCenterGetTopContentsList` (`GET https://ads.tiktok.com/CreativeOne/Report/CreativeCenterGetTopContentsList`): a country's top trending videos for a week or month, with views, engagement and author data. These are unofficial, undocumented endpoints behind Creative Center's Trending videos page that TikTok can change; without a TikTok One session each list is the top 4 rows whatever `page` and `limit` ask, and session cookies are not supported. `itemID`, `authorID` and `creatorID` come back as strings because TikTok sends them as JSON numbers above 2^53, and a nonzero `BaseResp.StatusCode` (which Creative Center sends with HTTP 200) rejects with `TiktokCreativeCenterError`. Recorded for Thailand's weekly list, with and without sponsored posts (ac-qiac9z).
 
 - Added FLUX 3 Klein edit-image LoRA at `run.blackforestlabs.flux3.klein.editImage.lora`, reusing the shared edit schema and recording our trained edit LoRA with the owned cat photo (ac-6dfs70).
 

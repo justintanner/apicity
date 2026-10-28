@@ -60,9 +60,9 @@ export function providerEnvVars(
  * really holds an item surfaces at call time and in `apicity doctor`.
  *
  * `envVar: ""` means the provider needs no credential at all — binance,
- * openligadb, openf1, endless, free-media-upload, and polymarket, whose
- * public market data works unauthenticated and whose trading bundle is
- * optional on top.
+ * openligadb, openf1, endless, tiktok-creative-center, free-media-upload, and
+ * polymarket, whose public market data works unauthenticated and whose
+ * trading bundle is optional on top.
  */
 export function isProviderConfigured(
   name: string,

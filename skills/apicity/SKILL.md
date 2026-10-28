@@ -2,7 +2,7 @@
 name: apicity
 description: |
   Call any supported provider API (OpenAI, Anthropic, xAI, fal, KIE, ElevenLabs,
-  S3, Telegram, Polymarket and 21 more) through the apicity CLI. Use for ANY
+  S3, Telegram, Polymarket and 22 more) through the apicity CLI. Use for ANY
   task that needs a provider API: generation, upload, lookup, posting, trading
   data, or checking what an endpoint expects.
 triggers:
@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 30 provider APIs
+# apicity — one command line for 31 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -449,6 +449,15 @@ apicity endless social.tiktokTrends.public --region thailand --json
 apicity endless social.trends.public --region worldwide --json
 ```
 
+### tiktok-creative-center — TikTok Creative Center trending videos, no credential
+
+Unofficial endpoints TikTok can change. Without a TikTok One session a list
+holds the top 4 rows; `page` and `limit` are ignored.
+
+```bash
+apicity tiktok-creative-center ads.creativeOne.report.creativeCenterGetTopContentsList --data '{"countryCode":"TH","periodDimension":3,"periodEndTimestamp":1792886400,"orderByMetric":1}' --json
+```
+
 ### thesportsdb — teams, leagues, events and results
 
 The `{apiKey}` is part of the URL and is supplied for you.
@@ -506,38 +515,39 @@ Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 `apicity setup agents` connects). `apicity help environment` lists them.
 
-| Provider            | Credential variables (names only)                                                                                                                                                                                                       |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `openai`            | `OPENAI_API_KEY`                                                                                                                                                                                                                        |
-| `xai`               | `XAI_API_KEY`                                                                                                                                                                                                                           |
-| `anthropic`         | `ANTHROPIC_API_KEY`                                                                                                                                                                                                                     |
-| `fireworks`         | `FIREWORKS_API_KEY`                                                                                                                                                                                                                     |
-| `fal`               | `FAL_API_KEY`                                                                                                                                                                                                                           |
-| `google`            | `GOOGLE_API_KEY`                                                                                                                                                                                                                        |
-| `googleflow`        | `GOOGLE_FLOW_API_KEY`                                                                                                                                                                                                                   |
-| `dolthub`           | `DOLTHUB_API_KEY`                                                                                                                                                                                                                       |
-| `dropbox`           | `DROPBOX_OAUTH_TOKEN`                                                                                                                                                                                                                   |
-| `simplefunctions`   | `SIMPLEFUNCTIONS_API_KEY` (optional; public rows work without it)                                                                                                                                                                       |
-| `kie`               | `KIE_API_KEY`                                                                                                                                                                                                                           |
-| `kimicoding`        | `KIMI_CODING_API_KEY`                                                                                                                                                                                                                   |
-| `alibaba`           | `DASHSCOPE_API_KEY`                                                                                                                                                                                                                     |
-| `zaicoding`         | `ZAI_CODING_PLAN_API_KEY`                                                                                                                                                                                                               |
-| `binance`           | none — public market data                                                                                                                                                                                                               |
-| `openligadb`        | none — public data                                                                                                                                                                                                                      |
-| `openf1`            | none — public data                                                                                                                                                                                                                      |
-| `endless`           | none — public data                                                                                                                                                                                                                      |
-| `elevenlabs`        | `ELEVENLABS_API_KEY`                                                                                                                                                                                                                    |
-| `s3`                | `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`                                                                                                                                                                                              |
-| `b2`                | `B2_ACCESS_KEY_ID`, `B2_SECRET_ACCESS_KEY`, `B2_REGION`                                                                                                                                                                                 |
-| `x`                 | `X_ACCESS_TOKEN`                                                                                                                                                                                                                        |
-| `meta`              | `IG_ACCESS_TOKEN`                                                                                                                                                                                                                       |
-| `polymarket`        | none for public data; trading needs `POLYMARKET_CLOB_API_KEY`, `POLYMARKET_CLOB_API_SECRET`, `POLYMARKET_CLOB_API_PASSPHRASE`, `POLYMARKET_ADDRESS`, `POLYMARKET_PRIVATE_KEY`, `POLYMARKET_FUNDER_ADDRESS`, `POLYMARKET_SIGNATURE_TYPE` |
-| `free-media-upload` | none — anonymous hosts                                                                                                                                                                                                                  |
-| `youtube`           | `YOUTUBE_ACCESS_TOKEN` (optional; public reads work without it)                                                                                                                                                                         |
-| `telegram`          | `TELEGRAM_BOT_KEY`                                                                                                                                                                                                                      |
-| `machgen`           | `MACHGEN_API_KEY`                                                                                                                                                                                                                       |
-| `quo`               | `QUO_API_KEY`                                                                                                                                                                                                                           |
-| `thesportsdb`       | `THESPORTSDB_API_KEY` (optional; the free tier works without it)                                                                                                                                                                        |
+| Provider                 | Credential variables (names only)                                                                                                                                                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openai`                 | `OPENAI_API_KEY`                                                                                                                                                                                                                        |
+| `xai`                    | `XAI_API_KEY`                                                                                                                                                                                                                           |
+| `anthropic`              | `ANTHROPIC_API_KEY`                                                                                                                                                                                                                     |
+| `fireworks`              | `FIREWORKS_API_KEY`                                                                                                                                                                                                                     |
+| `fal`                    | `FAL_API_KEY`                                                                                                                                                                                                                           |
+| `google`                 | `GOOGLE_API_KEY`                                                                                                                                                                                                                        |
+| `googleflow`             | `GOOGLE_FLOW_API_KEY`                                                                                                                                                                                                                   |
+| `dolthub`                | `DOLTHUB_API_KEY`                                                                                                                                                                                                                       |
+| `dropbox`                | `DROPBOX_OAUTH_TOKEN`                                                                                                                                                                                                                   |
+| `simplefunctions`        | `SIMPLEFUNCTIONS_API_KEY` (optional; public rows work without it)                                                                                                                                                                       |
+| `kie`                    | `KIE_API_KEY`                                                                                                                                                                                                                           |
+| `kimicoding`             | `KIMI_CODING_API_KEY`                                                                                                                                                                                                                   |
+| `alibaba`                | `DASHSCOPE_API_KEY`                                                                                                                                                                                                                     |
+| `zaicoding`              | `ZAI_CODING_PLAN_API_KEY`                                                                                                                                                                                                               |
+| `binance`                | none — public market data                                                                                                                                                                                                               |
+| `openligadb`             | none — public data                                                                                                                                                                                                                      |
+| `openf1`                 | none — public data                                                                                                                                                                                                                      |
+| `endless`                | none — public data                                                                                                                                                                                                                      |
+| `tiktok-creative-center` | none — public data                                                                                                                                                                                                                      |
+| `elevenlabs`             | `ELEVENLABS_API_KEY`                                                                                                                                                                                                                    |
+| `s3`                     | `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`                                                                                                                                                                                              |
+| `b2`                     | `B2_ACCESS_KEY_ID`, `B2_SECRET_ACCESS_KEY`, `B2_REGION`                                                                                                                                                                                 |
+| `x`                      | `X_ACCESS_TOKEN`                                                                                                                                                                                                                        |
+| `meta`                   | `IG_ACCESS_TOKEN`                                                                                                                                                                                                                       |
+| `polymarket`             | none for public data; trading needs `POLYMARKET_CLOB_API_KEY`, `POLYMARKET_CLOB_API_SECRET`, `POLYMARKET_CLOB_API_PASSPHRASE`, `POLYMARKET_ADDRESS`, `POLYMARKET_PRIVATE_KEY`, `POLYMARKET_FUNDER_ADDRESS`, `POLYMARKET_SIGNATURE_TYPE` |
+| `free-media-upload`      | none — anonymous hosts                                                                                                                                                                                                                  |
+| `youtube`                | `YOUTUBE_ACCESS_TOKEN` (optional; public reads work without it)                                                                                                                                                                         |
+| `telegram`               | `TELEGRAM_BOT_KEY`                                                                                                                                                                                                                      |
+| `machgen`                | `MACHGEN_API_KEY`                                                                                                                                                                                                                       |
+| `quo`                    | `QUO_API_KEY`                                                                                                                                                                                                                           |
+| `thesportsdb`            | `THESPORTSDB_API_KEY` (optional; the free tier works without it)                                                                                                                                                                        |
 
 ## Paid endpoints
 

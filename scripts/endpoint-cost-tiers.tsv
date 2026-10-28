@@ -1763,6 +1763,7 @@ thesportsdb	v2.search.league	GET	cheap	Free public sports-data API; no per-call 
 thesportsdb	v2.search.player	GET	cheap	Free public sports-data API; no per-call USD cost
 thesportsdb	v2.search.team	GET	cheap	Free public sports-data API; no per-call USD cost
 thesportsdb	v2.search.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+tiktok-creative-center	ads.creativeOne.report.creativeCenterGetTopContentsList	GET	cheap	Free public Creative Center trend data; no key, no USD cost
 x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.finalize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost

@@ -274,6 +274,7 @@ const KEYLESS = [
   "free-media-upload",
   "openf1",
   "openligadb",
+  "tiktok-creative-center",
 ];
 const REQUIRED = Object.keys(PROVIDERS)
   .filter((name) => !OPTIONAL.includes(name) && !KEYLESS.includes(name))

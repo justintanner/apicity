@@ -102,6 +102,11 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale: "Free public social-trends API; no key, no per-call USD cost",
   },
   {
+    match: { provider: "tiktok-creative-center" },
+    tier: "cheap",
+    rationale: "Free public Creative Center trend data; no key, no USD cost",
+  },
+  {
     match: { provider: "simplefunctions" },
     tier: "cheap",
     rationale: "Public agent/world data API; no per-call USD compute cost",

@@ -193,6 +193,9 @@ importers:
       '@apicity/thesportsdb':
         specifier: workspace:*
         version: link:../provider/thesportsdb
+      '@apicity/tiktok-creative-center':
+        specifier: workspace:*
+        version: link:../provider/tiktok-creative-center
       '@apicity/x':
         specifier: workspace:*
         version: link:../provider/x
@@ -371,6 +374,12 @@ importers:
         version: 4.6.7
 
   packages/provider/thesportsdb:
+    dependencies:
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.7
+
+  packages/provider/tiktok-creative-center:
     dependencies:
       zod:
         specifier: ^4.6.6

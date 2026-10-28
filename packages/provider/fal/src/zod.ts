@@ -3650,6 +3650,147 @@ export type FalFlux3TextToImageParsedRequest = z.output<
   typeof FalFlux3TextToImageRequestSchema
 >;
 
+// FLUX 3 Klein (blackforestlabs/flux-3/klein/*): the shapes its LoRA endpoints
+// and base trainers share, from each endpoint's queue OpenAPI on 2026-10-28.
+// The distilled and base text-to-image LoRA endpoints take one input, as do
+// the distilled and base edit LoRA endpoints; the two base trainers differ
+// only in the layout of the zip that images_data_url points at.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/base/trainer/api
+export const FalFlux3KleinLoraSchema = z.object({
+  path: z
+    .string()
+    .describe(
+      "URL to a FLUX 3 Klein LoRA (.safetensors), such as a Klein base trainer lora_file"
+    ),
+  scale: z.number().min(0).max(4).default(1),
+});
+export type FalFlux3KleinLora = z.input<typeof FalFlux3KleinLoraSchema>;
+
+// Box edges are fractions of the image size, with (0, 0) at the top-left.
+export const FalFlux3KleinBoxSchema = z.object({
+  x_min: z.number().min(0).max(1),
+  y_min: z.number().min(0).max(1),
+  x_max: z.number().min(0).max(1),
+  y_max: z.number().min(0).max(1),
+});
+
+const Flux3KleinBoxLabelSchema = z
+  .string()
+  .max(64)
+  .regex(/^[A-Za-z][A-Za-z0-9_]*$/)
+  .nullable()
+  .optional();
+
+export const FalFlux3KleinBoundingBoxSchema = z.object({
+  label: Flux3KleinBoxLabelSchema,
+  description: z.string().max(500),
+  box: FalFlux3KleinBoxSchema,
+});
+
+export const FalFlux3KleinEditBoundingBoxSchema = z.object({
+  label: Flux3KleinBoxLabelSchema,
+  description: z.string().max(500),
+  box: FalFlux3KleinBoxSchema.nullable().optional(),
+  source_image_index: z.number().int().min(0).nullable().optional(),
+  source_box: FalFlux3KleinBoxSchema.nullable().optional(),
+  target_box: FalFlux3KleinBoxSchema.nullable().optional(),
+});
+
+// x-fal: each side 256 to 4096 pixels, a multiple of 16.
+const Flux3KleinSideSchema = z.number().int().min(256).max(4096).multipleOf(16);
+
+export const FalFlux3KleinImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+  ]),
+  z.object({ width: Flux3KleinSideSchema, height: Flux3KleinSideSchema }),
+]);
+
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/lora/api
+export const FalFlux3KleinTextToImageLoraRequestSchema = z.object({
+  loras: z.array(FalFlux3KleinLoraSchema).max(3).default([]),
+  prompt: z.string(),
+  enable_prompt_expansion: z.boolean().default(true),
+  seed: z.number().int().nullable().optional(),
+  num_images: z.number().int().min(1).max(4).default(1),
+  enable_safety_checker: z.boolean().default(true),
+  output_format: z.enum(["jpeg", "png", "webp"]).default("png"),
+  sync_mode: z.boolean().default(false),
+  image_size: FalFlux3KleinImageSizeSchema.default("square_hd"),
+  bounding_boxes: z
+    .array(FalFlux3KleinBoundingBoxSchema)
+    .max(32)
+    .nullable()
+    .optional(),
+});
+export type FalFlux3KleinTextToImageLoraRequest = z.input<
+  typeof FalFlux3KleinTextToImageLoraRequestSchema
+>;
+export type FalFlux3KleinTextToImageLoraRequestInput =
+  FalFlux3KleinTextToImageLoraRequest;
+export type FalFlux3KleinTextToImageLoraParsedRequest = z.output<
+  typeof FalFlux3KleinTextToImageLoraRequestSchema
+>;
+
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
+export const FalFlux3KleinEditImageLoraRequestSchema =
+  FalFlux3KleinTextToImageLoraRequestSchema.extend({
+    prompt: z
+      .string()
+      .describe(
+        "A complete caption of the target image with the edit folded in; refer to the references by order"
+      ),
+    image_urls: z.array(z.string()).min(1).max(10),
+    image_size: FalFlux3KleinImageSizeSchema.nullable()
+      .optional()
+      .describe(
+        "Omit to use one reference's own size (at most 4 MP) or the first of several (at most 1 MP)"
+      ),
+    bounding_boxes: z
+      .array(FalFlux3KleinEditBoundingBoxSchema)
+      .max(32)
+      .nullable()
+      .optional(),
+  });
+export type FalFlux3KleinEditImageLoraRequest = z.input<
+  typeof FalFlux3KleinEditImageLoraRequestSchema
+>;
+export type FalFlux3KleinEditImageLoraRequestInput =
+  FalFlux3KleinEditImageLoraRequest;
+export type FalFlux3KleinEditImageLoraParsedRequest = z.output<
+  typeof FalFlux3KleinEditImageLoraRequestSchema
+>;
+
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/base/trainer/api
+export const FalFlux3KleinTrainerRequestSchema = z.object({
+  images_data_url: z
+    .string()
+    .describe(
+      "URL to a .zip. base/trainer: images ROOT.png/jpg/jpeg/webp, each with an optional ROOT.txt caption. base/trainer/edit: pairs ROOT_start.EXT (up to 10 as ROOT_start2.EXT ...) and ROOT_end.EXT, with an optional ROOT.txt instruction"
+    ),
+  trigger_phrase: z
+    .string()
+    .default("")
+    .describe("Caption for every image or pair that ships no .txt file"),
+  steps: z.number().int().min(100).max(10000).default(1000),
+  learning_rate: z.number().min(0.000001).max(0.01).default(0.0001),
+  resolution: z
+    .union([z.literal(512), z.literal(768), z.literal(1024)])
+    .default(1024),
+});
+export type FalFlux3KleinTrainerRequest = z.input<
+  typeof FalFlux3KleinTrainerRequestSchema
+>;
+export type FalFlux3KleinTrainerRequestInput = FalFlux3KleinTrainerRequest;
+export type FalFlux3KleinTrainerParsedRequest = z.output<
+  typeof FalFlux3KleinTrainerRequestSchema
+>;
+
 // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
 export const FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema =
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema.omit({

@@ -41,6 +41,11 @@ const TEST_DIRS = ["tests/unit", "tests/functional", "tests/integration"];
 // hatch, so it must justify itself.
 const ALLOWLIST = new Map([
   [
+    "tests/integration/fal-flux-3-klein-base-trainer-edit.test.ts",
+    'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
+      "the fal edit trainer queue status/result flow; offline replay never sleeps.",
+  ],
+  [
     "tests/integration/fal-flux-3-klein-base-trainer.test.ts",
     'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
       "the fal trainer queue status/result flow; offline replay never sleeps.",

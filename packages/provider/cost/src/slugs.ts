@@ -1193,6 +1193,8 @@ export const MODEL_DISPLAY = {
     "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",
     "blackforestlabs/flux-3/edit-image": "FLUX 3 Image Edit",
+    "blackforestlabs/flux-3/klein/base/trainer/edit":
+      "FLUX 3 Klein Base Edit Trainer",
     "blackforestlabs/flux-3/text-to-image": "FLUX 3 Image",
     "blackforestlabs/flux-video-upscale": "FLUX Video Upscale",
     "bytedance/seedance-2.0/fast/reference-to-video": "Seedance 2 Fast",

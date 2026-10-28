@@ -3973,6 +3973,7 @@ export type FalFlux3KleinEditImageLoraFn = ((
 // blackforestlabs/flux-3/klein/base/trainer is callable, and its edit trainer
 // hangs from it (run.blackforestlabs.flux3.klein.base.trainer.edit).
 export interface FalRunFlux3KleinBaseTrainerNamespace {
+  edit: FalFlux3KleinTrainerFn;
   (
     params: FalFlux3KleinTrainerRequest,
     signal?: AbortSignal

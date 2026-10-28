@@ -25,6 +25,16 @@ const URL_KEYS = new Set([
 const UPLOAD_TARGET_KEYS = ["upload_url", "uploadUrl"];
 
 /**
+ * Content types that mark a web page, not a file. A `url` can be a link to
+ * read: an OpenAI web-search citation, a docs link in an ElevenLabs answer, a
+ * TikTok video or an X search. Its download stops once the headers arrive and
+ * the URL comes back as sent. Every other type is saved, because fal returns
+ * captions, configs and 3D models under `url` as `text/plain`,
+ * `application/json` and `model/*`.
+ */
+const PAGE_CONTENT_TYPES = new Set(["text/html", "application/xhtml+xml"]);
+
+/**
  * How long one download may go without progress — no response headers yet,
  * or no body bytes since the last chunk — before it is abandoned and reported
  * in its `_savedTo` sibling. It measures silence, not total time, so a large
@@ -77,7 +87,8 @@ export function isBinary(value: unknown): value is ArrayBuffer | Uint8Array {
  * each into outDir. Returns a deep-cloned result with sibling `_savedTo` keys
  * inserted next to the original URL fields. Best-effort — network failures
  * and stalls leave the URL untouched and don't throw. An upload ticket's URLs
- * are never fetched (see `UPLOAD_TARGET_KEYS`).
+ * are never fetched (see `UPLOAD_TARGET_KEYS`), and a web page is not saved
+ * (see `PAGE_CONTENT_TYPES`).
  */
 export async function downloadUrlsInResult(
   result: unknown,
@@ -87,23 +98,32 @@ export async function downloadUrlsInResult(
 ): Promise<unknown> {
   const stallTimeoutMs = options.stallTimeoutMs ?? DOWNLOAD_STALL_TIMEOUT_MS;
   const cloned = deepClone(result);
-  const downloads: Promise<void>[] = [];
+  const found: { parent: Record<string, unknown>; key: string; url: string }[] =
+    [];
   walk(cloned, (parent, key, value) => {
     if (!URL_KEYS.has(key) || !isHttpUrl(value)) return;
     if (isUploadTicket(parent)) return;
-    downloads.push(
-      downloadOne(value, baseHint, outDir, stallTimeoutMs)
+    found.push({ parent: parent as Record<string, unknown>, key, url: value });
+  });
+  // The downloads run at once, so their millisecond timestamps can match:
+  // when there are several, each name also carries the download's number.
+  await Promise.all(
+    found.map(({ parent, key, url }, index) =>
+      downloadOne(
+        url,
+        baseHint,
+        found.length > 1 ? `-${index + 1}` : "",
+        outDir,
+        stallTimeoutMs
+      )
         .then((path) => {
-          (parent as Record<string, unknown>)[`${key}_savedTo`] = path;
+          if (path !== null) parent[`${key}_savedTo`] = path;
         })
         .catch((err) => {
-          (parent as Record<string, unknown>)[`${key}_savedTo`] = `error: ${
-            (err as Error).message
-          }`;
+          parent[`${key}_savedTo`] = `error: ${(err as Error).message}`;
         })
-    );
-  });
-  await Promise.all(downloads);
+    )
+  );
   return cloned;
 }
 
@@ -116,16 +136,20 @@ function isUploadTicket(node: object): boolean {
   return UPLOAD_TARGET_KEYS.some((key) => isHttpUrl(record[key]));
 }
 
+/** Resolves to the saved path, or `null` when the URL answered a web page. */
 async function downloadOne(
   url: string,
   baseHint: string,
+  suffix: string,
   outDir: string,
   stallTimeoutMs: number
-): Promise<string> {
-  const { bytes, contentType } = await fetchBody(url, stallTimeoutMs);
+): Promise<string | null> {
+  const body = await fetchBody(url, stallTimeoutMs);
+  if (body === null) return null;
+  const { bytes, contentType } = body;
   const ext = extFromContentType(contentType) ?? extFromUrl(url) ?? "bin";
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
-  const baseName = `${baseHint}__${ts}.${ext}`;
+  const baseName = `${baseHint}__${ts}${suffix}.${ext}`;
   const out = await writeBinary(bytes, baseName, outDir);
   return out.savedTo;
 }
@@ -134,12 +158,13 @@ async function downloadOne(
  * GET `url` and buffer its body, abandoning the transfer once it has gone
  * `stallTimeoutMs` without progress. The timer restarts when the headers
  * arrive and after every chunk. The stall message names no URL, so a signed
- * query string never reaches it.
+ * query string never reaches it. A web page resolves to `null` with its body
+ * cancelled unread.
  */
 async function fetchBody(
   url: string,
   stallTimeoutMs: number
-): Promise<{ bytes: Buffer; contentType: string }> {
+): Promise<{ bytes: Buffer; contentType: string } | null> {
   const controller = new AbortController();
   let stalled = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -155,6 +180,11 @@ async function fetchBody(
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
+    const contentType = res.headers.get("content-type") ?? "";
+    if (isPage(contentType)) {
+      await res.body?.cancel();
+      return null;
+    }
     const chunks: Uint8Array[] = [];
     if (res.body) {
       const reader = res.body.getReader();
@@ -165,10 +195,7 @@ async function fetchBody(
         chunks.push(value);
       }
     }
-    return {
-      bytes: Buffer.concat(chunks),
-      contentType: res.headers.get("content-type") ?? "",
-    };
+    return { bytes: Buffer.concat(chunks), contentType };
   } catch (err) {
     if (stalled) {
       throw new Error(`download stalled: no data for ${stallTimeoutMs} ms`);
@@ -177,6 +204,10 @@ async function fetchBody(
   } finally {
     clearTimeout(timer);
   }
+}
+
+function isPage(contentType: string): boolean {
+  return PAGE_CONTENT_TYPES.has(contentType.split(";")[0].trim().toLowerCase());
 }
 
 function extFromContentType(ct: string): string | null {

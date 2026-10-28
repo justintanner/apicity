@@ -1498,6 +1498,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/klein/base/edit-image/lora",
       "blackforestlabs/flux-3/klein/base/text-to-image/lora",
       "blackforestlabs/flux-3/klein/base/trainer/edit",
+      "blackforestlabs/flux-3/klein/edit-image/lora",
       "blackforestlabs/flux-3/klein/text-to-image/lora",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",

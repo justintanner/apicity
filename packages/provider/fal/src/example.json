@@ -346,6 +346,31 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.editImage.lora": {
+    "source": "fal/flux-3-klein-edit-image-lora",
+    "payload": {
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "loras": [
+        {
+          "path": "https://v3b.fal.media/files/b/0ab02ac9/p2dcEmp5srNPEw2V81PLz_flux3_klein_lora_031f628e922a4a958f3998be6ca46bfb.safetensors",
+          "scale": 1
+        }
+      ],
+      "prompt": "Make the photo black and white.",
+      "enable_prompt_expansion": false,
+      "seed": 5555,
+      "num_images": 1,
+      "output_format": "jpeg",
+      "image_size": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.klein.textToImage.lora": {
     "source": "fal/flux-3-klein-text-to-image-lora",
     "payload": {

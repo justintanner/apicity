@@ -1257,6 +1257,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
+  "blackforestlabs/flux-3/klein/edit-image/lora",
   "blackforestlabs/flux-3/klein/text-to-image/lora",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
@@ -1348,6 +1349,12 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // 2026-10-28: the owned Klein edit LoRA at 256x256 billed 0.8889 megapixels
+  // ($0.0106668), contradicting the published one-megapixel minimum.
+  "blackforestlabs/flux-3/klein/edit-image/lora": {
+    unit: "megapixels at $0.012",
+    why: "the published image-size minimum does not match the recorded bill, and no request field states the billed megapixels",
+  },
   // 2026-10-28: the owned Klein LoRA at 256x256 billed 0.8889 megapixels
   // ($0.0106668), contradicting the published one-megapixel minimum.
   "blackforestlabs/flux-3/klein/text-to-image/lora": {

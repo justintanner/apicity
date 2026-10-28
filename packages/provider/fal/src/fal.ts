@@ -1526,6 +1526,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/blackforestlabs/flux-3/klein/edit-image/lora
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
+  const blackforestlabsFlux3KleinEditImageLora = jsonBody<
+    FalFlux3KleinEditImageLoraRequest,
+    FalFlux3KleinImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/klein/edit-image/lora",
+    FalFlux3KleinEditImageLoraRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/minimax/h3-max-turbo/extend-video
   // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
   const minimaxH3MaxTurboExtendVideo = jsonBody<
@@ -4517,6 +4529,11 @@ export function createFal(opts: FalOptions): FalProvider {
     blackforestlabs: {
       flux3: {
         klein: {
+          editImage: {
+            // POST https://fal.run/blackforestlabs/flux-3/klein/edit-image/lora
+            // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
+            lora: blackforestlabsFlux3KleinEditImageLora,
+          },
           textToImage: {
             // POST https://fal.run/blackforestlabs/flux-3/klein/text-to-image/lora
             // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/lora/api

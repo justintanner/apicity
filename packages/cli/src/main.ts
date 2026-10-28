@@ -630,9 +630,9 @@ function readPaygateSecret(path: string | undefined): string | undefined {
 
 /**
  * Providers whose `url` fields link to web pages, never to media. Each row of
- * an Endless TikTok trends answer links to a TikTok video page, so the media
- * walk would fetch and save one HTML page per row. Their results come back as
- * sent.
+ * an Endless trends answer links to a TikTok video page or an X search, so
+ * the media walk would fetch and save one HTML page per row. Their results
+ * come back as sent.
  */
 const LINK_URL_PROVIDERS = new Set(["endless"]);
 

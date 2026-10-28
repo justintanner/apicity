@@ -5,6 +5,8 @@ import type { EndlessError } from "@apicity/endless";
 import {
   EndlessTikTokTrendsPublicRequestSchema,
   EndlessTikTokTrendsRegionSchema,
+  EndlessTrendsPublicRequestSchema,
+  EndlessTrendsRegionSchema,
 } from "@apicity/endless/zod";
 
 interface CapturedRequest {
@@ -165,5 +167,46 @@ describe("endless provider", () => {
     expect(
       (method as unknown as { example?: { payload: unknown } }).example?.payload
     ).toEqual({ region: "thailand" });
+  });
+
+  it("requests X trends by region slug", async () => {
+    const trends = {
+      region: "worldwide",
+      captured_at: null,
+      trends: [],
+      timeline: [],
+      longest: [],
+    };
+    const { requests, fetch } = capture(() => jsonResponse(trends));
+    const endless = createEndless({ fetch });
+
+    await expect(
+      endless.social.trends.public({ region: "south-korea" })
+    ).resolves.toEqual(trends);
+
+    expect(requests[0].url).toBe(
+      "https://api.endless.app/social/trends/public/south-korea"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.headers).toEqual({ "Endless-Api-Version": "1" });
+  });
+
+  it("attaches the X trends region schema and the recorded example", () => {
+    const method = createEndless().social.trends.public;
+
+    expect(method.schema).toBe(EndlessTrendsPublicRequestSchema);
+    expect(method.schema.safeParse({ region: "worldwide" }).success).toBe(true);
+    // X trends cover 43 regions TikTok trends do not, `worldwide` among them.
+    expect(method.schema.safeParse({ region: "south-korea" }).success).toBe(
+      true
+    );
+    expect(
+      EndlessTikTokTrendsPublicRequestSchema.safeParse({ region: "worldwide" })
+        .success
+    ).toBe(false);
+    expect(EndlessTrendsRegionSchema.options).toHaveLength(63);
+    expect(
+      (method as unknown as { example?: { payload: unknown } }).example?.payload
+    ).toEqual({ region: "worldwide" });
   });
 });

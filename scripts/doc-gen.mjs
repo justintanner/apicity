@@ -265,6 +265,9 @@ function formatUsageSnippet(
   if (providerName === "endless" && dotPath === "social.tiktokTrends.public") {
     return `const trends = await ${call}({ region: "thailand" });`;
   }
+  if (providerName === "endless" && dotPath === "social.trends.public") {
+    return `const trends = await ${call}({ region: "worldwide" });`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,
@@ -626,10 +629,12 @@ const PROVIDER_NOTES = new Map([
     "endless",
     [
       "Endless's public social endpoints need no key; its authenticated API",
-      "is not covered. `region` is a country slug from",
-      "`EndlessTikTokTrendsRegionSchema.options`, and any other value is a",
-      "404 whose `EndlessError.code` is `invalid_path_parameter`. Every call",
-      "sends `Endless-Api-Version: 1` unless `apiVersion` names another major.",
+      "is not covered. `region` is a slug from",
+      "`EndlessTikTokTrendsRegionSchema.options` for TikTok trends or",
+      "`EndlessTrendsRegionSchema.options` for X trends, and any other value",
+      "is a 404 whose `EndlessError.code` is `invalid_path_parameter`. Every",
+      "call sends `Endless-Api-Version: 1` unless `apiVersion` names another",
+      "major.",
     ].join(" "),
   ],
   [

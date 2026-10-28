@@ -60,7 +60,11 @@ import {
   walkAllEndpoints,
 } from "../../scripts/lib/endpoint-walk.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
-import { renderApiReference, takesNoArgument } from "../../scripts/doc-gen.mjs";
+import {
+  renderApiReference,
+  renderProviderReadme,
+  takesNoArgument,
+} from "../../scripts/doc-gen.mjs";
 
 interface WalkedEndpoint {
   provider: string;
@@ -860,5 +864,59 @@ describe("usage snippets name a function on every provider factory", () => {
     expect(fal).toContain(
       "const res = await fal.v1.serverless.logs.stream({ /* ... */ });"
     );
+  });
+});
+
+/** The code block of a README's `## Middleware` section, if it has one. */
+function middlewareSample(readme: string): string | undefined {
+  return /^## Middleware\n\n```typescript\n([\s\S]*?)^```$/m.exec(readme)?.[1];
+}
+
+describe("Middleware samples name a function on their provider", () => {
+  // The sample is copy-pasteable source, so its package must export
+  // `withRetry` and the call it wraps must be a function on the factory.
+  // Before ac-dghndy the generic `get.v1.models` was not one on nine
+  // providers, and five providers had no `withRetry` to import. The section
+  // does not depend on endpoints, so each README renders without a walk.
+  it("imports withRetry from its package and wraps a function", async () => {
+    const misses: string[] = [];
+    let samples = 0;
+    for (const provider of Object.keys(PROVIDER_FACTORIES) as ProviderName[]) {
+      const { readme } = await renderProviderReadme(provider, new Map());
+      const sample = middlewareSample(readme);
+      if (sample === undefined) {
+        if (readme.includes("## Middleware")) {
+          misses.push(`${provider}: unparsed Middleware section`);
+        }
+        continue;
+      }
+      samples += 1;
+      const imported = /^import \{ (\w+), withRetry \} from "([^"]+)";$/m.exec(
+        sample
+      );
+      const client = /^const (\w+) = (\w+)\(/m.exec(sample);
+      const wrapped = /^const \w+ = withRetry\(((\w+)\.[\w.]+), /m.exec(sample);
+      if (!imported || !client || !wrapped) {
+        misses.push(`${provider}: unparsed Middleware sample`);
+        continue;
+      }
+      const [, factory, pkg] = imported;
+      const mod = (await import(pkg)) as Record<string, unknown>;
+      if (mod[factory] !== PROVIDER_FACTORIES[provider]) {
+        misses.push(`${provider}: ${pkg} exports no ${factory}`);
+      }
+      if (typeof mod.withRetry !== "function") {
+        misses.push(`${provider}: ${pkg} exports no withRetry`);
+      }
+      if (client[2] !== factory || wrapped[2] !== client[1]) {
+        misses.push(`${provider}: ${wrapped[1]} is not on ${client[1]}`);
+      }
+      const resolved = resolveCallPath(providerInstance(provider), wrapped[1]);
+      if (typeof resolved !== "function") {
+        misses.push(`${provider}: ${typeof resolved} ${wrapped[1]}`);
+      }
+    }
+    expect(samples).toBeGreaterThan(0);
+    expect(misses).toEqual([]);
   });
 });

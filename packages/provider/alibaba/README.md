@@ -324,7 +324,7 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 import { createAlibaba, withRetry } from "@apicity/alibaba";
 
 const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
-const models = withRetry(alibaba.get.v1.models, { retries: 3 });
+const getTask = withRetry(alibaba.get.api.v1.tasks, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

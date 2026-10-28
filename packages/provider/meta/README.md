@@ -23,7 +23,7 @@ pnpm add @apicity/meta
 ```typescript
 import { createMeta } from "@apicity/meta";
 
-const meta = createMeta({ apiKey: process.env.META_API_KEY! });
+const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN! });
 ```
 
 ## Setup
@@ -349,15 +349,6 @@ const res = await meta.post.v25.mediaPublish({ /* ... */ });
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 
 </details>
-
-## Middleware
-
-```typescript
-import { createMeta, withRetry } from "@apicity/meta";
-
-const meta = createMeta({ apiKey: process.env.META_API_KEY! });
-const models = withRetry(meta.get.v1.models, { retries: 3 });
-```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 

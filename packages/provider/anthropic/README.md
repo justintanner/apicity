@@ -595,7 +595,7 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 import { createAnthropic, withRetry } from "@apicity/anthropic";
 
 const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-const models = withRetry(anthropic.get.v1.models, { retries: 3 });
+const listModels = withRetry(anthropic.get.v1.models.list, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

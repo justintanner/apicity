@@ -419,15 +419,6 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 </details>
 
-## Middleware
-
-```typescript
-import { createDoltHub, withRetry } from "@apicity/dolthub";
-
-const dolthub = createDoltHub({ apiToken: process.env.DOLTHUB_API_KEY! });
-const models = withRetry(dolthub.get.v1.models, { retries: 3 });
-```
-
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License

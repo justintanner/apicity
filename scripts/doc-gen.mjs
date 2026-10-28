@@ -4397,10 +4397,13 @@ const PROVIDER_AUTH = {
   },
   googleflow: {
     env: "GOOGLE_FLOW_API_KEY",
+    showMiddleware: false,
   },
   dolthub: {
     field: "apiToken",
+    showMiddleware: false,
   },
+  elevenlabs: { showMiddleware: false },
   zaicoding: {
     env: "ZAI_CODING_PLAN_API_KEY",
     showMiddleware: false,
@@ -4410,7 +4413,7 @@ const PROVIDER_AUTH = {
     env: "X_ACCESS_TOKEN",
     showMiddleware: false,
   },
-  ig: {
+  meta: {
     field: "accessToken",
     env: "IG_ACCESS_TOKEN",
     showMiddleware: false,
@@ -4474,12 +4477,21 @@ const PROVIDER_AUTH = {
     optionalAuth: true,
     showMiddleware: false,
   },
+  youtube: { showMiddleware: false },
 };
 
-// The call a provider's Middleware sample wraps, for a provider without
-// get.v1.models.
+// The call a provider's Middleware sample wraps, for a provider whose
+// get.v1.models is not a function. withRetry forwards its first argument as
+// the request, so each entry takes one request argument.
+// tests/unit/doc-gen-labels.test.ts resolves every rendered sample on a real
+// factory.
 const MIDDLEWARE_SAMPLE_CALLS = {
+  alibaba: { name: "getTask", path: "get.api.v1.tasks" },
+  anthropic: { name: "listModels", path: "get.v1.models.list" },
+  fireworks: { name: "listAccounts", path: "inference.v1.accounts.list" },
   "free-media-upload": { name: "upload", path: "uguu.upload" },
+  kie: { name: "listModels", path: "get.api.v1.models" },
+  kimicoding: { name: "countTokens", path: "post.coding.v1.countTokens" },
 };
 
 // Per-provider upstream documentation URLs. When set, a docs badge is
@@ -4901,7 +4913,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 // through this, and the count is threaded out of the single
 // `resolveEndpointLabels` call that produced the README header — so neither
 // the bytes nor the count can drift.
-async function renderProviderReadme(providerName, endpointsByProvider) {
+export async function renderProviderReadme(providerName, endpointsByProvider) {
   const providerDir = path.join(
     REPO_ROOT,
     "packages",

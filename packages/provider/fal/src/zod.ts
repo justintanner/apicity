@@ -16078,6 +16078,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalFlux3KleinTrainerRequestSchema,
   "blackforestlabs/flux-3/klein/base/text-to-image/lora":
     FalFlux3KleinTextToImageLoraRequestSchema,
+  "blackforestlabs/flux-3/klein/text-to-image/lora":
+    FalFlux3KleinTextToImageLoraRequestSchema,
   "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
   "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/text-to-video":

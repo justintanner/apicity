@@ -1896,7 +1896,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 import { createFireworks, withRetry } from "@apicity/fireworks";
 
 const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
-const models = withRetry(fireworks.get.v1.models, { retries: 3 });
+const listAccounts = withRetry(fireworks.inference.v1.accounts.list, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

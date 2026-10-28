@@ -119,15 +119,6 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 
 </details>
 
-## Middleware
-
-```typescript
-import { createYouTube, withRetry } from "@apicity/youtube";
-
-const youtube = createYouTube({ apiKey: process.env.YOUTUBE_API_KEY! });
-const models = withRetry(youtube.get.v1.models, { retries: 3 });
-```
-
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License

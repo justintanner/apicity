@@ -5329,15 +5329,6 @@ Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
-## Middleware
-
-```typescript
-import { createElevenLabs, withRetry } from "@apicity/elevenlabs";
-
-const elevenlabs = createElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
-const models = withRetry(elevenlabs.get.v1.models, { retries: 3 });
-```
-
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License

@@ -2248,7 +2248,7 @@ Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 import { createKie, withRetry } from "@apicity/kie";
 
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
-const models = withRetry(kie.get.v1.models, { retries: 3 });
+const listModels = withRetry(kie.get.api.v1.models, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

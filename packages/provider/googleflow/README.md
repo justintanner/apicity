@@ -488,15 +488,6 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 </details>
 
-## Middleware
-
-```typescript
-import { createGoogleFlow, withRetry } from "@apicity/googleflow";
-
-const googleflow = createGoogleFlow({ apiKey: process.env.GOOGLE_FLOW_API_KEY! });
-const models = withRetry(googleflow.get.v1.models, { retries: 3 });
-```
-
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License

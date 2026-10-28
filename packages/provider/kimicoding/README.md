@@ -157,7 +157,7 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 import { createKimiCoding, withRetry } from "@apicity/kimicoding";
 
 const kimicoding = createKimiCoding({ apiKey: process.env.KIMICODING_API_KEY! });
-const models = withRetry(kimicoding.get.v1.models, { retries: 3 });
+const countTokens = withRetry(kimicoding.post.coding.v1.countTokens, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

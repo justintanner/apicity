@@ -428,6 +428,16 @@ export type {
   FalFlux3EditImageRequest,
   FalFlux3EditImageRequestInput,
   FalFlux3EditImageParsedRequest,
+  FalFlux3KleinLora,
+  FalFlux3KleinTextToImageLoraRequest,
+  FalFlux3KleinTextToImageLoraRequestInput,
+  FalFlux3KleinTextToImageLoraParsedRequest,
+  FalFlux3KleinEditImageLoraRequest,
+  FalFlux3KleinEditImageLoraRequestInput,
+  FalFlux3KleinEditImageLoraParsedRequest,
+  FalFlux3KleinTrainerRequest,
+  FalFlux3KleinTrainerRequestInput,
+  FalFlux3KleinTrainerParsedRequest,
   FalMinimaxH3MaxRecastRequest,
   FalMinimaxH3MaxRecastRequestInput,
   FalMinimaxH3MaxRecastParsedRequest,
@@ -928,6 +938,9 @@ import type {
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalFlux3TextToImageRequest,
   FalFlux3EditImageRequest,
+  FalFlux3KleinTextToImageLoraRequest,
+  FalFlux3KleinEditImageLoraRequest,
+  FalFlux3KleinTrainerRequest,
   FalMinimaxH3MaxRecastRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequest,
@@ -3905,6 +3918,66 @@ export interface FalRunFlux3Namespace {
   ) => Promise<FalFlux3TextToImageResponse>) & {
     schema: ApicitySchema<FalFlux3TextToImageRequest>;
   };
+}
+
+// FLUX 3 Klein: the output of all four LoRA endpoints.
+export interface FalFlux3KleinImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  timings: Record<string, number>;
+  seed: number;
+  has_nsfw_concepts: boolean[];
+  prompt: string;
+}
+
+export interface FalFlux3KleinTrainerFile {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+}
+
+// FLUX 3 Klein base trainers: the trained LoRA weights and the training config.
+export interface FalFlux3KleinTrainerResponse {
+  lora_file: FalFlux3KleinTrainerFile;
+  config_file: FalFlux3KleinTrainerFile;
+}
+
+export type FalFlux3KleinTrainerFn = ((
+  params: FalFlux3KleinTrainerRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3KleinTrainerResponse>) & {
+  schema: ApicitySchema<FalFlux3KleinTrainerRequest>;
+};
+
+export type FalFlux3KleinTextToImageLoraFn = ((
+  params: FalFlux3KleinTextToImageLoraRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3KleinImageResponse>) & {
+  schema: ApicitySchema<FalFlux3KleinTextToImageLoraRequest>;
+};
+
+export type FalFlux3KleinEditImageLoraFn = ((
+  params: FalFlux3KleinEditImageLoraRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3KleinImageResponse>) & {
+  schema: ApicitySchema<FalFlux3KleinEditImageLoraRequest>;
+};
+
+// blackforestlabs/flux-3/klein/base/trainer is callable, and its edit trainer
+// hangs from it (run.blackforestlabs.flux3.klein.base.trainer.edit).
+export interface FalRunFlux3KleinBaseTrainerNamespace {
+  (
+    params: FalFlux3KleinTrainerRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3KleinTrainerResponse>;
+  schema: ApicitySchema<FalFlux3KleinTrainerRequest>;
 }
 
 export interface FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse {

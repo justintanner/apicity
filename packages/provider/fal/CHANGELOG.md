@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added shared FLUX 3 Klein trainer and LoRA request schemas, response types and callable types (ac-v8q1o7). The six endpoints follow separately in ac-tra7ie, ac-9uj0pi, ac-uhklr9, ac-1a7zs9, ac-1rn8vm and ac-6dfs70.
+
 - Added HeyGen Video Agent 3, dynamically priced (ac-egreqg).
 
 - Added HeyGen Video Agent 2, dynamically priced (ac-8eqafo).

@@ -65,6 +65,15 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "endless\tGET\tsocial.trends.public": {
+    provider: "endless",
+    method: "GET",
+    dotPath: "social.trends.public",
+    positional: [],
+    fields: [{ placeholder: "region", property: "region" }],
+    injected: [],
+    derived: [],
+  },
   "machgen\tGET\tapi.v0.tasks": {
     provider: "machgen",
     method: "GET",

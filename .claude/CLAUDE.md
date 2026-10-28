@@ -174,7 +174,7 @@ packages/provider/<name>/
 **telegram** — Telegram Bot API: send text, photo, video, audio messages
 **machgen** — Video generation, task status, authenticated assets
 **quo** — Quo business text messaging
-**endless** — Endless public social trends: TikTok trends by country (no key)
+**endless** — Endless public social trends: TikTok and X trends by region (no key)
 **x** — X (Twitter) social API for posting content (api.x.com)
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)

@@ -335,6 +335,10 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
       source: "static:endless-public-tiktok-trends",
       payload: { region: "thailand" },
     },
+    "GET social.trends.public": {
+      source: "static:endless-public-trends",
+      payload: { region: "worldwide" },
+    },
   },
 };
 

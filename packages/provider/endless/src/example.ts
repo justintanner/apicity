@@ -23,6 +23,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "cheap",
     "runByDefault": true
+  },
+  "GET social.trends.public": {
+    "source": "static:endless-public-trends",
+    "payload": {
+      "region": "worldwide"
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

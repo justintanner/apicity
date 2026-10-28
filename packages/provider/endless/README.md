@@ -7,7 +7,7 @@
 
 Endless public social trends API provider.
 
-Endless's public social endpoints need no key; its authenticated API is not covered. `region` is a country slug from `EndlessTikTokTrendsRegionSchema.options`, and any other value is a 404 whose `EndlessError.code` is `invalid_path_parameter`. Every call sends `Endless-Api-Version: 1` unless `apiVersion` names another major.
+Endless's public social endpoints need no key; its authenticated API is not covered. `region` is a slug from `EndlessTikTokTrendsRegionSchema.options` for TikTok trends or `EndlessTrendsRegionSchema.options` for X trends, and any other value is a 404 whose `EndlessError.code` is `invalid_path_parameter`. Every call sends `Endless-Api-Version: 1` unless `apiVersion` names another major.
 
 Runtime dependencies:
 
@@ -31,7 +31,7 @@ const endless = createEndless();
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### social
 
@@ -46,6 +46,23 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const trends = await endless.social.tiktokTrends.public({ region: "thailand" });
+```
+
+Source: [`packages/provider/endless/src/endless.ts`](src/endless.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>endless.social.trends.public</code></b></summary>
+
+<code>GET https://api.endless.app/social/trends/public/{region}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://endless.app/docs/api/social/public-trends)
+
+```typescript
+const trends = await endless.social.trends.public({ region: "worldwide" });
 ```
 
 Source: [`packages/provider/endless/src/endless.ts`](src/endless.ts)

@@ -4612,6 +4612,8 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify)
 
 ```typescript
+declare const recording: Blob;
+
 const res = await elevenlabs.v1.voices.pvc.captcha("voice_id", { recording });
 ```
 

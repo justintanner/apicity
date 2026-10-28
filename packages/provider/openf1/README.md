@@ -81,6 +81,8 @@ for REST reads and this package does not store credentials or tokens
 outside the client instance.
 
 ```typescript
+declare function fetchTokenSomewhereElse(): Promise<{ access_token: string }>;
+
 const openf1 = createOpenF1({
   tokenProvider: async () => {
     const token = await fetchTokenSomewhereElse();

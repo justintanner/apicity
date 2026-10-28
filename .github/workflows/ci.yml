@@ -93,6 +93,12 @@ jobs:
       - name: Verify generated provider READMEs are current
         run: pnpm run doc-gen:check
 
+      # Type-check every TypeScript block of the provider READMEs and
+      # docs/middleware.md against provider source, not dist/, so it needs no
+      # build. After doc-gen:check, so a stale README fails as drift first.
+      - name: Type-check README code blocks
+        run: pnpm run check:readme-types
+
       - name: Build packages
         run: pnpm run build
 

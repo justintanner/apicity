@@ -61,6 +61,7 @@ pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (one alias per package; see below)
 pnpm run doc-gen                 # Regenerate every provider README
 pnpm run doc-gen:check           # Check generated READMEs for drift (part of ci:local)
+pnpm run check:readme-types      # Type-check every TypeScript block in the generated READMEs and docs/middleware.md (part of ci:local)
 pnpm run doc-gen:kie             # Regenerate one provider README (one alias per provider; see below)
 pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts from the endpoint sources
 pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
@@ -95,7 +96,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped forma
 pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
 pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
 pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + gen:frontier:check + doc-gen:check + build + check:packed-types + typecheck:tests + lint + test:run
+pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + gen:frontier:check + doc-gen:check + check:readme-types + build + check:packed-types + typecheck:tests + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
@@ -325,7 +326,7 @@ API keys are resolved at runtime via the [1Password CLI](https://developer.1pass
 
 ### CI
 
-GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, build, verify artifacts, packed-provider type check, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (every push, any branch; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
+GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, README code-block type check, build, verify artifacts, packed-provider type check, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (every push, any branch; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
 
 ## Code Conventions
 
@@ -422,7 +423,10 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
 - **test** (push + PR) — guards against cassette re-recording
   (`POLLY_MODE` must be `replay`), then audit + generated-example drift check +
   generated-README drift check (`doc-gen:check`, which must precede the build
-  because `pnpm run build` ends in `doc-gen`) + build + verify artifacts +
+  because `pnpm run build` ends in `doc-gen`) + the README code-block type
+  check (`check:readme-types`: every `ts` / `typescript` block of the
+  generated provider READMEs and `docs/middleware.md`, compiled against
+  provider source) + build + verify artifacts +
   the packed-provider type check (`check:packed-types`: every provider packed
   and imported by a node16 consumer with `skipLibCheck: false`) + the
   tests-project typecheck (`typecheck:tests`) + lint + integration tests via

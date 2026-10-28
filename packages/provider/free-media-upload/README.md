@@ -66,10 +66,10 @@ const file = new Blob([bytes], { type: "image/jpeg" });
 //    `bin` + `file` blocks. The factory keeps these distinctions in
 //    the type system so the destructure below is statically checked.
 const [catboxUrl, gofile, uguu, filebin] = (await Promise.all([
-  free.catbox.upload({ file, filename: "cat1.jpg" }),
-  free.gofile.upload({ file, filename: "cat1.jpg" }),
-  free.uguu.upload({ file, filename: "cat1.jpg" }),
-  free.filebin.upload({ file, filename: "cat1.jpg", bin: "apicity-test-img" }),
+  freeMediaUpload.catbox.upload({ file, filename: "cat1.jpg" }),
+  freeMediaUpload.gofile.upload({ file, filename: "cat1.jpg" }),
+  freeMediaUpload.uguu.upload({ file, filename: "cat1.jpg" }),
+  freeMediaUpload.filebin.upload({ file, filename: "cat1.jpg", bin: "apicity-test-img" }),
 ])) as [string, GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse];
 
 // 3. catbox is the simplest UX: text/plain response, just the URL,
@@ -144,9 +144,11 @@ every host fails. Useful when one provider is flaky (uguu's CDN can 502
 during traffic spikes) but you don't care which one wins.
 
 ```typescript
+import { readFileSync } from "node:fs";
 import { createFreeMediaUpload, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";
 
 const freeMediaUpload = createFreeMediaUpload();
+const bytes = readFileSync("./cat1.jpg");
 const file = new Blob([bytes], { type: "image/jpeg" });
 
 // litterbox accepts a TTL; uguu and tflink are best-effort permanent.
@@ -155,7 +157,7 @@ const file = new Blob([bytes], { type: "image/jpeg" });
 // ever seeing it. The returned URL is already normalised — string in,
 // string out, regardless of which host responded.
 try {
-  const url = await uploadToAnyHost(free, {
+  const url = await uploadToAnyHost(freeMediaUpload, {
     file,
     filename: "cat1.jpg",
     hosts: ["litterbox", "uguu", "tflink"],
@@ -191,7 +193,7 @@ try {
   auth handle — save it if you want to delete the upload later via
   the gofile API. Without it, anonymous uploads are write-only.
 - Every endpoint exposes a Zod schema:
-  `free.catbox.upload.schema.safeParse(input)` validates the payload
+  `freeMediaUpload.catbox.upload.schema.safeParse(input)` validates the payload
   before the network call, which catches the most common mistake
   (passing a `Buffer` or `string` instead of a `Blob`).
 - All endpoints accept an `AbortSignal` second argument and compose

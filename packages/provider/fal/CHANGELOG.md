@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Klein edit-image at `run.blackforestlabs.flux3.klein.editImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: an edit of our cat photo at 256x256 billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).
+
 - Added FLUX 3 Klein text-to-image at `run.blackforestlabs.flux3.klein.textToImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: a 256x256 image billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).
 
 - Added FLUX 3 Klein edit-image LoRA at `run.blackforestlabs.flux3.klein.editImage.lora`, reusing the shared edit schema and recording our trained edit LoRA with the owned cat photo (ac-6dfs70).

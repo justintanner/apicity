@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Klein base edit-image LoRA at `run.blackforestlabs.flux3.klein.base.editImage.lora`, with the shared edit schema and a recording using our trained edit LoRA and owned cat photo (ac-1rn8vm).
+
 - Added Endless `social.trends.public` (`GET https://api.endless.app/social/trends/public/{region}`): what is trending on X in a region, with each trend's search link and tweet volume (`null` when X reports none), the last 24 hours of snapshots in `timeline`, and the longest-trending names. `region` is one of 63 slugs, `worldwide` and 62 countries, checked by the request schema. The CLI calls it as `apicity endless social.trends.public --region worldwide`. Recorded for worldwide (ac-cle0z4).
 
 - Added the Endless provider (`@apicity/endless`), keyless and free, with `social.tiktokTrends.public` (`GET https://api.endless.app/social/tiktok-trends/public/{region}`): a country's most played trending TikTok videos of the last 24 hours, with the longest-trending videos, sounds and hashtags. `region` is one of 20 country slugs, checked by the request schema; calls send `Endless-Api-Version: 1` unless `apiVersion` says otherwise, and failures raise `EndlessError` with Endless's reason in `code`. The CLI calls it as `apicity endless social.tiktokTrends.public --region thailand`, its cost tier is `cheap`, and `@apicity/har` maps `api.endless.app` to it. Recorded for thailand (ac-cle0z4).

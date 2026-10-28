@@ -3985,7 +3985,12 @@ export interface FalRunFlux3KleinBaseTextToImageNamespace {
   lora: FalFlux3KleinTextToImageLoraFn;
 }
 
+export interface FalRunFlux3KleinBaseEditImageNamespace {
+  lora: FalFlux3KleinEditImageLoraFn;
+}
+
 export interface FalRunFlux3KleinBaseNamespace {
+  editImage: FalRunFlux3KleinBaseEditImageNamespace;
   textToImage: FalRunFlux3KleinBaseTextToImageNamespace;
   trainer: FalRunFlux3KleinBaseTrainerNamespace;
 }

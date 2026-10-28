@@ -16076,6 +16076,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalFlux3KleinTrainerRequestSchema,
   "blackforestlabs/flux-3/klein/base/trainer/edit":
     FalFlux3KleinTrainerRequestSchema,
+  "blackforestlabs/flux-3/klein/base/edit-image/lora":
+    FalFlux3KleinEditImageLoraRequestSchema,
   "blackforestlabs/flux-3/klein/base/text-to-image/lora":
     FalFlux3KleinTextToImageLoraRequestSchema,
   "blackforestlabs/flux-3/klein/text-to-image/lora":

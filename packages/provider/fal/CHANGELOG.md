@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Klein base edit-image LoRA at `run.blackforestlabs.flux3.klein.base.editImage.lora`, with the shared edit schema and a recording using our trained edit LoRA and owned cat photo (ac-1rn8vm).
+
 - Added FLUX 3 Klein text-to-image LoRA at `run.blackforestlabs.flux3.klein.textToImage.lora`, reusing the shared LoRA schema and our trained cat LoRA (ac-1a7zs9).
 
 - Added FLUX 3 Klein base text-to-image LoRA at `run.blackforestlabs.flux3.klein.base.textToImage.lora`, with shared LoRA schemas and a recorded image using our trained cat LoRA (ac-uhklr9).

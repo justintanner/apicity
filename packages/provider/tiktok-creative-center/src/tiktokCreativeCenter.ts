@@ -3,6 +3,7 @@ import { TiktokCreativeCenterError } from "./types";
 import type {
   TiktokCreativeCenterGetTopContentsListRequest,
   TiktokCreativeCenterGetTopContentsListResponse,
+  TiktokCreativeCenterGetTopContentsOverviewResponse,
   TiktokCreativeCenterOptions,
   TiktokCreativeCenterProvider,
 } from "./types";
@@ -158,6 +159,15 @@ export function createTiktokCreativeCenter(
             },
             { schema: TiktokCreativeCenterGetTopContentsListRequestSchema }
           ),
+          // sig-ok: Creative Center's PascalCase path segments become camelCase keys.
+          // GET https://ads.tiktok.com/CreativeOne/Report/GetTopContentsOverview
+          // Docs: https://ads.tiktok.com/creative/creativeCenter/trends/video
+          getTopContentsOverview: async (signal?: AbortSignal) => {
+            return getRequest<TiktokCreativeCenterGetTopContentsOverviewResponse>(
+              "/CreativeOne/Report/GetTopContentsOverview",
+              signal
+            );
+          },
         },
       },
     },

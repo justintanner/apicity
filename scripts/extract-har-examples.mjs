@@ -340,6 +340,13 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
       payload: { region: "worldwide" },
     },
   },
+  // The overview takes no input, so its recording yields no payload.
+  "tiktok-creative-center": {
+    "GET ads.creativeOne.report.getTopContentsOverview": {
+      source: "static:tiktok-creative-center-overview",
+      payload: {},
+    },
+  },
 };
 
 // Curated overrides for accepted submits with unusable media (ac-fevz1c).

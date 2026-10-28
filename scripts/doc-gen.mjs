@@ -277,6 +277,12 @@ function formatUsageSnippet(
   }
   if (
     providerName === "tiktok-creative-center" &&
+    dotPath === "ads.creativeOne.report.getTopContentsOverview"
+  ) {
+    return `const overview = await ${call}();`;
+  }
+  if (
+    providerName === "tiktok-creative-center" &&
     dotPath === "ads.creativeOne.report.creativeCenterGetTopContentsList"
   ) {
     return [
@@ -658,7 +664,9 @@ const PROVIDER_NOTES = new Map([
       "JSON numbers above 2^53, so `itemID`, `authorID` and `creatorID` come",
       "back as strings with every digit. Creative Center reports a failure as",
       "HTTP 200 with a nonzero `BaseResp.StatusCode`, which rejects with",
-      "`TiktokCreativeCenterError` (`statusCode`). A row's video page is",
+      "`TiktokCreativeCenterError` (`statusCode`). The overview reports the",
+      "latest daily, weekly and monthly period ends, the values a list's",
+      "`periodEndTimestamp` takes. A row's video page is",
       "`https://www.tiktok.com/@<handlerName>/video/<itemID>`; `videoURL`",
       "is a signed CDN link that expires.",
     ].join(" "),

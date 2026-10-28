@@ -11,6 +11,7 @@ export type {
   TiktokCreativeCenterGetTopContentsListMethod,
   TiktokCreativeCenterGetTopContentsListRequest,
   TiktokCreativeCenterGetTopContentsListResponse,
+  TiktokCreativeCenterGetTopContentsOverviewResponse,
   TiktokCreativeCenterItemInfo,
   TiktokCreativeCenterItemMetrics,
   TiktokCreativeCenterOptions,

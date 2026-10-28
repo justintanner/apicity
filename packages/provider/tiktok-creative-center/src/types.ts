@@ -131,6 +131,18 @@ export interface TiktokCreativeCenterGetTopContentsListResponse {
   [key: string]: unknown;
 }
 
+/**
+ * Unix seconds that end the latest daily, weekly and monthly lists: the
+ * values `periodEndTimestamp` takes.
+ */
+export interface TiktokCreativeCenterGetTopContentsOverviewResponse {
+  BaseResp: TiktokCreativeCenterBaseResp;
+  lastDailyEndTimestamp?: number;
+  lastWeeklyEndTimestamp?: number;
+  lastMonthlyEndTimestamp?: number;
+  [key: string]: unknown;
+}
+
 export interface TiktokCreativeCenterGetTopContentsListMethod {
   (
     request: TiktokCreativeCenterGetTopContentsListRequest,
@@ -140,6 +152,9 @@ export interface TiktokCreativeCenterGetTopContentsListMethod {
 }
 export interface TiktokCreativeCenterReportNamespace {
   creativeCenterGetTopContentsList: TiktokCreativeCenterGetTopContentsListMethod;
+  getTopContentsOverview(
+    signal?: AbortSignal
+  ): Promise<TiktokCreativeCenterGetTopContentsOverviewResponse>;
 }
 export interface TiktokCreativeCenterCreativeOneNamespace {
   report: TiktokCreativeCenterReportNamespace;

@@ -6,6 +6,7 @@ import { createEndless } from "@apicity/endless";
 import { createKie } from "@apicity/kie";
 import { createOpenLigaDB } from "@apicity/openligadb";
 import { createTheSportsDB } from "@apicity/thesportsdb";
+import { createTiktokCreativeCenter } from "@apicity/tiktok-creative-center";
 import { createXai } from "@apicity/xai";
 import { findMatchingRow } from "../../scripts/lib/match-har-to-endpoint.mjs";
 import { exampleCandidate } from "../../scripts/lib/example-candidates.mjs";
@@ -140,6 +141,7 @@ describe("example provenance", () => {
       kie: createKie({ apiKey: "test-key" }),
       openligadb: createOpenLigaDB(),
       thesportsdb: createTheSportsDB({ apiKey: "test-key" }),
+      "tiktok-creative-center": createTiktokCreativeCenter(),
       xai: createXai({ apiKey: "test-key" }),
     };
     for (const { provider, entries } of examples) {

@@ -166,6 +166,9 @@ importers:
       '@apicity/meta':
         specifier: workspace:*
         version: link:../provider/meta
+      '@apicity/omkar':
+        specifier: workspace:*
+        version: link:../provider/omkar
       '@apicity/openai':
         specifier: workspace:*
         version: link:../provider/openai
@@ -310,6 +313,12 @@ importers:
         version: 4.6.7
 
   packages/provider/meta:
+    dependencies:
+      zod:
+        specifier: ^4.6.6
+        version: 4.6.7
+
+  packages/provider/omkar:
     dependencies:
       zod:
         specifier: ^4.6.6

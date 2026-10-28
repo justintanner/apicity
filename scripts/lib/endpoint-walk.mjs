@@ -250,6 +250,11 @@ const PROVIDERS = [
     ],
     factoryNames: ["createTiktokCreativeCenter"],
   },
+  {
+    name: "omkar",
+    entryFiles: ["packages/provider/omkar/src/omkar.ts"],
+    factoryNames: ["createOmkar"],
+  },
 ];
 
 const TSV_ONLY_PROVIDERS = ["b2"];

@@ -18,6 +18,7 @@ const DEFAULT_EXCLUDED_HEADERS = [
   "x-goog-api-key",
   "x-amz-date",
   "x-amz-security-token",
+  "api-key",
 ];
 
 /** Polly's default harness identity; custom matchRequestsBy needs matching options. */

@@ -67,6 +67,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   thesportsdb: ["www.thesportsdb.com", "thedatadb.readme.io"],
   endless: ["endless.app"],
   "tiktok-creative-center": ["ads.tiktok.com"],
+  omkar: ["www.omkar.cloud"],
 };
 
 const METHOD_LINE_RE =

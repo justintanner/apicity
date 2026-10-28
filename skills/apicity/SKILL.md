@@ -2,7 +2,7 @@
 name: apicity
 description: |
   Call any supported provider API (OpenAI, Anthropic, xAI, fal, KIE, ElevenLabs,
-  S3, Telegram, Polymarket and 22 more) through the apicity CLI. Use for ANY
+  S3, Telegram, Polymarket and 23 more) through the apicity CLI. Use for ANY
   task that needs a provider API: generation, upload, lookup, posting, trading
   data, or checking what an endpoint expects.
 triggers:
@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 31 provider APIs
+# apicity — one command line for 32 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -459,6 +459,15 @@ apicity tiktok-creative-center ads.creativeOne.report.getTopContentsOverview --j
 apicity tiktok-creative-center ads.creativeOne.report.creativeCenterGetTopContentsList --data '{"countryCode":"TH","periodDimension":3,"periodEndTimestamp":1792886400,"orderByMetric":1}' --json
 ```
 
+### omkar — TikTok's trending feed by country (Omkar Cloud TikTok Scraper)
+
+Each call scrapes a fresh batch of up to 30 videos. The free plan allows 1,000
+successful calls a month.
+
+```bash
+apicity omkar feed.trending --data '{"country":"TH"}' --json
+```
+
 ### thesportsdb — teams, leagues, events and results
 
 The `{apiKey}` is part of the URL and is supplied for you.
@@ -548,6 +557,7 @@ secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 | `telegram`               | `TELEGRAM_BOT_KEY`                                                                                                                                                                                                                      |
 | `machgen`                | `MACHGEN_API_KEY`                                                                                                                                                                                                                       |
 | `quo`                    | `QUO_API_KEY`                                                                                                                                                                                                                           |
+| `omkar`                  | `OMKAR_API_KEY`                                                                                                                                                                                                                         |
 | `thesportsdb`            | `THESPORTSDB_API_KEY` (optional; the free tier works without it)                                                                                                                                                                        |
 
 ## Paid endpoints

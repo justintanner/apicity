@@ -128,6 +128,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/tiktok-creative-center/src"
       ),
+      "@apicity/omkar/zod": path.resolve(
+        __dirname,
+        "../packages/provider/omkar/src/zod"
+      ),
+      "@apicity/omkar": path.resolve(
+        __dirname,
+        "../packages/provider/omkar/src"
+      ),
       "@apicity/s3/zod": path.resolve(
         __dirname,
         "../packages/provider/s3/src/zod"

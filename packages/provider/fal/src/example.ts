@@ -293,6 +293,28 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.base.textToImage.lora": {
+    "source": "fal/flux-3-klein-base-text-to-image-lora",
+    "payload": {
+      "loras": [
+        {
+          "path": "https://v3b.fal.media/files/b/0ab029a5/JcXRpMRG_eVrKeu1xO1sE_flux3_klein_lora_af8f29c6b86c4b8a835d593c001a850c.safetensors",
+          "scale": 1
+        }
+      ],
+      "prompt": "A photo of apct cat sitting on a windowsill in soft daylight.",
+      "enable_prompt_expansion": false,
+      "seed": 5555,
+      "num_images": 1,
+      "output_format": "jpeg",
+      "image_size": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.klein.base.trainer": {
     "source": "fal/flux-3-klein-base-trainer",
     "payload": {

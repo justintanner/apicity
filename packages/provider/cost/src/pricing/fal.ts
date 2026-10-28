@@ -1254,6 +1254,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
@@ -1345,6 +1346,12 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // 2026-10-28: a 256x256 image with the owned Klein LoRA billed 0.8889
+  // megapixels ($0.0311115), not the published one-megapixel minimum.
+  "blackforestlabs/flux-3/klein/base/text-to-image/lora": {
+    unit: "megapixels at $0.035",
+    why: "the published image-size minimum does not match the recorded bill, and no request field states the billed megapixels",
+  },
   // 2026-10-28: 100 steps with one reference image per pair billed
   // 211 units at $0.002 ($0.422), confirmed by the HAR and usage API.
   "blackforestlabs/flux-3/klein/base/trainer/edit": {

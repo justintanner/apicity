@@ -3981,7 +3981,12 @@ export interface FalRunFlux3KleinBaseTrainerNamespace {
   schema: ApicitySchema<FalFlux3KleinTrainerRequest>;
 }
 
+export interface FalRunFlux3KleinBaseTextToImageNamespace {
+  lora: FalFlux3KleinTextToImageLoraFn;
+}
+
 export interface FalRunFlux3KleinBaseNamespace {
+  textToImage: FalRunFlux3KleinBaseTextToImageNamespace;
   trainer: FalRunFlux3KleinBaseTrainerNamespace;
 }
 

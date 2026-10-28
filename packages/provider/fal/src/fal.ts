@@ -269,6 +269,8 @@ import {
   FalFlux3TextToImageResponse,
   FalFlux3KleinTrainerRequest,
   FalFlux3KleinTrainerResponse,
+  FalFlux3KleinTextToImageLoraRequest,
+  FalFlux3KleinImageResponse,
   FalFlux3EditImageRequest,
   FalFlux3EditImageResponse,
   FalMinimaxH3MaxRecastRequest,
@@ -682,6 +684,7 @@ import {
   FalFlux3EditImageRequestSchema,
   FalFlux3TextToImageRequestSchema,
   FalFlux3KleinTrainerRequestSchema,
+  FalFlux3KleinTextToImageLoraRequestSchema,
   FalIdeogramV4p5EditRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
@@ -1482,6 +1485,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/klein/base/trainer/edit",
     FalFlux3KleinTrainerRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/klein/base/text-to-image/lora
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/base/text-to-image/lora/api
+  const blackforestlabsFlux3KleinBaseTextToImageLora = jsonBody<
+    FalFlux3KleinTextToImageLoraRequest,
+    FalFlux3KleinImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/klein/base/text-to-image/lora",
+    FalFlux3KleinTextToImageLoraRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4484,6 +4499,11 @@ export function createFal(opts: FalOptions): FalProvider {
               // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/base/trainer/edit/api
               edit: blackforestlabsFlux3KleinBaseTrainerEdit,
             }),
+            textToImage: {
+              // POST https://fal.run/blackforestlabs/flux-3/klein/base/text-to-image/lora
+              // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/base/text-to-image/lora/api
+              lora: blackforestlabsFlux3KleinBaseTextToImageLora,
+            },
           },
         },
         // POST https://fal.run/blackforestlabs/flux-3/edit-video

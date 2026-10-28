@@ -661,6 +661,7 @@ export type {
   FalFlux3KleinEditImageLoraFn,
   FalRunFlux3KleinBaseTrainerNamespace,
   FalRunFlux3KleinBaseNamespace,
+  FalRunFlux3KleinBaseEditImageNamespace,
   FalRunFlux3KleinBaseTextToImageNamespace,
   FalRunFlux3KleinTextToImageNamespace,
   FalRunFlux3KleinNamespace,

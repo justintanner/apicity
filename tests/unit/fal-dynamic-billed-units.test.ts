@@ -12,6 +12,7 @@ import {
 // recording, and each recorded bill shows the request cannot fix the billed
 // quantity, so each stays dynamic with its billed unit named.
 const CHECKED = [
+  "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
   "blackforestlabs/flux-3/klein/text-to-image/lora",

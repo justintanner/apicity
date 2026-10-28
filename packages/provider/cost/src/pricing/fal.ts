@@ -1254,6 +1254,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
   "blackforestlabs/flux-3/klein/text-to-image/lora",
@@ -1351,6 +1352,12 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   // ($0.0106668), contradicting the published one-megapixel minimum.
   "blackforestlabs/flux-3/klein/text-to-image/lora": {
     unit: "megapixels at $0.012",
+    why: "the published image-size minimum does not match the recorded bill, and no request field states the billed megapixels",
+  },
+  // 2026-10-28: a 256x256 image with the owned Klein edit LoRA billed 0.8889
+  // megapixels ($0.0311115), not the published one-megapixel minimum.
+  "blackforestlabs/flux-3/klein/base/edit-image/lora": {
+    unit: "megapixels at $0.035",
     why: "the published image-size minimum does not match the recorded bill, and no request field states the billed megapixels",
   },
   // 2026-10-28: a 256x256 image with the owned Klein LoRA billed 0.8889

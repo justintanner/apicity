@@ -66,6 +66,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   simplefunctions: ["docs.simplefunctions.dev"],
   thesportsdb: ["www.thesportsdb.com", "thedatadb.readme.io"],
   endless: ["endless.app"],
+  "tiktok-creative-center": ["ads.tiktok.com"],
 };
 
 const METHOD_LINE_RE =

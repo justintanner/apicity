@@ -243,6 +243,13 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/endless/src/endless.ts"],
     factoryNames: ["createEndless"],
   },
+  {
+    name: "tiktok-creative-center",
+    entryFiles: [
+      "packages/provider/tiktok-creative-center/src/tiktokCreativeCenter.ts",
+    ],
+    factoryNames: ["createTiktokCreativeCenter"],
+  },
 ];
 
 const TSV_ONLY_PROVIDERS = ["b2"];

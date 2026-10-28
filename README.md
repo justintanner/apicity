@@ -110,9 +110,9 @@ call them. There is no MCP server: [MCP.md](MCP.md).
 [@apicity/telegram](packages/provider/telegram), [@apicity/quo](packages/provider/quo),
 [@apicity/thesportsdb](packages/provider/thesportsdb), [@apicity/googleflow](packages/provider/googleflow),
 [@apicity/zaicoding](packages/provider/zaicoding), [@apicity/openf1](packages/provider/openf1),
-[@apicity/endless](packages/provider/endless), [@apicity/dropbox](packages/provider/dropbox),
-[@apicity/dolthub](packages/provider/dolthub), [@apicity/youtube](packages/provider/youtube),
-[@apicity/cost](packages/provider/cost), [@apicity/har](packages/provider/har).
+[@apicity/endless](packages/provider/endless), [@apicity/tiktok-creative-center](packages/provider/tiktok-creative-center),
+[@apicity/dropbox](packages/provider/dropbox), [@apicity/dolthub](packages/provider/dolthub),
+[@apicity/youtube](packages/provider/youtube), [@apicity/cost](packages/provider/cost), [@apicity/har](packages/provider/har).
 
 <!-- provider-inventory:providers:end -->
 

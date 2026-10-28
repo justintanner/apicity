@@ -46,6 +46,7 @@ export const providerHosts: Readonly<Record<string, readonly string[]>> = {
   simplefunctions: ["data.simplefunctions.dev", "simplefunctions.dev"],
   telegram: ["api.telegram.org"],
   thesportsdb: ["www.thesportsdb.com"],
+  "tiktok-creative-center": ["ads.tiktok.com"],
   x: ["api.x.com"],
   xai: ["api.x.ai", "management-api.x.ai"],
   youtube: ["www.googleapis.com", "www.youtube.com"],

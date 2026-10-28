@@ -1,0 +1,17 @@
+{
+  "GET ads.creativeOne.report.creativeCenterGetTopContentsList": {
+    "source": "tiktok-creative-center/top-contents-list-th-weekly-organic",
+    "payload": {
+      "countryCode": "TH",
+      "periodDimension": 3,
+      "periodEndTimestamp": 1792886400,
+      "orderByMetric": 1,
+      "organicOnly": true,
+      "contentLabelIDs": "",
+      "page": 1,
+      "limit": 20
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  }
+}

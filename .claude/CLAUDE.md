@@ -9,7 +9,8 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`, `@apicity/machgen`,
 `@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
 `@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
-`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/endless`, `@apicity/elevenlabs`, `@apicity/s3`,
+`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/endless`, `@apicity/tiktok-creative-center`,
+`@apicity/elevenlabs`, `@apicity/s3`,
 `@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
 `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
 `@apicity/free-media-upload`, `@apicity/cost`, `@apicity/har`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI and xAI Realtime server transports use `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
@@ -121,8 +122,8 @@ the repository by `tests/unit/provider-inventory-docs.test.ts`, so a new
 package that ships without its aliases — or an alias documented here that no
 longer exists — fails a gate rather than going stale.
 
-- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:endless`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:har`, `build:kie`, `build:kimicoding`, `build:machgen`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
-- `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:endless`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:machgen`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
+- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:endless`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:har`, `build:kie`, `build:kimicoding`, `build:machgen`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:tiktok-creative-center`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
+- `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:endless`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:machgen`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:tiktok-creative-center`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
   (`cost` and `har` are excluded: their READMEs are hand-written and they expose no endpoint
   surface.)
 
@@ -175,6 +176,7 @@ packages/provider/<name>/
 **machgen** — Video generation, task status, authenticated assets
 **quo** — Quo business text messaging
 **endless** — Endless public social trends: TikTok and X trends by region (no key)
+**tiktok-creative-center** — TikTok Creative Center trending videos (unofficial endpoints, no key)
 **x** — X (Twitter) social API for posting content (api.x.com)
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)

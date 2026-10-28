@@ -23,7 +23,7 @@ pnpm add @apicity/free-media-upload
 ```typescript
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
-const free-media-upload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
+const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
 ```
 
 ## Real-world example: race a portrait across four free hosts
@@ -217,7 +217,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://catbox.moe/tools.php)
 
 ```typescript
-const res = await free-media-upload.catbox.upload({ /* ... */ });
+const res = await freeMediaUpload.catbox.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -236,7 +236,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://filebin.net/)
 
 ```typescript
-const res = await free-media-upload.filebin.upload({ /* ... */ });
+const res = await freeMediaUpload.filebin.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -255,7 +255,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://gofile.io/api)
 
 ```typescript
-const res = await free-media-upload.gofile.upload({ /* ... */ });
+const res = await freeMediaUpload.gofile.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -274,7 +274,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://litterbox.catbox.moe/)
 
 ```typescript
-const res = await free-media-upload.litterbox.upload({ /* ... */ });
+const res = await freeMediaUpload.litterbox.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -293,7 +293,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://temp.sh/)
 
 ```typescript
-const res = await free-media-upload.tempsh.upload({ /* ... */ });
+const res = await freeMediaUpload.tempsh.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -312,7 +312,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://tmpfile.link/)
 
 ```typescript
-const res = await free-media-upload.tflink.upload({ /* ... */ });
+const res = await freeMediaUpload.tflink.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -331,7 +331,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://tmpfiles.org/)
 
 ```typescript
-const res = await free-media-upload.tmpfiles.api.v1.upload({ /* ... */ });
+const res = await freeMediaUpload.tmpfiles.api.v1.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -350,7 +350,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://uguu.se/)
 
 ```typescript
-const res = await free-media-upload.uguu.upload({ /* ... */ });
+const res = await freeMediaUpload.uguu.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -362,8 +362,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 ```typescript
 import { createFreeMediaUpload, withRetry } from "@apicity/free-media-upload";
 
-const free-media-upload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
-const models = withRetry(free-media-upload.get.v1.models, { retries: 3 });
+const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
+const models = withRetry(freeMediaUpload.get.v1.models, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

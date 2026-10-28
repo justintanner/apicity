@@ -46,6 +46,7 @@ import { createS3 } from "@apicity/s3";
 import { createSimpleFunctions } from "@apicity/simplefunctions";
 import { createTelegram } from "@apicity/telegram";
 import { createTheSportsDB } from "@apicity/thesportsdb";
+import { createTiktokCreativeCenter } from "@apicity/tiktok-creative-center";
 import { createX } from "@apicity/x";
 import { createXai } from "@apicity/xai";
 import { createYouTube } from "@apicity/youtube";
@@ -741,6 +742,7 @@ const PROVIDER_FACTORIES = {
   simplefunctions: createSimpleFunctions,
   telegram: createTelegram,
   thesportsdb: createTheSportsDB,
+  "tiktok-creative-center": createTiktokCreativeCenter,
   x: createX,
   xai: createXai,
   youtube: createYouTube,
@@ -769,8 +771,11 @@ function providerInstance(provider: ProviderName): unknown {
 }
 
 function snippetCalls(provider: string, text: string): string[] {
-  const escaped = provider.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const re = new RegExp(`const \\w+ = await (${escaped}\\.[\\w.]+)\\(`, "g");
+  // doc-gen camelCases a hyphenated name into the snippet's variable.
+  const variable = provider.replace(/-([a-z0-9])/g, (_, c: string) =>
+    c.toUpperCase()
+  );
+  const re = new RegExp(`const \\w+ = await (${variable}\\.[\\w.]+)\\(`, "g");
   return [...text.matchAll(re)].map((match) => match[1]);
 }
 

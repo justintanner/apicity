@@ -120,6 +120,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/endless/src"
       ),
+      "@apicity/tiktok-creative-center/zod": path.resolve(
+        __dirname,
+        "../packages/provider/tiktok-creative-center/src/zod"
+      ),
+      "@apicity/tiktok-creative-center": path.resolve(
+        __dirname,
+        "../packages/provider/tiktok-creative-center/src"
+      ),
       "@apicity/s3/zod": path.resolve(
         __dirname,
         "../packages/provider/s3/src/zod"

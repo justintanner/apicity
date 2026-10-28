@@ -223,6 +223,12 @@ export function takesNoArgument(ep) {
     );
 }
 
+// The provider's name as a variable in README code: a hyphenated name
+// (free-media-upload) is not a valid identifier, so it is camelCased.
+function providerVariable(providerName) {
+  return providerName.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+}
+
 function formatUsageSnippet(
   providerName,
   dotPath,
@@ -232,7 +238,8 @@ function formatUsageSnippet(
   // `dotPath` is the collapsed display label. Special cases match that label.
   // `callPath` is the copy-pasteable path, which may put back a verb or leaf
   // the label dropped (ac-kqdzn9).
-  const call = callPath ? `${providerName}.${callPath}` : providerName;
+  const variable = providerVariable(providerName);
+  const call = callPath ? `${variable}.${callPath}` : variable;
   if (
     providerName === "google" &&
     dotPath === "v1.publishers.google.models.countTokens"
@@ -267,6 +274,19 @@ function formatUsageSnippet(
   }
   if (providerName === "endless" && dotPath === "social.trends.public") {
     return `const trends = await ${call}({ region: "worldwide" });`;
+  }
+  if (
+    providerName === "tiktok-creative-center" &&
+    dotPath === "ads.creativeOne.report.creativeCenterGetTopContentsList"
+  ) {
+    return [
+      `const top = await ${call}({`,
+      '  countryCode: "TH",',
+      "  periodDimension: 3,",
+      "  periodEndTimestamp: 1792886400,",
+      "  orderByMetric: 1,",
+      "});",
+    ].join("\n");
   }
   if (providerName === "openf1" && dotPath === "token") {
     return [
@@ -625,6 +645,24 @@ export const ENDPOINT_NOTES = new Map([
 ]);
 
 const PROVIDER_NOTES = new Map([
+  [
+    "tiktok-creative-center",
+    [
+      "These are unofficial, undocumented endpoints behind TikTok Creative",
+      "Center's Trending videos page",
+      "(https://ads.tiktok.com/creative/creativeCenter/trends/video), and",
+      "TikTok can change or remove them without notice. They need no key.",
+      "Without a TikTok One session every list holds the top 4 rows of",
+      "page 1, whatever `page` and `limit` ask, and the client does not",
+      "support a session cookie. TikTok sends item, author and creator ids as",
+      "JSON numbers above 2^53, so `itemID`, `authorID` and `creatorID` come",
+      "back as strings with every digit. Creative Center reports a failure as",
+      "HTTP 200 with a nonzero `BaseResp.StatusCode`, which rejects with",
+      "`TiktokCreativeCenterError` (`statusCode`). A row's video page is",
+      "`https://www.tiktok.com/@<handlerName>/video/<itemID>`; `videoURL`",
+      "is a signed CDN link that expires.",
+    ].join(" "),
+  ],
   [
     "endless",
     [
@@ -4399,6 +4437,10 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  "tiktok-creative-center": {
+    noAuth: true,
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -4440,6 +4482,8 @@ const PROVIDER_DOCS = {
     "https://www.dropbox.com/developers/documentation/http/documentation",
   openf1: "https://openf1.org/docs/",
   endless: "https://endless.app/docs/api",
+  "tiktok-creative-center":
+    "https://ads.tiktok.com/creative/creativeCenter/trends/video",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -4502,6 +4546,9 @@ const PROVIDER_DEP_NOTES = {
     zod: "request schemas attached to OpenF1 endpoint methods as `.schema`",
   },
   endless: {
+    zod: "request schemas attached to endpoint methods as `.schema`",
+  },
+  "tiktok-creative-center": {
     zod: "request schemas attached to endpoint methods as `.schema`",
   },
   dropbox: {
@@ -4620,28 +4667,28 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push(`import { ${factory} } from "${pkgName}";`);
   sections.push("");
   if (providerName === "s3") {
-    sections.push(`const ${providerName} = ${factory}({`);
+    sections.push(`const ${providerVariable(providerName)} = ${factory}({`);
     sections.push("  accessKeyId: process.env.S3_ACCESS_KEY_ID!,");
     sections.push("  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,");
     sections.push('  region: process.env.S3_REGION ?? "us-east-1",');
     sections.push("  endpoint: process.env.S3_ENDPOINT,");
     sections.push("});");
   } else if (providerName === "b2") {
-    sections.push(`const ${providerName} = ${factory}({`);
+    sections.push(`const ${providerVariable(providerName)} = ${factory}({`);
     sections.push("  accessKeyId: process.env.B2_ACCESS_KEY_ID!,");
     sections.push("  secretAccessKey: process.env.B2_SECRET_ACCESS_KEY!,");
     sections.push("  region: process.env.B2_REGION!,");
     sections.push("  endpoint: process.env.B2_ENDPOINT,");
     sections.push("});");
   } else if (noAuth) {
-    sections.push(`const ${providerName} = ${factory}();`);
+    sections.push(`const ${providerVariable(providerName)} = ${factory}();`);
   } else if (optionalAuth) {
     sections.push(
-      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey} });`
+      `const ${providerVariable(providerName)} = ${factory}({ ${authField}: process.env.${envKey} });`
     );
   } else {
     sections.push(
-      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
+      `const ${providerVariable(providerName)} = ${factory}({ ${authField}: process.env.${envKey}! });`
     );
   }
   sections.push("```");
@@ -4799,10 +4846,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push(`import { ${factory}, withRetry } from "${pkgName}";`);
     sections.push("");
     sections.push(
-      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
+      `const ${providerVariable(providerName)} = ${factory}({ ${authField}: process.env.${envKey}! });`
     );
     sections.push(
-      `const models = withRetry(${providerName}.get.v1.models, { retries: 3 });`
+      `const models = withRetry(${providerVariable(providerName)}.get.v1.models, { retries: 3 });`
     );
     sections.push("```");
     sections.push("");

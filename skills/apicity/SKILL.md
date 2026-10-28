@@ -150,7 +150,8 @@ is for shells, and several codes share one.
 Media never comes back as bytes on stdout. A binary result is written to the
 output directory and reported as `{"savedTo": "<path>", "bytes": 12345}`; a JSON
 result carrying media URLs is returned with a sibling `<key>_savedTo` beside
-each one. An upload ticket, an object that also carries `upload_url` or
+each one. A URL that answers with a web page is left as sent, with no sibling.
+An upload ticket, an object that also carries `upload_url` or
 `uploadUrl`, comes back untouched: nothing exists at its URLs until you PUT the
 bytes to its upload URL. So does an `endless` result, whose URLs are web pages.
 The directory is `--output-dir`, else

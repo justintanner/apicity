@@ -371,6 +371,11 @@ becomes `{ savedTo, bytes }`. A JSON response is walked for `https://` strings
 under the media keys `url`, `downloadUrl`, `download_url`, `audio_url`,
 `audioUrl`, `video_url`, `videoUrl`, `image_url`, `imageUrl`, `fileUrl` and
 `file_url`; each is downloaded and a sibling `<key>_savedTo` added next to it.
+A URL that answers with a web page (`text/html`), such as a web-search
+citation, is left as sent: the transfer stops at the headers and nothing is
+saved. When one response yields several files, each name ends in its number
+(`-1`, `-2`, …), so downloads that finish in the same millisecond never
+overwrite each other.
 An object that also carries an `upload_url` or `uploadUrl` is an upload ticket
 (`fal storage.upload.initiate`, say): nothing exists at its URLs until you PUT
 the bytes, so none of them is fetched and the object comes back as sent. An

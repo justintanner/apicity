@@ -30,6 +30,7 @@ import type { InstantiatedProvider } from "../../packages/cli/src/providers";
 
 const HOME = mkdtempSync(join(tmpdir(), "apicity-cli-home-"));
 const TRICKLE_CHUNKS = 30;
+const CAPTIONS = "1\n00:00:00,000 --> 00:00:01,000\nA cat.\n";
 
 /** A loopback server whose routes misbehave on purpose; no network involved. */
 let server: Server;
@@ -40,6 +41,29 @@ const ROUTES: Record<string, (res: ServerResponse) => void> = {
   "/preview.png": (res) => {
     res.writeHead(200, { "content-type": "image/png" });
     res.end(Buffer.from([1, 2, 3]));
+  },
+  "/one.png": (res) => {
+    res.writeHead(200, { "content-type": "image/png" });
+    res.end(Buffer.from([1]));
+  },
+  "/two.png": (res) => {
+    res.writeHead(200, { "content-type": "image/png" });
+    res.end(Buffer.from([2]));
+  },
+  "/three.png": (res) => {
+    res.writeHead(200, { "content-type": "image/png" });
+    res.end(Buffer.from([3]));
+  },
+  // fal returns captions, configs and 3D models under `url` as text/plain,
+  // application/json and model/*.
+  "/captions.srt": (res) => {
+    res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
+    res.end(CAPTIONS);
+  },
+  // A web page whose body never ends: reading it would stall the download.
+  "/page": (res) => {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    res.write("<!DOCTYPE html><html>");
   },
   // Takes the request and never answers, as fal's CDN does for an object
   // nobody has uploaded yet.
@@ -202,6 +226,87 @@ describe("a provider whose URLs are web pages", () => {
     expect(JSON.parse(out[0])).toEqual(trends);
     expect(requested).toEqual([]);
     expect(readdirSync(dir)).toEqual([]);
+  });
+});
+
+describe("a URL that answers with a web page", () => {
+  // ac-ht9p12: OpenAI web-search citations, ElevenLabs docs links and Endless
+  // trend rows put page links under `url`, and each was saved as `.bin` HTML.
+  it("is left as sent, with its body unread", async () => {
+    const dir = outputDir();
+    const page = { citation: { url: `${base}/page` } };
+
+    const result = await downloadUrlsInResult(
+      page,
+      dir,
+      "openai__v1.responses",
+      {
+        stallTimeoutMs: 1_000,
+      }
+    );
+
+    expect(result).toEqual(page);
+    expect(requested).toEqual(["/page"]);
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("does not stop other text from saving", async () => {
+    const result = (await downloadUrlsInResult(
+      { captions: { url: `${base}/captions.srt` } },
+      outputDir(),
+      "fal__run.captions"
+    )) as Record<string, Record<string, string>>;
+
+    expect(result.captions.url_savedTo).toMatch(/\.srt$/);
+    expect(readFileSync(result.captions.url_savedTo, "utf8")).toBe(CAPTIONS);
+  });
+});
+
+describe("several downloads from one result", () => {
+  // ac-ht9p12: names were timestamped to the millisecond, so parallel
+  // downloads that finished together overwrote each other.
+  it("keep one file per URL when they finish in the same millisecond", async () => {
+    vi.spyOn(Date.prototype, "toISOString").mockReturnValue(
+      "2026-10-28T10:00:00.000Z"
+    );
+    const dir = outputDir();
+
+    const result = (await downloadUrlsInResult(
+      {
+        items: [
+          { url: `${base}/one.png` },
+          { url: `${base}/two.png` },
+          { url: `${base}/three.png` },
+        ],
+      },
+      dir,
+      "test__several"
+    )) as { items: Record<string, string>[] };
+
+    const saved = result.items.map((item) => item.url_savedTo);
+    expect(saved.map((path) => [...readFileSync(path)])).toEqual([
+      [1],
+      [2],
+      [3],
+    ]);
+    expect(readdirSync(dir).sort()).toEqual([
+      "test__several__2026-10-28T10-00-00-000Z-1.png",
+      "test__several__2026-10-28T10-00-00-000Z-2.png",
+      "test__several__2026-10-28T10-00-00-000Z-3.png",
+    ]);
+  });
+
+  it("leave a single download's name unnumbered", async () => {
+    vi.spyOn(Date.prototype, "toISOString").mockReturnValue(
+      "2026-10-28T10:00:00.000Z"
+    );
+    const dir = outputDir();
+
+    await downloadUrlsInResult({ url: `${base}/one.png` }, dir, "test__single");
+
+    expect(readdirSync(dir)).toEqual([
+      "test__single__2026-10-28T10-00-00-000Z.png",
+    ]);
   });
 });
 

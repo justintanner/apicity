@@ -1364,7 +1364,6 @@ const limiter = createRateLimiter(XAI_RATE_LIMITS.tier2);
 
 const chat = withRateLimit(xai.post.v1.chat.completions, limiter);
 const responses = withRateLimit(xai.post.v1.responses, limiter);
-const images = withRateLimit(xai.post.v1.images.generations, limiter);
 ```
 
 ### Composing with retry

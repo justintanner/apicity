@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-258 endpoints across 56 groups. Each method mirrors an upstream URL path.
+259 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2348,6 +2348,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.krea.v3.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.krea.v3.textToImage</code></b></summary>
+
+<code>POST https://fal.run/krea/v3/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/krea/v3/text-to-image/api)
+
+```typescript
+const res = await fal.run.krea.v3.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

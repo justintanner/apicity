@@ -335,6 +335,60 @@ const kreaV3Edit = (): ModelPricing => ({
   source: source(KREA_V3_EDIT, KREA_V3_EDIT_AS_OF),
 });
 
+// Krea 3 text-to-image, read from the reasoning_level description on the
+// queue OpenAPI on 2026-10-29. The input has no reference images. Both
+// low and medium bill $0.025 per output megapixel. The model page's
+// overview sentence about references is the edit card's wording; this
+// schema does not accept image_urls. Fractional megapixels are priced
+// exactly, the same rule the edit recording confirmed. An omitted
+// reasoning_level is the schema default, medium. auto or an omitted
+// image_size has no billable area.
+const KREA_V3_TEXT_TO_IMAGE = "krea/v3/text-to-image";
+const KREA_V3_TEXT_TO_IMAGE_AS_OF = "2026-10-29";
+
+function kreaV3TextToImageLevel(
+  p: Record<string, unknown>
+): "low" | "medium" | undefined {
+  const level = kreaV3Reasoning(p);
+  if (level === "low" || level === "medium") return level;
+  return undefined;
+}
+
+const kreaV3TextToImage = (): ModelPricing => ({
+  kind: "perUnit",
+  unit: "megapixels",
+  units: (p) => {
+    if (kreaV3TextToImageLevel(p) === undefined) return undefined;
+    return kreaV3OutputMegapixels(p);
+  },
+  warn: (p) => {
+    const messages: string[] = [];
+    const level = kreaV3Reasoning(p);
+    if (level !== "low" && level !== "medium") {
+      messages.push(
+        `fal '${KREA_V3_TEXT_TO_IMAGE}': reasoning_level '${String(level)}' is not a priced tier`
+      );
+    }
+    if (
+      (level === "low" || level === "medium") &&
+      kreaV3OutputMegapixels(p) === undefined
+    ) {
+      messages.push(
+        `fal '${KREA_V3_TEXT_TO_IMAGE}': image_size is omitted, auto, or unrecognized; low and medium bill output megapixels, so pass an explicit size`
+      );
+    }
+    return messages;
+  },
+  extra: (p) => {
+    if (kreaV3TextToImageLevel(p) === undefined) return undefined;
+    if (kreaV3OutputMegapixels(p) === undefined) return undefined;
+    return 0;
+  },
+  select: [],
+  rates: { "": KREA_V3_MEGAPIXEL_USD },
+  source: source(KREA_V3_TEXT_TO_IMAGE, KREA_V3_TEXT_TO_IMAGE_AS_OF),
+});
+
 const perCharacter = (
   endpointId: string,
   usd: number,
@@ -2101,6 +2155,11 @@ export const fal: Record<string, ModelPricing> = {
   // billed x-fal-billable-units 1.75 ($0.04375): the 768x1024 reference
   // is smaller than the output, so fal billed it at its own size.
   "krea/v3/edit": kreaV3Edit(),
+
+  // Krea 3 text-to-image. See kreaV3TextToImage(). The recording is
+  // reasoning_level low at 1024x1024 with no reference images. It billed
+  // x-fal-billable-units 1.0 ($0.025).
+  "krea/v3/text-to-image": kreaV3TextToImage(),
 
   // Muse Image text-to-image bills $0.01 per image. num_images
   // defaults to 1. The recorded call billed x-fal-billable-units

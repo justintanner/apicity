@@ -429,6 +429,10 @@ export const MODEL_SLUGS = {
     eleven_turbo_v2_5: "elt2p5",
     eleven_multilingual_v2: "elml2",
     eleven_multilingual_v3: "elml3",
+    // Same model fal resells as fal-ai/elevenlabs/speech-to-text/scribe-v2.
+    scribe_v2: "scribe2",
+    scribe_v2_medical: "scribe2m",
+    scribe_v2_realtime: "scribe2rt",
   },
 
   // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana,
@@ -1005,6 +1009,9 @@ export const MODEL_DISPLAY = {
     eleven_turbo_v2_5: "Eleven Turbo 2.5",
     eleven_multilingual_v2: "Eleven Multilingual 2",
     eleven_multilingual_v3: "Eleven Multilingual 3",
+    scribe_v2: "Scribe v2",
+    scribe_v2_medical: "Scribe v2 Medical",
+    scribe_v2_realtime: "Scribe v2 Realtime",
   },
 
   fal: {

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ElevenLabs Scribe speech-to-text pricing, verified 2026-10-29 against
+  https://elevenlabs.io/pricing/api. `scribe_v2` and `scribe_v2_medical` are
+  $0.22/hour and `scribe_v2_realtime` is $0.39/hour, stored per second as
+  the hourly list price / 3600. The audio length is not in the request;
+  pass `costHints.durationSeconds`. An omitted or non-positive hint stays
+  unpriced with the missing-units warning. Keyterm prompting and transcript
+  editing are separate add-ons and are not included. `scribe_v1` is not on
+  this card. `MODEL_SLUGS.elevenlabs` adds `scribe2` (shared with fal's
+  Scribe v2), `scribe2m` and `scribe2rt` (ac-yurrdi).
+
 - `resolveMachGenUpscaleEstimate(payload, quote, { hints })` prices the MachGen upscales the bundled table cannot, such as the four Topaz upscalers, whose vendor credits depend on the source. It asks MachGen's free quote, passed in as `machgen.api.v0.upscale.quote`, so the package still imports no provider and does no I/O of its own, and returns the quote's `cost_micros` in USD with `rateAsOf: null`. Every other request, MiniMax-H3's upscale included, falls through to `computeEstimate` with no network call, and a failed or malformed quote degrades to the local `usd: 0` with a warning. `isMachGenQuotePriced` tells which requests ask the quote. MachGen's REST docs do not list the quote endpoint (read 2026-10-26), so MachGen may change it without notice. The recorded Topaz upscale billed exactly its quote (ac-23mccw).
 
 - MachGen pricing for the T2V-only models Veo 3.1 (0.471 USD/s at 720p and 1080p, 0.706 at 2160p), Veo 3.1 Fast (0.118, 0.142 and 0.353) and Grok Imagine Video (0.059 at 480p, 0.083 at 720p), verified 2026-10-25 against the public pricebook. Veo 3.1's audio is always on, and each model has one rate per height. `MODEL_SLUGS.machgen` reuses `veo3p1` (fal), `veo3p1f` (googleflow) and `grokimgv` (xai). Three recorded T2V clips billed exactly their estimates, 2.415 USD gross: Veo 3.1 at 720p for 4 s (1.884), Veo 3.1 Fast at 720p for 4 s (0.472) and Grok Imagine Video at 480p for 1 s (0.059) (ac-5qfga3).

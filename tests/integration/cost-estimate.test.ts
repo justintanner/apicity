@@ -28,6 +28,49 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings).toEqual([]);
   });
 
+  // Hourly card prices on https://elevenlabs.io/pricing/api (2026-10-29).
+  // 600 s is 10 minutes, one sixth of that hour.
+  it.each([
+    ["scribe_v2", 0.22],
+    ["scribe_v2_medical", 0.22],
+    ["scribe_v2_realtime", 0.39],
+  ] as const)("elevenlabs %s → 600 s at $%s/hour", (modelId, perHour) => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "elevenlabs",
+      payload: { model_id: modelId },
+      costHints: { durationSeconds: 600 },
+    });
+    expect(r.usd).toBeCloseTo((perHour * 600) / 3600, 12);
+    expect(r.usd).toBeGreaterThan(0);
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.unit).toBe("seconds");
+    expect(r.breakdown.units).toBe(600);
+    expect(r.breakdown.perUnitUsd).toBeCloseTo(perHour / 3600, 12);
+    expect(r.rateAsOf).toBe("2026-10-29");
+    expect(r.warnings).toEqual([]);
+  });
+
+  it("elevenlabs scribe stays unpriced without a duration hint", () => {
+    const c = createCost();
+    const missing = c.estimate({
+      provider: "elevenlabs",
+      payload: { model_id: "scribe_v2" },
+    });
+    expect(missing.usd).toBe(0);
+    expect(missing.warnings).toEqual([
+      "elevenlabs 'scribe_v2': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds",
+    ]);
+
+    const absent = c.estimate({
+      provider: "elevenlabs",
+      payload: { model_id: "scribe_v2", text: "ignored" },
+      costHints: { durationSeconds: 0 },
+    });
+    expect(absent.usd).toBe(0);
+    expect(absent.warnings).toEqual(missing.warnings);
+  });
+
   // Veo bills per video: the 8-second payload below prices at the flat 720p
   // Fast rate, not 8 × anything.
   it("kie veo3_fast → $0.30 per video at the default 720p", () => {

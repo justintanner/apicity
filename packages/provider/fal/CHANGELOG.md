@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 reference-to-video-audio LoRA trainer at `run.minimax.h3.ref2va.trainer` (`POST https://fal.run/minimax/h3/ref2va/trainer`). New `ref2va` key on the existing `minimax.h3` object. Price is $0.015 per training step (default 2000), with a 100-step floor. The recording uses `number_of_steps` 1 and fal billed 100 steps ($1.50) (ac-tarrln).
+
 - Added MiniMax H3 first-last-frame LoRA trainer at `run.minimax.h3.flf2v.trainer` (`POST https://fal.run/minimax/h3/flf2v/trainer`). New `flf2v` key on the existing `minimax.h3` object. Price is $0.01 per training step (default 2000), with a 100-step floor. The recording uses `number_of_steps` 1 and fal billed 100 steps ($1.00) (ac-npoa6h).
 
 - Added MiniMax H3 image-to-video LoRA trainer at `run.minimax.h3.i2v.trainer` (`POST https://fal.run/minimax/h3/i2v/trainer`). New `i2v` key on the existing `minimax.h3` object. Price is $0.01 per training step (default 2000), with a 100-step floor. The recording uses `number_of_steps` 1 and fal billed 100 steps ($1.00) (ac-emdulx).

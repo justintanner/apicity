@@ -2075,6 +2075,135 @@ export type FalMinimaxH3Flf2vTrainerParsedRequest = z.output<
   typeof FalMinimaxH3Flf2vTrainerRequestSchema
 >;
 
+// MiniMax H3 reference-to-video-audio LoRA trainer. Queue OpenAPI
+// read 2026-10-29. `training_data_url` is the only required field.
+// Price is $0.015 per `number_of_steps` (range 1–15000, default 2000).
+// Reference sidecars are optional. No field names a model. Rank, frame
+// count, resolution, and aspect ratio are fixed vocabularies.
+// Docs: https://fal.ai/models/minimax/h3/ref2va/trainer/api
+export const FalMinimaxH3Ref2vaTrainerRequestSchema = z.object({
+  training_data_url: z
+    .string()
+    .min(1)
+    .describe(
+      "URL or data URI of a zip containing only video clips (.mp4, .mov, .avi, .mkv), plus optional same-basename caption text files and ordered reference sidecars. Image datasets are rejected."
+    ),
+  rank: z
+    .union([
+      z.literal(8),
+      z.literal(16),
+      z.literal(32),
+      z.literal(64),
+      z.literal(128),
+    ])
+    .default(32)
+    .describe(
+      "LoRA rank. Higher values increase capacity and use more memory."
+    ),
+  number_of_steps: z
+    .number()
+    .int()
+    .min(1)
+    .max(15000)
+    .default(2000)
+    .describe("Training steps. Billed at $0.015 per step."),
+  learning_rate: z
+    .number()
+    .min(0.000001)
+    .max(1)
+    .default(0.0002)
+    .describe("Learning rate. Higher values train faster and can overfit."),
+  number_of_frames: z
+    .union([
+      z.literal(22),
+      z.literal(39),
+      z.literal(56),
+      z.literal(73),
+      z.literal(90),
+      z.literal(107),
+      z.literal(124),
+    ])
+    .default(73)
+    .describe(
+      "Frames per training sample. Each value satisfies frames % 17 == 5."
+    ),
+  frame_rate: z
+    .number()
+    .int()
+    .min(8)
+    .max(60)
+    .default(24)
+    .describe("Target frames per second."),
+  resolution: z
+    .enum(["low", "medium", "high"])
+    .default("medium")
+    .describe(
+      "Training resolution. Higher values use more memory. Not a pixel tier."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("16:9")
+    .describe("Training aspect ratio."),
+  trigger_phrase: z
+    .string()
+    .default("")
+    .describe("Phrase prepended to captions during training."),
+  reference_conditioning_p: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.9)
+    .describe(
+      "Probability of conditioning on the reference images. The rest trains unconditioned text-to-video-audio."
+    ),
+  resume_from_lora_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "URL of a LoRA from this trainer to warm-start. Training continues for number_of_steps more steps."
+    ),
+  auto_scale_input: z
+    .boolean()
+    .default(false)
+    .describe("Scale videos to the target frame count and fps."),
+  split_input_into_scenes: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Split videos longer than the duration threshold into scenes. Reference sidecars are dropped for split clips."
+    ),
+  split_input_duration_threshold: z
+    .number()
+    .min(1)
+    .max(60)
+    .default(30)
+    .describe(
+      "Duration threshold in seconds above which a video is split into scenes."
+    ),
+  debug_dataset: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Return a downloadable archive of the preprocessed training data."
+    ),
+  strict_dataset: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Reject blank captions, missing reference sidecars, and videos without a readable audio track."
+    ),
+});
+export type FalMinimaxH3Ref2vaTrainerRequest = z.input<
+  typeof FalMinimaxH3Ref2vaTrainerRequestSchema
+>;
+export type FalMinimaxH3Ref2vaTrainerRequestInput =
+  FalMinimaxH3Ref2vaTrainerRequest;
+export type FalMinimaxH3Ref2vaTrainerParsedRequest = z.output<
+  typeof FalMinimaxH3Ref2vaTrainerRequestSchema
+>;
+
 // ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
@@ -16819,6 +16948,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "minimax/h3/t2v/trainer": FalMinimaxH3T2vTrainerRequestSchema,
   "minimax/h3/i2v/trainer": FalMinimaxH3I2vTrainerRequestSchema,
   "minimax/h3/flf2v/trainer": FalMinimaxH3Flf2vTrainerRequestSchema,
+  "minimax/h3/ref2va/trainer": FalMinimaxH3Ref2vaTrainerRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,

@@ -1,0 +1,201 @@
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import { z } from "zod";
+import {
+  createFal,
+  type FalMinimaxH3Ref2vaTrainerParsedRequest,
+  type FalMinimaxH3Ref2vaTrainerRequest,
+  type FalMinimaxH3Ref2vaTrainerRequestInput,
+  type FalMinimaxH3Ref2vaTrainerResponse,
+  type FalRunMinimaxH3Namespace,
+  type FalRunMinimaxH3Ref2vaNamespace,
+} from "@apicity/fal";
+import {
+  FalMinimaxH3Ref2vaTrainerRequestSchema as schema,
+  FAL_ENDPOINT_REQUEST_SCHEMAS,
+} from "@apicity/fal/zod";
+import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../../packages/provider/cost/src/pricing/fal";
+import {
+  MODEL_DISPLAY,
+  MODEL_SLUGS,
+} from "../../packages/provider/cost/src/slugs";
+
+const endpoint = "minimax/h3/ref2va/trainer";
+const recorded = {
+  training_data_url:
+    "https://v3b.fal.media/files/b/0ab058c4/3llAgREfXZoh36mMnJYKX_h3-t2v-trainer.zip",
+  number_of_steps: 1,
+  auto_scale_input: true,
+  trigger_phrase: "apct cat",
+} satisfies FalMinimaxH3Ref2vaTrainerRequest;
+
+function accepts(body: Record<string, unknown>): boolean {
+  return schema.safeParse({ ...recorded, ...body }).success;
+}
+
+describe("MiniMax H3 reference-to-video-audio trainer", () => {
+  it("owns ref2va.trainer on the existing h3 object", () => {
+    const provider = createFal({ apiKey: "test-key" });
+    const h3 = provider.run.minimax.h3;
+    expectTypeOf(h3).toEqualTypeOf<FalRunMinimaxH3Namespace>();
+    expectTypeOf(h3.ref2va).toEqualTypeOf<FalRunMinimaxH3Ref2vaNamespace>();
+    expect(h3.ref2va.trainer).toBe(provider.post.run.minimax.h3.ref2va.trainer);
+    expect(typeof h3.ref2va.trainer).toBe("function");
+    expect(h3.ref2va.trainer.schema).toBe(schema);
+    expect(h3.textToVideo).toBe(provider.post.run.minimax.h3.textToVideo);
+    expect(h3.t2v.trainer).toBe(provider.post.run.minimax.h3.t2v.trainer);
+    expect(h3.i2v.trainer).toBe(provider.post.run.minimax.h3.i2v.trainer);
+    expect(h3.flf2v.trainer).toBe(provider.post.run.minimax.h3.flf2v.trainer);
+    expect(FAL_ENDPOINT_REQUEST_SCHEMAS[endpoint]).toBe(schema);
+    expectTypeOf<FalMinimaxH3Ref2vaTrainerRequest>().toEqualTypeOf<
+      z.input<typeof schema>
+    >();
+    expectTypeOf<FalMinimaxH3Ref2vaTrainerRequestInput>().toEqualTypeOf<FalMinimaxH3Ref2vaTrainerRequest>();
+    expectTypeOf<FalMinimaxH3Ref2vaTrainerParsedRequest>().toEqualTypeOf<
+      z.output<typeof schema>
+    >();
+    expectTypeOf<FalMinimaxH3Ref2vaTrainerResponse>().toEqualTypeOf<{
+      lora_file: {
+        url: string;
+        content_type?: string | null;
+        file_name?: string | null;
+        file_size?: number | null;
+      };
+      config_file: {
+        url: string;
+        content_type?: string | null;
+        file_name?: string | null;
+        file_size?: number | null;
+      };
+      debug_dataset?: {
+        url: string;
+        content_type?: string | null;
+        file_name?: string | null;
+        file_size?: number | null;
+      } | null;
+    }>();
+  });
+
+  it("posts the recorded body unchanged to the trainer URL", async () => {
+    const response = {
+      lora_file: { url: "https://example.com/lora.safetensors" },
+      config_file: { url: "https://example.com/config.json" },
+    };
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify(response), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+    const provider = createFal({
+      apiKey: "fal-test-key",
+      fetch: mockFetch as unknown as typeof fetch,
+    });
+    expect(await provider.run.minimax.h3.ref2va.trainer(recorded)).toEqual(
+      response
+    );
+    const [url, init] = mockFetch.mock.calls[0] as [
+      RequestInfo | URL,
+      RequestInit,
+    ];
+    expect(String(url)).toBe(`https://fal.run/${endpoint}`);
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(String(init.body))).toEqual(recorded);
+    expect(init.headers).toMatchObject({
+      Authorization: "Key fal-test-key",
+      "Content-Type": "application/json",
+    });
+  });
+
+  it("describes the documented fields in order", () => {
+    expect(Object.keys(schema.shape)).toEqual([
+      "training_data_url",
+      "rank",
+      "number_of_steps",
+      "learning_rate",
+      "number_of_frames",
+      "frame_rate",
+      "resolution",
+      "aspect_ratio",
+      "trigger_phrase",
+      "reference_conditioning_p",
+      "resume_from_lora_url",
+      "auto_scale_input",
+      "split_input_into_scenes",
+      "split_input_duration_threshold",
+      "debug_dataset",
+      "strict_dataset",
+    ]);
+  });
+
+  it("requires only the archive URL and keeps upstream defaults", () => {
+    expect(schema.safeParse(recorded).success).toBe(true);
+    const parsed = schema.safeParse({
+      training_data_url: recorded.training_data_url,
+    });
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.number_of_steps).toBe(2000);
+    expect(parsed.data.rank).toBe(32);
+    expect(parsed.data.number_of_frames).toBe(73);
+    expect(parsed.data.resolution).toBe("medium");
+    expect(parsed.data.aspect_ratio).toBe("16:9");
+    expect(parsed.data.reference_conditioning_p).toBe(0.9);
+    expect(parsed.data.resume_from_lora_url).toBeUndefined();
+    expect(parsed.data.auto_scale_input).toBe(false);
+    expect(schema.safeParse({}).success).toBe(false);
+    expect(accepts({ number_of_steps: 1 })).toBe(true);
+    expect(accepts({ number_of_steps: 15000 })).toBe(true);
+    expect(accepts({ number_of_steps: 0 })).toBe(false);
+    expect(accepts({ number_of_steps: 15001 })).toBe(false);
+    expect(accepts({ number_of_steps: 1.5 })).toBe(false);
+    expect(accepts({ rank: 32 })).toBe(true);
+    expect(accepts({ rank: 24 })).toBe(false);
+    expect(accepts({ number_of_frames: 73 })).toBe(true);
+    expect(accepts({ number_of_frames: 24 })).toBe(false);
+    expect(accepts({ resolution: "low" })).toBe(true);
+    expect(accepts({ resolution: "480P" })).toBe(false);
+    expect(accepts({ aspect_ratio: "9:16" })).toBe(true);
+    expect(accepts({ reference_conditioning_p: 0 })).toBe(true);
+    expect(accepts({ reference_conditioning_p: 1 })).toBe(true);
+    expect(accepts({ reference_conditioning_p: 1.1 })).toBe(false);
+    expect(accepts({ resume_from_lora_url: null })).toBe(true);
+    expect(
+      accepts({ resume_from_lora_url: "https://example.com/a.safetensors" })
+    ).toBe(true);
+    expect(accepts({ resume_from_lora_url: "" })).toBe(false);
+    expect(accepts({ unknown_field: 1 })).toBe(true);
+  });
+
+  it("prices requested training steps and the documented default", () => {
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: recorded,
+    });
+    // steps=1 still bills the 100-step trainer floor observed on t2v.
+    expect(estimate.usd).toBeCloseTo(1.5, 10);
+    expect(estimate.breakdown).toMatchObject({
+      units: 100,
+      unit: "generations",
+    });
+    expect(estimate.warnings).toEqual([]);
+    expect(
+      computeEstimate({
+        provider: "fal",
+        endpoint,
+        payload: { training_data_url: recorded.training_data_url },
+      }).usd
+    ).toBeCloseTo(30, 10);
+    expect(
+      computeEstimate({
+        provider: "fal",
+        endpoint,
+        payload: { ...recorded, number_of_steps: 2 },
+      }).usd
+    ).toBeCloseTo(1.5, 10);
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
+    expect(MODEL_SLUGS.fal[endpoint]).toBe("h3ref2vt");
+    expect(MODEL_DISPLAY.fal[endpoint]).toBe("MiniMax H3 Ref2VA Trainer");
+  });
+});

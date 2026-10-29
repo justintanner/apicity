@@ -683,6 +683,9 @@ export type {
   FalMinimaxH3ReferenceToVideoRequest,
   FalMinimaxH3ReferenceToVideoRequestInput,
   FalMinimaxH3ReferenceToVideoParsedRequest,
+  FalMinimaxH3T2vTrainerRequest,
+  FalMinimaxH3T2vTrainerRequestInput,
+  FalMinimaxH3T2vTrainerParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -1014,6 +1017,7 @@ import type {
   FalWan3p0ImageToVideoRequest,
   FalWan3p0ReferenceToVideoRequest,
   FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3T2vTrainerRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -3278,6 +3282,37 @@ type FalMinimaxH3ReferenceToVideoFn = ((
 
 export interface FalRunMinimaxH3Namespace {
   referenceToVideo: FalMinimaxH3ReferenceToVideoFn;
+}
+
+export interface FalMinimaxH3TrainerFile {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+}
+
+// minimax/h3/t2v/trainer returns the trained LoRA and its inference config.
+export interface FalMinimaxH3T2vTrainerResponse {
+  lora_file: FalMinimaxH3TrainerFile;
+  config_file: FalMinimaxH3TrainerFile;
+  debug_dataset?: FalMinimaxH3TrainerFile | null;
+}
+
+type FalMinimaxH3T2vTrainerFn = ((
+  params: FalMinimaxH3T2vTrainerRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3T2vTrainerResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3T2vTrainerRequest>;
+};
+
+// minimax/h3/t2v/trainer is h3.t2v.trainer, a sibling of textToVideo.
+// This leaf owns the t2v scaffold. Later H3 trainers add their own keys.
+export interface FalRunMinimaxH3T2vNamespace {
+  trainer: FalMinimaxH3T2vTrainerFn;
+}
+
+export interface FalRunMinimaxH3Namespace {
+  t2v: FalRunMinimaxH3T2vNamespace;
 }
 
 export interface FalRunMinimaxNamespace {

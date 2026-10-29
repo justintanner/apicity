@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Krea 3 edit at `run.krea.v3.edit` (`POST https://fal.run/krea/v3/edit`). This bead owns the new `krea.v3` scaffold. low and medium bill $0.025 per megapixel of the output plus each reference, counted at the output size when the reference pixels are not in the payload; high adds $0.125; ultra is a flat price by reference count. The recording uses reasoning_level low, a 1024x1024 output, and one `cat1.jpg` reference, and billed 1.75 megapixels ($0.04375) because the reference is smaller than the output (ac-t85sor).
+
 - Added FLUX 3 Klein edit-image at `run.blackforestlabs.flux3.klein.editImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: an edit of our cat photo at 256x256 billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).
 
 - Added FLUX 3 Klein text-to-image at `run.blackforestlabs.flux3.klein.textToImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: a 256x256 image billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).

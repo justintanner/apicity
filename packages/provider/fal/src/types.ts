@@ -266,6 +266,9 @@ export type {
   FalMetaMuseImageEditParsedRequest,
   FalMetaMuseImageEditRequestInput,
   FalMetaMuseImageEditRequest,
+  FalKreaV3EditParsedRequest,
+  FalKreaV3EditRequestInput,
+  FalKreaV3EditRequest,
   FalMetaMuseImageTextToImageParsedRequest,
   FalMetaMuseImageTextToImageRequestInput,
   FalMetaMuseImageTextToImageRequest,
@@ -890,6 +893,7 @@ import type {
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditRequest,
+  FalKreaV3EditRequest,
   FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageRequest,
@@ -5129,6 +5133,40 @@ type FalMetaMuseImageEditFn = ((
 
 export interface FalRunMetaMuseImageNamespace {
   edit: FalMetaMuseImageEditFn;
+}
+
+export interface FalKreaV3EditResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  seed: number;
+  prompt: string;
+  timings: Record<string, number>;
+  has_nsfw_concepts: boolean[];
+}
+
+type FalKreaV3EditFn = ((
+  params: FalKreaV3EditRequest,
+  signal?: AbortSignal
+) => Promise<FalKreaV3EditResponse>) & {
+  schema: ApicitySchema<FalKreaV3EditRequest>;
+};
+
+export interface FalRunKreaV3Namespace {
+  edit: FalKreaV3EditFn;
+}
+
+export interface FalRunKreaNamespace {
+  v3: FalRunKreaV3Namespace;
+}
+
+export interface FalRunNamespace {
+  krea: FalRunKreaNamespace;
 }
 
 export interface FalOpenaiGptImage2p5SunburstEditResponse {

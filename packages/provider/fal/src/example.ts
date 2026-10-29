@@ -1544,6 +1544,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST krea.v3.edit": {
+    "source": "fal/krea-v3-edit",
+    "payload": {
+      "prompt": "Keep the cat and soften the background",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "image_size": {
+        "width": 1024,
+        "height": 1024
+      },
+      "reasoning_level": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST lightricks.ltx2p5.audioToVideo.fast": {
     "source": "fal/lightricks-ltx-2-5-audio-to-video-fast",
     "payload": {

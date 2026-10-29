@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added the Omkar Cloud TikTok Scraper provider (`@apicity/omkar`) with `feed.trending` (`GET https://tiktok-scraper.omkar.cloud/feed/trending`): the For You feed TikTok shows in a country right now, up to 30 videos with stats, author, sound, media qualities and subtitles, and a fresh batch on every call. `country` takes an ISO 3166-1 alpha-2 code (Omkar defaults to `US`). The key, `OMKAR_API_KEY`, is sent as the `API-Key` header; the free plan allows 1,000 successful requests a month. Gateway errors reject with `OmkarError`, whose `code` carries Omkar's stable error code (`invalid_api_key`, `quota_exceeded`, `rate_limited`, ...). Recorded for Thailand (ac-4ev2i7).
+
 - Added FLUX 3 Klein edit-image at `run.blackforestlabs.flux3.klein.editImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: an edit of our cat photo at 256x256 billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).
 
 - Added FLUX 3 Klein text-to-image at `run.blackforestlabs.flux3.klein.textToImage`, now callable with its LoRA variant still at `.lora`; its input is the LoRA endpoint's without `loras`. Pricing is dynamic: a 256x256 image billed 0.8889 megapixels at $0.009 while the card prices images per resolution tier (ac-eahf2q).
@@ -188,6 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The `api-key` request header no longer enters a Polly recording's match identity, like the other credential headers, in the test harness and in `@apicity/har` `pollyEntryId`. The header was already scrubbed to `***` on disk, but a recording made with the real key matched only that key, so it could not replay without it. No committed recording sent the header before `@apicity/omkar` (ac-4ev2i7).
 - **Breaking:** MachGen `reference_video_start_secs` is now a list (`number[]`) with one start second per `src_video_urls` entry, as MachGen requires. The schema typed it as a single number, which MachGen rejects with HTTP 400 "Input should be a valid list", so no request that set it could succeed (ac-ks4no2).
 - **Breaking:** KIE `Seedance25RequestSchema` and `Seedance25InputSchema`
   (`bytedance/seedance-2-5`) now default `input.generate_audio` to `false`,

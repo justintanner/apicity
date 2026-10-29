@@ -107,6 +107,11 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale: "Free public Creative Center trend data; no key, no USD cost",
   },
   {
+    match: { provider: "omkar" },
+    tier: "cheap",
+    rationale: "Free plan of 1,000 requests a month; no per-call USD cost",
+  },
+  {
     match: { provider: "simplefunctions" },
     tier: "cheap",
     rationale: "Public agent/world data API; no per-call USD compute cost",

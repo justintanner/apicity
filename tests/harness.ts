@@ -61,6 +61,7 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
           "x-goog-api-key",
           "x-amz-date",
           "x-amz-security-token",
+          "api-key",
         ],
       },
       body: false,
@@ -84,6 +85,7 @@ export function setupPollyIgnoringBody(recordingName: string): PollyContext {
           "x-goog-api-key",
           "x-amz-date",
           "x-amz-security-token",
+          "api-key",
         ],
       },
       body: false,
@@ -228,6 +230,7 @@ function setupPollyWithOptions(
         "x-goog-api-key",
         "x-amz-date",
         "x-amz-security-token",
+        "api-key",
       ],
     },
   };

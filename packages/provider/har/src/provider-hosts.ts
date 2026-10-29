@@ -33,6 +33,7 @@ export const providerHosts: Readonly<Record<string, readonly string[]>> = {
   kimicoding: ["api.kimi.com"],
   machgen: ["api.machgen.ai"],
   meta: ["graph.instagram.com"],
+  omkar: ["tiktok-scraper.omkar.cloud"],
   openai: ["api.openai.com", "chatgpt.com"],
   openf1: ["api.openf1.org"],
   openligadb: ["api.openligadb.de"],

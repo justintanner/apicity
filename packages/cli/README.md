@@ -253,6 +253,7 @@ any mode.
 | `telegram`               | `TELEGRAM_BOT_KEY`                                                                                                                                                                                            |
 | `machgen`                | `MACHGEN_API_KEY`                                                                                                                                                                                             |
 | `quo`                    | `QUO_API_KEY`                                                                                                                                                                                                 |
+| `omkar`                  | `OMKAR_API_KEY`                                                                                                                                                                                               |
 | `thesportsdb`            | `THESPORTSDB_API_KEY` _(optional — keyless endpoints work without it)_                                                                                                                                        |
 
 `apicity providers` prints this table for the machine you are on, with a

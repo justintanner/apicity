@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 tiktok-creative-center	ads.creativeOne.report.creativeCenterGetTopContentsList	GET	https://ads.tiktok.com/CreativeOne/Report/CreativeCenterGetTopContentsList{query}	https://ads.tiktok.com/creative/creativeCenter/trends/video
 tiktok-creative-center	ads.creativeOne.report.getTopContentsOverview	GET	https://ads.tiktok.com/CreativeOne/Report/GetTopContentsOverview	https://ads.tiktok.com/creative/creativeCenter/trends/video
 endless	social.tiktokTrends.public	GET	https://api.endless.app/social/tiktok-trends/public/{region}	https://endless.app/docs/api/social/public-tiktok-trends

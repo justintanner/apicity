@@ -87,7 +87,9 @@ export function signatureOptions(provider) {
         ? ["eapi", "fapi"]
         : provider === "kie"
           ? ["kieai"]
-          : [],
+          : provider === "omkar"
+            ? ["tiktok-scraper"]
+            : [],
   };
 }
 

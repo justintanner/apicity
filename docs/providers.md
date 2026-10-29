@@ -41,6 +41,7 @@ table includes it so the published roster stays in one place.
 | [@apicity/openf1](../packages/provider/openf1)                                 | OpenF1 Formula 1 historical and live timing data                   |
 | [@apicity/endless](../packages/provider/endless)                               | Endless public TikTok and X trends by region                       |
 | [@apicity/tiktok-creative-center](../packages/provider/tiktok-creative-center) | TikTok Creative Center trending videos (unofficial endpoints)      |
+| [@apicity/omkar](../packages/provider/omkar)                                   | Omkar Cloud TikTok Scraper trending feed by country                |
 | [@apicity/dropbox](../packages/provider/dropbox)                               | Dropbox users, files, content upload/download, and sharing         |
 | [@apicity/dolthub](../packages/provider/dolthub)                               | DoltHub SQL execution and Dolt database management                 |
 | [@apicity/youtube](../packages/provider/youtube)                               | YouTube Data API v3 video publishing                               |

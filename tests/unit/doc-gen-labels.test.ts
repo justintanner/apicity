@@ -36,6 +36,7 @@ import { createGoogleFlow } from "@apicity/googleflow";
 import { createKie } from "@apicity/kie";
 import { createKimiCoding } from "@apicity/kimicoding";
 import { createMeta } from "@apicity/meta";
+import { createOmkar } from "@apicity/omkar";
 import { createOpenAi } from "@apicity/openai";
 import { createOpenF1 } from "@apicity/openf1";
 import { createOpenLigaDB } from "@apicity/openligadb";
@@ -736,6 +737,7 @@ const PROVIDER_FACTORIES = {
   kie: createKie,
   kimicoding: createKimiCoding,
   meta: createMeta,
+  omkar: createOmkar,
   openai: createOpenAi,
   openf1: createOpenF1,
   openligadb: createOpenLigaDB,

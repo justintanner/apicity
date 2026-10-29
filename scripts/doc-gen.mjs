@@ -294,6 +294,9 @@ function formatUsageSnippet(
       "});",
     ].join("\n");
   }
+  if (providerName === "omkar" && dotPath === "feed.trending") {
+    return `const feed = await ${call}({ country: "TH" });`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,
@@ -655,6 +658,20 @@ export const ENDPOINT_NOTES = new Map([
 ]);
 
 const PROVIDER_NOTES = new Map([
+  [
+    "omkar",
+    [
+      "Omkar Cloud's TikTok Scraper scrapes TikTok live on every call, so a",
+      "feed call returns a fresh batch each time. The key goes in the",
+      "`API-Key` header. The free plan allows 1,000 successful (HTTP 200)",
+      "requests a month; errors are not charged, and",
+      "`GET https://tiktok-scraper.omkar.cloud/account/usage` reports usage",
+      "without spending a request. Every gateway error is JSON with a stable",
+      "`code` (`missing_api_key`, `invalid_api_key`, `quota_exceeded`,",
+      "`rate_limited`, ...), which rejects with `OmkarError` (`code`).",
+      "Media and subtitle links are signed TikTok CDN URLs that expire.",
+    ].join(" "),
+  ],
   [
     "tiktok-creative-center",
     [
@@ -4462,6 +4479,9 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  omkar: {
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -4526,6 +4546,7 @@ const PROVIDER_DOCS = {
   endless: "https://endless.app/docs/api",
   "tiktok-creative-center":
     "https://ads.tiktok.com/creative/creativeCenter/trends/video",
+  omkar: "https://www.omkar.cloud/tools/tiktok-scraper",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -4591,6 +4612,9 @@ const PROVIDER_DEP_NOTES = {
     zod: "request schemas attached to endpoint methods as `.schema`",
   },
   "tiktok-creative-center": {
+    zod: "request schemas attached to endpoint methods as `.schema`",
+  },
+  omkar: {
     zod: "request schemas attached to endpoint methods as `.schema`",
   },
   dropbox: {

@@ -1,0 +1,10 @@
+{
+  "GET feed.trending": {
+    "source": "omkar/feed-trending-th",
+    "payload": {
+      "country": "TH"
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  }
+}

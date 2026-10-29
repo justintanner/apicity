@@ -1,9 +1,21 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { loadCatalog } from "../../packages/cli/src/catalog";
+import {
+  parseEndpointFlags,
+  parseGlobalFlags,
+  requireRequestFields,
+  resolveRequestBody,
+} from "../../packages/cli/src/args";
+import { CALL_SHAPES, callShapeKey } from "../../packages/cli/src/call-shapes";
+import {
+  findEntries,
+  loadCatalog,
+  selectEntry,
+} from "../../packages/cli/src/catalog";
 import { BUILTIN_COMMANDS } from "../../packages/cli/src/commands";
 import { HELP_TOPICS } from "../../packages/cli/src/help";
+import { mergeRequestFields } from "../../packages/cli/src/invoke";
 
 // AC-08 (REQ-009): the agent skill is the whole point of the CLI — it is how
 // an agent reaches 1,658 endpoints without a tool list in its context. These
@@ -170,6 +182,90 @@ function isFlag(token: string | undefined): boolean {
   return token !== undefined && token.startsWith("-");
 }
 
+/**
+ * Whitespace split that keeps single- and double-quoted spans whole.
+ * A `#` outside a token starts a comment and ends the line.
+ */
+function shellTokens(line: string): string[] {
+  const out: string[] = [];
+  let current = "";
+  let quote: string | null = null;
+  let has = false;
+  for (const ch of line) {
+    if (quote) {
+      if (ch === quote) quote = null;
+      else current += ch;
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch;
+      has = true;
+      continue;
+    }
+    if (/\s/.test(ch)) {
+      if (has || current) out.push(current);
+      current = "";
+      has = false;
+      continue;
+    }
+    if (ch === "#" && !current && !has) break;
+    current += ch;
+  }
+  if (has || current) out.push(current);
+  return out;
+}
+
+interface GrammarInvocation {
+  /** The command text, including the leading `apicity`. */
+  text: string;
+  provider: string;
+  dotPath: string;
+  /** Tokens after `apicity <provider> <dotPath>`. */
+  argv: string[];
+}
+
+/**
+ * Endpoint-shaped `apicity` commands in shell fences and table cells.
+ *
+ * Table cells contribute their backticked spans, then every candidate is
+ * split on `|` so a piped shell line yields the `apicity` segment alone.
+ */
+function grammarInvocations(markdown: string): GrammarInvocation[] {
+  const candidates: string[] = [];
+  let fenced = false;
+  let shell = false;
+  for (const line of markdown.split("\n")) {
+    if (line.trimStart().startsWith("```")) {
+      if (!fenced) {
+        shell = SHELL_FENCES.has(line.trim().replace(/^`+/, "").trim());
+      }
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced && shell) {
+      candidates.push(line);
+      continue;
+    }
+    if (!line.trimStart().startsWith("|")) continue;
+    for (const span of line.matchAll(/`([^`]+)`/g)) candidates.push(span[1]);
+  }
+
+  const found: GrammarInvocation[] = [];
+  for (const candidate of candidates) {
+    for (const segment of candidate.split("|")) {
+      const tokens = shellTokens(segment.trim());
+      const at = tokens.indexOf("apicity");
+      if (at === -1) continue;
+      const [provider, dotPath, ...argv] = tokens.slice(at + 1);
+      if (!provider || !dotPath) continue;
+      if (dotPath.startsWith("-") || dotPath.startsWith("<")) continue;
+      const text = tokens.slice(at).join(" ");
+      found.push({ text, provider, dotPath, argv });
+    }
+  }
+  return found;
+}
+
 const BUILTIN_HEADS = new Set([
   ...BUILTIN_COMMANDS.map((command) => command.name.split(" ")[0]),
   ...PLANNED_COMMANDS,
@@ -288,6 +384,40 @@ describe("skills/apicity/SKILL.md invocations", () => {
     }
 
     expect(ambiguous).toEqual([]);
+  });
+
+  it("parses every endpoint example through the CLI grammar", async () => {
+    const catalog = await loadCatalog({ env: {} });
+    const providers = new Set(catalog.map((entry) => entry.provider));
+    const failures: string[] = [];
+
+    for (const invocation of grammarInvocations(body)) {
+      if (!providers.has(invocation.provider)) continue;
+      try {
+        const { flags, rest } = parseGlobalFlags(invocation.argv);
+        if (flags.help) continue;
+        const entries = findEntries(
+          catalog,
+          invocation.provider,
+          invocation.dotPath
+        );
+        const entry = selectEntry(entries, flags.method);
+        const shape =
+          CALL_SHAPES[
+            callShapeKey(invocation.provider, entry.method, invocation.dotPath)
+          ];
+        const bound = parseEndpointFlags(rest, shape);
+        if (flags.dataFile !== undefined || flags.data === "-") continue;
+        const requestBody = await resolveRequestBody(flags);
+        const request = mergeRequestFields(requestBody, bound.fields);
+        requireRequestFields(shape, request);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        failures.push(`${invocation.text}: ${message}`);
+      }
+    }
+
+    expect(failures).toEqual([]);
   });
 });
 

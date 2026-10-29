@@ -543,6 +543,62 @@ describe("the provider form without a dotPath", () => {
   });
 });
 
+describe("query fields stay in --data", () => {
+  it("refuses --country on omkar feed.trending before any request", async () => {
+    const calls: Call[] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "omkar",
+      ["feed.trending", "--country", "TH"],
+      cap.writer,
+      options(
+        tree(calls, (leaf) => ({
+          get: { feed: { trending: leaf("GET") } },
+        })),
+        { HOME, OMKAR_API_KEY: "omkar-test" }
+      )
+    );
+
+    expect(exit).toBe(1);
+    expect(calls).toEqual([]);
+    const envelope = errorOf(cap);
+    expect(envelope.code).toBe("usage");
+    expect(envelope.error).toBe("unknown flag: --country");
+    expect(envelope.hint).toBe(
+      "this endpoint takes no parameter flags; pass the request with --data"
+    );
+  });
+
+  it("names --data when a flagged endpoint is given an unknown flag", async () => {
+    const calls: Call[] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "simplefunctions",
+      ["api.public.market.candles", "--ticker", "KXBTC", "--limit", "5"],
+      cap.writer,
+      options(
+        tree(calls, (leaf) => ({
+          get: {
+            api: { public: { market: { candles: leaf("GET") } } },
+          },
+        })),
+        { HOME, SIMPLEFUNCTIONS_API_KEY: "sf-test" }
+      )
+    );
+
+    expect(exit).toBe(1);
+    expect(calls).toEqual([]);
+    const envelope = errorOf(cap);
+    expect(envelope.code).toBe("usage");
+    expect(envelope.error).toBe("unknown flag: --limit");
+    expect(envelope.hint).toBe(
+      "this endpoint takes: --ticker; pass any other request field in --data"
+    );
+  });
+});
+
 describe("the success envelope of a call", () => {
   it("wraps the provider's answer once", async () => {
     const cap = capture();

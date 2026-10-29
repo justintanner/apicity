@@ -297,6 +297,9 @@ function formatUsageSnippet(
   if (providerName === "omkar" && dotPath === "feed.trending") {
     return `const feed = await ${call}({ country: "TH" });`;
   }
+  if (providerName === "omkar" && dotPath === "feed.explore") {
+    return `const feed = await ${call}({ country: "TH", category: "all" });`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,

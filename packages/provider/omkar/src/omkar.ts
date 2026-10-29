@@ -1,12 +1,17 @@
 import { attachExamples } from "./example";
 import { OmkarError } from "./types";
 import type {
+  OmkarFeedExploreRequest,
+  OmkarFeedExploreResponse,
   OmkarFeedTrendingRequest,
   OmkarFeedTrendingResponse,
   OmkarOptions,
   OmkarProvider,
 } from "./types";
-import { OmkarFeedTrendingRequestSchema } from "./zod";
+import {
+  OmkarFeedExploreRequestSchema,
+  OmkarFeedTrendingRequestSchema,
+} from "./zod";
 
 interface OmkarErrorDetails {
   code?: string;
@@ -120,6 +125,21 @@ export function createOmkar(options: OmkarOptions = {}): OmkarProvider {
           );
         },
         { schema: OmkarFeedTrendingRequestSchema }
+      ),
+      // GET https://tiktok-scraper.omkar.cloud/feed/explore{query}
+      // Docs: https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
+      explore: Object.assign(
+        async (request: OmkarFeedExploreRequest = {}, signal?: AbortSignal) => {
+          const query = queryString({
+            country: request.country,
+            category: request.category,
+          });
+          return getRequest<OmkarFeedExploreResponse>(
+            `/feed/explore${query}`,
+            signal
+          );
+        },
+        { schema: OmkarFeedExploreRequestSchema }
       ),
     },
   });

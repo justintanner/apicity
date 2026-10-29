@@ -1,5 +1,9 @@
 import type { z } from "zod";
-import type { OmkarFeedTrendingRequestSchema } from "./zod";
+import type {
+  OmkarExploreCategorySchema,
+  OmkarFeedExploreRequestSchema,
+  OmkarFeedTrendingRequestSchema,
+} from "./zod";
 
 /**
  * `status` is the HTTP status, or 408 on timeout, 499 when the caller aborts
@@ -29,6 +33,10 @@ export interface OmkarOptions {
 
 export type OmkarFeedTrendingRequest = z.infer<
   typeof OmkarFeedTrendingRequestSchema
+>;
+export type OmkarExploreCategory = z.infer<typeof OmkarExploreCategorySchema>;
+export type OmkarFeedExploreRequest = z.infer<
+  typeof OmkarFeedExploreRequestSchema
 >;
 
 export interface OmkarVideoStats {
@@ -245,6 +253,15 @@ export interface OmkarFeedTrendingResponse {
   [key: string]: unknown;
 }
 
+/** One Explore tab: up to 30 videos; every call returns a fresh batch. */
+export interface OmkarFeedExploreResponse {
+  category: string;
+  country: string;
+  video_count: number;
+  videos: OmkarVideo[];
+  [key: string]: unknown;
+}
+
 export interface OmkarFeedTrendingMethod {
   (
     request?: OmkarFeedTrendingRequest,
@@ -252,8 +269,16 @@ export interface OmkarFeedTrendingMethod {
   ): Promise<OmkarFeedTrendingResponse>;
   schema: typeof OmkarFeedTrendingRequestSchema;
 }
+export interface OmkarFeedExploreMethod {
+  (
+    request?: OmkarFeedExploreRequest,
+    signal?: AbortSignal
+  ): Promise<OmkarFeedExploreResponse>;
+  schema: typeof OmkarFeedExploreRequestSchema;
+}
 export interface OmkarFeedNamespace {
   trending: OmkarFeedTrendingMethod;
+  explore: OmkarFeedExploreMethod;
 }
 export interface OmkarProvider {
   feed: OmkarFeedNamespace;

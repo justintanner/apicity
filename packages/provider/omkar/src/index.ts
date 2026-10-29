@@ -5,6 +5,10 @@ export type {
   OmkarAuthor,
   OmkarAuthorStats,
   OmkarEffect,
+  OmkarExploreCategory,
+  OmkarFeedExploreMethod,
+  OmkarFeedExploreRequest,
+  OmkarFeedExploreResponse,
   OmkarFeedNamespace,
   OmkarFeedTrendingMethod,
   OmkarFeedTrendingRequest,
@@ -23,4 +27,9 @@ export type {
   OmkarVideoQuality,
   OmkarVideoStats,
 } from "./types";
-export { OmkarCountrySchema, OmkarFeedTrendingRequestSchema } from "./zod";
+export {
+  OmkarCountrySchema,
+  OmkarExploreCategorySchema,
+  OmkarFeedExploreRequestSchema,
+  OmkarFeedTrendingRequestSchema,
+} from "./zod";

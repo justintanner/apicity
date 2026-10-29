@@ -986,6 +986,7 @@ machgen	api.v0.upscale.quote	POST	expensive	Per-second video generation priced p
 meta	v25.container	GET	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.mediaPublish	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
+omkar	feed.explore	GET	cheap	Free plan of 1,000 requests a month; no per-call USD cost
 omkar	feed.trending	GET	cheap	Free plan of 1,000 requests a month; no per-call USD cost
 openai	codex.usage	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.audio.speech	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money

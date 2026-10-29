@@ -177,7 +177,13 @@ describe("MODEL_SLUGS", () => {
       eleven_turbo_v2_5: "elt2p5",
       eleven_multilingual_v2: "elml2",
       eleven_multilingual_v3: "elml3",
+      scribe_v2: "scribe2",
+      scribe_v2_medical: "scribe2m",
+      scribe_v2_realtime: "scribe2rt",
     });
+    expect(MODEL_SLUGS.elevenlabs.scribe_v2).toBe(
+      MODEL_SLUGS.fal["fal-ai/elevenlabs/speech-to-text/scribe-v2"]
+    );
   });
 
   it("has kimicoding models", () => {
@@ -427,6 +433,9 @@ describe("MODEL_DISPLAY", () => {
       eleven_flash_v2_5: "Eleven Flash 2.5",
       eleven_turbo_v2_5: "Eleven Turbo 2.5",
       eleven_multilingual_v2: "Eleven Multilingual 2",
+      scribe_v2: "Scribe v2",
+      scribe_v2_medical: "Scribe v2 Medical",
+      scribe_v2_realtime: "Scribe v2 Realtime",
     });
   });
 

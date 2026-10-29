@@ -94,6 +94,14 @@ const e = c.estimate({
   payload: { model_id: "eleven_flash_v2_5", text: "Hello world" },
 });
 
+// elevenlabs speech-to-text — the body has no duration. 600 s is 10 minutes
+// of Scribe v2 at $0.22/hour.
+const stt = c.estimate({
+  provider: "elevenlabs",
+  payload: { model_id: "scribe_v2" },
+  costHints: { durationSeconds: 600 },
+});
+
 // free → always $0
 const z = c.estimate({ provider: "free-media-upload" });
 ```
@@ -255,18 +263,21 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 
 ### Endpoints that need it
 
-| Provider | Pricing key                             | Length follows                           |
-| -------- | --------------------------------------- | ---------------------------------------- |
-| `kie`    | `veo3` / `veo3_fast`                    | model-fixed clip                         |
-| `kie`    | `happyhorse/video-edit`                 | source `video_url`, billed on both sides |
-| `kie`    | `kling-3.0/motion-control`              | motion video                             |
-| `kie`    | `omnihuman-1-5`                         | driving audio                            |
-| `kie`    | `omnihuman-2-0`                         | driving audio                            |
-| `kie`    | `volcengine/video-to-video-lip-sync`    | source video                             |
-| `xai`    | `v1/videos/edits`                       | source video                             |
-| `fal`    | `fal-ai/wan/v2.7/edit-video`            | source video                             |
-| `fal`    | Seedance 2.0 / 2.5, duration `"auto"`   | the model's pick                         |
-| `fal`    | `bytedance/seedance-2.5/draft/complete` | the draft, with `aspectRatio`            |
+| Provider     | Pricing key                             | Length follows                           |
+| ------------ | --------------------------------------- | ---------------------------------------- |
+| `kie`        | `veo3` / `veo3_fast`                    | model-fixed clip                         |
+| `kie`        | `happyhorse/video-edit`                 | source `video_url`, billed on both sides |
+| `kie`        | `kling-3.0/motion-control`              | motion video                             |
+| `kie`        | `omnihuman-1-5`                         | driving audio                            |
+| `kie`        | `omnihuman-2-0`                         | driving audio                            |
+| `kie`        | `volcengine/video-to-video-lip-sync`    | source video                             |
+| `xai`        | `v1/videos/edits`                       | source video                             |
+| `fal`        | `fal-ai/wan/v2.7/edit-video`            | source video                             |
+| `fal`        | Seedance 2.0 / 2.5, duration `"auto"`   | the model's pick                         |
+| `fal`        | `bytedance/seedance-2.5/draft/complete` | the draft, with `aspectRatio`            |
+| `elevenlabs` | `scribe_v2`                             | input audio                              |
+| `elevenlabs` | `scribe_v2_medical`                     | input audio                              |
+| `elevenlabs` | `scribe_v2_realtime`                    | input audio                              |
 
 wan edit-video defaults `duration` to `0` ("match the source clip"). That is
 not a length, so it reaches the hint exactly like an omitted field would. The
@@ -679,7 +690,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
 | `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
 | `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`          |
-| `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
+| `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`            |
 | `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints    |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |

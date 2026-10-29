@@ -15,6 +15,15 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET feed.explore": {
+    "source": "omkar/feed-explore-th-all",
+    "payload": {
+      "country": "TH",
+      "category": "all"
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  },
   "GET feed.trending": {
     "source": "omkar/feed-trending-th",
     "payload": {

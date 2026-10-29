@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createOmkar } from "@apicity/omkar";
 import type { OmkarError } from "@apicity/omkar";
-import { OmkarFeedTrendingRequestSchema } from "@apicity/omkar/zod";
+import {
+  OmkarFeedExploreRequestSchema,
+  OmkarFeedTrendingRequestSchema,
+} from "@apicity/omkar/zod";
 
 interface CapturedRequest {
   url: string;
@@ -26,6 +29,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 }
 
 const EMPTY_FEED = { country: "TH", video_count: 0, videos: [] };
+const EMPTY_EXPLORE = { ...EMPTY_FEED, category: "comedy" };
 
 // Never answers; rejects once the request's signal aborts.
 const hangingFetch: typeof globalThis.fetch = (_url, init) =>
@@ -73,6 +77,23 @@ describe("omkar provider", () => {
       "https://omkar.test/feed/trending",
       "https://omkar.test/feed/trending",
     ]);
+  });
+
+  it("sends an Explore request's country, then its category", async () => {
+    const { requests, fetch } = capture(() => jsonResponse(EMPTY_EXPLORE));
+    const omkar = createOmkar({ apiKey: "omkar-key", fetch });
+
+    await expect(
+      omkar.feed.explore({ category: "comedy", country: "TH" })
+    ).resolves.toEqual(EMPTY_EXPLORE);
+    await omkar.feed.explore();
+
+    expect(requests.map((request) => request.url)).toEqual([
+      "https://tiktok-scraper.omkar.cloud/feed/explore?country=TH&category=comedy",
+      "https://tiktok-scraper.omkar.cloud/feed/explore",
+    ]);
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.headers).toEqual({ "API-Key": "omkar-key" });
   });
 
   it("reads OMKAR_API_KEY when no apiKey is passed", async () => {
@@ -204,6 +225,30 @@ describe("omkar provider", () => {
     expect(
       (trending as unknown as { example: { payload: unknown } }).example.payload
     ).toEqual({ country: "TH" });
+  });
+
+  it("attaches the Explore schema and the recorded example", () => {
+    const explore = createOmkar({ apiKey: "omkar-key" }).feed.explore;
+
+    expect(explore.schema).toBe(OmkarFeedExploreRequestSchema);
+    expect(
+      (explore as unknown as { example: { payload: unknown } }).example.payload
+    ).toEqual({ country: "TH", category: "all" });
+  });
+
+  it("accepts the 21 Explore tabs and no other category", () => {
+    const parse = (request: unknown) =>
+      OmkarFeedExploreRequestSchema.safeParse(request).success;
+
+    expect(parse({})).toBe(true);
+    expect(parse({ country: "TH", category: "all" })).toBe(true);
+    expect(parse({ category: "fitness-health" })).toBe(true);
+    expect(
+      OmkarFeedExploreRequestSchema.shape.category.unwrap().options
+    ).toHaveLength(21);
+    expect(parse({ category: "music" })).toBe(false);
+    expect(parse({ category: "Comedy" })).toBe(false);
+    expect(parse({ country: "th" })).toBe(false);
   });
 
   it("accepts an ISO alpha-2 country or none", () => {

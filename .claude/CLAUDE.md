@@ -178,7 +178,7 @@ packages/provider/<name>/
 **quo** — Quo business text messaging
 **endless** — Endless public social trends: TikTok and X trends by region (no key)
 **tiktok-creative-center** — TikTok Creative Center trending videos (unofficial endpoints, no key)
-**omkar** — Omkar Cloud TikTok Scraper: TikTok's trending feed by country (`API-Key` header, free plan)
+**omkar** — Omkar Cloud TikTok Scraper: TikTok's trending and Explore feeds by country (`API-Key` header, free plan)
 **x** — X (Twitter) social API for posting content (api.x.com)
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)

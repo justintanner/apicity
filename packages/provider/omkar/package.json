@@ -1,7 +1,7 @@
 {
   "name": "@apicity/omkar",
   "version": "0.20.0",
-  "description": "Omkar Cloud TikTok Scraper provider: the trending feed by country.",
+  "description": "Omkar Cloud TikTok Scraper provider: trending and Explore feeds by country.",
   "license": "MIT",
   "repository": {
     "type": "git",

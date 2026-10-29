@@ -459,13 +459,14 @@ apicity tiktok-creative-center ads.creativeOne.report.getTopContentsOverview --j
 apicity tiktok-creative-center ads.creativeOne.report.creativeCenterGetTopContentsList --data '{"countryCode":"TH","periodDimension":3,"periodEndTimestamp":1792886400,"orderByMetric":1}' --json
 ```
 
-### omkar — TikTok's trending feed by country (Omkar Cloud TikTok Scraper)
+### omkar — TikTok's trending and Explore feeds by country (Omkar Cloud TikTok Scraper)
 
 Each call scrapes a fresh batch of up to 30 videos. The free plan allows 1,000
 successful calls a month.
 
 ```bash
 apicity omkar feed.trending --data '{"country":"TH"}' --json
+apicity omkar feed.explore --data '{"country":"TH","category":"comedy"}' --json
 ```
 
 ### thesportsdb — teams, leagues, events and results

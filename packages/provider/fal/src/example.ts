@@ -1560,6 +1560,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST krea.v3.textToImage": {
+    "source": "fal/krea-v3-text-to-image",
+    "payload": {
+      "prompt": "A red ceramic cup on a wooden table",
+      "image_size": {
+        "width": 1024,
+        "height": 1024
+      },
+      "reasoning_level": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST lightricks.ltx2p5.audioToVideo.fast": {
     "source": "fal/lightricks-ltx-2-5-audio-to-video-fast",
     "payload": {

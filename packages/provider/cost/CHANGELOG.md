@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Krea 3 text-to-image (`krea/v3/text-to-image`, slug `krea3`) pricing from the 2026-10-29 queue OpenAPI. low and medium are $0.025 per output megapixel. There is no reference input. The 1024x1024 recording billed 1.0 megapixels ($0.025). auto or an omitted size stays unpriced (ac-uy20rg).
+
 - Krea 3 edit (`krea/v3/edit`, slug `krea3`) pricing from the 2026-10-29
   queue OpenAPI. low and medium are $0.025 per megapixel of the output plus
   each reference. References are counted at the output size, the card's

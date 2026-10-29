@@ -8213,6 +8213,99 @@ export type FalKreaV3EditParsedRequest = z.output<
   typeof FalKreaV3EditRequestSchema
 >;
 
+const FalKreaV3TextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-29
+// (sha256 347a03eddc1f1385a22e32ea9d6f6217e970da6890d8a630978fbb19cc24ff42).
+// Field order follows x-fal-order-properties. Leaf under krea.v3; the edit
+// child owns the scaffold.
+// Docs: https://fal.ai/models/krea/v3/text-to-image/api
+export const FalKreaV3TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe("Description of the image to generate."),
+  model: z
+    .enum(["berry", "jam"])
+    .default("berry")
+    .describe("Model variant: berry favors quality, jam favors speed."),
+  image_size: z
+    .union([
+      FalKreaV3TextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("auto")
+    .describe(
+      "Output size, rounded up to multiples of 16, at most 4,220,160 total pixels (1680×2512). auto lets the prompt expander pick the aspect ratio at about 2048×2048."
+    ),
+  reasoning_level: z
+    .enum(["low", "medium"])
+    .default("medium")
+    .describe(
+      "How much effort the harness spends reasoning about the given prompt. Higher reasoning effort means slower generation time. Both levels bill $0.025 per output megapixel."
+    ),
+  negative_prompt: z
+    .string()
+    .max(1024)
+    .default("")
+    .describe("What to keep out of the image. Used by berry only."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Latent noise seed. Use a new seed when editing a previous output again."
+    ),
+  output_format: z
+    .enum(["png", "jpeg"])
+    .default("png")
+    .describe("Output image format."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Return images as data URIs instead of saving them in request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Check output images for unsafe content. Disabling requires account authorization."
+    ),
+});
+export type FalKreaV3TextToImageRequest = z.input<
+  typeof FalKreaV3TextToImageRequestSchema
+>;
+export type FalKreaV3TextToImageRequestInput = FalKreaV3TextToImageRequest;
+export type FalKreaV3TextToImageParsedRequest = z.output<
+  typeof FalKreaV3TextToImageRequestSchema
+>;
+
 const FalOpenaiGptImage2p5SunburstEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -16173,6 +16266,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalOpenaiGptImage2p5SunburstEditRequestSchema,
   "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
   "krea/v3/edit": FalKreaV3EditRequestSchema,
+  "krea/v3/text-to-image": FalKreaV3TextToImageRequestSchema,
   "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,

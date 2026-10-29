@@ -390,6 +390,8 @@ import {
   FalMinimaxH3I2vTrainerResponse,
   FalMinimaxH3Flf2vTrainerRequest,
   FalMinimaxH3Flf2vTrainerResponse,
+  FalMinimaxH3Ref2vaTrainerRequest,
+  FalMinimaxH3Ref2vaTrainerResponse,
   FalSeedreamV5ProTextToImageRequest,
   FalSeedreamV5ProTextToImageResponse,
   FalSeedreamV5ProEditRequest,
@@ -671,6 +673,7 @@ import {
   FalMinimaxH3T2vTrainerRequestSchema,
   FalMinimaxH3I2vTrainerRequestSchema,
   FalMinimaxH3Flf2vTrainerRequestSchema,
+  FalMinimaxH3Ref2vaTrainerRequestSchema,
   FalSeedreamV5ProTextToImageRequestSchema,
   FalSeedreamV5ProEditRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1802,6 +1805,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/minimax/h3/flf2v/trainer",
     FalMinimaxH3Flf2vTrainerRequestSchema,
+    {
+      base: runBaseURL,
+    }
+  );
+  // POST https://fal.run/minimax/h3/ref2va/trainer
+  // Docs: https://fal.ai/models/minimax/h3/ref2va/trainer/api
+  const minimaxH3Ref2vaTrainer = jsonBody<
+    FalMinimaxH3Ref2vaTrainerRequest,
+    FalMinimaxH3Ref2vaTrainerResponse
+  >(
+    "POST",
+    "/minimax/h3/ref2va/trainer",
+    FalMinimaxH3Ref2vaTrainerRequestSchema,
     {
       base: runBaseURL,
     }
@@ -4849,6 +4865,11 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/minimax/h3/flf2v/trainer
           // Docs: https://fal.ai/models/minimax/h3/flf2v/trainer/api
           trainer: minimaxH3Flf2vTrainer,
+        },
+        ref2va: {
+          // POST https://fal.run/minimax/h3/ref2va/trainer
+          // Docs: https://fal.ai/models/minimax/h3/ref2va/trainer/api
+          trainer: minimaxH3Ref2vaTrainer,
         },
       },
       music3: minimaxMusic3,

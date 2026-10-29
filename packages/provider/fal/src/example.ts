@@ -1799,6 +1799,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.t2v.trainer": {
+    "source": "fal/minimax-h3-t2v-trainer",
+    "payload": {
+      "training_data_url": "https://v3b.fal.media/files/b/0ab058c4/3llAgREfXZoh36mMnJYKX_h3-t2v-trainer.zip",
+      "number_of_steps": 1,
+      "auto_scale_input": true,
+      "trigger_phrase": "apct cat"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.textToVideo": {
     "source": "fal/minimax-h3-text-to-video",
     "payload": {

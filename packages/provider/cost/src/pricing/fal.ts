@@ -2502,6 +2502,19 @@ export const fal: Record<string, ModelPricing> = {
     },
     source: source("minimax/h3/reference-to-video", videoCardAsOf),
   },
+  // Card and pricing API, 2026-10-29: $0.005 per step. number_of_steps
+  // is 1–15000 and defaults to 2000 ($10). CostUnit has no steps member,
+  // so each requested step counts as one generation. The steps=1
+  // recording billed 100 steps ($0.50 on the usage API). The pricing API
+  // still prices one unit at $0.005, so the estimate follows the request.
+  "minimax/h3/t2v/trainer": {
+    kind: "perUnit",
+    unit: "generations",
+    units: (p) => Math.max(1, asNumber(p.number_of_steps) ?? 2000),
+    select: [],
+    rates: { "": 0.005 },
+    source: source("minimax/h3/t2v/trainer", videoCardAsOf),
+  },
 
   "bria/fibo-edit-1.5/product-holding": perImage(
     "bria/fibo-edit-1.5/product-holding",

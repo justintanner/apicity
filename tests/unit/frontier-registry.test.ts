@@ -1426,7 +1426,9 @@ describe("frontier generated registry", () => {
       /\| Rank \| Model +\| Creator +\| Elo +\| Price +\| apicity endpoints +\|/
     );
     expect(doc).toContain("Prices as of");
-    expect(doc).toContain("dynamic, 0.04-0.065 USD/s, 0.035-0.15 USD/s");
+    expect(doc).toContain(
+      "0.05-0.16 USD/s, 0.04-0.065 USD/s, 0.035-0.15 USD/s"
+    );
     expect(doc).toContain("or a price");
   });
 

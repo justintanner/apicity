@@ -177,11 +177,11 @@ describe("HeyGen Video reference-to-video contract", () => {
       endpoint,
       payload: recorded,
     });
-    expect(estimate.usd).toBeCloseTo(0.1, 10);
+    expect(estimate.usd).toBeCloseTo(0.05, 10);
     expect(estimate.breakdown).toMatchObject({ units: 5, unit: "seconds" });
     expect(estimate.warnings).toEqual([]);
     expect(usd({ prompt: "x", reference_video_urls: ["v"] })).toBeCloseTo(
-      0.1,
+      0.05,
       10
     );
     expect(
@@ -191,7 +191,7 @@ describe("HeyGen Video reference-to-video contract", () => {
         resolution: "1080p",
         duration: 10,
       })
-    ).toBeCloseTo(0.6, 10);
+    ).toBeCloseTo(0.3, 10);
     expect(
       usd({
         prompt: "x",
@@ -199,14 +199,14 @@ describe("HeyGen Video reference-to-video contract", () => {
         resolution: "2k",
         duration: 15,
       })
-    ).toBeCloseTo(0.9, 10);
+    ).toBeCloseTo(0.45, 10);
   });
 
   it("is statically priced, with a slug and a display name", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/heygen/heygen-video/reference-to-video",
-      asOf: "2026-10-23",
+      asOf: "2026-10-29",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "heygenvideo"

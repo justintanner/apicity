@@ -45,9 +45,9 @@ const flux3MaxAsOf = "2026-10-21";
 // this date.
 const audioAsOf = "2026-08-22";
 
-// Wan 3.0 pricing was pulled from fal's pricing API
-// (GET /v1/models/pricing?endpoint_id=...) on this date.
-const wan30AsOf = "2026-08-25";
+// Frontier video cards re-read on this date (fal.ai pricingInfoOverride,
+// corroborated by GET /v1/models/pricing). Promos below name their end date.
+const videoCardAsOf = "2026-10-29";
 
 // The five per-megapixel entries were re-read on this date: each model's
 // fal.ai page and GET /v1/models/pricing, with the megapixel definition and
@@ -762,6 +762,16 @@ const FLUX_3_RATES: Record<string, number> = {
   "1080p": 0.29,
 };
 
+// Text-to-video and image-to-video also publish 2K and 4K. First-last-frame,
+// keyframes and extend accept the same resolution enum but their cards still
+// list only 720p and 1080p, so they keep FLUX_3_RATES and a 1440p or 2160p
+// request fails closed.
+const FLUX_3_VIDEO_RATES: Record<string, number> = {
+  ...FLUX_3_RATES,
+  "1440p": 0.32,
+  "2160p": 0.47,
+};
+
 const FLUX_3_EXTEND_RATES: Record<string, number> = {
   "720p": 0.41,
   "1080p": 0.53,
@@ -847,21 +857,13 @@ const gptImagePerImage = (
 //     delivered resolution and precise/creative mode as rechecked
 //     2026-08-22; source duration and dimensions are not request fields, so
 //     a static estimate would guess.
-//   - alibaba/wan-3.0/text-to-video, alibaba/wan-3.0/image-to-video,
-//     alibaba/wan-3.0/reference-to-video: billed per COMPUTE SECOND
-//     (USD 0.00017) as pulled 2026-08-25 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=...). The request carries an output
-//     `duration`, but compute seconds are wall-clock GPU time — a different
-//     unit that no request field determines — so deriving a rate from
-//     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
-//     siblings bill per OUTPUT second instead and are priced statically below.
 //   - minimax/music-3: billed per COMPUTE SECOND (USD 0.00125) as pulled
 //     2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=minimax/music-3). Same shape as the
-//     alibaba/wan-3.0 rows: the request carries a `duration`, but that is an
-//     upper bound on OUTPUT seconds — the model may stop earlier and reports
-//     the length it actually produced — while billing counts wall-clock GPU
-//     seconds, so no request field determines the price.
+//     (GET /v1/models/pricing?endpoint_id=minimax/music-3). The request
+//     carries a `duration`, but that is an upper bound on OUTPUT seconds —
+//     the model may stop earlier and reports the length it actually
+//     produced — while billing counts wall-clock GPU seconds, so no request
+//     field determines the price.
 //   - topaz/upscale/image/precision: billed on OUTPUT area — "$0.08 per 24
 //     megapixels of output, with any precision model", pulled 2026-08-28 from
 //     the model page, and the pricing API reports the same rate as an opaque
@@ -890,8 +892,7 @@ const gptImagePerImage = (
 //     seconds-per-unit constant for. A static per-model rate would be invented.
 //   - lightricks/ltx-2.5/image-to-video/pro: billed per COMPUTE SECOND
 //     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=...). Same shape as the
-//     `alibaba/wan-3.0/*` video models: the request carries an output
+//     (GET /v1/models/pricing?endpoint_id=...). The request carries an output
 //     `duration` (6 | 8 | 10 | "auto"), but the billed unit is wall-clock GPU
 //     time, and "auto" does not even fix the output length at request time, so
 //     no request field can derive the price. The pricing API reports the same
@@ -899,16 +900,15 @@ const gptImagePerImage = (
 //     metering either. Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
 //   - lightricks/ltx-2.5/image-to-video/fast: billed per COMPUTE SECOND
 //     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=...). Same shape as the
-//     `alibaba/wan-3.0/*` video models: the request carries an output
+//     (GET /v1/models/pricing?endpoint_id=...). The request carries an output
 //     `duration` (6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | "auto"), but the
 //     billed unit is wall-clock GPU time, and "auto" does not even fix the
 //     output length at request time, so no request field can derive the
 //     price. The same pull reports the same unit and rate for the endpoint's
 //     `/pro` sibling, so the tier changes neither the metering nor the rate.
-//     Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
-//     `alibaba/wan-3.0-prime/*`, whose pull reports `"seconds"` — OUTPUT
-//     seconds, payload-derivable — and which are priced statically below.
+//     Contrast `fal-ai/kling-video/v3/pro/image-to-video`, whose pull reports
+//     `"seconds"` — OUTPUT seconds, payload-derivable — and which is priced
+//     statically below.
 //   - bytedance/seedream/v5/pro/layerize: billed per COMPUTE SECOND
 //     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
 //     (GET /v1/models/pricing?endpoint_id=bytedance/seedream/v5/pro/layerize).
@@ -916,30 +916,6 @@ const gptImagePerImage = (
 //     model returns is chosen by the model, not the payload — the statically
 //     priced Seedream siblings bill per IMAGE instead, a unit their
 //     `num_images` fixes exactly.
-//   - minimax/h3/text-to-video: billed per COMPUTE SECOND (USD 0.00017) as
-//     pulled 2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=minimax/h3/text-to-video). The
-//     request carries an output `duration` in the 5-15s range and a
-//     `resolution` tier, but neither fixes wall-clock GPU time — the same
-//     reasoning as the `alibaba/wan-3.0/*` video family, and the same rate.
-//     Statically priced video siblings such as `fal-ai/wan/v2.7/text-to-video`
-//   - minimax/h3/image-to-video: billed per COMPUTE SECOND (USD 0.00017) as
-//     pulled 2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=minimax/h3/image-to-video). The
-//     request carries an output `duration` in the 5-15s range and a
-//     `resolution` tier, but neither fixes wall-clock GPU time — the same
-//     reasoning as the `alibaba/wan-3.0/*` video family, and the same rate.
-//     Statically priced video siblings such as `fal-ai/wan/v2.7/image-to-video`
-//     report unit "seconds" (output seconds) from the same API instead.
-//   - minimax/h3/reference-to-video: billed per COMPUTE SECOND (USD 0.00017)
-//     as pulled 2026-08-28 from fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=minimax/h3/reference-to-video). The
-//     request carries an output `duration` in the 5-15s range and a
-//     `resolution` tier, but neither fixes wall-clock GPU time, and the
-//     variable count of reference assets moves it further - the same reasoning
-//     as the `alibaba/wan-3.0/*` video family, and the same rate. The
-//     statically priced `fal-ai/wan/v2.7/reference-to-video` sibling reports
-//     unit "seconds" (output seconds) at USD 0.1 from the same API instead.
 //   - minimax/h3-max/extend-video: the official card (read 2026-10-07)
 //     bills $0.05/$0.08/$0.16/$0.32 per generated second at
 //     480p/768p/1080p/2K, plus $0.02 per 1,000 reference tokens beyond the
@@ -979,12 +955,6 @@ const gptImagePerImage = (
 //     usage API reads the same 6 seconds), where the card predicts $0.286 to
 //     $0.288. The card states no rounding, and one call cannot tell rounding
 //     up from rounding to the nearest second, so no rate is encoded.
-//   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
-//     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
-//     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
-//     per OUTPUT second (USD 0.05) and stays priced statically below — the
-//     v1.5 path changed billing unit, not just rate, so the payload
-//     `duration` cannot derive its price.
 //   - bytedance/seedream/v5/pro/text-to-image: fal's pricing API reports a
 //     bare "units" unit at USD 0.0675 (pulled 2026-08-28), and the model
 //     page's card calls its own numbers "tentative": $0.0675 per image at or
@@ -1250,9 +1220,6 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
-  "alibaba/wan-3.0/image-to-video",
-  "alibaba/wan-3.0/reference-to-video",
-  "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-3/edit-image",
   "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
@@ -1315,9 +1282,6 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "minimax/h3-max/lip-sync/image-to-video",
   "minimax/h3-max/reference-to-video",
   "minimax/h3-max/reframe-video",
-  "minimax/h3/image-to-video",
-  "minimax/h3/reference-to-video",
-  "minimax/h3/text-to-video",
   "minimax/music-3",
   "mirelo-ai/sfx2.0/text-to-audio",
   "mirelo-ai/sfx2.0/video-to-audio",
@@ -1333,7 +1297,6 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
-  "xai/grok-imagine-video/v1.5/reference-to-video",
   "xai/grok-voice",
 ] as const;
 
@@ -1600,42 +1563,30 @@ export const fal: Record<string, ModelPricing> = {
     klingV4Seconds,
     "2026-10-23"
   ),
-  // HeyGen Video reference-to-video's card prices it like text-to-video,
-  // with no reference surcharge: the requested seconds at $0.02/s (480p,
-  // 768p) and $0.06/s (1080p, 2K). The 5 s 480p recording with one
-  // reference image returned 5.17 s of video and 5.26 s of audio and billed
-  // exactly 5 units, charged at half the card ($0.01/s, 2026-10-23); no
-  // video or audio reference was recorded. The card's list rates stand.
+  // HeyGen Video, all three operations, one card (read 2026-10-29): a 50%
+  // promo through 2026-10-31 bills $0.01/s at 480p and 768p and $0.03/s at
+  // 1080p and 2K. List rates after that date are $0.02 and $0.06. The 5 s
+  // 480p recording billed exactly 5 units. No reference surcharge.
   "heygen/heygen-video/reference-to-video": perSecondTiered(
     "heygen/heygen-video/reference-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
+    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
     numericSeconds(5),
-    "2026-10-23"
+    videoCardAsOf
   ),
-  // HeyGen Video image-to-video bills like text-to-video: the requested
-  // seconds at the card's $0.02/s (480p, 768p) and $0.06/s (1080p, 2K). The
-  // 5 s 480p recording returned 5.17 s of video and 5.26 s of audio and
-  // billed exactly 5 units, charged at half the card ($0.01/s) as on
-  // text-to-video (2026-10-23); the card's list rates stand.
   "heygen/heygen-video/image-to-video": perSecondTiered(
     "heygen/heygen-video/image-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
+    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
     numericSeconds(5),
-    "2026-10-23"
+    videoCardAsOf
   ),
-  // HeyGen Video's card bills $0.02/s at 480p and 768p and $0.06/s at 1080p
-  // and 2K. It bills the requested seconds: the 5 s 480p recording returned
-  // 5.17 s of video and 5.26 s of audio and billed exactly 5 units. The
-  // pricing API and the usage read charged them $0.01/s, half the card, with
-  // no promotion published (2026-10-23); the card's list rates stand.
   "heygen/heygen-video/text-to-video": perSecondTiered(
     "heygen/heygen-video/text-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
+    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
     numericSeconds(5),
-    "2026-10-23"
+    videoCardAsOf
   ),
   // Ideogram Vector text-to-vector bills each generated SVG by quality: low
   // $0.13, medium $0.16, high $0.20, and high with reference images $0.32
@@ -2273,26 +2224,44 @@ export const fal: Record<string, ModelPricing> = {
     "2026-10-08"
   ),
 
-  // Bills the requested seconds (default 5) at the resolution tier (default
-  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
-  // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
+  // Card read 2026-10-29: $0.08/s at 480p and $0.14/s at 720p, plus $0.01
+  // per reference image (1-7). OpenAPI defaults duration to 8 and resolution
+  // to 480p. GET /v1/models/pricing reports seconds at $0.01, the cent
+  // quantum, which matches no card tier. A missing image list fails closed.
+  "xai/grok-imagine-video/v1.5/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: numericSeconds(8),
+    select: [resolutionTier("480p")],
+    rates: { "480p": 0.08, "720p": 0.14 },
+    extra: (p) => {
+      const images = p.reference_image_urls;
+      return Array.isArray(images) ? images.length * 0.01 : undefined;
+    },
+    source: source(
+      "xai/grok-imagine-video/v1.5/reference-to-video",
+      videoCardAsOf
+    ),
+  },
+
+  // Promo through 2026-10-31 (card read 2026-10-29): $0.01625/$0.026/$0.052
+  // at 480P/768P/1080P. List after that date is $0.025/$0.04/$0.08. The
+  // recorded 0.92 s 480P call billed 0.92 units. Default resolution is 768P
+  // and default duration is 5. Turbo siblings whose cards were not this
+  // promo (extend-video's 2K tier) stay on their own rates.
   "minimax/h3-max-turbo/text-to-video": perSecondTiered(
     "minimax/h3-max-turbo/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    { "480P": 0.01625, "768P": 0.026, "1080P": 0.052 },
     numericSeconds(5),
-    "2026-10-08"
+    videoCardAsOf
   ),
-
-  // Bills the requested seconds (default 5) at the resolution tier (default
-  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
-  // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
   "minimax/h3-max-turbo/image-to-video": perSecondTiered(
     "minimax/h3-max-turbo/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    { "480P": 0.01625, "768P": 0.026, "1080P": 0.052 },
     numericSeconds(5),
-    "2026-10-08"
+    videoCardAsOf
   ),
 
   // Bills the requested seconds (default 5) at the resolution tier (default
@@ -2306,27 +2275,58 @@ export const fal: Record<string, ModelPricing> = {
     "2026-10-07"
   ),
 
-  // Bills the requested seconds (default 5) at the resolution tier (default
-  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
-  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  // Promo through 2026-10-31 (card read 2026-10-29): $0.0325/$0.052/$0.104
+  // at 480P/768P/1080P. List after that date is $0.05/$0.08/$0.16. The
+  // recorded 0.92 s 480P call billed 0.92 units. Default resolution is 768P
+  // and default duration is 5. Other H3 Max leaves are outside this sweep.
   "minimax/h3-max/text-to-video": perSecondTiered(
     "minimax/h3-max/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    { "480P": 0.0325, "768P": 0.052, "1080P": 0.104 },
     numericSeconds(5),
-    "2026-10-07"
+    videoCardAsOf
   ),
-
-  // Bills the requested seconds (default 5) at the resolution tier (default
-  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
-  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
   "minimax/h3-max/image-to-video": perSecondTiered(
     "minimax/h3-max/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    { "480P": 0.0325, "768P": 0.052, "1080P": 0.104 },
     numericSeconds(5),
-    "2026-10-07"
+    videoCardAsOf
   ),
+
+  // Card read 2026-10-29: $0.05/$0.06/$0.13/$0.16 per second at
+  // 480P/768P/2K/4K. OpenAPI defaults duration to 5 and resolution to 2K.
+  // GET /v1/models/pricing reports seconds at $0.05, the 480P floor.
+  "minimax/h3/text-to-video": perSecondTiered(
+    "minimax/h3/text-to-video",
+    [resolutionTier("2K")],
+    { "480P": 0.05, "768P": 0.06, "2K": 0.13, "4K": 0.16 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
+  "minimax/h3/image-to-video": perSecondTiered(
+    "minimax/h3/image-to-video",
+    [resolutionTier("2K")],
+    { "480P": 0.05, "768P": 0.06, "2K": 0.13, "4K": 0.16 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
+  // Same second rates. The first five reference images are free and each
+  // further image is $0.08. An omitted image list is zero images.
+  "minimax/h3/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: numericSeconds(5),
+    select: [resolutionTier("2K")],
+    rates: { "480P": 0.05, "768P": 0.06, "2K": 0.13, "4K": 0.16 },
+    extra: (p) => {
+      const images = p.reference_image_urls;
+      if (images === undefined) return 0;
+      if (!Array.isArray(images)) return undefined;
+      return Math.max(0, images.length - 5) * 0.08;
+    },
+    source: source("minimax/h3/reference-to-video", videoCardAsOf),
+  },
 
   "bria/fibo-edit-1.5/product-holding": perImage(
     "bria/fibo-edit-1.5/product-holding",
@@ -2653,19 +2653,23 @@ export const fal: Record<string, ModelPricing> = {
     flux3Seconds,
     flux3AsOf
   ),
+  // Card read 2026-10-29 adds $0.32/s at 1440p (2K) and $0.47/s at 2160p
+  // (4K). 720p and 1080p are unchanged. GET /v1/models/pricing reports
+  // seconds at $0.085, half the 720p card, the same units-vs-seconds split
+  // FLUX 3 Max documents. Siblings stay on FLUX_3_RATES.
   "blackforestlabs/flux-3/text-to-video": perSecondTiered(
     "blackforestlabs/flux-3/text-to-video",
     [resolutionTier("720p")],
-    FLUX_3_RATES,
+    FLUX_3_VIDEO_RATES,
     flux3Seconds,
-    flux3AsOf
+    videoCardAsOf
   ),
   "blackforestlabs/flux-3/image-to-video": perSecondTiered(
     "blackforestlabs/flux-3/image-to-video",
     [resolutionTier("720p")],
-    FLUX_3_RATES,
+    FLUX_3_VIDEO_RATES,
     flux3Seconds,
-    flux3AsOf
+    videoCardAsOf
   ),
   "blackforestlabs/flux-3/first-last-frame-to-video": perSecondTiered(
     "blackforestlabs/flux-3/first-last-frame-to-video",
@@ -2831,38 +2835,60 @@ export const fal: Record<string, ModelPricing> = {
     operation: "complete",
   }),
 
-  // Video — Wan 3.0 Prime bills a flat USD 0.05 per OUTPUT second with no
-  // resolution tier (fal's pricing API reports one unit_price for all three
-  // operations, pulled 2026-08-25). `duration` is an integer 2-30 defaulting
-  // to 5, so an omitted duration is exactly the documented default. An
-  // explicit `duration: null` selects smart duration — the model picks the
-  // length — which no request field determines, so numericSeconds returns
-  // undefined and the estimate fails closed rather than assuming 5.
-  "alibaba/wan-3.0-prime/text-to-video": perSecond(
+  // Wan 3.0 and Wan 3.0 Prime, cards read 2026-10-29. Base is
+  // $0.05/$0.10/$0.20 and Prime is $0.068/$0.14/$0.28 at 480p/720p/1080p.
+  // OpenAPI defaults resolution to 1080p and duration to 5. `duration: null`
+  // is smart duration, which numericSeconds fails closed. GET
+  // /v1/models/pricing still reports seconds at $0.05 for every operation,
+  // which is the base 480p floor and matches no Prime tier.
+  "alibaba/wan-3.0/text-to-video": perSecondTiered(
+    "alibaba/wan-3.0/text-to-video",
+    [resolutionTier("1080p")],
+    { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
+  "alibaba/wan-3.0/image-to-video": perSecondTiered(
+    "alibaba/wan-3.0/image-to-video",
+    [resolutionTier("1080p")],
+    { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
+  "alibaba/wan-3.0/reference-to-video": perSecondTiered(
+    "alibaba/wan-3.0/reference-to-video",
+    [resolutionTier("1080p")],
+    { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
+  "alibaba/wan-3.0-prime/text-to-video": perSecondTiered(
     "alibaba/wan-3.0-prime/text-to-video",
-    0.05,
+    [resolutionTier("1080p")],
+    { "480p": 0.068, "720p": 0.14, "1080p": 0.28 },
     numericSeconds(5),
-    wan30AsOf
+    videoCardAsOf
   ),
-  "alibaba/wan-3.0-prime/image-to-video": perSecond(
+  "alibaba/wan-3.0-prime/image-to-video": perSecondTiered(
     "alibaba/wan-3.0-prime/image-to-video",
-    0.05,
+    [resolutionTier("1080p")],
+    { "480p": 0.068, "720p": 0.14, "1080p": 0.28 },
     numericSeconds(5),
-    wan30AsOf
+    videoCardAsOf
   ),
-  // Reference media is metered upstream too, but its length is not in the
-  // payload — output component only, matching wan/v2.7/reference-to-video.
-  "alibaba/wan-3.0-prime/reference-to-video": perSecond(
+  "alibaba/wan-3.0-prime/reference-to-video": perSecondTiered(
     "alibaba/wan-3.0-prime/reference-to-video",
-    0.05,
+    [resolutionTier("1080p")],
+    { "480p": 0.068, "720p": 0.14, "1080p": 0.28 },
     numericSeconds(5),
-    wan30AsOf
+    videoCardAsOf
   ),
 
-  // Video — Wan 2.7: t2v/i2v tier on resolution (schema default 1080p);
-  // reference-to-video and edit-video bill a flat $0.10/s (the page states
-  // no resolution tier for either). Reference-to-video also meters input
-  // video seconds — excluded, not in the payload.
+  // Video — Wan 2.7: t2v/i2v/edit tier on resolution (schema default 1080p).
+  // Edit's card (read 2026-10-29) is $0.10 at 720p and $0.15 at 1080p;
+  // duration 0 still means "match the source". Reference-to-video stays a
+  // flat $0.10/s (its card states no resolution tier) and also meters input
+  // video seconds, which are not in the payload.
   "fal-ai/wan/v2.7/text-to-video": perSecondTiered(
     "fal-ai/wan/v2.7/text-to-video",
     [resolutionTier("1080p")],
@@ -2880,10 +2906,12 @@ export const fal: Record<string, ModelPricing> = {
     0.1,
     numericSeconds(5)
   ),
-  "fal-ai/wan/v2.7/edit-video": perSecond(
+  "fal-ai/wan/v2.7/edit-video": perSecondTiered(
     "fal-ai/wan/v2.7/edit-video",
-    0.1,
-    wanEditSeconds
+    [resolutionTier("1080p")],
+    WAN_2P7_VIDEO_RATES,
+    wanEditSeconds,
+    videoCardAsOf
   ),
 
   // Video — Kling v3, audio-tiered. The page's third tier — audio with

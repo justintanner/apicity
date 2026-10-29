@@ -6,8 +6,15 @@ import { asNumber, asObject, hintSeconds, hintInputSeconds } from "./helpers";
 // tests/fixtures/machgen-evidence/machgen-pricing-2026-10-25.json maps each
 // pricebook row to the request shapes priced here, and
 // machgen-pricebook-2026-10-25.json holds the exact micro-USD rates. Each
-// machgen replay test asserts its recorded billing receipt equals the estimate.
+// machgen replay test asserts its recorded billing receipt equals the estimate
+// from that day. Seedance 2.5 and Seedance 2.0 were re-read on 2026-10-29
+// from the public pricebook (the JSON the pricing page renders) and carry
+// that later source; the 2026-10-25 fixture stays the historical snapshot.
 const source = { url: "https://www.machgen.ai/pricing", asOf: "2026-10-25" };
+const pricebookSource = {
+  url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
+  asOf: "2026-10-29",
+};
 const config = (p: Record<string, unknown>) => asObject(p.video_config) ?? {};
 const has = (p: Record<string, unknown>, key: string) =>
   Array.isArray(p[key]) && (p[key] as unknown[]).length > 0;
@@ -59,7 +66,8 @@ const AUDIO_PRICED = new Set([
 const videoCount = (p: Record<string, unknown>) =>
   Array.isArray(p.src_video_urls) ? p.src_video_urls.length : 0;
 // An edit renders the primary reference clip's length: a 4 s source billed
-// (4 + 4) x 0.06 USD on Seedance-2.5 480p (ac-ks4no2 receipt).
+// (4 + 4) x 0.06 USD on Seedance-2.5 480p on 2026-10-25 (ac-ks4no2 receipt).
+// The 2026-10-29 pricebook bills that same shape at 0.061488 USD/s.
 const editSeconds = (p: Record<string, unknown>, hints?: CostHints) =>
   hintSeconds(hints) ??
   (videoCount(p) === 1 ? hintInputSeconds(hints) : undefined);
@@ -174,7 +182,8 @@ const audio: PerUnitPricing["select"][number] = {
 };
 const flat = (
   rates: Record<string, number>,
-  select: PerUnitPricing["select"] = [height]
+  select: PerUnitPricing["select"] = [height],
+  rateSource: PerUnitPricing["source"] = source
 ): PerUnitPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -182,7 +191,7 @@ const flat = (
   select,
   rates,
   warn,
-  source,
+  source: rateSource,
 });
 // Each band's rate bills the seconds inside it: Vidu Q3 Turbo 540p is
 // 0.075 USD for 5 s and 0.165 for 10 s (5 x 0.015 + 5 x 0.018).
@@ -286,29 +295,35 @@ export const machgen: Record<string, ModelPricing> = {
     warn,
     source,
   },
+  // Public pricebook micros / 1e6, re-read 2026-10-29. The 2026-10-25
+  // page rates were 0.1/0.23/0.59 and 0.06/0.14/0.32.
   "Seedance-2.5": flat(
     {
-      "no-video|480": 0.1,
-      "no-video|720": 0.23,
-      "no-video|1080": 0.59,
-      "video|480": 0.06,
-      "video|720": 0.14,
-      "video|1080": 0.32,
+      "no-video|480": 0.1028,
+      "no-video|720": 0.23112,
+      "no-video|1080": 0.56862,
+      "video|480": 0.061488,
+      "video|720": 0.13824,
+      "video|1080": 0.3402,
     },
-    [videoInput, height]
+    [videoInput, height],
+    pricebookSource
   ),
+  // Public pricebook micros / 1e6, re-read 2026-10-29. The 2026-10-25
+  // page rates were 0.07/0.15/0.37/0.78 and 0.04/0.085/0.23/0.465.
   "Seedance-2.0": flat(
     {
-      "no-video|480": 0.07,
-      "no-video|720": 0.15,
-      "no-video|1080": 0.37,
-      "no-video|2160": 0.78,
-      "video|480": 0.04,
-      "video|720": 0.085,
-      "video|1080": 0.23,
-      "video|2160": 0.465,
+      "no-video|480": 0.070308,
+      "no-video|720": 0.1512,
+      "no-video|1080": 0.37422,
+      "no-video|2160": 0.7776,
+      "video|480": 0.043189,
+      "video|720": 0.09288,
+      "video|1080": 0.22842,
+      "video|2160": 0.46656,
     },
-    [videoInput, height]
+    [videoInput, height],
+    pricebookSource
   ),
   "Alibaba-Wan-3.0": flat({ "480": 0.049, "720": 0.096, "1080": 0.191 }),
   "HappyHorse-1.1": flat({ "720": 0.132, "1080": 0.17 }),

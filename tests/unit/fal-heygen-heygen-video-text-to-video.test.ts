@@ -144,16 +144,16 @@ describe("HeyGen Video text-to-video contract", () => {
       endpoint,
       payload: recorded,
     });
-    expect(estimate.usd).toBeCloseTo(0.1, 10);
+    expect(estimate.usd).toBeCloseTo(0.05, 10);
     expect(estimate.breakdown).toMatchObject({ units: 5, unit: "seconds" });
     expect(estimate.warnings).toEqual([]);
-    expect(usd({ prompt: "x" })).toBeCloseTo(0.1, 10);
+    expect(usd({ prompt: "x" })).toBeCloseTo(0.05, 10);
     expect(usd({ prompt: "x", resolution: "1080p", duration: 10 })).toBeCloseTo(
-      0.6,
+      0.3,
       10
     );
     expect(usd({ prompt: "x", resolution: "2k", duration: 15 })).toBeCloseTo(
-      0.9,
+      0.45,
       10
     );
   });
@@ -162,7 +162,7 @@ describe("HeyGen Video text-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/heygen/heygen-video/text-to-video",
-      asOf: "2026-10-23",
+      asOf: "2026-10-29",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "heygenvideo"

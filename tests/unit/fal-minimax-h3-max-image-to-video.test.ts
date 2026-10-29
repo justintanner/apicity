@@ -225,16 +225,15 @@ describe("MiniMax H3 Max image-to-video contract", () => {
     }
   });
 
-  // Static branch (P-7): the recorded 480P call asked for 0.92 s and fal
-  // billed x-fal-billable-units 0.92, which its usage API priced at the
-  // card's promotional $0.03/s. The entry carries the post-promotion list
-  // rates (OQ-3), so the recorded payload estimates at 0.92 x $0.05.
+  // Card read 2026-10-29: promo through 2026-10-31 is $0.0325/$0.052/$0.104.
+  // List after that date is $0.05/$0.08/$0.16. The recorded 0.92 s 480P
+  // call billed 0.92 units, so it estimates at 0.92 x $0.0325.
   it.each([
-    ["480P", 0.05],
-    ["768P", 0.08],
-    ["1080P", 0.16],
+    ["480P", 0.0325],
+    ["768P", 0.052],
+    ["1080P", 0.104],
   ] as const)(
-    "prices %s at its list rate per requested second",
+    "prices %s at its current promo rate per requested second",
     (tier, rate) => {
       const estimate = computeEstimate({
         provider: "fal",
@@ -253,18 +252,18 @@ describe("MiniMax H3 Max image-to-video contract", () => {
         endpoint,
         payload: { ...input, resolution: "480P", duration: 0.92 },
       }).usd
-    ).toBeCloseTo(0.046));
+    ).toBeCloseTo(0.0299));
 
   it("prices the default five seconds at 768P", () =>
     expect(
       computeEstimate({ provider: "fal", endpoint, payload: input }).usd
-    ).toBeCloseTo(0.4));
+    ).toBeCloseTo(0.26));
 
   it("is statically priced, with a slug and a display name", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/minimax/h3-max/image-to-video",
-      asOf: "2026-10-07",
+      asOf: "2026-10-29",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "h3mi2v"

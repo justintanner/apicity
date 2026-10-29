@@ -85,22 +85,52 @@ function shapePayload(
 
 describe("MachGen pricing", () => {
   it("prices every recorded request at its billing receipt", () => {
+    // Seedance 2.5 and 2.0 were re-read from the public pricebook on
+    // 2026-10-29. MACHGEN_RECORDED keeps the 2026-10-25 receipt; the
+    // forward estimate uses the new per-second micros.
+    const refreshedUsd = (
+      model: string,
+      variant: (typeof MACHGEN_RECORDED)[number][2]
+    ) => {
+      const video = variant?.video !== undefined;
+      if (model === "Seedance-2.5") {
+        const seconds = variant?.operation ? 8 : 4;
+        return seconds * (video ? 0.061488 : 0.1028);
+      }
+      return 4 * 0.070308;
+    };
     for (const [i, task, variant, usd] of MACHGEN_RECORDED) {
       const result = computeEstimate({
         provider: "machgen",
         payload: machgenPayload(i, task, variant),
         costHints: machgenHints(variant),
       });
+      const model = MACHGEN_CASES[i]![1];
       const label = `${MACHGEN_CASES[i]![0]} ${task} ${JSON.stringify(variant ?? {})}`;
-      expect(result.usd, label).toBeCloseTo(usd, 8);
+      const refreshed = model === "Seedance-2.5" || model === "Seedance-2.0";
+      const forward = refreshed ? refreshedUsd(model, variant) : usd;
+      expect(result.usd, label).toBeCloseTo(forward, 8);
       expect(result.warnings, label).toEqual([]);
-      expect(result.rateAsOf).toBe("2026-10-25");
+      expect(result.rateAsOf, label).toBe(
+        refreshed ? "2026-10-29" : "2026-10-25"
+      );
+      if (refreshed) expect(usd, label).not.toBeCloseTo(forward, 6);
     }
   });
   it("matches every priced pricebook row's own example", () => {
+    // The 2026-10-25 fixture's Seedance 2.5 and 2.0 examples are the
+    // historical page totals. Those two models were re-priced on
+    // 2026-10-29, so their rows stay in the fixture and are not rechecked
+    // against today's rates.
+    const historicalModels = new Set(["Seedance-2.5", "Seedance-2.0"]);
     let checked = 0;
+    let historical = 0;
     for (const row of evidence.rows) {
       if (!row.prices) continue;
+      if (historicalModels.has(row.apiModel)) {
+        historical += row.prices.length;
+        continue;
+      }
       const clip = row.example?.match(/^\(\$([0-9.]+) \/ (\d+)s clip\)$/);
       const input = row.example?.match(
         /^\(\$([0-9.]+) \/ (\d+)s \+ (\d+)s input\)$/
@@ -138,7 +168,8 @@ describe("MachGen pricing", () => {
         checked++;
       }
     }
-    expect(checked).toBe(332);
+    expect(historical).toBe(35);
+    expect(checked + historical).toBe(332);
   });
   it("prices exactly the models the evidence prices", () => {
     const priced = new Set(
@@ -264,7 +295,10 @@ describe("MachGen pricing", () => {
     expect(estimate(video).warnings.join()).toContain(
       "input plus output seconds"
     );
-    expect(estimate(video, { inputDurationSeconds: 3 }).usd).toBeCloseTo(0.42);
+    expect(estimate(video, { inputDurationSeconds: 3 }).usd).toBeCloseTo(
+      0.430416,
+      6
+    );
     expect(estimate(video, { inputDurationSeconds: -1 }).usd).toBe(0);
     expect(
       estimate({
@@ -272,7 +306,7 @@ describe("MachGen pricing", () => {
         draft_source_task_id: "draft",
         video_config: { height: 480, duration_secs: 4 },
       }).usd
-    ).toBeCloseTo(2.36);
+    ).toBeCloseTo(2.27448, 6);
   });
   it("prices reference videos, edits and upscales by the seconds MachGen bills", () => {
     const video = "https://example.com/ref.mp4";
@@ -312,7 +346,7 @@ describe("MachGen pricing", () => {
     const edit = { src_video_urls: [video], reference_video_operation: "edit" };
     expect(
       r2v("Seedance-2.5", edit, { inputDurationSeconds: 4 }).usd
-    ).toBeCloseTo(0.48);
+    ).toBeCloseTo(0.491904, 6);
     expect(
       r2v(
         "Seedance-2.5",
@@ -444,11 +478,19 @@ describe("MachGen pricing", () => {
     }
   });
   it("pins provenance, shared slugs and displays", () => {
-    for (const row of Object.values(PRICING.machgen))
-      expect(row.source).toEqual({
-        url: "https://www.machgen.ai/pricing",
-        asOf: "2026-10-25",
-      });
+    for (const [model, row] of Object.entries(PRICING.machgen)) {
+      expect(row.source, model).toEqual(
+        model === "Seedance-2.5" || model === "Seedance-2.0"
+          ? {
+              url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
+              asOf: "2026-10-29",
+            }
+          : {
+              url: "https://www.machgen.ai/pricing",
+              asOf: "2026-10-25",
+            }
+      );
+    }
     expect(MODEL_SLUGS.machgen).toEqual({
       "MiniMax-H3": "mmh3",
       "Seedance-2.5": "sd2p5",

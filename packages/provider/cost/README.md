@@ -724,7 +724,7 @@ import { resolveFalDynamicEstimate } from "@apicity/cost";
 
 const fal = createFal({ apiKey: process.env.FAL_ADMIN_API_KEY! });
 const est = await resolveFalDynamicEstimate(
-  "alibaba/wan-3.0/text-to-video",
+  "google/gemini-omni-flash/v1.1/text-to-video",
   { prompt: "a red panda", duration: 5 },
   fal.v1.models.pricing.estimate,
   { unitQuantity: 5 } // billed units, e.g. a prior call's x-fal-billable-units

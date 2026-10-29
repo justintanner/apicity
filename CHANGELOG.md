@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `feed.explore.categories` to `@apicity/omkar` (`GET https://tiktok-scraper.omkar.cloud/feed/explore/categories`): the Explore tabs `feed.explore` accepts, each an `id` (the `category` value) and a display `name`. The recorded list is the same 21 tabs as the `category` enum, which the replay test checks (ac-4ev2i7).
+
 - Added `feed.explore` to `@apicity/omkar` (`GET https://tiktok-scraper.omkar.cloud/feed/explore`): one tab of TikTok's Explore page for a country, up to 30 videos and a fresh batch on every call, in the same video shape as `feed.trending`. `category` is one of Omkar's 21 Explore tabs (`all`, `singing-dancing`, `comedy`, `sports`, ...; Omkar defaults to `all`) and `country` an ISO 3166-1 alpha-2 code (default `US`). Recorded for Thailand's `all` tab (ac-4ev2i7).
 
 - Added the Omkar Cloud TikTok Scraper provider (`@apicity/omkar`) with `feed.trending` (`GET https://tiktok-scraper.omkar.cloud/feed/trending`): the For You feed TikTok shows in a country right now, up to 30 videos with stats, author, sound, media qualities and subtitles, and a fresh batch on every call. `country` takes an ISO 3166-1 alpha-2 code (Omkar defaults to `US`). The key, `OMKAR_API_KEY`, is sent as the `API-Key` header; the free plan allows 1,000 successful requests a month. Gateway errors reject with `OmkarError`, whose `code` carries Omkar's stable error code (`invalid_api_key`, `quota_exceeded`, `rate_limited`, ...). Recorded for Thailand (ac-4ev2i7).

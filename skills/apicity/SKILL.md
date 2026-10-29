@@ -467,6 +467,7 @@ successful calls a month.
 ```bash
 apicity omkar feed.trending --data '{"country":"TH"}' --json
 apicity omkar feed.explore --data '{"country":"TH","category":"comedy"}' --json
+apicity omkar feed.explore.categories --json
 ```
 
 ### thesportsdb — teams, leagues, events and results

@@ -96,6 +96,34 @@ describe("omkar provider", () => {
     expect(requests[0].init.headers).toEqual({ "API-Key": "omkar-key" });
   });
 
+  it("lists the Explore tabs with no query", async () => {
+    const list = {
+      category_count: 2,
+      categories: [
+        { id: "all", name: "All" },
+        { id: "comedy", name: "Comedy" },
+      ],
+    };
+    const { requests, fetch } = capture(() => jsonResponse(list));
+    const omkar = createOmkar({ apiKey: "omkar-key", fetch });
+
+    await expect(omkar.feed.explore.categories()).resolves.toEqual(list);
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toBe(
+      "https://tiktok-scraper.omkar.cloud/feed/explore/categories"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.headers).toEqual({ "API-Key": "omkar-key" });
+    expect(
+      (
+        omkar.feed.explore.categories as unknown as {
+          example: { payload: unknown };
+        }
+      ).example.payload
+    ).toEqual({});
+  });
+
   it("reads OMKAR_API_KEY when no apiKey is passed", async () => {
     vi.stubEnv("OMKAR_API_KEY", "env-key");
     const { requests, fetch } = capture(() => jsonResponse(EMPTY_FEED));

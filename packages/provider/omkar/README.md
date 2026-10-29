@@ -31,7 +31,7 @@ const omkar = createOmkar({ apiKey: process.env.OMKAR_API_KEY! });
 
 ## API Reference
 
-2 endpoints across 1 group. Each method mirrors an upstream URL path.
+3 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### feed
 
@@ -46,6 +46,23 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const feed = await omkar.feed.explore({ country: "TH", category: "all" });
+```
+
+Source: [`packages/provider/omkar/src/omkar.ts`](src/omkar.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>omkar.feed.explore.categories</code></b></summary>
+
+<code>GET https://tiktok-scraper.omkar.cloud/feed/explore/categories</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.omkar.cloud/tools/tiktok-scraper/explore-categories)
+
+```typescript
+const categories = await omkar.feed.explore.categories();
 ```
 
 Source: [`packages/provider/omkar/src/omkar.ts`](src/omkar.ts)

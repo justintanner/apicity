@@ -52,9 +52,9 @@ A dotPath that carries more than one HTTP method exits `ambiguous` (8) until
 
 ### Parameters: three kinds, one grammar
 
-Every value is passed as `--<name> <value>` (or `--<name>=<value>`), and what
-the CLI does with it comes from the generated call-shape table, never from the
-URL:
+Every URL placeholder is passed as `--<name> <value>` (or `--<name>=<value>`),
+and what the CLI does with it comes from the generated call-shape table, never
+from the URL:
 
 - **Path parameters** are passed to the endpoint function as arguments.
   `apicity describe` lists them as `pathParams`.
@@ -78,6 +78,15 @@ URL:
 
 Both spellings of a name work: the URL's placeholder (`--vector_store_id`) and
 the property the endpoint declares (`--vectorStoreId`).
+
+Every other request field goes in `--data`, and passing one as a flag is a
+usage error. That includes each query-string field of an endpoint whose URL
+ends in `{query}` (binance, openf1, omkar, ...): a flag value is the string as
+typed, while `--data` carries JSON types.
+
+```bash
+apicity omkar feed.trending --data '{"country":"TH"}'
+```
 
 ### The request body
 

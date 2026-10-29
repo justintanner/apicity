@@ -298,7 +298,11 @@ function knownFlagsHint(bindings: Map<string, FlagBinding>): string {
   if (callable.length === 0) {
     return "this endpoint takes no parameter flags; pass the request with --data";
   }
-  return `this endpoint takes: ${[...new Set(callable)].join(", ")}`;
+  const listed = [...new Set(callable)].join(", ");
+  return (
+    `this endpoint takes: ${listed}; ` +
+    "pass any other request field in --data"
+  );
 }
 
 /** Reads the request body from stdin. The only stdin read in the program. */

@@ -411,7 +411,7 @@ apicity polymarket data.trades --data '{"limit":20}'
 
 ```bash
 apicity simplefunctions api.public.markets --json
-apicity simplefunctions api.public.market.candles --data '{"marketId":"<marketId>"}'
+apicity simplefunctions api.public.market.candles --ticker <ticker> --data '{"limit":100}'
 apicity simplefunctions api.x.news --json
 ```
 

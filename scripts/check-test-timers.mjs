@@ -56,6 +56,11 @@ const ALLOWLIST = new Map([
       "the fal H3 trainer queue status/result flow; offline replay never sleeps.",
   ],
   [
+    "tests/integration/fal-minimax-h3-i2v-trainer.test.ts",
+    'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
+      "the fal H3 i2v trainer queue status/result flow; offline replay never sleeps.",
+  ],
+  [
     "tests/integration/fal-minimax-h3-max-reframe-video.test.ts",
     'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
       "the fal queue status/result flow; offline replay never sleeps.",

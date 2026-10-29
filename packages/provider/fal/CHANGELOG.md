@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 image-to-video LoRA trainer at `run.minimax.h3.i2v.trainer` (`POST https://fal.run/minimax/h3/i2v/trainer`). New `i2v` key on the existing `minimax.h3` object. Price is $0.01 per training step (default 2000), with a 100-step floor. The recording uses `number_of_steps` 1 and fal billed 100 steps ($1.00) (ac-emdulx).
+
 - Added MiniMax H3 text-to-video LoRA trainer at `run.minimax.h3.t2v.trainer` (`POST https://fal.run/minimax/h3/t2v/trainer`). New `t2v` key on the existing `minimax.h3` object. Price is $0.005 per training step (default 2000). The recording uses `number_of_steps` 1 and fal billed 100 steps ($0.50) (ac-h8q5j7).
 
 - Added Krea 3 text-to-image at `run.krea.v3.textToImage` (`POST https://fal.run/krea/v3/text-to-image`), a leaf under the `krea.v3` scaffold owned by the edit endpoint. low and medium both bill $0.025 per output megapixel. The recording uses reasoning_level low and a 1024x1024 output, with no reference images, and billed 1.0 megapixels ($0.025) (ac-uy20rg).

@@ -110,7 +110,7 @@ describe("apicity frontier", () => {
       provider: "fal",
       dotPath: "minimax.h3.imageToVideo",
       modelId: "-",
-      price: { unit: "dynamic" },
+      price: { unit: "seconds", min: 0.05, max: 0.16 },
       configured: false,
     });
     const kie = envelope.data.find((row) => row.provider === "kie");

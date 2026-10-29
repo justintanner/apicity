@@ -80,7 +80,7 @@ describe("billed units of dynamically priced fal endpoints", () => {
   });
 
   it("keeps the generic warning for a dynamic endpoint without an entry", () => {
-    const endpoint = "alibaba/wan-3.0/text-to-video";
+    const endpoint = "google/gemini-omni-flash/v1.1/text-to-video";
     expect(falDynamicBilledUnit(endpoint)).toBeUndefined();
     const [warning] = computeEstimate({
       provider: "fal",

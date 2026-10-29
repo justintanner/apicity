@@ -495,7 +495,11 @@ export const MODEL_SLUGS = {
     "lightricks/ltx-2.5/text-to-video/pro": "ltx2p5p",
     "lightricks/ltx-2.5/text-to-video/fast": "ltx2p5f",
     "xai/grok-imagine-video/v1.5/image-to-video": "grokimgv1p5",
+    "xai/grok-imagine-video/v1.5/reference-to-video": "grokimgv1p5",
     "xai/grok-imagine-video/v1.5/text-to-video": "grokimgv1p5",
+    "minimax/h3/text-to-video": "mmh3",
+    "minimax/h3/image-to-video": "mmh3",
+    "minimax/h3/reference-to-video": "mmh3",
     "minimax/h3-max-turbo/text-to-video": "h3mtt2v",
     "minimax/h3-max-turbo/image-to-video": "h3mti2v",
     "minimax/h3-max/camera-controls": "h3mcc",
@@ -576,8 +580,10 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/us/reference-to-video": "sd2p5",
     "bytedance/seedance-2.5/draft/complete": "sd2p5",
 
-    // Video — Wan 3.0 Prime (the base wan-3.0 family bills per compute
-    // second and is deliberately unpriced, so it carries no slug either).
+    // Video — Wan 3.0. Base shares kie's wan3p0; Prime stays wan3p0p.
+    "alibaba/wan-3.0/text-to-video": "wan3p0",
+    "alibaba/wan-3.0/image-to-video": "wan3p0",
+    "alibaba/wan-3.0/reference-to-video": "wan3p0",
     "alibaba/wan-3.0-prime/text-to-video": "wan3p0p",
     "alibaba/wan-3.0-prime/image-to-video": "wan3p0p",
     "alibaba/wan-3.0-prime/reference-to-video": "wan3p0p",
@@ -1190,10 +1196,12 @@ export const MODEL_DISPLAY = {
     "xai/grok-imagine-video/extend-video": "Grok Extend",
     "xai/grok-imagine-video/edit-video": "Grok Imagine Video Edit",
 
-    // Dynamically priced (FAL_DYNAMIC_PRICING_ENDPOINTS): display-only rows,
-    // no slug and no PRICING.fal entry. Names follow the same model on
-    // another provider, then the fal family's existing names, then fal's
-    // own model title (ac-j3d6ki.6).
+    // Display names, including endpoints that are still dynamically priced
+    // (FAL_DYNAMIC_PRICING_ENDPOINTS). Those stay display-only: no slug and
+    // no PRICING.fal entry. A key that also appears in MODEL_SLUGS.fal is
+    // statically priced. Names follow the same model on another provider,
+    // then the fal family's existing names, then fal's own model title
+    // (ac-j3d6ki.6).
     "alibaba/qwen-image-3/edit": "Qwen Image 3 Edit",
     "alibaba/qwen-image-3/text-to-image": "Qwen Image 3",
     "alibaba/wan-3.0/image-to-video": "Wan 3.0",

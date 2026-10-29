@@ -40,7 +40,7 @@ import type { CostEstimate, CostHints } from "./types";
  *
  *     const fal = createFal({ apiKey: process.env.FAL_ADMIN_API_KEY });
  *     const estimate = await resolveFalDynamicEstimate(
- *       "alibaba/wan-3.0/text-to-video",
+ *       "google/gemini-omni-flash/v1.1/text-to-video",
  *       { prompt: "a red panda", duration: 5 },
  *       fal.v1.models.pricing.estimate,
  *       { unitQuantity: 5 } // e.g. a prior call's x-fal-billable-units
@@ -274,7 +274,7 @@ function pickBasis(
  * Pass `options.cache` to collapse repeat lookups. Only usable answers are
  * cached: a transient outage must not pin a `usd: 0` for the whole TTL.
  *
- * @param endpoint - fal endpoint id, e.g. `alibaba/wan-3.0/text-to-video`
+ * @param endpoint - fal endpoint id, e.g. `google/gemini-omni-flash/v1.1/text-to-video`
  * @param payload - the request body the caller intends to send
  * @param estimate - fal's estimator, e.g. `fal.v1.models.pricing.estimate`
  * @param options - hints, the quantity to price, cache, and cache-key prefix

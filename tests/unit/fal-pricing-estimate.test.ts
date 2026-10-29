@@ -896,44 +896,126 @@ describe("fal video pricing estimates", () => {
     expect(MODEL_SLUGS.kie["bytedance/seedance-2-5"]).toBe("sd2p5");
   });
 
-  it("prices Wan 3.0 Prime per output second", () => {
-    // Wan 3.0 Prime bills a flat $0.05 per OUTPUT second, with no resolution
-    // tier — fal's pricing API reports one unit_price for all three operations
-    // (pulled 2026-08-25). `duration` is an integer defaulting to 5.
+  it("prices Wan 3.0 Prime per output second and resolution", () => {
+    // Card read 2026-10-29: $0.068/$0.14/$0.28 at 480p/720p/1080p. Omitted
+    // resolution is the OpenAPI default 1080p. Omitted duration is 5.
     expect(
       est("alibaba/wan-3.0-prime/text-to-video", { prompt: "p", duration: 2 })
         .usd
-    ).toBeCloseTo(0.1, 10);
+    ).toBeCloseTo(0.56, 10);
 
     expect(
       est("alibaba/wan-3.0-prime/image-to-video", {
         start_image_url: "https://example.com/cat.jpg",
         duration: 30,
       }).usd
-    ).toBeCloseTo(1.5, 10);
+    ).toBeCloseTo(8.4, 10);
 
-    // Omitted duration takes the documented schema default of 5 seconds.
     expect(
       est("alibaba/wan-3.0-prime/reference-to-video", {
         reference_image_urls: ["https://example.com/cat.jpg"],
       }).usd
-    ).toBeCloseTo(0.25, 10);
+    ).toBeCloseTo(1.4, 10);
 
-    // Resolution does not tier the rate.
     expect(
       est("alibaba/wan-3.0-prime/text-to-video", {
         prompt: "p",
         duration: 5,
         resolution: "480p",
       }).usd
-    ).toBeCloseTo(
+    ).toBeCloseTo(0.34, 10);
+    expect(
       est("alibaba/wan-3.0-prime/text-to-video", {
         prompt: "p",
         duration: 5,
         resolution: "1080p",
-      }).usd,
-      10
-    );
+      }).usd
+    ).toBeCloseTo(1.4, 10);
+  });
+
+  it("prices Wan 3.0 base, MiniMax H3 and Grok 1.5 reference from their cards", () => {
+    // Cards read 2026-10-29. Omitted Wan resolution is 1080p ($0.20/s) and
+    // omitted duration is 5. Omitted H3 resolution is 2K ($0.13/s).
+    for (const endpoint of [
+      "alibaba/wan-3.0/text-to-video",
+      "alibaba/wan-3.0/image-to-video",
+      "alibaba/wan-3.0/reference-to-video",
+    ]) {
+      const payload =
+        endpoint === "alibaba/wan-3.0/image-to-video"
+          ? { start_image_url: "https://example.com/cat.jpg" }
+          : endpoint.endsWith("reference-to-video")
+            ? { reference_image_urls: ["https://example.com/cat.jpg"] }
+            : { prompt: "p" };
+      const priced = est(endpoint, payload);
+      expect(priced.usd, endpoint).toBeCloseTo(1, 10);
+      expect(priced.rateAsOf, endpoint).toBe("2026-10-29");
+      expect(priced.warnings, endpoint).toEqual([]);
+    }
+    expect(
+      est("alibaba/wan-3.0/text-to-video", {
+        prompt: "p",
+        duration: 5,
+        resolution: "480p",
+      }).usd
+    ).toBeCloseTo(0.25, 10);
+
+    for (const endpoint of [
+      "minimax/h3/text-to-video",
+      "minimax/h3/image-to-video",
+    ]) {
+      const priced = est(endpoint, {
+        prompt: "p",
+        ...(endpoint.endsWith("image-to-video")
+          ? { image_url: "https://example.com/cat.jpg" }
+          : {}),
+      });
+      expect(priced.usd, endpoint).toBeCloseTo(0.65, 10);
+      expect(priced.rateAsOf, endpoint).toBe("2026-10-29");
+    }
+    expect(
+      est("minimax/h3/text-to-video", {
+        prompt: "p",
+        duration: 5,
+        resolution: "4K",
+      }).usd
+    ).toBeCloseTo(0.8, 10);
+    const h3Ref = "minimax/h3/reference-to-video";
+    expect(est(h3Ref, { prompt: "p" }).usd).toBeCloseTo(0.65, 10);
+    expect(
+      est(h3Ref, {
+        prompt: "p",
+        reference_image_urls: ["a", "b", "c", "d", "e", "f"],
+      }).usd
+    ).toBeCloseTo(0.73, 10);
+    const badImages = est(h3Ref, { prompt: "p", reference_image_urls: "a" });
+    expect(badImages.usd).toBe(0);
+    expect(badImages.warnings.length).toBeGreaterThan(0);
+
+    // Default duration 8 at 480p, plus $0.01 per reference image. 1080p is
+    // the sibling card, not this one.
+    const grok = "xai/grok-imagine-video/v1.5/reference-to-video";
+    const grokDefault = est(grok, {
+      prompt: "p",
+      reference_image_urls: ["https://example.com/cat.jpg"],
+    });
+    expect(grokDefault.usd).toBeCloseTo(0.65, 10);
+    expect(grokDefault.rateAsOf).toBe("2026-10-29");
+    expect(
+      est(grok, {
+        prompt: "p",
+        duration: 5,
+        resolution: "720p",
+        reference_image_urls: ["a", "b"],
+      }).usd
+    ).toBeCloseTo(0.72, 10);
+    const grok1080 = est(grok, {
+      prompt: "p",
+      resolution: "1080p",
+      reference_image_urls: ["a"],
+    });
+    expect(grok1080.usd).toBe(0);
+    expect(grok1080.warnings.join(" ")).toMatch(/no rate/);
   });
 
   it("fails closed on Wan 3.0 Prime smart duration", () => {
@@ -971,7 +1053,7 @@ describe("fal video pricing estimates", () => {
         video_url: "u",
         duration: 8,
       }).usd
-    ).toBeCloseTo(0.8, 10);
+    ).toBeCloseTo(1.2, 10);
   });
 
   it("warns on an unrecognized selector value instead of guessing", () => {
@@ -1410,11 +1492,7 @@ describe("fal edit/image pricing estimates", () => {
     // alibaba/qwen-image-3/text-to-image and its /edit sibling are
     // compute-second-metered — the model page states 1K/2K tier rates but
     // publishes no image_size-to-tier selector, and the pricing API reports one
-    // flat compute-second price with no tier at all (ac-kjdp0j); the three
-    // alibaba/wan-3.0 video operations are compute-second-metered too — their
-    // payload `duration` is OUTPUT seconds, a different unit from the
-    // wall-clock GPU seconds they bill, so it cannot derive the price (the
-    // alibaba/wan-3.0-prime siblings bill per output second and ARE priced);
+    // flat compute-second price with no tier at all (ac-kjdp0j);
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
@@ -1446,14 +1524,7 @@ describe("fal edit/image pricing estimates", () => {
     // length at request time; meshy/v7/image-to-3d is compute-second-metered
     // too — its request only sizes the mesh and toggles generation stages, and
     // upstream publishes no seconds-per-unit constant for any of them
-    // (ac-yhn0aq); minimax/h3/image-to-video is compute-second-metered too, and
-    // neither its output `duration` nor its `resolution` tier fixes the
-    // wall-clock GPU time it bills; minimax/h3/reference-to-video is
-    // compute-second-metered too, and neither its output `duration` nor its
-    // `resolution` tier fixes the wall-clock GPU time it bills;
-    // minimax/h3/text-to-video is compute-second-metered too, and neither its
-    // output `duration` nor its `resolution` tier fixes the wall-clock GPU time
-    // it bills; minimax/music-3 is compute-second-metered too — its `duration`
+    // (ac-yhn0aq); minimax/music-3 is compute-second-metered too — its `duration`
     // is an upper bound on OUTPUT seconds the model may undershoot, not the
     // wall-clock GPU seconds fal bills; topaz/upscale/image/precision bills on
     // OUTPUT area ($0.08 per 24 megapixels of output) and the request carries
@@ -1461,10 +1532,8 @@ describe("fal edit/image pricing estimates", () => {
     // request field; topaz/upscale/video/precision bills on the DELIVERED video
     // ($0.10 per 10 seconds of output at 720p, more at 1080p and 4K), and
     // output resolution, duration and frame rate are all properties of the
-    // source clip rather than request fields;
-    // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
-    // too, unlike its unversioned sibling, which bills per output second and
-    // stays statically priced. Mirelo SFX 2.0 text-to-audio, video-to-audio
+    // source clip rather than request fields.
+    // Mirelo SFX 2.0 text-to-audio, video-to-audio
     // and video-to-video each bill 2 units for a 1.5-second sample,
     // contradicting the card's seconds formula. Mureka instrumental billed 2
     // units ($0.015) for a mureka-7.6 request its card prices at $0.045.
@@ -1491,9 +1560,6 @@ describe("fal edit/image pricing estimates", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
-      "alibaba/wan-3.0/image-to-video",
-      "alibaba/wan-3.0/reference-to-video",
-      "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/klein/base/edit-image/lora",
       "blackforestlabs/flux-3/klein/base/text-to-image/lora",
@@ -1556,9 +1622,6 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/h3-max/lip-sync/image-to-video",
       "minimax/h3-max/reference-to-video",
       "minimax/h3-max/reframe-video",
-      "minimax/h3/image-to-video",
-      "minimax/h3/reference-to-video",
-      "minimax/h3/text-to-video",
       "minimax/music-3",
       "mirelo-ai/sfx2.0/text-to-audio",
       "mirelo-ai/sfx2.0/video-to-audio",
@@ -1574,7 +1637,6 @@ describe("fal edit/image pricing estimates", () => {
       "topaz/upscale/video/precision",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
-      "xai/grok-imagine-video/v1.5/reference-to-video",
       "xai/grok-voice",
     ]);
     for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {

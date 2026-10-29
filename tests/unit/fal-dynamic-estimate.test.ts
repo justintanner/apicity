@@ -14,7 +14,7 @@ import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../../packages/provider/cost/src/
 // injected, so every case here is offline by construction — no Polly, no
 // network, no provider import (ac-nz65nc).
 
-const DYNAMIC = "alibaba/wan-3.0/text-to-video";
+const DYNAMIC = "google/gemini-omni-flash/v1.1/text-to-video";
 const STATIC = "alibaba/wan-3.0-prime/text-to-video";
 
 const estimator = (
@@ -147,8 +147,9 @@ describe("resolveFalDynamicEstimate", () => {
       { unitQuantity: 2 }
     );
     // Wiring this in must not turn every estimate into a request.
+    // Omitted resolution is 1080p at $0.28/s, so 2 seconds is $0.56.
     expect(calls).toEqual([]);
-    expect(result.usd).toBeCloseTo(0.1, 12);
+    expect(result.usd).toBeCloseTo(0.56, 12);
     expect(result.warnings).toEqual([]);
   });
 
@@ -197,10 +198,10 @@ describe("resolveFalDynamicEstimate", () => {
   });
 
   it("forwards cost hints to the local path", async () => {
-    // wan/v2.7/edit-video bills $0.10/s and its duration 0 means "match the
-    // source clip", a length only the caller knows — so the hint is what makes
-    // it derivable at all. Chosen over a wan-3.0-prime call because that
-    // family's `duration: null` is NOT hint-rescuable by design.
+    // wan/v2.7/edit-video bills $0.15/s at its default 1080p, and duration 0
+    // means "match the source clip", a length only the caller knows — so the
+    // hint is what makes it derivable at all. Chosen over a wan-3.0-prime
+    // call because that family's `duration: null` is NOT hint-rescuable.
     const endpoint = "fal-ai/wan/v2.7/edit-video";
     const calls: unknown[] = [];
     const withHint = await resolveFalDynamicEstimate(
@@ -210,7 +211,7 @@ describe("resolveFalDynamicEstimate", () => {
       { hints: { durationSeconds: 4 } }
     );
     expect(calls).toEqual([]);
-    expect(withHint.usd).toBeCloseTo(0.4, 12);
+    expect(withHint.usd).toBeCloseTo(0.6, 12);
 
     const withoutHint = await resolveFalDynamicEstimate(
       endpoint,
@@ -413,7 +414,7 @@ describe("resolveFalDynamicEstimate", () => {
         { cache, unitQuantity: 2 }
       );
       expect(calls).toEqual([]);
-      expect(result.usd).toBeCloseTo(0.1, 12);
+      expect(result.usd).toBeCloseTo(0.56, 12);
     });
   });
 });

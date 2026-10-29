@@ -134,6 +134,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Frontier video list prices re-read 2026-10-29 from fal.ai cards and
+  MachGen's public pricebook. MachGen Seedance 2.5 is now
+  0.1028/0.23112/0.56862 USD/s (video input 0.061488/0.13824/0.3402) and
+  Seedance 2.0 is 0.070308/0.1512/0.37422/0.7776 (video input
+  0.043189/0.09288/0.22842/0.46656); their `source` is the pricebook URL
+  dated 2026-10-29. fal Wan 3.0 base is 0.05/0.10/0.20 USD/s, Wan 3.0 Prime
+  is 0.068/0.14/0.28, Wan 2.7 edit-video is 0.10 at 720p and 0.15 at 1080p,
+  and FLUX 3 text-to-video and image-to-video add 0.32 at 1440p and 0.47 at
+  2160p. HeyGen video, MiniMax H3 Max and H3 Max Turbo text-to-video and
+  image-to-video use the promo rates through 2026-10-31. MiniMax H3 and
+  Grok Imagine Video 1.5 reference-to-video are now static card rates.
+  Recorded MachGen Seedance receipts stay the 2026-10-25 bills (ac-tk5037).
 - `computeEstimate`'s openai route reads `costHints.inputTokens` and
   `outputTokens`, which it used to ignore. Declaring any token count prices
   the declared usage (`source: "declared-tokens+table"`) instead of the

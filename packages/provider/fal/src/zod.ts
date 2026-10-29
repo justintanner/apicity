@@ -1452,10 +1452,11 @@ export const FalAlibabaQwenImage3EditRequestSchema = z.object({
 // ---------------------------------------------------------------------------
 
 // The base `alibaba/wan-3.0/*` and premium `alibaba/wan-3.0-prime/*` families
-// publish byte-identical request schemas per operation — only their billing
-// differs (compute-second metering vs a flat $0.05 per output second). Each
-// operation therefore defines one schema that both endpoint ids reuse, the
-// same way `fal-ai/wan/v2.7/pro/*` reuses its non-pro schemas.
+// publish byte-identical request schemas per operation. Their cards differ:
+// base is $0.05/$0.10/$0.20 and prime is $0.068/$0.14/$0.28 per output
+// second at 480p/720p/1080p (read 2026-10-29). Each operation therefore
+// defines one schema that both endpoint ids reuse, the same way
+// `fal-ai/wan/v2.7/pro/*` reuses its non-pro schemas.
 // Docs: https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
 
 const FalWan3p0ResolutionSchema = z.enum(["480p", "720p", "1080p"]);
@@ -3278,7 +3279,10 @@ const Flux3AspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-const Flux3ResolutionSchema = z.enum(["720p", "1080p"]);
+// 1440p is the card's 2K tier and 2160p its 4K tier. Text-to-video and
+// image-to-video publish prices for both; the other video operations accept
+// the same enum and price only 720p and 1080p.
+const Flux3ResolutionSchema = z.enum(["720p", "1080p", "1440p", "2160p"]);
 
 const Flux3DurationSchema = z.union([
   z.literal("auto"),

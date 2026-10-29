@@ -97,13 +97,18 @@ export const MACHGEN_RECORDED: ReadonlyArray<
   [0, "I2V", { frames: "lone-end-frame", durationSecs: 2 }, 0.07],
   // The 3 s read after the 1 s start offset plus 2 s out, at 0.05 USD/s.
   [0, "R2V", { video: { startSecs: 1 }, durationSecs: 2 }, 0.25],
+  // 4 s at 480p, no input video. The 2026-10-25 receipt is 0.40 USD
+  // (0.10 USD/s); the 2026-10-29 pricebook is 0.1028 USD/s.
   [1, "T2V", undefined, 0.4],
   [1, "I2V", undefined, 0.4],
   [1, "R2V", undefined, 0.4],
-  // An edit renders its 4 s source: 4 s read plus 4 s out at 0.06 USD/s.
+  // An edit renders its 4 s source: 4 s read plus 4 s out. The 2026-10-25
+  // receipt is 0.48 USD (0.06 USD/s); the 2026-10-29 pricebook is 0.061488.
   [1, "R2V", { video: {}, operation: "edit" }, 0.48],
-  // An extend bills the 4 s read plus the 4 s it adds.
+  // An extend bills the 4 s read plus the 4 s it adds (same receipt).
   [1, "R2V", { video: {}, operation: "extend" }, 0.48],
+  // 4 s at 480p, no input video. The 2026-10-25 receipt is 0.28 USD
+  // (0.07 USD/s); the 2026-10-29 pricebook is 0.070308 USD/s.
   [2, "T2V", undefined, 0.28],
   [2, "I2V", undefined, 0.28],
   [2, "R2V", undefined, 0.28],
@@ -318,7 +323,21 @@ export async function recordMachgen(
       name,
       estimate.usd
     );
-    expect(billing.generation_cost_micros / 1e6).toBeCloseTo(estimate.usd, 6);
+    // Seedance 2.5 and 2.0 receipts are the 2026-10-25 bills in
+    // MACHGEN_RECORDED. Replay must not re-record them to match the
+    // 2026-10-29 forward rate.
+    const historical =
+      MACHGEN_CASES[index]![1] === "Seedance-2.5" ||
+      MACHGEN_CASES[index]![1] === "Seedance-2.0";
+    const recorded = MACHGEN_RECORDED.find(
+      ([i, recordedTask, recordedVariant]) =>
+        i === index &&
+        recordedTask === taskType &&
+        JSON.stringify(recordedVariant ?? {}) === JSON.stringify(variant ?? {})
+    );
+    const receiptUsd = historical ? recorded?.[3] : estimate.usd;
+    expect(receiptUsd, name).toBeDefined();
+    expect(billing.generation_cost_micros / 1e6).toBeCloseTo(receiptUsd!, 6);
     if (index === 0 && taskType === "T2V") {
       const bytes = new Uint8Array(await provider.api.v0.assets(task.task_id));
       expect(bytes.byteLength).toBeGreaterThan(8);

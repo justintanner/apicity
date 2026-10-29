@@ -2479,6 +2479,15 @@ export const fal: Record<string, ModelPricing> = {
     numericSeconds(5),
     videoCardAsOf
   ),
+  // llms.txt, 2026-10-29: $0.0625/s at 480P, $0.075/s at 768P,
+  // $0.1625/s at 2K (the default), $0.20/s at 4K. Duration defaults to 5.
+  "minimax/h3/text-to-video/lora": perSecondTiered(
+    "minimax/h3/text-to-video/lora",
+    [resolutionTier("2K")],
+    { "480P": 0.0625, "768P": 0.075, "2K": 0.1625, "4K": 0.2 },
+    numericSeconds(5),
+    videoCardAsOf
+  ),
   "minimax/h3/image-to-video": perSecondTiered(
     "minimax/h3/image-to-video",
     [resolutionTier("2K")],

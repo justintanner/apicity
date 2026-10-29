@@ -647,6 +647,9 @@ export type {
   FalMinimaxH3TextToVideoRequest,
   FalMinimaxH3TextToVideoRequestInput,
   FalMinimaxH3TextToVideoParsedRequest,
+  FalMinimaxH3TextToVideoLoraRequest,
+  FalMinimaxH3TextToVideoLoraRequestInput,
+  FalMinimaxH3TextToVideoLoraParsedRequest,
   FalMinimaxH3ImageToVideoRequest,
   FalMinimaxH3ImageToVideoRequestInput,
   FalMinimaxH3ImageToVideoParsedRequest,
@@ -1014,6 +1017,7 @@ import type {
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
   FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3TextToVideoLoraRequest,
   FalMinimaxH3ImageToVideoRequest,
   FalSeedreamV5ProTextToImageRequest,
   FalSeedreamV5ProEditRequest,
@@ -2687,15 +2691,26 @@ export interface FalRunBytedanceNamespace {
   seedream: FalRunBytedanceSeedreamNamespace;
 }
 
-type FalMinimaxH3TextToVideoFn = ((
-  params: FalMinimaxH3TextToVideoRequest,
+type FalMinimaxH3TextToVideoLoraFn = ((
+  params: FalMinimaxH3TextToVideoLoraRequest,
   signal?: AbortSignal
 ) => Promise<FalMinimaxH3TextToVideoResponse>) & {
-  schema: ApicitySchema<FalMinimaxH3TextToVideoRequest>;
+  schema: ApicitySchema<FalMinimaxH3TextToVideoLoraRequest>;
 };
 
+// minimax/h3/text-to-video is callable, and its LoRA variant hangs from it
+// (run.minimax.h3.textToVideo.lora). This leaf owns that promotion.
+export interface FalRunMinimaxH3TextToVideoNamespace {
+  lora: FalMinimaxH3TextToVideoLoraFn;
+  (
+    params: FalMinimaxH3TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<FalMinimaxH3TextToVideoResponse>;
+  schema: ApicitySchema<FalMinimaxH3TextToVideoRequest>;
+}
+
 export interface FalRunMinimaxH3Namespace {
-  textToVideo: FalMinimaxH3TextToVideoFn;
+  textToVideo: FalRunMinimaxH3TextToVideoNamespace;
 }
 type FalMinimaxH3ImageToVideoFn = ((
   params: FalMinimaxH3ImageToVideoRequest,

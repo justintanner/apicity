@@ -1854,6 +1854,23 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.textToVideo.lora": {
+    "source": "fal/minimax-h3-text-to-video-lora",
+    "payload": {
+      "prompt": "apct cat walks across a sunlit garden.",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled",
+      "loras": [
+        {
+          "path": "https://v3b.fal.media/files/b/0ab058f9/aofDUIQaypkDoDSR5qbeD_lora_weights_step_00001.safetensors",
+          "scale": 1
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.cameraControls": {
     "source": "fal/minimax-h3-max-camera-controls",
     "payload": {

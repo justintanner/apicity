@@ -1595,6 +1595,74 @@ export const FalMinimaxH3TextToVideoRequestSchema = z.object({
   sync_mode: z.boolean().optional(),
 });
 
+// MiniMax H3 text-to-video LoRA. Queue OpenAPI and llms.txt read 2026-10-29.
+// `prompt` and `loras` are required. Price is per second by resolution:
+// $0.0625 at 480P, $0.075 at 768P, $0.1625 at 2K (the default), $0.20 at
+// 4K. Duration is 5–15 seconds and defaults to 5. This leaf promotes the
+// existing textToVideo callable. No field names a model. Resolution,
+// aspect ratio, and prompt expansion are fixed vocabularies.
+// Docs: https://fal.ai/models/minimax/h3/text-to-video/lora/api
+const FalMinimaxH3LoraWeightSchema = z.object({
+  path: z
+    .string()
+    .min(1)
+    .describe("URL or HuggingFace repo id (owner/repo) of the LoRA weights."),
+  weight_name: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "LoRA filename inside a HuggingFace repo that holds more than one."
+    ),
+  scale: z
+    .number()
+    .min(0)
+    .max(4)
+    .default(1)
+    .describe("Strength of the LoRA, from 0 to 4."),
+});
+
+export const FalMinimaxH3TextToVideoLoraRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .default(5)
+    .describe("Output length in seconds. Billed per second by resolution."),
+  resolution: z
+    .enum(["480P", "768P", "2K", "4K"])
+    .default("2K")
+    .describe("480P and 768P are native. 2K and 4K upscale a 768P base."),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().default(true),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .default("balanced"),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional audio clip, at least 2 seconds, that replaces the soundtrack."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("16:9"),
+  loras: z
+    .array(FalMinimaxH3LoraWeightSchema)
+    .min(1)
+    .max(3)
+    .describe("LoRA adapters applied to the transformer."),
+});
+
 // ---------------------------------------------------------------------------
 // MiniMax Hailuo 03 (H3) image-to-video
 // ---------------------------------------------------------------------------
@@ -3264,6 +3332,17 @@ export type FalMinimaxH3TextToVideoRequestInput =
   FalMinimaxH3TextToVideoRequest;
 export type FalMinimaxH3TextToVideoParsedRequest = z.output<
   typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoLoraParams = z.infer<
+  typeof FalMinimaxH3TextToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3TextToVideoLoraRequest = z.input<
+  typeof FalMinimaxH3TextToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3TextToVideoLoraRequestInput =
+  FalMinimaxH3TextToVideoLoraRequest;
+export type FalMinimaxH3TextToVideoLoraParsedRequest = z.output<
+  typeof FalMinimaxH3TextToVideoLoraRequestSchema
 >;
 export type FalMinimaxH3ImageToVideoParams = z.infer<
   typeof FalMinimaxH3ImageToVideoRequestSchema
@@ -16943,6 +17022,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/wan-3.0-prime/reference-to-video":
     FalWan3p0ReferenceToVideoRequestSchema,
   "minimax/h3/text-to-video": FalMinimaxH3TextToVideoRequestSchema,
+  "minimax/h3/text-to-video/lora": FalMinimaxH3TextToVideoLoraRequestSchema,
   "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
   "minimax/h3/reference-to-video": FalMinimaxH3ReferenceToVideoRequestSchema,
   "minimax/h3/t2v/trainer": FalMinimaxH3T2vTrainerRequestSchema,

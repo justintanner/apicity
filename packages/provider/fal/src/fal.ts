@@ -381,6 +381,7 @@ import {
   FalSeedreamV5ProLayerizeRequest,
   FalSeedreamV5ProLayerizeResponse,
   FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3TextToVideoLoraRequest,
   FalMinimaxH3TextToVideoResponse,
   FalMinimaxH3ImageToVideoRequest,
   FalMinimaxH3ImageToVideoResponse,
@@ -669,6 +670,7 @@ import {
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedreamV5ProLayerizeRequestSchema,
   FalMinimaxH3TextToVideoRequestSchema,
+  FalMinimaxH3TextToVideoLoraRequestSchema,
   FalMinimaxH3ImageToVideoRequestSchema,
   FalMinimaxH3T2vTrainerRequestSchema,
   FalMinimaxH3I2vTrainerRequestSchema,
@@ -1769,6 +1771,17 @@ export function createFal(opts: FalOptions): FalProvider {
   >("POST", "/minimax/h3/text-to-video", FalMinimaxH3TextToVideoRequestSchema, {
     base: runBaseURL,
   });
+  // POST https://fal.run/minimax/h3/text-to-video/lora
+  // Docs: https://fal.ai/models/minimax/h3/text-to-video/lora/api
+  const minimaxH3TextToVideoLora = jsonBody<
+    FalMinimaxH3TextToVideoLoraRequest,
+    FalMinimaxH3TextToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/text-to-video/lora",
+    FalMinimaxH3TextToVideoLoraRequestSchema,
+    { base: runBaseURL }
+  );
   // POST https://fal.run/minimax/h3/image-to-video
   // Docs: https://fal.ai/models/minimax/h3/image-to-video/api
   const minimaxH3ImageToVideo = jsonBody<
@@ -4848,7 +4861,11 @@ export function createFal(opts: FalOptions): FalProvider {
         extendVideo: minimaxH3MaxTurboExtendVideo,
       },
       h3: {
-        textToVideo: minimaxH3TextToVideo,
+        textToVideo: Object.assign(minimaxH3TextToVideo, {
+          // POST https://fal.run/minimax/h3/text-to-video/lora
+          // Docs: https://fal.ai/models/minimax/h3/text-to-video/lora/api
+          lora: minimaxH3TextToVideoLora,
+        }),
         imageToVideo: minimaxH3ImageToVideo,
         referenceToVideo: minimaxH3ReferenceToVideo,
         t2v: {

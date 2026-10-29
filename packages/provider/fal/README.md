@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-257 endpoints across 55 groups. Each method mirrors an upstream URL path.
+258 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2329,6 +2329,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.klingVideo.v3.turbo.standard.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### krea
+
+<details>
+<summary><code>POST</code> <b><code>fal.krea.v3.edit</code></b></summary>
+
+<code>POST https://fal.run/krea/v3/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/krea/v3/edit/api)
+
+```typescript
+const res = await fal.run.krea.v3.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

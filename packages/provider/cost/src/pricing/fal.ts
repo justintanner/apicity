@@ -226,6 +226,115 @@ const perWholeMegapixel = (
   source: source(endpointId, on),
 });
 
+// Krea 3 edit, read from the reasoning_level description on the queue
+// OpenAPI on 2026-10-29. low and medium bill $0.025 per megapixel of the
+// output plus each reference. A reference larger than the output counts as
+// the output size. Reference pixel sizes are not in the payload, so each
+// reference is counted at the output size (the card's maximum) and the
+// estimate warns that a smaller reference bills less. high adds a flat
+// $0.125. ultra ignores image_size and is a flat price by reference count,
+// so its megapixel units are 0 and the flat price is `extra`. An omitted
+// reasoning_level is the schema default, medium. auto or an omitted
+// image_size has no billable area on the non-ultra tiers.
+const KREA_V3_EDIT = "krea/v3/edit";
+const KREA_V3_EDIT_AS_OF = "2026-10-29";
+const KREA_V3_MEGAPIXEL_USD = 0.025;
+
+function kreaV3Reasoning(p: Record<string, unknown>): string | undefined {
+  if (p.reasoning_level === undefined) return "medium";
+  return asString(p.reasoning_level);
+}
+
+function kreaV3ReferenceCount(p: Record<string, unknown>): number | undefined {
+  if (!Array.isArray(p.image_urls) || p.image_urls.length < 1) {
+    return undefined;
+  }
+  return p.image_urls.length;
+}
+
+function kreaV3OutputMegapixels(
+  p: Record<string, unknown>
+): number | undefined {
+  const area = imageArea(p);
+  if (area === undefined) return undefined;
+  return area / PIXELS_PER_MEGAPIXEL;
+}
+
+function kreaV3UltraUsd(refs: number): number {
+  const published = [0, 0.27, 0.3, 0.32, 0.35];
+  const listed = published[refs];
+  if (listed !== undefined) return listed;
+  return 0.35 + (refs - 4) * 0.0275;
+}
+
+function kreaV3PricedLevel(level: string | undefined): boolean {
+  return (
+    level === "low" ||
+    level === "medium" ||
+    level === "high" ||
+    level === "ultra"
+  );
+}
+
+const kreaV3Edit = (): ModelPricing => ({
+  kind: "perUnit",
+  unit: "megapixels",
+  units: (p) => {
+    const refs = kreaV3ReferenceCount(p);
+    if (refs === undefined) return undefined;
+    const level = kreaV3Reasoning(p);
+    if (level === "ultra") return 0;
+    if (level !== "low" && level !== "medium" && level !== "high") {
+      return undefined;
+    }
+    return kreaV3OutputMegapixels(p);
+  },
+  warn: (p) => {
+    const level = kreaV3Reasoning(p);
+    const refs = kreaV3ReferenceCount(p);
+    const messages: string[] = [];
+    if (refs === undefined) {
+      messages.push(
+        `fal '${KREA_V3_EDIT}': image_urls must list at least one reference`
+      );
+    }
+    if (!kreaV3PricedLevel(level)) {
+      messages.push(
+        `fal '${KREA_V3_EDIT}': reasoning_level '${String(level)}' is not a priced tier`
+      );
+    }
+    if (level === "low" || level === "medium" || level === "high") {
+      const megapixels = kreaV3OutputMegapixels(p);
+      if (megapixels === undefined) {
+        messages.push(
+          `fal '${KREA_V3_EDIT}': image_size is omitted, auto, or unrecognized; low, medium, and high bill output megapixels, so pass an explicit size`
+        );
+      } else if (refs !== undefined) {
+        messages.push(
+          `fal '${KREA_V3_EDIT}': each reference is counted at the output size (${megapixels} megapixels). A smaller reference bills less; a larger one is capped at the output size.`
+        );
+      }
+    }
+    return messages;
+  },
+  extra: (p) => {
+    const refs = kreaV3ReferenceCount(p);
+    if (refs === undefined) return undefined;
+    const level = kreaV3Reasoning(p);
+    if (level === "ultra") return kreaV3UltraUsd(refs);
+    if (level !== "low" && level !== "medium" && level !== "high") {
+      return undefined;
+    }
+    const megapixels = kreaV3OutputMegapixels(p);
+    if (megapixels === undefined) return undefined;
+    const references = megapixels * refs * KREA_V3_MEGAPIXEL_USD;
+    return level === "high" ? references + 0.125 : references;
+  },
+  select: [],
+  rates: { "": KREA_V3_MEGAPIXEL_USD },
+  source: source(KREA_V3_EDIT, KREA_V3_EDIT_AS_OF),
+});
+
 const perCharacter = (
   endpointId: string,
   usd: number,
@@ -1985,6 +2094,13 @@ export const fal: Record<string, ModelPricing> = {
   // billed x-fal-billable-units 1, one image, so the charge is
   // $0.01.
   "meta/muse-image/edit": perImage("meta/muse-image/edit", 0.01, "2026-10-08"),
+
+  // Krea 3 edit. See kreaV3Edit() for the card. The recording is
+  // reasoning_level low at 1024x1024 with one cat1.jpg reference. The
+  // estimate counts that reference at the 1 MP output ($0.05). The call
+  // billed x-fal-billable-units 1.75 ($0.04375): the 768x1024 reference
+  // is smaller than the output, so fal billed it at its own size.
+  "krea/v3/edit": kreaV3Edit(),
 
   // Muse Image text-to-image bills $0.01 per image. num_images
   // defaults to 1. The recorded call billed x-fal-billable-units

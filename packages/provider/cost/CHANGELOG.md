@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Krea 3 edit (`krea/v3/edit`, slug `krea3`) pricing from the 2026-10-29
+  queue OpenAPI. low and medium are $0.025 per megapixel of the output plus
+  each reference. References are counted at the output size, the card's
+  maximum when their pixels are absent, and the estimate warns that a
+  smaller reference bills less. high adds $0.125. ultra is flat by
+  reference count ($0.27 / $0.30 / $0.32 / $0.35 for 1–4, then $0.0275
+  each) and ignores `image_size`. auto or an omitted size stays unpriced
+  on the non-ultra tiers (ac-t85sor).
+
 - ElevenLabs Scribe speech-to-text pricing, verified 2026-10-29 against
   https://elevenlabs.io/pricing/api. `scribe_v2` and `scribe_v2_medical` are
   $0.22/hour and `scribe_v2_realtime` is $0.39/hour, stored per second as

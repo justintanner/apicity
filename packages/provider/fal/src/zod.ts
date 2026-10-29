@@ -8058,6 +8058,161 @@ export type FalMetaMuseImageEditParsedRequest = z.output<
   typeof FalMetaMuseImageEditRequestSchema
 >;
 
+const FalKreaV3EditImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+const FalKreaV3EditRegionSchema = z.object({
+  image_idx: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Zero-based index into image_urls."),
+  x: z
+    .number()
+    .min(0)
+    .lt(1)
+    .describe("Left edge as a fraction of image width."),
+  y: z
+    .number()
+    .min(0)
+    .lt(1)
+    .describe("Top edge as a fraction of image height."),
+  width: z
+    .number()
+    .gt(0)
+    .max(1)
+    .describe("Width as a fraction of image width."),
+  height: z
+    .number()
+    .gt(0)
+    .max(1)
+    .describe("Height as a fraction of image height."),
+  label: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(/^[^\s@]+$/)
+    .nullable()
+    .optional()
+    .describe(
+      "Refer to this region as @label. Defaults to its one-based position."
+    ),
+  note: z
+    .string()
+    .max(5000)
+    .default("")
+    .describe("Edit instruction for this region; may reference other @labels."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-29
+// (sha256 5fc40fc471b2be4960ee54eed8fd5993545f9d41096dbe9d83ef61518a74e913). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/krea/v3/edit/api
+export const FalKreaV3EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(5000)
+    .default("")
+    .describe(
+      "Edit instruction. Refer to images as <image-1>, <image-2>, ... and regions as @label. May be omitted when a region has a note."
+    ),
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(8)
+    .describe(
+      "Reference images to edit or combine (1-8). Order sets the <image-N> tags."
+    ),
+  regions: z
+    .array(FalKreaV3EditRegionSchema)
+    .max(24)
+    .optional()
+    .describe(
+      "Bounding boxes on reference images, with optional labels and editing notes. Requires high or ultra reasoning."
+    ),
+  regional_edit: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe(
+      "With high or ultra reasoning, true preserves pixels outside the edit regions on the chosen canvas; false disables automatic region cropping and preservation. Omit to retain automatic preservation. With image_size=auto, keeps the canvas dimensions; an explicit image_size preserves the resized input. Billing uses the generated render dimensions. Use PNG for lossless output."
+    ),
+  model: z
+    .enum(["berry", "jam"])
+    .default("berry")
+    .describe("Model variant: berry favors quality, jam favors speed."),
+  image_size: z
+    .union([
+      FalKreaV3EditImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("auto")
+    .describe(
+      "Output size, rounded up to multiples of 16, at most 4,220,160 total pixels (1680×2512). auto lets the prompt expander pick the aspect ratio at about 2048×2048."
+    ),
+  reasoning_level: z
+    .enum(["low", "medium", "high", "ultra"])
+    .default("medium")
+    .describe(
+      "How much effort the harness spends reasoning about the given editing task. Higher reasoning effort means slower generation time. high plans the edit with segmentation, web search and reference photos, keeps unedited areas of a single input image, corrects required text, and bills a flat $0.125 (5 megapixels) more per request. low and medium bill $0.025 per megapixel of the output plus each reference (references larger than the output count as the output size). ultra generates at 2K with Krea's ultra thinking mode, ignores image_size and negative_prompt, and bills a flat price by reference count: $0.27 for 1, $0.30 for 2, $0.32 for 3, $0.35 for 4, plus $0.0275 per reference past 4."
+    ),
+  negative_prompt: z
+    .string()
+    .max(1024)
+    .default("")
+    .describe("What to keep out of the image. Used by berry only."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Latent noise seed. Use a new seed when editing a previous output again."
+    ),
+  output_format: z
+    .enum(["png", "jpeg"])
+    .default("png")
+    .describe("Output image format."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Return images as data URIs instead of saving them in request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Check output images for unsafe content. Disabling requires account authorization."
+    ),
+});
+export type FalKreaV3EditRequest = z.input<typeof FalKreaV3EditRequestSchema>;
+export type FalKreaV3EditRequestInput = FalKreaV3EditRequest;
+export type FalKreaV3EditParsedRequest = z.output<
+  typeof FalKreaV3EditRequestSchema
+>;
+
 const FalOpenaiGptImage2p5SunburstEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -16017,6 +16172,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openai/gpt-image-2.5/sunburst/edit":
     FalOpenaiGptImage2p5SunburstEditRequestSchema,
   "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
+  "krea/v3/edit": FalKreaV3EditRequestSchema,
   "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,

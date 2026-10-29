@@ -157,6 +157,8 @@ import {
   FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditResponse,
   FalMetaMuseImageEditRequest,
+  FalKreaV3EditResponse,
+  FalKreaV3EditRequest,
   FalMetaMuseImageTextToImageResponse,
   FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Response,
@@ -568,6 +570,7 @@ import {
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
   FalMetaMuseImageEditRequestSchema,
+  FalKreaV3EditRequestSchema,
   FalMetaMuseImageTextToImageRequestSchema,
   FalElevenlabsMusicV2p5RequestSchema,
   FalBriaFiboGen1p5TextToImageRequestSchema,
@@ -3203,6 +3206,15 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/krea/v3/edit
+  // Docs: https://fal.ai/models/krea/v3/edit/api
+  const kreaV3Edit = jsonBody<FalKreaV3EditRequest, FalKreaV3EditResponse>(
+    "POST",
+    "/krea/v3/edit",
+    FalKreaV3EditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/openai/gpt-image-2.5/sunburst/edit
   // Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api
@@ -4271,6 +4283,13 @@ export function createFal(opts: FalOptions): FalProvider {
     // POST https://fal.run/fal-ai/flux-2-flex
     // Docs: https://fal.ai/models/fal-ai/flux-2-flex/api
     flux2Flex,
+    krea: {
+      v3: {
+        // POST https://fal.run/krea/v3/edit
+        // Docs: https://fal.ai/models/krea/v3/edit/api
+        edit: kreaV3Edit,
+      },
+    },
     kandinsky6Pro: {
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/fal-ai/kandinsky6-pro/image-to-video

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MiniMax H3 first-last-frame trainer (`minimax/h3/flf2v/trainer`, slug `h3flf2vt`) pricing from the 2026-10-29 pricing API. $0.01 per `number_of_steps` (range 1–15000, default 2000). The estimator floors at 100 steps. The steps=1 recording billed 100 steps ($1.00). Each billed step counts as one generation (ac-npoa6h).
+
 - MiniMax H3 image-to-video trainer (`minimax/h3/i2v/trainer`, slug `h3i2vt`) pricing from the 2026-10-29 pricing API. $0.01 per `number_of_steps` (range 1–15000, default 2000). The estimator floors at 100 steps. The steps=1 recording billed 100 steps ($1.00). Each billed step counts as one generation (ac-emdulx).
 
 - MiniMax H3 text-to-video trainer (`minimax/h3/t2v/trainer`, slug `h3t2vt`) pricing from the 2026-10-29 pricing API. $0.005 per `number_of_steps` (range 1–15000, default 2000). Each requested step counts as one generation. The steps=1 recording billed 100 steps ($0.50) (ac-h8q5j7).

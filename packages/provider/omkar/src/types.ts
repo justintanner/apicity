@@ -253,6 +253,19 @@ export interface OmkarFeedTrendingResponse {
   [key: string]: unknown;
 }
 
+/** One Explore tab: `id` is the `category` value `feed.explore` takes. */
+export interface OmkarExploreCategoryItem {
+  id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+export interface OmkarFeedExploreCategoriesResponse {
+  category_count: number;
+  categories: OmkarExploreCategoryItem[];
+  [key: string]: unknown;
+}
+
 /** One Explore tab: up to 30 videos; every call returns a fresh batch. */
 export interface OmkarFeedExploreResponse {
   category: string;
@@ -275,6 +288,7 @@ export interface OmkarFeedExploreMethod {
     signal?: AbortSignal
   ): Promise<OmkarFeedExploreResponse>;
   schema: typeof OmkarFeedExploreRequestSchema;
+  categories(signal?: AbortSignal): Promise<OmkarFeedExploreCategoriesResponse>;
 }
 export interface OmkarFeedNamespace {
   trending: OmkarFeedTrendingMethod;

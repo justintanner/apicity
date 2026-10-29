@@ -340,6 +340,13 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
       payload: { region: "worldwide" },
     },
   },
+  // The category list takes no input, so its recording yields no payload.
+  omkar: {
+    "GET feed.explore.categories": {
+      source: "static:omkar-explore-categories",
+      payload: {},
+    },
+  },
   // The overview takes no input, so its recording yields no payload.
   "tiktok-creative-center": {
     "GET ads.creativeOne.report.getTopContentsOverview": {

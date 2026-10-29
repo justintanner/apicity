@@ -1,6 +1,7 @@
 import { attachExamples } from "./example";
 import { OmkarError } from "./types";
 import type {
+  OmkarFeedExploreCategoriesResponse,
   OmkarFeedExploreRequest,
   OmkarFeedExploreResponse,
   OmkarFeedTrendingRequest,
@@ -139,7 +140,17 @@ export function createOmkar(options: OmkarOptions = {}): OmkarProvider {
             signal
           );
         },
-        { schema: OmkarFeedExploreRequestSchema }
+        {
+          schema: OmkarFeedExploreRequestSchema,
+          // GET https://tiktok-scraper.omkar.cloud/feed/explore/categories
+          // Docs: https://www.omkar.cloud/tools/tiktok-scraper/explore-categories
+          categories: async (signal?: AbortSignal) => {
+            return getRequest<OmkarFeedExploreCategoriesResponse>(
+              "/feed/explore/categories",
+              signal
+            );
+          },
+        }
       ),
     },
   });

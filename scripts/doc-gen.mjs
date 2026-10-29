@@ -300,6 +300,9 @@ function formatUsageSnippet(
   if (providerName === "omkar" && dotPath === "feed.explore") {
     return `const feed = await ${call}({ country: "TH", category: "all" });`;
   }
+  if (providerName === "omkar" && dotPath === "feed.explore.categories") {
+    return `const categories = await ${call}();`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,

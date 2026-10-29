@@ -36,7 +36,7 @@ export const OmkarExploreCategorySchema = z
     "technology",
   ])
   .describe(
-    "Explore tab to read; `/feed/explore/categories` lists them. Omitted, Omkar uses `all`."
+    "Explore tab to read; `feed.explore.categories` lists them. Omitted, Omkar uses `all`."
   );
 
 export const OmkarFeedExploreRequestSchema = z.object({

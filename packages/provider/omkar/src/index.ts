@@ -6,6 +6,8 @@ export type {
   OmkarAuthorStats,
   OmkarEffect,
   OmkarExploreCategory,
+  OmkarExploreCategoryItem,
+  OmkarFeedExploreCategoriesResponse,
   OmkarFeedExploreMethod,
   OmkarFeedExploreRequest,
   OmkarFeedExploreResponse,

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import { createEndless } from "@apicity/endless";
 import { createKie } from "@apicity/kie";
+import { createOmkar } from "@apicity/omkar";
 import { createOpenLigaDB } from "@apicity/openligadb";
 import { createTheSportsDB } from "@apicity/thesportsdb";
 import { createTiktokCreativeCenter } from "@apicity/tiktok-creative-center";
@@ -139,6 +140,7 @@ describe("example provenance", () => {
     const factories: Record<string, unknown> = {
       endless: createEndless(),
       kie: createKie({ apiKey: "test-key" }),
+      omkar: createOmkar({ apiKey: "test-key" }),
       openligadb: createOpenLigaDB(),
       thesportsdb: createTheSportsDB({ apiKey: "test-key" }),
       "tiktok-creative-center": createTiktokCreativeCenter(),

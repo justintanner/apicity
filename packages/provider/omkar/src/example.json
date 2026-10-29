@@ -8,6 +8,12 @@
     "tier": "cheap",
     "runByDefault": true
   },
+  "GET feed.explore.categories": {
+    "source": "static:omkar-explore-categories",
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
+  },
   "GET feed.trending": {
     "source": "omkar/feed-trending-th",
     "payload": {

@@ -686,6 +686,9 @@ export type {
   FalMinimaxH3T2vTrainerRequest,
   FalMinimaxH3T2vTrainerRequestInput,
   FalMinimaxH3T2vTrainerParsedRequest,
+  FalMinimaxH3I2vTrainerRequest,
+  FalMinimaxH3I2vTrainerRequestInput,
+  FalMinimaxH3I2vTrainerParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -1018,6 +1021,7 @@ import type {
   FalWan3p0ReferenceToVideoRequest,
   FalMinimaxH3ReferenceToVideoRequest,
   FalMinimaxH3T2vTrainerRequest,
+  FalMinimaxH3I2vTrainerRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -3313,6 +3317,28 @@ export interface FalRunMinimaxH3T2vNamespace {
 
 export interface FalRunMinimaxH3Namespace {
   t2v: FalRunMinimaxH3T2vNamespace;
+}
+
+// minimax/h3/i2v/trainer is h3.i2v.trainer. This leaf owns the i2v scaffold.
+export interface FalMinimaxH3I2vTrainerResponse {
+  lora_file: FalMinimaxH3TrainerFile;
+  config_file: FalMinimaxH3TrainerFile;
+  debug_dataset?: FalMinimaxH3TrainerFile | null;
+}
+
+type FalMinimaxH3I2vTrainerFn = ((
+  params: FalMinimaxH3I2vTrainerRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3I2vTrainerResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3I2vTrainerRequest>;
+};
+
+export interface FalRunMinimaxH3I2vNamespace {
+  trainer: FalMinimaxH3I2vTrainerFn;
+}
+
+export interface FalRunMinimaxH3Namespace {
+  i2v: FalRunMinimaxH3I2vNamespace;
 }
 
 export interface FalRunMinimaxNamespace {

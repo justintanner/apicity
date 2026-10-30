@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 image-to-video LoRA at `run.minimax.h3.imageToVideo.lora` (`POST https://fal.run/minimax/h3/image-to-video/lora`). Promotes the existing `imageToVideo` callable and adds `.lora`. Price is $0.0625 per second at 480P ($0.075 at 768P, $0.1625 at 2K, $0.20 at 4K). The recording uses `tests/fixtures/cat1.jpg`, duration 5, and resolution 480P. fal billed 5 seconds ($0.3125) (ac-jhn0kn).
+
 - Added MiniMax H3 text-to-video LoRA at `run.minimax.h3.textToVideo.lora` (`POST https://fal.run/minimax/h3/text-to-video/lora`). Promotes the existing `textToVideo` callable and adds `.lora`. Price is $0.0625 per second at 480P ($0.075 at 768P, $0.1625 at 2K, $0.20 at 4K). The recording uses duration 5 and resolution 480P. fal billed 5 seconds ($0.3125) (ac-wulsa2).
 
 - Added MiniMax H3 reference-to-video-audio LoRA trainer at `run.minimax.h3.ref2va.trainer` (`POST https://fal.run/minimax/h3/ref2va/trainer`). New `ref2va` key on the existing `minimax.h3` object. Price is $0.015 per training step (default 2000), with a 100-step floor. The recording uses `number_of_steps` 1 and fal billed 100 steps ($1.50) (ac-tarrln).

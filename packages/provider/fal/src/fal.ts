@@ -384,6 +384,7 @@ import {
   FalMinimaxH3TextToVideoLoraRequest,
   FalMinimaxH3TextToVideoResponse,
   FalMinimaxH3ImageToVideoRequest,
+  FalMinimaxH3ImageToVideoLoraRequest,
   FalMinimaxH3ImageToVideoResponse,
   FalMinimaxH3T2vTrainerRequest,
   FalMinimaxH3T2vTrainerResponse,
@@ -672,6 +673,7 @@ import {
   FalMinimaxH3TextToVideoRequestSchema,
   FalMinimaxH3TextToVideoLoraRequestSchema,
   FalMinimaxH3ImageToVideoRequestSchema,
+  FalMinimaxH3ImageToVideoLoraRequestSchema,
   FalMinimaxH3T2vTrainerRequestSchema,
   FalMinimaxH3I2vTrainerRequestSchema,
   FalMinimaxH3Flf2vTrainerRequestSchema,
@@ -1791,6 +1793,17 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/minimax/h3/image-to-video",
     FalMinimaxH3ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/minimax/h3/image-to-video/lora
+  // Docs: https://fal.ai/models/minimax/h3/image-to-video/lora/api
+  const minimaxH3ImageToVideoLora = jsonBody<
+    FalMinimaxH3ImageToVideoLoraRequest,
+    FalMinimaxH3ImageToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/image-to-video/lora",
+    FalMinimaxH3ImageToVideoLoraRequestSchema,
     { base: runBaseURL }
   );
   // POST https://fal.run/minimax/h3/t2v/trainer
@@ -4866,7 +4879,11 @@ export function createFal(opts: FalOptions): FalProvider {
           // Docs: https://fal.ai/models/minimax/h3/text-to-video/lora/api
           lora: minimaxH3TextToVideoLora,
         }),
-        imageToVideo: minimaxH3ImageToVideo,
+        imageToVideo: Object.assign(minimaxH3ImageToVideo, {
+          // POST https://fal.run/minimax/h3/image-to-video/lora
+          // Docs: https://fal.ai/models/minimax/h3/image-to-video/lora/api
+          lora: minimaxH3ImageToVideoLora,
+        }),
         referenceToVideo: minimaxH3ReferenceToVideo,
         t2v: {
           // POST https://fal.run/minimax/h3/t2v/trainer

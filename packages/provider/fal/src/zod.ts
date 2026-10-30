@@ -1705,6 +1705,67 @@ export const FalMinimaxH3ImageToVideoRequestSchema = z.object({
   // Returns the video as base64 instead of a CDN URL.
   sync_mode: z.boolean().optional(),
 });
+
+// MiniMax H3 image-to-video LoRA. Queue OpenAPI and llms.txt read 2026-10-29.
+// `prompt` and `loras` are required. `image_url` is optional: omitting both
+// frames makes the request behave as text-to-video at 16:9. Price matches
+// the text-to-video LoRA card: $0.0625/s at 480P, $0.075/s at 768P,
+// $0.1625/s at 2K (the default), $0.20/s at 4K. Duration defaults to 5.
+// This leaf promotes the existing imageToVideo callable. No field names a
+// model. Resolution and prompt expansion are fixed vocabularies.
+// Docs: https://fal.ai/models/minimax/h3/image-to-video/lora/api
+export const FalMinimaxH3ImageToVideoLoraRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .default(5)
+    .describe("Output length in seconds. Billed per second by resolution."),
+  resolution: z
+    .enum(["480P", "768P", "2K", "4K"])
+    .default("2K")
+    .describe("480P and 768P are native. 2K and 4K upscale a 768P base."),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().default(true),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .default("balanced"),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional audio clip, at least 2 seconds, that replaces the soundtrack."
+    ),
+  image_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "First frame. An HTTP(S) URL or a data URI. The output canvas follows it."
+    ),
+  end_image_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe("Optional last frame. It may be provided alone."),
+  loras: z
+    .array(FalMinimaxH3LoraWeightSchema)
+    .min(1)
+    .max(3)
+    .describe("LoRA adapters applied to the transformer."),
+});
+
 // MiniMax Hailuo 03 (H3) reference-to-video
 // ---------------------------------------------------------------------------
 
@@ -3354,6 +3415,17 @@ export type FalMinimaxH3ImageToVideoRequestInput =
   FalMinimaxH3ImageToVideoRequest;
 export type FalMinimaxH3ImageToVideoParsedRequest = z.output<
   typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoLoraParams = z.infer<
+  typeof FalMinimaxH3ImageToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoLoraRequest = z.input<
+  typeof FalMinimaxH3ImageToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoLoraRequestInput =
+  FalMinimaxH3ImageToVideoLoraRequest;
+export type FalMinimaxH3ImageToVideoLoraParsedRequest = z.output<
+  typeof FalMinimaxH3ImageToVideoLoraRequestSchema
 >;
 export type FalMinimaxH3ReferenceToVideoParams = z.infer<
   typeof FalMinimaxH3ReferenceToVideoRequestSchema
@@ -17024,6 +17096,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "minimax/h3/text-to-video": FalMinimaxH3TextToVideoRequestSchema,
   "minimax/h3/text-to-video/lora": FalMinimaxH3TextToVideoLoraRequestSchema,
   "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
+  "minimax/h3/image-to-video/lora": FalMinimaxH3ImageToVideoLoraRequestSchema,
   "minimax/h3/reference-to-video": FalMinimaxH3ReferenceToVideoRequestSchema,
   "minimax/h3/t2v/trainer": FalMinimaxH3T2vTrainerRequestSchema,
   "minimax/h3/i2v/trainer": FalMinimaxH3I2vTrainerRequestSchema,

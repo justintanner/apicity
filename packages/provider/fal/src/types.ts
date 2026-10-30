@@ -689,6 +689,9 @@ export type {
   FalMinimaxH3ReferenceToVideoRequest,
   FalMinimaxH3ReferenceToVideoRequestInput,
   FalMinimaxH3ReferenceToVideoParsedRequest,
+  FalMinimaxH3ReferenceToVideoLoraRequest,
+  FalMinimaxH3ReferenceToVideoLoraRequestInput,
+  FalMinimaxH3ReferenceToVideoLoraParsedRequest,
   FalMinimaxH3T2vTrainerRequest,
   FalMinimaxH3T2vTrainerRequestInput,
   FalMinimaxH3T2vTrainerParsedRequest,
@@ -1034,6 +1037,7 @@ import type {
   FalWan3p0ImageToVideoRequest,
   FalWan3p0ReferenceToVideoRequest,
   FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoLoraRequest,
   FalMinimaxH3T2vTrainerRequest,
   FalMinimaxH3I2vTrainerRequest,
   FalMinimaxH3Flf2vTrainerRequest,
@@ -3315,15 +3319,24 @@ export interface FalRunKlingVideoNamespace {
   o3p4k: FalRunKlingVideoO3p4kNamespace;
 }
 
-type FalMinimaxH3ReferenceToVideoFn = ((
-  params: FalMinimaxH3ReferenceToVideoRequest,
+type FalMinimaxH3ReferenceToVideoLoraFn = ((
+  params: FalMinimaxH3ReferenceToVideoLoraRequest,
   signal?: AbortSignal
 ) => Promise<FalMinimaxH3ReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalMinimaxH3ReferenceToVideoRequest>;
+  schema: ApicitySchema<FalMinimaxH3ReferenceToVideoLoraRequest>;
 };
 
+export interface FalRunMinimaxH3ReferenceToVideoNamespace {
+  lora: FalMinimaxH3ReferenceToVideoLoraFn;
+  (
+    params: FalMinimaxH3ReferenceToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<FalMinimaxH3ReferenceToVideoResponse>;
+  schema: ApicitySchema<FalMinimaxH3ReferenceToVideoRequest>;
+}
+
 export interface FalRunMinimaxH3Namespace {
-  referenceToVideo: FalMinimaxH3ReferenceToVideoFn;
+  referenceToVideo: FalRunMinimaxH3ReferenceToVideoNamespace;
 }
 
 export interface FalMinimaxH3TrainerFile {

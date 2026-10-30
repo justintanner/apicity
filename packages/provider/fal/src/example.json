@@ -1834,6 +1834,26 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.referenceToVideo.lora": {
+    "source": "fal/minimax-h3-reference-to-video-lora",
+    "payload": {
+      "prompt": "Image 1 is the apct cat. The cat blinks slowly and tilts its head.",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled",
+      "loras": [
+        {
+          "path": "https://v3b.fal.media/files/b/0ab05c41/nT8ZCUgg2lLF1c1awPGoA_lora_weights_step_00001.safetensors",
+          "scale": 1
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.t2v.trainer": {
     "source": "fal/minimax-h3-t2v-trainer",
     "payload": {

@@ -1766,6 +1766,58 @@ export const FalMinimaxH3ImageToVideoLoraRequestSchema = z.object({
     .describe("LoRA adapters applied to the transformer."),
 });
 
+// MiniMax H3 reference-to-video LoRA. Queue OpenAPI read 2026-10-30.
+// References may be supplied individually or together, with a combined cap
+// of 12 files. The LoRA leaf permits audio-only references. No model fields.
+// Docs: https://fal.ai/models/minimax/h3/reference-to-video/lora/api
+export const FalMinimaxH3ReferenceToVideoLoraRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(50000),
+    duration: z
+      .number()
+      .int()
+      .min(5)
+      .max(15)
+      .default(5)
+      .describe("Output length in seconds. Billed per second by resolution."),
+    resolution: z
+      .enum(["480P", "768P", "2K", "4K"])
+      .default("2K")
+      .describe("480P and 768P are native. 2K and 4K upscale a 768P base."),
+    seed: z.number().int().nullable().optional(),
+    enable_safety_checker: z.boolean().default(true),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return the video as base64 instead of a CDN URL."),
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .nullable()
+      .default("balanced"),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("adaptive"),
+    reference_image_urls: z.array(z.string().min(1)).max(9).optional(),
+    reference_video_urls: z.array(z.string().min(1)).max(3).optional(),
+    reference_audio_urls: z.array(z.string().min(1)).max(3).optional(),
+    loras: z
+      .array(FalMinimaxH3LoraWeightSchema)
+      .min(1)
+      .max(3)
+      .describe("LoRA adapters applied to the transformer."),
+  })
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message: "MiniMax H3 accepts at most 12 reference files in total",
+      path: ["reference_image_urls"],
+    }
+  );
+
 // MiniMax Hailuo 03 (H3) reference-to-video
 // ---------------------------------------------------------------------------
 
@@ -3426,6 +3478,17 @@ export type FalMinimaxH3ImageToVideoLoraRequestInput =
   FalMinimaxH3ImageToVideoLoraRequest;
 export type FalMinimaxH3ImageToVideoLoraParsedRequest = z.output<
   typeof FalMinimaxH3ImageToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoLoraParams = z.infer<
+  typeof FalMinimaxH3ReferenceToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoLoraRequest = z.input<
+  typeof FalMinimaxH3ReferenceToVideoLoraRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoLoraRequestInput =
+  FalMinimaxH3ReferenceToVideoLoraRequest;
+export type FalMinimaxH3ReferenceToVideoLoraParsedRequest = z.output<
+  typeof FalMinimaxH3ReferenceToVideoLoraRequestSchema
 >;
 export type FalMinimaxH3ReferenceToVideoParams = z.infer<
   typeof FalMinimaxH3ReferenceToVideoRequestSchema
@@ -17098,6 +17161,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
   "minimax/h3/image-to-video/lora": FalMinimaxH3ImageToVideoLoraRequestSchema,
   "minimax/h3/reference-to-video": FalMinimaxH3ReferenceToVideoRequestSchema,
+  "minimax/h3/reference-to-video/lora":
+    FalMinimaxH3ReferenceToVideoLoraRequestSchema,
   "minimax/h3/t2v/trainer": FalMinimaxH3T2vTrainerRequestSchema,
   "minimax/h3/i2v/trainer": FalMinimaxH3I2vTrainerRequestSchema,
   "minimax/h3/flf2v/trainer": FalMinimaxH3Flf2vTrainerRequestSchema,

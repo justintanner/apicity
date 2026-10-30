@@ -156,10 +156,13 @@ export type {
   FalVeedCleanAudioRequestInput,
   FalVeedCleanAudioParsedRequest,
   FalKlingVideoO3ProTextToVideoRequest,
+  FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoRequestInput,
+  FalKlingVideoO3ProImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3ProTextToVideoParsedRequest,
+  FalKlingVideoO3ProImageToVideoParsedRequest,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
   FalFlux2FlexRequest,
   FalFlux2FlexRequestInput,
@@ -908,6 +911,7 @@ import type {
   FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
   FalKlingVideoO3ProTextToVideoRequest,
+  FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
   FalKandinsky6ProImageToVideoRequest,
@@ -6528,8 +6532,26 @@ type FalKlingVideoO3ProTextToVideoFn = ((
 };
 
 export interface FalRunKlingVideoO3ProNamespace {
+  imageToVideo: FalKlingVideoO3ProImageToVideoFn;
   textToVideo: FalKlingVideoO3ProTextToVideoFn;
 }
+
+export interface FalKlingVideoO3ProImageToVideoResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3ProImageToVideoFn = ((
+  params: FalKlingVideoO3ProImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3ProImageToVideoResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3ProImageToVideoRequest>;
+};
 
 export interface FalKlingVideoO3StandardImageToVideoResponse {
   /** The generated video. */

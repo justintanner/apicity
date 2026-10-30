@@ -4059,6 +4059,24 @@ export type FalFlux3ImageToVideoDraftParsedRequest = z.output<
   typeof FalFlux3ImageToVideoDraftRequestSchema
 >;
 
+// FLUX 3 draft extend-video. Queue OpenAPI read 2026-10-30.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/draft/api
+export const FalFlux3ExtendVideoDraftRequestSchema =
+  FalFlux3TextToVideoDraftRequestSchema.extend({
+    video_url: z
+      .string()
+      .describe("URL or data URI of the source MP4, at most 50 MiB."),
+  });
+
+export type FalFlux3ExtendVideoDraftRequest = z.input<
+  typeof FalFlux3ExtendVideoDraftRequestSchema
+>;
+export type FalFlux3ExtendVideoDraftRequestInput =
+  FalFlux3ExtendVideoDraftRequest;
+export type FalFlux3ExtendVideoDraftParsedRequest = z.output<
+  typeof FalFlux3ExtendVideoDraftRequestSchema
+>;
+
 // FLUX 3 draft first-last-frame-to-video. Queue OpenAPI read 2026-10-30.
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/draft/api
 export const FalFlux3FirstLastFrameToVideoDraftRequestSchema =
@@ -17185,6 +17203,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/image-to-video": FalFlux3ImageToVideoRequestSchema,
   "blackforestlabs/flux-3/image-to-video/draft":
     FalFlux3ImageToVideoDraftRequestSchema,
+  "blackforestlabs/flux-3/extend-video/draft":
+    FalFlux3ExtendVideoDraftRequestSchema,
   "blackforestlabs/flux-3/first-last-frame-to-video/draft":
     FalFlux3FirstLastFrameToVideoDraftRequestSchema,
   "blackforestlabs/flux-3/keyframes-to-video/draft":

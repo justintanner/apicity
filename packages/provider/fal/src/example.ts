@@ -243,6 +243,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.extendVideo.draft": {
+    "source": "fal/flux3-extend-video-draft",
+    "payload": {
+      "prompt": "Continue the shot as the cat blinks slowly and tilts its head.",
+      "video_url": "https://v3b.fal.media/files/b/0ab06600/PQFal3vxkzt3U9AMmn63P_output.mp4",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.firstLastFrameToVideo": {
     "source": "fal/flux-3-first-last-frame-to-video",
     "payload": {

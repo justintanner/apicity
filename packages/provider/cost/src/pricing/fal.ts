@@ -1940,6 +1940,25 @@ export const fal: Record<string, ModelPricing> = {
     source: source("veed/clean-audio", "2026-10-16"),
   },
   // Pro 1080p: $0.112/s without audio, $0.14/s with audio.
+  "fal-ai/kling-video/o3/pro/reference-to-video": perSecondTiered(
+    "fal-ai/kling-video/o3/pro/reference-to-video",
+    [
+      {
+        name: "generate_audio",
+        pick: (p) =>
+          typeof p.generate_audio === "boolean"
+            ? String(p.generate_audio)
+            : "false",
+      },
+    ],
+    { false: 0.112, true: 0.14 },
+    (p) =>
+      Array.isArray(p.multi_prompt) && p.multi_prompt.length > 0
+        ? undefined
+        : klingSeconds(p),
+    "2026-10-30"
+  ),
+  // Pro 1080p: $0.112/s without audio, $0.14/s with audio.
   "fal-ai/kling-video/o3/pro/image-to-video": perSecondTiered(
     "fal-ai/kling-video/o3/pro/image-to-video",
     [

@@ -156,12 +156,15 @@ export type {
   FalVeedCleanAudioRequestInput,
   FalVeedCleanAudioParsedRequest,
   FalKlingVideoO3ProTextToVideoRequest,
+  FalKlingVideoO3ProReferenceToVideoRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoRequestInput,
+  FalKlingVideoO3ProReferenceToVideoRequestInput,
   FalKlingVideoO3ProImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3ProTextToVideoParsedRequest,
+  FalKlingVideoO3ProReferenceToVideoParsedRequest,
   FalKlingVideoO3ProImageToVideoParsedRequest,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
   FalFlux2FlexRequest,
@@ -911,6 +914,7 @@ import type {
   FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
   FalKlingVideoO3ProTextToVideoRequest,
+  FalKlingVideoO3ProReferenceToVideoRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
@@ -6532,9 +6536,27 @@ type FalKlingVideoO3ProTextToVideoFn = ((
 };
 
 export interface FalRunKlingVideoO3ProNamespace {
+  referenceToVideo: FalKlingVideoO3ProReferenceToVideoFn;
   imageToVideo: FalKlingVideoO3ProImageToVideoFn;
   textToVideo: FalKlingVideoO3ProTextToVideoFn;
 }
+
+export interface FalKlingVideoO3ProReferenceToVideoResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3ProReferenceToVideoFn = ((
+  params: FalKlingVideoO3ProReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3ProReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3ProReferenceToVideoRequest>;
+};
 
 export interface FalKlingVideoO3ProImageToVideoResponse {
   /** The generated video. */

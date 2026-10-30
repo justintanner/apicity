@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling O3 Pro reference-to-video with reference images, elements, and audio-dependent pricing (ac-r2l24g).
+
 - Added Kling O3 Pro image-to-video with optional end frames, multi-shot prompts, and audio-dependent pricing (ac-cg2abc).
 
 - Added Kling O3 Pro text-to-video with three-to-fifteen-second durations and audio-dependent pricing (ac-yjtof3).

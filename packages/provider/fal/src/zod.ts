@@ -12247,6 +12247,115 @@ export type FalKlingVideoO3ProImageToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3ProImageToVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/reference-to-video/api
+export const FalKlingVideoO3ProReferenceToVideoRequestSchema = z
+  .object({
+    enable_safety_checker: z.boolean().default(true),
+    prompt: z
+      .string()
+      .max(2500)
+      .nullable()
+      .optional()
+      .describe(
+        "Either prompt or multi_prompt must be provided, but not both."
+      ),
+    multi_prompt: z
+      .array(FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional(),
+    start_image_url:
+      FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable()
+        .optional()
+        .describe("Image to use as the first frame."),
+    end_image_url: FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable()
+      .optional()
+      .describe("Image to use as the last frame."),
+    image_urls: z
+      .array(FalKlingVideoO3StandardImageToVideoImageUrlSchema)
+      .nullable()
+      .optional()
+      .describe(
+        "Reference images for style/appearance, referenced as @Image1, @Image2. Maximum four combined elements and images when using video."
+      ),
+    elements: z
+      .array(
+        z.object({
+          frontal_image_url:
+            FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable().optional(),
+          reference_image_urls: z
+            .array(FalKlingVideoO3StandardImageToVideoImageUrlSchema)
+            .min(1)
+            .max(3)
+            .nullable()
+            .optional()
+            .describe(
+              "Additional reference images from different angles; one to three images."
+            ),
+          video_url: z
+            .string()
+            .nullable()
+            .optional()
+            .describe(
+              "Element video; at most one element per request may use video."
+            ),
+          voice_id: z.string().nullable().optional(),
+        })
+      )
+      .nullable()
+      .optional()
+      .describe("Characters or objects referenced as @Element1, @Element2."),
+    generate_audio: z.boolean().default(false),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5"),
+    shot_type: z.enum(["customize", "intelligent"]).default("customize"),
+    aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).default("16:9"),
+  })
+  .refine((v) => (v.prompt != null) !== (v.multi_prompt != null), {
+    message: "Provide exactly one of prompt or multi_prompt",
+    path: ["prompt"],
+  })
+  .superRefine((v, ctx) => {
+    const videos = v.elements?.filter((e) => e.video_url != null).length ?? 0;
+    if (videos > 1)
+      ctx.addIssue({
+        code: "custom",
+        message: "At most one element may use video",
+        path: ["elements"],
+      });
+    if (
+      videos > 0 &&
+      (v.elements?.length ?? 0) + (v.image_urls?.length ?? 0) > 4
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "At most four combined elements and images when using video",
+        path: ["image_urls"],
+      });
+  });
+export type FalKlingVideoO3ProReferenceToVideoRequest = z.input<
+  typeof FalKlingVideoO3ProReferenceToVideoRequestSchema
+>;
+export type FalKlingVideoO3ProReferenceToVideoRequestInput =
+  FalKlingVideoO3ProReferenceToVideoRequest;
+export type FalKlingVideoO3ProReferenceToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3ProReferenceToVideoRequestSchema
+>;
+
 // VEED Clean Audio
 export const FalVeedCleanAudioRequestSchema = z.object({
   audio_url: z
@@ -17282,6 +17391,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
+  "fal-ai/kling-video/o3/pro/reference-to-video":
+    FalKlingVideoO3ProReferenceToVideoRequestSchema,
   "fal-ai/kling-video/o3/pro/image-to-video":
     FalKlingVideoO3ProImageToVideoRequestSchema,
   "fal-ai/kling-video/o3/pro/text-to-video":

@@ -4041,6 +4041,24 @@ export type FalFlux3TextToVideoDraftParsedRequest = z.output<
   typeof FalFlux3TextToVideoDraftRequestSchema
 >;
 
+// FLUX 3 draft image-to-video. Queue OpenAPI read 2026-10-30.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api
+export const FalFlux3ImageToVideoDraftRequestSchema =
+  FalFlux3TextToVideoDraftRequestSchema.extend({
+    image_url: z
+      .string()
+      .describe("URL or data URI of the opening keyframe image."),
+  });
+
+export type FalFlux3ImageToVideoDraftRequest = z.input<
+  typeof FalFlux3ImageToVideoDraftRequestSchema
+>;
+export type FalFlux3ImageToVideoDraftRequestInput =
+  FalFlux3ImageToVideoDraftRequest;
+export type FalFlux3ImageToVideoDraftParsedRequest = z.output<
+  typeof FalFlux3ImageToVideoDraftRequestSchema
+>;
+
 export const FalFlux3ImageToVideoRequestSchema =
   Flux3VideoRequestBaseSchema.extend({
     image_url: z.string(),
@@ -17107,6 +17125,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/first-last-frame-to-video":
     FalFlux3FirstLastFrameToVideoRequestSchema,
   "blackforestlabs/flux-3/image-to-video": FalFlux3ImageToVideoRequestSchema,
+  "blackforestlabs/flux-3/image-to-video/draft":
+    FalFlux3ImageToVideoDraftRequestSchema,
   "blackforestlabs/flux-3/keyframes-to-video":
     FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,

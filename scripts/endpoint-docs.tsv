@@ -820,6 +820,7 @@ fal	alibaba.wan3p0Prime.referenceToVideo	POST	https://fal.run/alibaba/wan-3.0-pr
 fal	blackforestlabs.flux3.extendVideo	POST	https://fal.run/blackforestlabs/flux-3/extend-video	https://fal.ai/models/blackforestlabs/flux-3/extend-video/api
 fal	blackforestlabs.flux3.firstLastFrameToVideo	POST	https://fal.run/blackforestlabs/flux-3/first-last-frame-to-video	https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
 fal	blackforestlabs.flux3.imageToVideo	POST	https://fal.run/blackforestlabs/flux-3/image-to-video	https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
+fal	blackforestlabs.flux3.imageToVideo.draft	POST	https://fal.run/blackforestlabs/flux-3/image-to-video/draft	https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api
 fal	blackforestlabs.flux3.keyframesToVideo	POST	https://fal.run/blackforestlabs/flux-3/keyframes-to-video	https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
 fal	blackforestlabs.flux3.textToVideo	POST	https://fal.run/blackforestlabs/flux-3/text-to-video	https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
 fal	blackforestlabs.flux3.textToVideo.draft	POST	https://fal.run/blackforestlabs/flux-3/text-to-video/draft	https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api

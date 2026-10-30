@@ -731,6 +731,9 @@ export type {
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoRequestInput,
   FalFlux3ImageToVideoParsedRequest,
+  FalFlux3ImageToVideoDraftRequest,
+  FalFlux3ImageToVideoDraftRequestInput,
+  FalFlux3ImageToVideoDraftParsedRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequestInput,
   FalFlux3FirstLastFrameToVideoParsedRequest,
@@ -1054,6 +1057,7 @@ import type {
   FalFlux3TextToVideoRequest,
   FalFlux3TextToVideoDraftRequest,
   FalFlux3ImageToVideoRequest,
+  FalFlux3ImageToVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
@@ -1445,6 +1449,12 @@ export interface FalFlux3Keyframe {
 }
 
 export interface FalFlux3TextToVideoDraftResponse {
+  video: FalFile;
+  /** Durable encrypted bundle for draft-enhance, when supplied upstream. */
+  draft_cache?: FalFile | null;
+}
+
+export interface FalFlux3ImageToVideoDraftResponse {
   video: FalFile;
   /** Durable encrypted bundle for draft-enhance, when supplied upstream. */
   draft_cache?: FalFile | null;
@@ -3500,12 +3510,21 @@ export interface FalRunFlux3TextToVideoNamespace {
   schema: ApicitySchema<FalFlux3TextToVideoRequest>;
 }
 
-type FalFlux3ImageToVideoFn = ((
-  params: FalFlux3ImageToVideoRequest,
+type FalFlux3ImageToVideoDraftFn = ((
+  params: FalFlux3ImageToVideoDraftRequest,
   signal?: AbortSignal
-) => Promise<FalFlux3VideoResponse>) & {
-  schema: ApicitySchema<FalFlux3ImageToVideoRequest>;
+) => Promise<FalFlux3ImageToVideoDraftResponse>) & {
+  schema: ApicitySchema<FalFlux3ImageToVideoDraftRequest>;
 };
+
+export interface FalRunFlux3ImageToVideoNamespace {
+  draft: FalFlux3ImageToVideoDraftFn;
+  (
+    params: FalFlux3ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3VideoResponse>;
+  schema: ApicitySchema<FalFlux3ImageToVideoRequest>;
+}
 
 type FalFlux3FirstLastFrameToVideoFn = ((
   params: FalFlux3FirstLastFrameToVideoRequest,
@@ -3538,7 +3557,7 @@ type FalFluxVideoUpscaleFn = ((
 export interface FalRunFlux3Namespace {
   extendVideo: FalFlux3ExtendVideoFn;
   firstLastFrameToVideo: FalFlux3FirstLastFrameToVideoFn;
-  imageToVideo: FalFlux3ImageToVideoFn;
+  imageToVideo: FalRunFlux3ImageToVideoNamespace;
   keyframesToVideo: FalFlux3KeyframesToVideoFn;
   textToVideo: FalRunFlux3TextToVideoNamespace;
 }

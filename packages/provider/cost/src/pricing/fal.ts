@@ -2913,6 +2913,13 @@ export const fal: Record<string, ModelPricing> = {
     flux3Seconds,
     "2026-10-30"
   ),
+  // Draft card: $0.06/output second at 720p. Auto needs a duration hint.
+  "blackforestlabs/flux-3/image-to-video/draft": perSecond(
+    "blackforestlabs/flux-3/image-to-video/draft",
+    0.06,
+    flux3Seconds,
+    "2026-10-30"
+  ),
   "blackforestlabs/flux-3/text-to-video": perSecondTiered(
     "blackforestlabs/flux-3/text-to-video",
     [resolutionTier("720p")],

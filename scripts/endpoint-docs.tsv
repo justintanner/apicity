@@ -1857,3 +1857,4 @@ fal	kling.v4.referenceToVideo	POST	https://fal.run/kling/v4/reference-to-video	h
 fal	kling.v4.videoToVideo.edit	POST	https://fal.run/kling/v4/video-to-video/edit	https://fal.ai/models/kling/v4/video-to-video/edit/api
 fal	heygen.v2.videoAgent	POST	https://fal.run/fal-ai/heygen/v2/video-agent	https://fal.ai/models/fal-ai/heygen/v2/video-agent/api
 fal	heygen.v3.videoAgent	POST	https://fal.run/fal-ai/heygen/v3/video-agent	https://fal.ai/models/fal-ai/heygen/v3/video-agent/api
+fal	klingVideo.o3.pro.textToVideo	POST	https://fal.run/fal-ai/kling-video/o3/pro/text-to-video	https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api

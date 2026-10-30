@@ -12019,6 +12019,75 @@ const FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema =
       .describe("The duration of this shot in seconds"),
   });
 
+// Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api
+export const FalKlingVideoO3ProTextToVideoRequestSchema = z
+  .object({
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Disabling safety checks requires account authorization; unauthorized requests are always checked."
+      ),
+    prompt: z
+      .string()
+      .max(2500)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt for video generation. Required unless multi_prompt is provided."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video duration in seconds (3-15s)."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "1:1"])
+      .default("16:9")
+      .describe("Aspect ratio of the generated video."),
+    generate_audio: z
+      .boolean()
+      .default(false)
+      .describe("Whether to generate native audio for the video."),
+    multi_prompt: z
+      .array(FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional()
+      .describe("List of prompts for multi-shot video generation."),
+    shot_type: z
+      .enum(["customize", "intelligent"])
+      .default("customize")
+      .describe(
+        "The type of multi-shot video generation. 'intelligent' lets the model automatically determine shot structure."
+      ),
+  })
+  .refine((v) => v.prompt != null || v.multi_prompt != null, {
+    message:
+      "fal-ai/kling-video/o3/pro/text-to-video needs prompt or multi_prompt",
+    path: ["prompt"],
+  });
+export type FalKlingVideoO3ProTextToVideoRequest = z.input<
+  typeof FalKlingVideoO3ProTextToVideoRequestSchema
+>;
+export type FalKlingVideoO3ProTextToVideoRequestInput =
+  FalKlingVideoO3ProTextToVideoRequest;
+export type FalKlingVideoO3ProTextToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3ProTextToVideoRequestSchema
+>;
+
 // Kling O3 Standard image-to-video: live OpenAPI 2026-10-15. Field order
 // follows x-fal-order-properties. The prompt-or-multi_prompt rule comes from
 // the prompt description; a guarded 422 probe cannot reach it.
@@ -17135,6 +17204,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
+  "fal-ai/kling-video/o3/pro/text-to-video":
+    FalKlingVideoO3ProTextToVideoRequestSchema,
   "fal-ai/kling-video/o3/standard/image-to-video":
     FalKlingVideoO3StandardImageToVideoRequestSchema,
   "fal-ai/flux-2-flex": FalFlux2FlexRequestSchema,

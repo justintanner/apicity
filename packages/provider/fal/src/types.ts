@@ -155,8 +155,11 @@ export type {
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioRequestInput,
   FalVeedCleanAudioParsedRequest,
+  FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
+  FalKlingVideoO3ProTextToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoRequestInput,
+  FalKlingVideoO3ProTextToVideoParsedRequest,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
   FalFlux2FlexRequest,
   FalFlux2FlexRequestInput,
@@ -904,6 +907,7 @@ import type {
   FalOpenrouterRouterDecisionsRequest,
   FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
+  FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
   FalKandinsky6ProImageToVideoRequest,
@@ -6506,6 +6510,27 @@ export interface FalRunNamespace {
   flux2Flex: FalRunFlux2FlexNamespace;
 }
 
+export interface FalKlingVideoO3ProTextToVideoResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3ProTextToVideoFn = ((
+  params: FalKlingVideoO3ProTextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3ProTextToVideoResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3ProTextToVideoRequest>;
+};
+
+export interface FalRunKlingVideoO3ProNamespace {
+  textToVideo: FalKlingVideoO3ProTextToVideoFn;
+}
+
 export interface FalKlingVideoO3StandardImageToVideoResponse {
   /** The generated video. */
   video: {
@@ -6528,6 +6553,7 @@ export interface FalRunKlingVideoO3StandardNamespace {
 }
 
 export interface FalRunKlingVideoO3Namespace {
+  pro: FalRunKlingVideoO3ProNamespace;
   standard: FalRunKlingVideoO3StandardNamespace;
 }
 

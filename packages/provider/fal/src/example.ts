@@ -1488,6 +1488,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.o3.pro.textToVideo": {
+    "source": "fal/kling-video-o3-pro-text-to-video",
+    "payload": {
+      "prompt": "A cat blinks, static camera.",
+      "duration": "3",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3.standard.imageToVideo": {
     "source": "fal/kling-video-o3-standard-image-to-video",
     "payload": {

@@ -1939,6 +1939,25 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "": 0.0125 / 60 },
     source: source("veed/clean-audio", "2026-10-16"),
   },
+  // Pro 1080p: $0.112/s without audio, $0.14/s with audio.
+  "fal-ai/kling-video/o3/pro/text-to-video": perSecondTiered(
+    "fal-ai/kling-video/o3/pro/text-to-video",
+    [
+      {
+        name: "generate_audio",
+        pick: (p) =>
+          typeof p.generate_audio === "boolean"
+            ? String(p.generate_audio)
+            : "false",
+      },
+    ],
+    { false: 0.112, true: 0.14 },
+    (p) =>
+      Array.isArray(p.multi_prompt) && p.multi_prompt.length > 0
+        ? undefined
+        : klingSeconds(p),
+    "2026-10-30"
+  ),
   // Bills each requested second (duration, a digit string defaulting to "5")
   // at $0.084 with audio off and $0.112 with audio on; generate_audio
   // defaults to false here, unlike Kling v3. fal counts the charge in

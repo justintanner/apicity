@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-274 endpoints across 56 groups. Each method mirrors an upstream URL path.
+275 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2232,6 +2232,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### klingVideo
+
+<details>
+<summary><code>POST</code> <b><code>fal.klingVideo.o3.pro.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kling-video/o3/pro/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api)
+
+```typescript
+const res = await fal.run.klingVideo.o3.pro.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.o3.standard.imageToVideo</code></b></summary>

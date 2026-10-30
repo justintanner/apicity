@@ -157,14 +157,17 @@ export type {
   FalVeedCleanAudioParsedRequest,
   FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3ProReferenceToVideoRequest,
+  FalKlingVideoO3ProVideoToVideoEditRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoRequestInput,
   FalKlingVideoO3ProReferenceToVideoRequestInput,
+  FalKlingVideoO3ProVideoToVideoEditRequestInput,
   FalKlingVideoO3ProImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3ProTextToVideoParsedRequest,
   FalKlingVideoO3ProReferenceToVideoParsedRequest,
+  FalKlingVideoO3ProVideoToVideoEditParsedRequest,
   FalKlingVideoO3ProImageToVideoParsedRequest,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
   FalFlux2FlexRequest,
@@ -915,6 +918,7 @@ import type {
   FalVeedCleanAudioRequest,
   FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3ProReferenceToVideoRequest,
+  FalKlingVideoO3ProVideoToVideoEditRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
@@ -6536,6 +6540,7 @@ type FalKlingVideoO3ProTextToVideoFn = ((
 };
 
 export interface FalRunKlingVideoO3ProNamespace {
+  videoToVideo: FalRunKlingVideoO3ProVideoToVideoNamespace;
   referenceToVideo: FalKlingVideoO3ProReferenceToVideoFn;
   imageToVideo: FalKlingVideoO3ProImageToVideoFn;
   textToVideo: FalKlingVideoO3ProTextToVideoFn;
@@ -6557,6 +6562,27 @@ type FalKlingVideoO3ProReferenceToVideoFn = ((
 ) => Promise<FalKlingVideoO3ProReferenceToVideoResponse>) & {
   schema: ApicitySchema<FalKlingVideoO3ProReferenceToVideoRequest>;
 };
+
+export interface FalKlingVideoO3ProVideoToVideoEditResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3ProVideoToVideoEditFn = ((
+  params: FalKlingVideoO3ProVideoToVideoEditRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3ProVideoToVideoEditResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3ProVideoToVideoEditRequest>;
+};
+
+export interface FalRunKlingVideoO3ProVideoToVideoNamespace {
+  edit: FalKlingVideoO3ProVideoToVideoEditFn;
+}
 
 export interface FalKlingVideoO3ProImageToVideoResponse {
   /** The generated video. */

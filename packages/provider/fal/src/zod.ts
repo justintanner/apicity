@@ -12356,6 +12356,64 @@ export type FalKlingVideoO3ProReferenceToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3ProReferenceToVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/edit/api
+export const FalKlingVideoO3ProVideoToVideoEditRequestSchema = z
+  .object({
+    enable_safety_checker: z.boolean().default(true),
+    prompt: z
+      .string()
+      .max(2500)
+      .describe(
+        "Text prompt for video generation. Reference the video as @Video1."
+      ),
+    video_url: z
+      .string()
+      .describe(
+        "Reference MP4/MOV video: 3-15 seconds, 720-3840px, maximum 200MB."
+      ),
+    image_urls: z
+      .array(FalKlingVideoO3StandardImageToVideoImageUrlSchema)
+      .nullable()
+      .optional()
+      .describe(
+        "Reference images as @Image1, @Image2. Maximum four combined images and elements."
+      ),
+    keep_audio: z
+      .boolean()
+      .default(true)
+      .describe("Keep the original audio from the reference video."),
+    elements: z
+      .array(
+        z.object({
+          frontal_image_url:
+            FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable().optional(),
+          reference_image_urls: z
+            .array(FalKlingVideoO3StandardImageToVideoImageUrlSchema)
+            .min(1)
+            .max(3)
+            .nullable()
+            .optional()
+            .describe("Additional reference images; one to three images."),
+        })
+      )
+      .nullable()
+      .optional()
+      .describe("Characters or objects referenced as @Element1, @Element2."),
+    shot_type: z.literal("customize").default("customize"),
+  })
+  .refine((v) => (v.elements?.length ?? 0) + (v.image_urls?.length ?? 0) <= 4, {
+    message: "At most four combined elements and reference images",
+    path: ["image_urls"],
+  });
+export type FalKlingVideoO3ProVideoToVideoEditRequest = z.input<
+  typeof FalKlingVideoO3ProVideoToVideoEditRequestSchema
+>;
+export type FalKlingVideoO3ProVideoToVideoEditRequestInput =
+  FalKlingVideoO3ProVideoToVideoEditRequest;
+export type FalKlingVideoO3ProVideoToVideoEditParsedRequest = z.output<
+  typeof FalKlingVideoO3ProVideoToVideoEditRequestSchema
+>;
+
 // VEED Clean Audio
 export const FalVeedCleanAudioRequestSchema = z.object({
   audio_url: z
@@ -17393,6 +17451,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
   "fal-ai/kling-video/o3/pro/reference-to-video":
     FalKlingVideoO3ProReferenceToVideoRequestSchema,
+  "fal-ai/kling-video/o3/pro/video-to-video/edit":
+    FalKlingVideoO3ProVideoToVideoEditRequestSchema,
   "fal-ai/kling-video/o3/pro/image-to-video":
     FalKlingVideoO3ProImageToVideoRequestSchema,
   "fal-ai/kling-video/o3/pro/text-to-video":

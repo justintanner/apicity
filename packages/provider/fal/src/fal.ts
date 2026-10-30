@@ -85,10 +85,12 @@ import {
   FalVeedCleanAudioResponse,
   FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3ProReferenceToVideoRequest,
+  FalKlingVideoO3ProVideoToVideoEditRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoResponse,
   FalKlingVideoO3ProReferenceToVideoResponse,
+  FalKlingVideoO3ProVideoToVideoEditResponse,
   FalKlingVideoO3ProImageToVideoResponse,
   FalKlingVideoO3StandardImageToVideoResponse,
   FalFlux2FlexRequest,
@@ -570,6 +572,7 @@ import {
   FalVeedCleanAudioRequestSchema,
   FalKlingVideoO3ProTextToVideoRequestSchema,
   FalKlingVideoO3ProReferenceToVideoRequestSchema,
+  FalKlingVideoO3ProVideoToVideoEditRequestSchema,
   FalKlingVideoO3ProImageToVideoRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
@@ -3919,6 +3922,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/edit
+  // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/edit/api
+  const klingVideoO3ProVideoToVideoEdit = jsonBody<
+    FalKlingVideoO3ProVideoToVideoEditRequest,
+    FalKlingVideoO3ProVideoToVideoEditResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/pro/video-to-video/edit",
+    FalKlingVideoO3ProVideoToVideoEditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/kling-video/o3/pro/image-to-video
   // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video/api
   const klingVideoO3ProImageToVideo = jsonBody<
@@ -5152,6 +5168,12 @@ export function createFal(opts: FalOptions): FalProvider {
     klingVideo: {
       o3: {
         pro: {
+          videoToVideo: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/edit
+            // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/edit/api
+            edit: klingVideoO3ProVideoToVideoEdit,
+          },
           // sig-ok: stylistic dotPath divergence from URL
           // POST https://fal.run/fal-ai/kling-video/o3/pro/reference-to-video
           // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/reference-to-video/api

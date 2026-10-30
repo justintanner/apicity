@@ -1506,6 +1506,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.o3.pro.videoToVideo.edit": {
+    "source": "fal/kling-video-o3-pro-video-to-video-edit",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "prompt": "Add a blue bow tie to the cat in @Video1.",
+      "keep_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3.standard.imageToVideo": {
     "source": "fal/kling-video-o3-standard-image-to-video",
     "payload": {

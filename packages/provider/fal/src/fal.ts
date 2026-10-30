@@ -430,6 +430,8 @@ import {
   FalWanV2p7EditVideoRequest,
   FalWanV2p7EditVideoResponse,
   FalFlux3TextToVideoRequest,
+  FalFlux3TextToVideoDraftRequest,
+  FalFlux3TextToVideoDraftResponse,
   FalFlux3ImageToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
@@ -698,6 +700,7 @@ import {
   FalWanV2p7ReferenceToVideoRequestSchema,
   FalWanV2p7EditVideoRequestSchema,
   FalFlux3TextToVideoRequestSchema,
+  FalFlux3TextToVideoDraftRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
@@ -1350,6 +1353,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/text-to-video",
     FalFlux3TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/text-to-video/draft
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api
+  const blackforestlabsFlux3TextToVideoDraft = jsonBody<
+    FalFlux3TextToVideoDraftRequest,
+    FalFlux3TextToVideoDraftResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/text-to-video/draft",
+    FalFlux3TextToVideoDraftRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4731,7 +4746,11 @@ export function createFal(opts: FalOptions): FalProvider {
         firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
         imageToVideo: blackforestlabsFlux3ImageToVideo,
         keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
-        textToVideo: blackforestlabsFlux3TextToVideo,
+        textToVideo: Object.assign(blackforestlabsFlux3TextToVideo, {
+          // POST https://fal.run/blackforestlabs/flux-3/text-to-video/draft
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api
+          draft: blackforestlabsFlux3TextToVideoDraft,
+        }),
       },
       flux3Max: {
         // POST https://fal.run/blackforestlabs/flux-3-max/image-to-video

@@ -465,6 +465,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.textToVideo.draft": {
+    "source": "fal/flux3-text-to-video-draft",
+    "payload": {
+      "prompt": "A paper boat drifts across a calm pond, one continuous shot.",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3Max.imageToVideo": {
     "source": "fal/flux-3-max-image-to-video",
     "payload": {

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-266 endpoints across 56 groups. Each method mirrors an upstream URL path.
+267 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -597,6 +597,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.blackforestlabs.flux3.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.textToVideo.draft</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3/text-to-video/draft</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3.textToVideo.draft({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

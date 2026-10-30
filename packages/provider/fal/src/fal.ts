@@ -83,7 +83,9 @@ import {
   FalCreatifyBorealResponse,
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioResponse,
+  FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
+  FalKlingVideoO3ProTextToVideoResponse,
   FalKlingVideoO3StandardImageToVideoResponse,
   FalFlux2FlexRequest,
   FalFlux2FlexResponse,
@@ -562,6 +564,7 @@ import {
   FalOpenrouterRouterDecisionsRequestSchema,
   FalCreatifyBorealRequestSchema,
   FalVeedCleanAudioRequestSchema,
+  FalKlingVideoO3ProTextToVideoRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
   FalKandinsky6ProImageToVideoRequestSchema,
@@ -3884,6 +3887,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/o3/pro/text-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api
+  const klingVideoO3ProTextToVideo = jsonBody<
+    FalKlingVideoO3ProTextToVideoRequest,
+    FalKlingVideoO3ProTextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/pro/text-to-video",
+    FalKlingVideoO3ProTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/kling-video/o3/standard/image-to-video
   // Docs: https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
   const klingVideoO3StandardImageToVideo = jsonBody<
@@ -5103,6 +5119,12 @@ export function createFal(opts: FalOptions): FalProvider {
     qwenImage,
     klingVideo: {
       o3: {
+        pro: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/fal-ai/kling-video/o3/pro/text-to-video
+          // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api
+          textToVideo: klingVideoO3ProTextToVideo,
+        },
         standard: {
           // sig-ok: stylistic dotPath divergence from URL
           // POST https://fal.run/fal-ai/kling-video/o3/standard/image-to-video

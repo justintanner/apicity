@@ -1939,6 +1939,13 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "": 0.0125 / 60 },
     source: source("veed/clean-audio", "2026-10-16"),
   },
+  // Generated duration is not carried in the request: use costHints.durationSeconds.
+  "fal-ai/kling-video/o3/pro/video-to-video/edit": perSecond(
+    "fal-ai/kling-video/o3/pro/video-to-video/edit",
+    0.168,
+    hintedSeconds,
+    "2026-10-30"
+  ),
   // Pro 1080p: $0.112/s without audio, $0.14/s with audio.
   "fal-ai/kling-video/o3/pro/reference-to-video": perSecondTiered(
     "fal-ai/kling-video/o3/pro/reference-to-video",

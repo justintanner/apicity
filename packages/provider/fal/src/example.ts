@@ -209,6 +209,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.draftEnhance": {
+    "source": "fal/flux3-draft-enhance",
+    "payload": {
+      "draft_cache_url": "https://v3b.fal.media/files/b/0ab0651b/e5ypKJpJdJ4PygzykfPnh_draft_cache.bin"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.editImage": {
     "source": "fal/flux-3-edit-image",
     "payload": {

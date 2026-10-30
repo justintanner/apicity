@@ -726,8 +726,11 @@ export type {
   FalFlux3TextToVideoRequestInput,
   FalFlux3TextToVideoParsedRequest,
   FalFlux3TextToVideoDraftRequest,
+  FalFlux3DraftEnhanceRequest,
   FalFlux3TextToVideoDraftRequestInput,
+  FalFlux3DraftEnhanceRequestInput,
   FalFlux3TextToVideoDraftParsedRequest,
+  FalFlux3DraftEnhanceParsedRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoRequestInput,
   FalFlux3ImageToVideoParsedRequest,
@@ -1065,6 +1068,7 @@ import type {
   FalWanV2p7EditVideoRequest,
   FalFlux3TextToVideoRequest,
   FalFlux3TextToVideoDraftRequest,
+  FalFlux3DraftEnhanceRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
   FalFlux3ExtendVideoDraftRequest,
@@ -1458,6 +1462,10 @@ export type FalFlux3Duration = "auto" | number;
 export interface FalFlux3Keyframe {
   image_url: string;
   frame_index: number;
+}
+
+export interface FalFlux3DraftEnhanceResponse {
+  video: FalFile;
 }
 
 export interface FalFlux3TextToVideoDraftResponse {
@@ -3611,7 +3619,15 @@ type FalFluxVideoUpscaleFn = ((
   schema: ApicitySchema<FalFluxVideoUpscaleRequest>;
 };
 
+type FalFlux3DraftEnhanceFn = ((
+  params: FalFlux3DraftEnhanceRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3DraftEnhanceResponse>) & {
+  schema: ApicitySchema<FalFlux3DraftEnhanceRequest>;
+};
+
 export interface FalRunFlux3Namespace {
+  draftEnhance: FalFlux3DraftEnhanceFn;
   extendVideo: FalRunFlux3ExtendVideoNamespace;
   firstLastFrameToVideo: FalRunFlux3FirstLastFrameToVideoNamespace;
   imageToVideo: FalRunFlux3ImageToVideoNamespace;

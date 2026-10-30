@@ -4021,6 +4021,24 @@ export type FalFlux3TextToVideoParsedRequest = z.output<
   typeof FalFlux3TextToVideoRequestSchema
 >;
 
+// FLUX 3 draft enhancement. Queue OpenAPI read 2026-10-30.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/draft-enhance/api
+export const FalFlux3DraftEnhanceRequestSchema = z.object({
+  draft_cache_url: z
+    .string()
+    .describe(
+      "URL or data URI of the encrypted draft cache bundle to enhance."
+    ),
+  safety_tolerance: z.number().int().min(0).max(4).default(2),
+});
+export type FalFlux3DraftEnhanceRequest = z.input<
+  typeof FalFlux3DraftEnhanceRequestSchema
+>;
+export type FalFlux3DraftEnhanceRequestInput = FalFlux3DraftEnhanceRequest;
+export type FalFlux3DraftEnhanceParsedRequest = z.output<
+  typeof FalFlux3DraftEnhanceRequestSchema
+>;
+
 // FLUX 3 draft text-to-video. Queue OpenAPI read 2026-10-30.
 // Drafts are 720p; duration defaults to auto, so paid calls should pin it.
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api
@@ -17214,6 +17232,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video/draft":
     FalFlux3TextToVideoDraftRequestSchema,
+  "blackforestlabs/flux-3/draft-enhance": FalFlux3DraftEnhanceRequestSchema,
   "blackforestlabs/flux-3-max/image-to-video":
     FalFlux3MaxImageToVideoRequestSchema,
   "blackforestlabs/flux-3-max/keyframes-to-video":

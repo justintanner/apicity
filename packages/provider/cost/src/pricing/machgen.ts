@@ -1,3 +1,4 @@
+import { machgenImages } from "./machgen-images";
 import type { CostHints } from "../types";
 import type { ModelPricing, PerUnitPricing } from "./types";
 import { asNumber, asObject, hintSeconds, hintInputSeconds } from "./helpers";
@@ -269,6 +270,7 @@ h3Rates["upscale|1440"] = 0.05;
 const h3Flat = (p: Record<string, unknown>) =>
   h3Mode(p) === "r2v-video" || h3Mode(p) === "upscale";
 export const machgen: Record<string, ModelPricing> = {
+  ...machgenImages,
   "MiniMax-H3": {
     kind: "perUnit",
     unit: "seconds",

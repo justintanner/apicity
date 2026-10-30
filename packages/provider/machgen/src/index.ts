@@ -17,6 +17,7 @@ export type {
   MachGenUpscaleQuoteRequest,
   MachGenUpscaleQuoteResponse,
   MachGenVideoConfig,
+  MachGenImageConfig,
 } from "./types";
 export type {
   MachGenUpscaleGrid,
@@ -24,6 +25,8 @@ export type {
   MachGenVideoModel,
 } from "./zod";
 export {
+  MACHGEN_IMAGE_MODELS,
+  MachGenImageConfigSchema,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_UPSCALE,

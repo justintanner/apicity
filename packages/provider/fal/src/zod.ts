@@ -4021,6 +4021,26 @@ export type FalFlux3TextToVideoParsedRequest = z.output<
   typeof FalFlux3TextToVideoRequestSchema
 >;
 
+// FLUX 3 draft text-to-video. Queue OpenAPI read 2026-10-30.
+// Drafts are 720p; duration defaults to auto, so paid calls should pin it.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api
+export const FalFlux3TextToVideoDraftRequestSchema = z.object({
+  prompt: z.string(),
+  aspect_ratio: Flux3AspectRatioSchema.default("auto"),
+  duration: Flux3DurationSchema.default("auto"),
+  generate_audio: z.boolean().default(true),
+  safety_tolerance: z.number().int().min(0).max(4).default(2),
+});
+
+export type FalFlux3TextToVideoDraftRequest = z.input<
+  typeof FalFlux3TextToVideoDraftRequestSchema
+>;
+export type FalFlux3TextToVideoDraftRequestInput =
+  FalFlux3TextToVideoDraftRequest;
+export type FalFlux3TextToVideoDraftParsedRequest = z.output<
+  typeof FalFlux3TextToVideoDraftRequestSchema
+>;
+
 export const FalFlux3ImageToVideoRequestSchema =
   Flux3VideoRequestBaseSchema.extend({
     image_url: z.string(),
@@ -17090,6 +17110,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/keyframes-to-video":
     FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
+  "blackforestlabs/flux-3/text-to-video/draft":
+    FalFlux3TextToVideoDraftRequestSchema,
   "blackforestlabs/flux-3-max/image-to-video":
     FalFlux3MaxImageToVideoRequestSchema,
   "blackforestlabs/flux-3-max/keyframes-to-video":

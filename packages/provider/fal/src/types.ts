@@ -725,6 +725,9 @@ export type {
   FalFlux3TextToVideoRequest,
   FalFlux3TextToVideoRequestInput,
   FalFlux3TextToVideoParsedRequest,
+  FalFlux3TextToVideoDraftRequest,
+  FalFlux3TextToVideoDraftRequestInput,
+  FalFlux3TextToVideoDraftParsedRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoRequestInput,
   FalFlux3ImageToVideoParsedRequest,
@@ -1049,6 +1052,7 @@ import type {
   FalWanV2p7ReferenceToVideoRequest,
   FalWanV2p7EditVideoRequest,
   FalFlux3TextToVideoRequest,
+  FalFlux3TextToVideoDraftRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
@@ -1438,6 +1442,12 @@ export type FalFlux3Duration = "auto" | number;
 export interface FalFlux3Keyframe {
   image_url: string;
   frame_index: number;
+}
+
+export interface FalFlux3TextToVideoDraftResponse {
+  video: FalFile;
+  /** Durable encrypted bundle for draft-enhance, when supplied upstream. */
+  draft_cache?: FalFile | null;
 }
 
 export interface FalFlux3VideoResponse {
@@ -3474,12 +3484,21 @@ export interface FalRunHunyuanNamespace {
   v3: FalRunHunyuanV3Namespace;
 }
 
-type FalFlux3TextToVideoFn = ((
-  params: FalFlux3TextToVideoRequest,
+type FalFlux3TextToVideoDraftFn = ((
+  params: FalFlux3TextToVideoDraftRequest,
   signal?: AbortSignal
-) => Promise<FalFlux3VideoResponse>) & {
-  schema: ApicitySchema<FalFlux3TextToVideoRequest>;
+) => Promise<FalFlux3TextToVideoDraftResponse>) & {
+  schema: ApicitySchema<FalFlux3TextToVideoDraftRequest>;
 };
+
+export interface FalRunFlux3TextToVideoNamespace {
+  draft: FalFlux3TextToVideoDraftFn;
+  (
+    params: FalFlux3TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3VideoResponse>;
+  schema: ApicitySchema<FalFlux3TextToVideoRequest>;
+}
 
 type FalFlux3ImageToVideoFn = ((
   params: FalFlux3ImageToVideoRequest,
@@ -3521,7 +3540,7 @@ export interface FalRunFlux3Namespace {
   firstLastFrameToVideo: FalFlux3FirstLastFrameToVideoFn;
   imageToVideo: FalFlux3ImageToVideoFn;
   keyframesToVideo: FalFlux3KeyframesToVideoFn;
-  textToVideo: FalFlux3TextToVideoFn;
+  textToVideo: FalRunFlux3TextToVideoNamespace;
 }
 
 type FalFlux3MaxTextToVideoFn = ((

@@ -1451,6 +1451,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "mirelo-ai/sfx2.0/video-to-video",
   "mureka/api/generate/instrumental",
   "mureka/api/generate/podcast",
+  "openai/gpt-image-2",
   "openai/gpt-image-2.5/flare/edit",
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",
@@ -1477,6 +1478,12 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Public card read 2026-10-30. Canonical image cells are examples;
+  // actual billing depends on text/image input, cached and output tokens.
+  "openai/gpt-image-2": {
+    unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
+    why: "quality and dimensions do not fix actual token usage; canonical image prices exclude variable prompt/reasoning usage",
+  },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per
   // resolution tier ($0.008 at 768x768).

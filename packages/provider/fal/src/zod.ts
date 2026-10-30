@@ -9199,6 +9199,33 @@ export type FalOpenaiGptImage2ParsedRequest = z.output<
   typeof FalOpenaiGptImage2RequestSchema
 >;
 
+// GPT Image 2 edit, queue OpenAPI read 2026-10-30.
+// Docs: https://fal.ai/models/openai/gpt-image-2/edit/api
+export const FalOpenaiGptImage2EditRequestSchema =
+  FalOpenaiGptImage2RequestSchema.extend({
+    image_urls: z
+      .array(z.string())
+      .max(16)
+      .describe("Reference image URLs or data URIs; at most 16 images."),
+    image_size: FalOpenaiGptImage2RequestSchema.shape.image_size
+      .unwrap()
+      .default("auto"),
+    mask_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Mask URL: white regions are edited and black regions are kept."
+      ),
+  });
+export type FalOpenaiGptImage2EditRequest = z.input<
+  typeof FalOpenaiGptImage2EditRequestSchema
+>;
+export type FalOpenaiGptImage2EditRequestInput = FalOpenaiGptImage2EditRequest;
+export type FalOpenaiGptImage2EditParsedRequest = z.output<
+  typeof FalOpenaiGptImage2EditRequestSchema
+>;
+
 const FalOpenaiGptImage2p5SunburstEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -17044,6 +17071,7 @@ export type FalHeygenV3VideoAgentParsedRequest = z.output<
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openai/gpt-image-2": FalOpenaiGptImage2RequestSchema,
+  "openai/gpt-image-2/edit": FalOpenaiGptImage2EditRequestSchema,
   "fal-ai/heygen/v3/video-agent": FalHeygenV3VideoAgentRequestSchema,
   "fal-ai/heygen/v2/video-agent": FalHeygenV2VideoAgentRequestSchema,
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,

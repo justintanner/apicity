@@ -153,8 +153,10 @@ import {
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageResponse,
   FalOpenaiGptImage2Response,
+  FalOpenaiGptImage2EditResponse,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2Request,
+  FalOpenaiGptImage2EditRequest,
   FalOpenaiGptImage2p5SunburstEditResponse,
   FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditResponse,
@@ -596,6 +598,7 @@ import {
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2RequestSchema,
+  FalOpenaiGptImage2EditRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
   FalMetaMuseImageEditRequestSchema,
   FalKreaV3EditRequestSchema,
@@ -3461,6 +3464,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/openai/gpt-image-2/edit
+  // Docs: https://fal.ai/models/openai/gpt-image-2/edit/api
+  const openaiGptImage2Edit = jsonBody<
+    FalOpenaiGptImage2EditRequest,
+    FalOpenaiGptImage2EditResponse
+  >("POST", "/openai/gpt-image-2/edit", FalOpenaiGptImage2EditRequestSchema, {
+    base: runBaseURL,
+  });
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/openai/gpt-image-2.5/flare/text-to-image
   // Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
@@ -4627,7 +4639,11 @@ export function createFal(opts: FalOptions): FalProvider {
     openai: {
       // POST https://fal.run/openai/gpt-image-2
       // Docs: https://fal.ai/models/openai/gpt-image-2/api
-      gptImage2: openaiGptImage2,
+      gptImage2: Object.assign(openaiGptImage2, {
+        // POST https://fal.run/openai/gpt-image-2/edit
+        // Docs: https://fal.ai/models/openai/gpt-image-2/edit/api
+        edit: openaiGptImage2Edit,
+      }),
       gptImage2p5: {
         flare: {
           // sig-ok: stylistic dotPath divergence from URL

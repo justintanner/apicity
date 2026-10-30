@@ -1452,6 +1452,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "mureka/api/generate/instrumental",
   "mureka/api/generate/podcast",
   "openai/gpt-image-2",
+  "openai/gpt-image-2/edit",
   "openai/gpt-image-2.5/flare/edit",
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",
@@ -1483,6 +1484,10 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "openai/gpt-image-2": {
     unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
     why: "quality and dimensions do not fix actual token usage; canonical image prices exclude variable prompt/reasoning usage",
+  },
+  "openai/gpt-image-2/edit": {
+    unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
+    why: "quality and dimensions do not fix actual token usage; input images and prompt/reasoning add variable token usage",
   },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal GPT Image 2 editing as a child of the existing callable, with reference images, optional mask, and dynamic token-pricing metadata (ac-613okl).
+
 - Added fal GPT Image 2 text-to-image with image size validation and explicit dynamic token-pricing metadata (ac-5mij8c).
 
 - Added FLUX 3 draft enhancement from a reusable cache, with $0.29/second pricing based on a duration cost hint (ac-9secmm).

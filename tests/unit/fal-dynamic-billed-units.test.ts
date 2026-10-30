@@ -43,6 +43,7 @@ const CHECKED = [
   "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",
   "openai/gpt-image-2",
+  "openai/gpt-image-2/edit",
 ];
 
 // The substrings every dynamic fal warning keeps (fal-pricing-estimate pins

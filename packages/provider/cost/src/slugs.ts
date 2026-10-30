@@ -567,6 +567,7 @@ export const MODEL_SLUGS = {
     "blackforestlabs/flux-3/image-to-video": "flux3",
     "blackforestlabs/flux-3/image-to-video/draft": "flux3i2vd",
     "blackforestlabs/flux-3/first-last-frame-to-video/draft": "flux3flf2vd",
+    "blackforestlabs/flux-3/keyframes-to-video/draft": "flux3kf2vd",
     "blackforestlabs/flux-3/keyframes-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video/draft": "flux3t2vd",
@@ -1166,6 +1167,8 @@ export const MODEL_DISPLAY = {
       "FLUX 3 Image-to-Video Draft",
     "blackforestlabs/flux-3/first-last-frame-to-video/draft":
       "FLUX 3 First/Last-Frame-to-Video Draft",
+    "blackforestlabs/flux-3/keyframes-to-video/draft":
+      "FLUX 3 Keyframes-to-Video Draft",
     "blackforestlabs/flux-3/keyframes-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video/draft": "FLUX 3 Text-to-Video Draft",

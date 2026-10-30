@@ -435,8 +435,10 @@ import {
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoDraftRequest,
+  FalFlux3KeyframesToVideoDraftRequest,
   FalFlux3ImageToVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoDraftResponse,
+  FalFlux3KeyframesToVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
@@ -708,6 +710,7 @@ import {
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3ImageToVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoDraftRequestSchema,
+  FalFlux3KeyframesToVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
   FalFlux3MaxTextToVideoRequestSchema,
@@ -1395,6 +1398,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/first-last-frame-to-video/draft",
     FalFlux3FirstLastFrameToVideoDraftRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/keyframes-to-video/draft
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/draft/api
+  const blackforestlabsFlux3KeyframesToVideoDraft = jsonBody<
+    FalFlux3KeyframesToVideoDraftRequest,
+    FalFlux3KeyframesToVideoDraftResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/keyframes-to-video/draft",
+    FalFlux3KeyframesToVideoDraftRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4786,7 +4801,11 @@ export function createFal(opts: FalOptions): FalProvider {
           // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api
           draft: blackforestlabsFlux3ImageToVideoDraft,
         }),
-        keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
+        keyframesToVideo: Object.assign(blackforestlabsFlux3KeyframesToVideo, {
+          // POST https://fal.run/blackforestlabs/flux-3/keyframes-to-video/draft
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/draft/api
+          draft: blackforestlabsFlux3KeyframesToVideoDraft,
+        }),
         textToVideo: Object.assign(blackforestlabsFlux3TextToVideo, {
           // POST https://fal.run/blackforestlabs/flux-3/text-to-video/draft
           // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/draft/api

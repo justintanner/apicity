@@ -4123,6 +4123,42 @@ export const FalFlux3KeyframeSchema = z.object({
 
 const Flux3KeyframesSchema = z.array(FalFlux3KeyframeSchema).min(1).max(10);
 
+// FLUX 3 draft keyframes-to-video. Queue OpenAPI read 2026-10-30.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/draft/api
+export const FalFlux3KeyframesToVideoDraftRequestSchema =
+  FalFlux3TextToVideoDraftRequestSchema.extend({
+    duration: Flux3NumericDurationSchema.default(5),
+    keyframes: Flux3KeyframesSchema,
+  }).superRefine((request, ctx) => {
+    const seen = new Set<number>();
+    request.keyframes.forEach((keyframe, index) => {
+      if (seen.has(keyframe.frame_index)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["keyframes", index, "frame_index"],
+          message: "Keyframe positions must be unique.",
+        });
+      }
+      seen.add(keyframe.frame_index);
+      if (keyframe.frame_index > request.duration * 24) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["keyframes", index, "frame_index"],
+          message: "Keyframe position must not exceed duration * 24.",
+        });
+      }
+    });
+  });
+
+export type FalFlux3KeyframesToVideoDraftRequest = z.input<
+  typeof FalFlux3KeyframesToVideoDraftRequestSchema
+>;
+export type FalFlux3KeyframesToVideoDraftRequestInput =
+  FalFlux3KeyframesToVideoDraftRequest;
+export type FalFlux3KeyframesToVideoDraftParsedRequest = z.output<
+  typeof FalFlux3KeyframesToVideoDraftRequestSchema
+>;
+
 export const FalFlux3KeyframesToVideoRequestSchema =
   Flux3VideoRequestBaseSchema.extend({
     duration: Flux3NumericDurationSchema.optional(),
@@ -17151,6 +17187,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalFlux3ImageToVideoDraftRequestSchema,
   "blackforestlabs/flux-3/first-last-frame-to-video/draft":
     FalFlux3FirstLastFrameToVideoDraftRequestSchema,
+  "blackforestlabs/flux-3/keyframes-to-video/draft":
+    FalFlux3KeyframesToVideoDraftRequestSchema,
   "blackforestlabs/flux-3/keyframes-to-video":
     FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,

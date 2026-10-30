@@ -258,8 +258,11 @@ export type {
   FalOpenaiGptImage2p5FlareEditRequestInput,
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageParsedRequest,
+  FalOpenaiGptImage2ParsedRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequestInput,
+  FalOpenaiGptImage2RequestInput,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
+  FalOpenaiGptImage2Request,
   FalOpenaiGptImage2p5SunburstEditParsedRequest,
   FalOpenaiGptImage2p5SunburstEditRequestInput,
   FalOpenaiGptImage2p5SunburstEditRequest,
@@ -933,6 +936,7 @@ import type {
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
+  FalOpenaiGptImage2Request,
   FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditRequest,
   FalKreaV3EditRequest,
@@ -5489,7 +5493,27 @@ export interface FalRunOpenaiGptImage2p5Namespace {
   sunburst: FalRunOpenaiGptImage2p5SunburstNamespace;
 }
 
+export interface FalOpenaiGptImage2Response {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+export interface FalRunOpenaiGptImage2Namespace {
+  (
+    params: FalOpenaiGptImage2Request,
+    signal?: AbortSignal
+  ): Promise<FalOpenaiGptImage2Response>;
+  schema: ApicitySchema<FalOpenaiGptImage2Request>;
+}
+
 export interface FalRunOpenaiNamespace {
+  gptImage2: FalRunOpenaiGptImage2Namespace;
   gptImage2p5: FalRunOpenaiGptImage2p5Namespace;
 }
 

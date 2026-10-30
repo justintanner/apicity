@@ -2443,6 +2443,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openai.gptImage2": {
+    "source": "fal/openai-gpt-image-2",
+    "payload": {
+      "prompt": "A blue ceramic cup on a white table.",
+      "image_size": {
+        "width": 1024,
+        "height": 640
+      },
+      "quality": "low",
+      "num_images": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST openai.gptImage2p5.flare.edit": {
     "source": "fal/openai-gpt-image-2-5-flare-edit",
     "payload": {

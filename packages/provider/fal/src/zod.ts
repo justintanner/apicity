@@ -9146,6 +9146,59 @@ export type FalKreaV3TextToImageParsedRequest = z.output<
   typeof FalKreaV3TextToImageRequestSchema
 >;
 
+// GPT Image 2 concrete size limits, queue OpenAPI/docs read 2026-10-30.
+const FalOpenaiGptImage2ImageSizeSchema = z
+  .object({
+    width: z.number().int().positive().multipleOf(16).max(3840).default(512),
+    height: z.number().int().positive().multipleOf(16).max(3840).default(512),
+  })
+  .superRefine(({ width, height }, ctx) => {
+    const pixels = width * height;
+    if (pixels < 655360 || pixels > 8294400)
+      ctx.addIssue({
+        code: "custom",
+        message: "Image area must be between 655360 and 8294400 pixels.",
+      });
+    if (Math.max(width, height) / Math.min(width, height) > 3)
+      ctx.addIssue({
+        code: "custom",
+        message: "Aspect ratio must not exceed 3:1.",
+      });
+  });
+
+// Docs: https://fal.ai/models/openai/gpt-image-2/api
+export const FalOpenaiGptImage2RequestSchema = z.object({
+  prompt: z.string().min(1).max(32000),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2ImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3"),
+  background: z.enum(["auto", "transparent", "opaque"]).default("auto"),
+  quality: z.enum(["auto", "low", "medium", "high"]).default("high"),
+  num_images: z.number().int().min(1).max(10).default(1),
+  output_format: z.enum(["jpeg", "png", "webp"]).default("png"),
+  output_compression: z.number().int().min(0).max(100).nullable().optional(),
+  sync_mode: z.boolean().default(false),
+  enable_safety_checker: z.boolean().default(true),
+});
+export type FalOpenaiGptImage2Request = z.input<
+  typeof FalOpenaiGptImage2RequestSchema
+>;
+export type FalOpenaiGptImage2RequestInput = FalOpenaiGptImage2Request;
+export type FalOpenaiGptImage2ParsedRequest = z.output<
+  typeof FalOpenaiGptImage2RequestSchema
+>;
+
 const FalOpenaiGptImage2p5SunburstEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -16990,6 +17043,7 @@ export type FalHeygenV3VideoAgentParsedRequest = z.output<
 >;
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "openai/gpt-image-2": FalOpenaiGptImage2RequestSchema,
   "fal-ai/heygen/v3/video-agent": FalHeygenV3VideoAgentRequestSchema,
   "fal-ai/heygen/v2/video-agent": FalHeygenV2VideoAgentRequestSchema,
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,

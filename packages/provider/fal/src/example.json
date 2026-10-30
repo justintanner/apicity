@@ -1516,6 +1516,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.o3.pro.videoToVideo.reference": {
+    "source": "fal/kling-video-o3-pro-video-to-video-reference",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "prompt": "A cat blinks, following the motion in @Video1.",
+      "keep_audio": false,
+      "duration": "3"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3.standard.imageToVideo": {
     "source": "fal/kling-video-o3-standard-image-to-video",
     "payload": {

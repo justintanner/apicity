@@ -157,16 +157,19 @@ export type {
   FalVeedCleanAudioParsedRequest,
   FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3ProReferenceToVideoRequest,
+  FalKlingVideoO3ProVideoToVideoReferenceRequest,
   FalKlingVideoO3ProVideoToVideoEditRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoRequestInput,
   FalKlingVideoO3ProReferenceToVideoRequestInput,
+  FalKlingVideoO3ProVideoToVideoReferenceRequestInput,
   FalKlingVideoO3ProVideoToVideoEditRequestInput,
   FalKlingVideoO3ProImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3ProTextToVideoParsedRequest,
   FalKlingVideoO3ProReferenceToVideoParsedRequest,
+  FalKlingVideoO3ProVideoToVideoReferenceParsedRequest,
   FalKlingVideoO3ProVideoToVideoEditParsedRequest,
   FalKlingVideoO3ProImageToVideoParsedRequest,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
@@ -918,6 +921,7 @@ import type {
   FalVeedCleanAudioRequest,
   FalKlingVideoO3ProTextToVideoRequest,
   FalKlingVideoO3ProReferenceToVideoRequest,
+  FalKlingVideoO3ProVideoToVideoReferenceRequest,
   FalKlingVideoO3ProVideoToVideoEditRequest,
   FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
@@ -6563,6 +6567,23 @@ type FalKlingVideoO3ProReferenceToVideoFn = ((
   schema: ApicitySchema<FalKlingVideoO3ProReferenceToVideoRequest>;
 };
 
+export interface FalKlingVideoO3ProVideoToVideoReferenceResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3ProVideoToVideoReferenceFn = ((
+  params: FalKlingVideoO3ProVideoToVideoReferenceRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3ProVideoToVideoReferenceResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3ProVideoToVideoReferenceRequest>;
+};
+
 export interface FalKlingVideoO3ProVideoToVideoEditResponse {
   /** The generated video. */
   video: {
@@ -6581,6 +6602,7 @@ type FalKlingVideoO3ProVideoToVideoEditFn = ((
 };
 
 export interface FalRunKlingVideoO3ProVideoToVideoNamespace {
+  reference: FalKlingVideoO3ProVideoToVideoReferenceFn;
   edit: FalKlingVideoO3ProVideoToVideoEditFn;
 }
 

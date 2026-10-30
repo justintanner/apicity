@@ -1939,6 +1939,19 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "": 0.0125 / 60 },
     source: source("veed/clean-audio", "2026-10-16"),
   },
+  // Reference output duration can be requested explicitly, otherwise needs a hint.
+  "fal-ai/kling-video/o3/pro/video-to-video/reference": perSecond(
+    "fal-ai/kling-video/o3/pro/video-to-video/reference",
+    0.168,
+    (p, hints) =>
+      p.duration == null
+        ? hintedSeconds(p, hints)
+        : typeof p.duration === "string" &&
+            /^(?:[3-9]|1[0-5])$/.test(p.duration)
+          ? Number(p.duration)
+          : undefined,
+    "2026-10-30"
+  ),
   // Generated duration is not carried in the request: use costHints.durationSeconds.
   "fal-ai/kling-video/o3/pro/video-to-video/edit": perSecond(
     "fal-ai/kling-video/o3/pro/video-to-video/edit",

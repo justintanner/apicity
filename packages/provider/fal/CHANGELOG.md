@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling O3 Pro video-to-video reference with output duration/aspect controls and per-second pricing (ac-hpnzx5).
+
 - Added Kling O3 Pro video editing with reference images/elements and duration-hinted pricing (ac-uxyuke).
 
 - Added Kling O3 Pro reference-to-video with reference images, elements, and audio-dependent pricing (ac-r2l24g).

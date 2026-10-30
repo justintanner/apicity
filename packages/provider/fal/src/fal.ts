@@ -434,7 +434,9 @@ import {
   FalFlux3TextToVideoDraftResponse,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
+  FalFlux3FirstLastFrameToVideoDraftRequest,
   FalFlux3ImageToVideoDraftResponse,
+  FalFlux3FirstLastFrameToVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
@@ -705,6 +707,7 @@ import {
   FalFlux3TextToVideoDraftRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3ImageToVideoDraftRequestSchema,
+  FalFlux3FirstLastFrameToVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
   FalFlux3MaxTextToVideoRequestSchema,
@@ -1380,6 +1383,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/image-to-video/draft",
     FalFlux3ImageToVideoDraftRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/first-last-frame-to-video/draft
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/draft/api
+  const blackforestlabsFlux3FirstLastFrameToVideoDraft = jsonBody<
+    FalFlux3FirstLastFrameToVideoDraftRequest,
+    FalFlux3FirstLastFrameToVideoDraftResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/first-last-frame-to-video/draft",
+    FalFlux3FirstLastFrameToVideoDraftRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4758,7 +4773,14 @@ export function createFal(opts: FalOptions): FalProvider {
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
         editImage: blackforestlabsFlux3EditImage,
         extendVideo: blackforestlabsFlux3ExtendVideo,
-        firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
+        firstLastFrameToVideo: Object.assign(
+          blackforestlabsFlux3FirstLastFrameToVideo,
+          {
+            // POST https://fal.run/blackforestlabs/flux-3/first-last-frame-to-video/draft
+            // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/draft/api
+            draft: blackforestlabsFlux3FirstLastFrameToVideoDraft,
+          }
+        ),
         imageToVideo: Object.assign(blackforestlabsFlux3ImageToVideo, {
           // POST https://fal.run/blackforestlabs/flux-3/image-to-video/draft
           // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api

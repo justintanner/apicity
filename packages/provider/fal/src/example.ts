@@ -1807,6 +1807,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.imageToVideo.lora": {
+    "source": "fal/minimax-h3-image-to-video-lora",
+    "payload": {
+      "prompt": "apct cat blinks slowly and tilts its head.",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled",
+      "loras": [
+        {
+          "path": "https://v3b.fal.media/files/b/0ab058f9/aofDUIQaypkDoDSR5qbeD_lora_weights_step_00001.safetensors",
+          "scale": 1
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.ref2va.trainer": {
     "source": "fal/minimax-h3-ref2va-trainer",
     "payload": {

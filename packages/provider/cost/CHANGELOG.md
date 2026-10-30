@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MiniMax H3 image-to-video LoRA (`minimax/h3/image-to-video/lora`, slug `h3i2vl`) pricing from the 2026-10-29 llms card. Same per-second rates as the text-to-video LoRA: $0.0625 at 480P, $0.075 at 768P, $0.1625 at 2K (the default), and $0.20 at 4K. Duration defaults to 5 seconds. The recording uses duration 5 and resolution 480P. The usage API billed 5 seconds ($0.3125) (ac-jhn0kn).
+
 - MiniMax H3 text-to-video LoRA (`minimax/h3/text-to-video/lora`, slug `h3t2vl`) pricing from the 2026-10-29 llms card. $0.0625 per second at 480P, $0.075 at 768P, $0.1625 at 2K (the default), and $0.20 at 4K. Duration defaults to 5 seconds. The recording uses duration 5 and resolution 480P. The usage API billed 5 seconds ($0.3125) (ac-wulsa2).
 
 - MiniMax H3 reference-to-video-audio trainer (`minimax/h3/ref2va/trainer`, slug `h3ref2vt`) pricing from the 2026-10-29 pricing API. $0.015 per `number_of_steps` (range 1–15000, default 2000). The estimator floors at 100 steps. The steps=1 recording billed 100 steps ($1.50). Each billed step counts as one generation (ac-tarrln).

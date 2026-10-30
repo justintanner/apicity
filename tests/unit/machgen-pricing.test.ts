@@ -175,6 +175,15 @@ describe("MachGen pricing", () => {
     const priced = new Set(
       evidence.rows.filter((r) => r.prices).map((r) => r.apiModel)
     );
+    // Image pricebook rows are independently verified in machgen-image.test.ts.
+    for (const model of [
+      "GPT-Image-2",
+      "GPT-Image-2.5-Sunburst",
+      "GPT-Image-2.5-Flare",
+      "Nano-Banana-2",
+      "Nano-Banana-2.1",
+    ])
+      priced.add(model);
     expect(Object.keys(PRICING.machgen).sort()).toEqual([...priced].sort());
     for (const row of evidence.rows.filter((r) => r.unpriced))
       expect(row.unpriced!.length, row.apiModel).toBeGreaterThan(0);
@@ -480,18 +489,28 @@ describe("MachGen pricing", () => {
   it("pins provenance, shared slugs and displays", () => {
     for (const [model, row] of Object.entries(PRICING.machgen)) {
       expect(row.source, model).toEqual(
-        model === "Seedance-2.5" || model === "Seedance-2.0"
+        row.kind === "perUnit" && row.unit === "images"
           ? {
               url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
-              asOf: "2026-10-29",
+              asOf: "2026-10-30",
             }
-          : {
-              url: "https://www.machgen.ai/pricing",
-              asOf: "2026-10-25",
-            }
+          : model === "Seedance-2.5" || model === "Seedance-2.0"
+            ? {
+                url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
+                asOf: "2026-10-29",
+              }
+            : {
+                url: "https://www.machgen.ai/pricing",
+                asOf: "2026-10-25",
+              }
       );
     }
     expect(MODEL_SLUGS.machgen).toEqual({
+      "GPT-Image-2": "gi2",
+      "GPT-Image-2.5-Sunburst": "gi2p5sb",
+      "GPT-Image-2.5-Flare": "gi2p5fl",
+      "Nano-Banana-2": "nb2",
+      "Nano-Banana-2.1": "nb21",
       "MiniMax-H3": "mmh3",
       "Seedance-2.5": "sd2p5",
       "Seedance-2.0": "sd2",

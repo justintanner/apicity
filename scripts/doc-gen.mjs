@@ -774,6 +774,15 @@ const PROVIDER_NOTES = new Map([
   [
     "machgen",
     [
+      "Image generation uses the same `api.v0.generate` method: set",
+      "`task_type` to `T2I` or `I2I` and supply `image_config` with `height`",
+      "and optional `width`/`aspect_ratio`. The frontier image IDs are",
+      "`GPT-Image-2`, `GPT-Image-2.5-Sunburst`, `GPT-Image-2.5-Flare`,",
+      "`Nano-Banana-2` and `Nano-Banana-2.1`. Edits take public HTTP(S)",
+      "`src_image_urls` or previous image `src_task_ids`. Poll `api.v0.tasks`",
+      "for `task_output.image`. GPT Image 2 defaults to high quality;",
+      '`optimization_level: "EXPRESS"` selects low quality. The recorded',
+      "1280×544 EXPRESS request billed $0.001385 before Generation Credit.",
       "Send `Alibaba-Wan-3.0` requests with MachGen's documented",
       '`video_config`: `aspect_ratio: "adaptive"`, `fps: 30` and `audio: true`.',
       "On 2026-10-22, seven Wan 3.0 tasks that omitted `aspect_ratio` and",

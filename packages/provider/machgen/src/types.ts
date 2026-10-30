@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   MachGenGenerateRequestSchema,
+  MachGenImageConfigSchema,
   MachGenUpscaleConfigSchema,
   MachGenUpscaleQuoteRequestSchema,
   MachGenVideoConfigSchema,
@@ -28,6 +29,7 @@ export interface MachGenOptions {
 export type MachGenGenerateRequest = z.infer<
   typeof MachGenGenerateRequestSchema
 >;
+export type MachGenImageConfig = z.infer<typeof MachGenImageConfigSchema>;
 export type MachGenVideoConfig = z.infer<typeof MachGenVideoConfigSchema>;
 export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;
 export type MachGenUpscaleQuoteRequest = z.infer<
@@ -43,7 +45,11 @@ export interface MachGenTaskStatusResponse {
   task_id: string;
   status: "PENDING" | "RUNNING" | "COMPLETED" | "FAILED";
   metadata: Record<string, unknown>;
-  task_output?: { video?: string; [key: string]: unknown } | null;
+  task_output?: {
+    image?: string;
+    video?: string;
+    [key: string]: unknown;
+  } | null;
   error_msg?: string | null;
   moderation?: Record<string, unknown> | null;
   generation_time_secs?: number | null;

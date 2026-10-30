@@ -658,6 +658,12 @@ export const MODEL_SLUGS = {
     "imagen-4": "nb2l",
   },
   machgen: {
+    "GPT-Image-2": "gi2",
+    "GPT-Image-2.5-Sunburst": "gi2p5sb",
+    "GPT-Image-2.5-Flare": "gi2p5fl",
+    "Nano-Banana-2": "nb2",
+    "Nano-Banana-2.1": "nb21",
+
     "MiniMax-H3": "mmh3",
     "Seedance-2.5": "sd2p5",
     "Seedance-2.0": "sd2",
@@ -1341,6 +1347,12 @@ export const MODEL_DISPLAY = {
     "imagen-4": "Nano Banana 2 Lite",
   },
   machgen: {
+    "GPT-Image-2": "GPT Image 2",
+    "GPT-Image-2.5-Sunburst": "GPT Image 2.5 Sunburst",
+    "GPT-Image-2.5-Flare": "GPT Image 2.5 Flare",
+    "Nano-Banana-2": "Nano Banana 2",
+    "Nano-Banana-2.1": "Nano Banana 2.1",
+
     "MiniMax-H3": "MiniMax H3",
     "Seedance-2.5": "Seedance 2.5",
     "Seedance-2.0": "Seedance 2",

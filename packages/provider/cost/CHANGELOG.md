@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MachGen T2I/I2I schemas for five frontier image models and size/quality-aware public-pricebook estimates (ac-qu8m4t).
+
 - Added Kling O3 Pro video-to-video reference with output duration/aspect controls and per-second pricing (ac-hpnzx5).
 
 - Added Kling O3 Pro video editing with reference images/elements and duration-hinted pricing (ac-uxyuke).

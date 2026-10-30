@@ -445,6 +445,23 @@ export const MachGenUpscaleConfigSchema = z
 const list = (values: readonly unknown[]) => values.join(", ");
 const isHttpUrl = (url: string) => /^https?:\/\//i.test(url);
 
+/** Frontier image models supported by the existing async generate endpoint. */
+export const MACHGEN_IMAGE_MODELS = [
+  "GPT-Image-2",
+  "GPT-Image-2.5-Sunburst",
+  "GPT-Image-2.5-Flare",
+  "Nano-Banana-2",
+  "Nano-Banana-2.1",
+] as const;
+
+export const MachGenImageConfigSchema = z.object({
+  height: z.number().int().positive(),
+  width: z.number().int().positive().optional(),
+  aspect_ratio: z.string().optional(),
+  infer_steps: z.number().int().positive().optional(),
+  guidance_scale: z.array(z.number()).optional(),
+});
+
 export const MachGenGenerateRequestSchema = z
   .object({
     model: z
@@ -454,10 +471,12 @@ export const MachGenGenerateRequestSchema = z
           ...MachGenVideoModel[],
         ]
       )
+      .or(z.enum(MACHGEN_IMAGE_MODELS))
       .or(MachGenModelAliasSchema),
-    task_type: z.enum(["T2V", "I2V", "R2V", "UPSCALE"]),
+    task_type: z.enum(["T2V", "I2V", "R2V", "UPSCALE", "T2I", "I2I"]),
     prompt: z.string(),
-    video_config: MachGenVideoConfigSchema,
+    video_config: MachGenVideoConfigSchema.optional(),
+    image_config: MachGenImageConfigSchema.optional(),
     upscale_config: MachGenUpscaleConfigSchema.optional(),
     enhance_prompt: z.boolean().optional(),
     prompt_enhancement_level: z
@@ -512,6 +531,35 @@ export const MachGenGenerateRequestSchema = z
     const videos = req.src_video_urls ?? [];
     const audios = req.src_audio_urls ?? [];
     const keyframes = req.keyframe_indices;
+    const imageModel = (MACHGEN_IMAGE_MODELS as readonly string[]).includes(
+      req.model
+    );
+    if (req.task_type === "T2I" || req.task_type === "I2I") {
+      if (Object.hasOwn(MACHGEN_VIDEO_MODEL_TASK_TYPES, req.model))
+        issue(["task_type"], `${req.model} does not support ${req.task_type}`);
+      if (!req.image_config)
+        issue(["image_config"], "image_config is required for image tasks");
+      if (
+        req.task_type === "I2I" &&
+        !images.length &&
+        !req.src_task_ids?.length
+      )
+        issue(["src_image_urls"], "I2I requires a source image or source task");
+      images.forEach((url, i) => {
+        if (!isHttpUrl(url))
+          issue(
+            ["src_image_urls", i],
+            "async image tasks require public http(s) source URLs"
+          );
+      });
+      return;
+    }
+    if (imageModel)
+      issue(["task_type"], `${req.model} supports only T2I and I2I`);
+    if (!req.video_config) {
+      issue(["video_config"], "video_config is required for video tasks");
+      return;
+    }
     const { duration_secs, num_frames } = req.video_config;
     if ((duration_secs === undefined) === (num_frames === undefined))
       issue(

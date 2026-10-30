@@ -252,6 +252,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.imageToVideo.draft": {
+    "source": "fal/flux3-image-to-video-draft",
+    "payload": {
+      "prompt": "The cat blinks slowly and tilts its head, one continuous shot.",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.keyframesToVideo": {
     "source": "fal/flux-3-keyframes-to-video",
     "payload": {

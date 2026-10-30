@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 image-to-video draft at `run.blackforestlabs.flux3.imageToVideo.draft`, with an opening-image request schema, optional draft cache, and $0.06/second pricing. Automatic duration requires a cost hint (ac-bgxlr1).
+
 - Added FLUX 3 text-to-video draft at `run.blackforestlabs.flux3.textToVideo.draft`, with a request schema, optional draft-cache response, and $0.06/second pricing. Automatic duration requires a cost hint (ac-81wixr).
 
 - Added MiniMax H3 reference-to-video LoRA at `run.minimax.h3.referenceToVideo.lora`, with request schema, reference limits, and per-second pricing by resolution ($0.0625/s at 480P; five seconds costs $0.3125) (ac-o2h6c6).

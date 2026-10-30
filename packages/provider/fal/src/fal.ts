@@ -433,6 +433,8 @@ import {
   FalFlux3TextToVideoDraftRequest,
   FalFlux3TextToVideoDraftResponse,
   FalFlux3ImageToVideoRequest,
+  FalFlux3ImageToVideoDraftRequest,
+  FalFlux3ImageToVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
@@ -702,6 +704,7 @@ import {
   FalFlux3TextToVideoRequestSchema,
   FalFlux3TextToVideoDraftRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
+  FalFlux3ImageToVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
   FalFlux3MaxTextToVideoRequestSchema,
@@ -1365,6 +1368,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/text-to-video/draft",
     FalFlux3TextToVideoDraftRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/image-to-video/draft
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api
+  const blackforestlabsFlux3ImageToVideoDraft = jsonBody<
+    FalFlux3ImageToVideoDraftRequest,
+    FalFlux3ImageToVideoDraftResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/image-to-video/draft",
+    FalFlux3ImageToVideoDraftRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4744,7 +4759,11 @@ export function createFal(opts: FalOptions): FalProvider {
         editImage: blackforestlabsFlux3EditImage,
         extendVideo: blackforestlabsFlux3ExtendVideo,
         firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
-        imageToVideo: blackforestlabsFlux3ImageToVideo,
+        imageToVideo: Object.assign(blackforestlabsFlux3ImageToVideo, {
+          // POST https://fal.run/blackforestlabs/flux-3/image-to-video/draft
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/draft/api
+          draft: blackforestlabsFlux3ImageToVideoDraft,
+        }),
         keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
         textToVideo: Object.assign(blackforestlabsFlux3TextToVideo, {
           // POST https://fal.run/blackforestlabs/flux-3/text-to-video/draft

@@ -434,9 +434,11 @@ import {
   FalFlux3TextToVideoDraftResponse,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
+  FalFlux3ExtendVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoDraftRequest,
   FalFlux3KeyframesToVideoDraftRequest,
   FalFlux3ImageToVideoDraftResponse,
+  FalFlux3ExtendVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoDraftResponse,
   FalFlux3KeyframesToVideoDraftResponse,
   FalFlux3FirstLastFrameToVideoRequest,
@@ -709,6 +711,7 @@ import {
   FalFlux3TextToVideoDraftRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3ImageToVideoDraftRequestSchema,
+  FalFlux3ExtendVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoDraftRequestSchema,
   FalFlux3KeyframesToVideoDraftRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
@@ -1386,6 +1389,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/image-to-video/draft",
     FalFlux3ImageToVideoDraftRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/extend-video/draft
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/draft/api
+  const blackforestlabsFlux3ExtendVideoDraft = jsonBody<
+    FalFlux3ExtendVideoDraftRequest,
+    FalFlux3ExtendVideoDraftResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/extend-video/draft",
+    FalFlux3ExtendVideoDraftRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4787,7 +4802,11 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/blackforestlabs/flux-3/edit-image
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
         editImage: blackforestlabsFlux3EditImage,
-        extendVideo: blackforestlabsFlux3ExtendVideo,
+        extendVideo: Object.assign(blackforestlabsFlux3ExtendVideo, {
+          // POST https://fal.run/blackforestlabs/flux-3/extend-video/draft
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/draft/api
+          draft: blackforestlabsFlux3ExtendVideoDraft,
+        }),
         firstLastFrameToVideo: Object.assign(
           blackforestlabsFlux3FirstLastFrameToVideo,
           {

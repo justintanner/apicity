@@ -2920,6 +2920,13 @@ export const fal: Record<string, ModelPricing> = {
     flux3Seconds,
     "2026-10-30"
   ),
+  // Extend draft card: $0.12/output second. Auto needs a duration hint.
+  "blackforestlabs/flux-3/extend-video/draft": perSecond(
+    "blackforestlabs/flux-3/extend-video/draft",
+    0.12,
+    flux3Seconds,
+    "2026-10-30"
+  ),
   // Draft card: $0.06/output second at 720p. Duration defaults to five seconds.
   "blackforestlabs/flux-3/first-last-frame-to-video/draft": perSecond(
     "blackforestlabs/flux-3/first-last-frame-to-video/draft",

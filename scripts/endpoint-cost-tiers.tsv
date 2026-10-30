@@ -515,6 +515,7 @@ fal	blackforestlabs.flux3.firstLastFrameToVideo.draft	POST	prohibitive	Media-gen
 fal	blackforestlabs.flux3.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.imageToVideo.draft	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.keyframesToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	blackforestlabs.flux3.keyframesToVideo.draft	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.klein.base.editImage.lora	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.klein.base.textToImage.lora	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.klein.base.trainer	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

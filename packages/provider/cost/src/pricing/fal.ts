@@ -2927,6 +2927,13 @@ export const fal: Record<string, ModelPricing> = {
     numericSeconds(5),
     "2026-10-30"
   ),
+  // Draft card: $0.06/output second at 720p. Duration defaults to five seconds.
+  "blackforestlabs/flux-3/keyframes-to-video/draft": perSecond(
+    "blackforestlabs/flux-3/keyframes-to-video/draft",
+    0.06,
+    numericSeconds(5),
+    "2026-10-30"
+  ),
   "blackforestlabs/flux-3/text-to-video": perSecondTiered(
     "blackforestlabs/flux-3/text-to-video",
     [resolutionTier("720p")],

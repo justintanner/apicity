@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 keyframes-to-video draft with keyframe position validation, a five-second default, optional draft cache, and $0.06/second pricing (ac-dma2rd).
+
 - Added FLUX 3 first/last-frame draft with required boundary images, a five-second default, optional draft cache, and $0.06/second pricing (ac-46jtsg).
 
 - Added FLUX 3 image-to-video draft at `run.blackforestlabs.flux3.imageToVideo.draft`, with an opening-image request schema, optional draft cache, and $0.06/second pricing. Automatic duration requires a cost hint (ac-bgxlr1).

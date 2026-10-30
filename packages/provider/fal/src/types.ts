@@ -733,10 +733,13 @@ export type {
   FalFlux3ImageToVideoParsedRequest,
   FalFlux3ImageToVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoDraftRequest,
+  FalFlux3KeyframesToVideoDraftRequest,
   FalFlux3ImageToVideoDraftRequestInput,
   FalFlux3FirstLastFrameToVideoDraftRequestInput,
+  FalFlux3KeyframesToVideoDraftRequestInput,
   FalFlux3ImageToVideoDraftParsedRequest,
   FalFlux3FirstLastFrameToVideoDraftParsedRequest,
+  FalFlux3KeyframesToVideoDraftParsedRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequestInput,
   FalFlux3FirstLastFrameToVideoParsedRequest,
@@ -1062,6 +1065,7 @@ import type {
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoDraftRequest,
+  FalFlux3KeyframesToVideoDraftRequest,
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
@@ -1465,6 +1469,12 @@ export interface FalFlux3ImageToVideoDraftResponse {
 }
 
 export interface FalFlux3FirstLastFrameToVideoDraftResponse {
+  video: FalFile;
+  /** Durable encrypted bundle for draft-enhance, when supplied upstream. */
+  draft_cache?: FalFile | null;
+}
+
+export interface FalFlux3KeyframesToVideoDraftResponse {
   video: FalFile;
   /** Durable encrypted bundle for draft-enhance, when supplied upstream. */
   draft_cache?: FalFile | null;
@@ -3552,12 +3562,21 @@ export interface FalRunFlux3FirstLastFrameToVideoNamespace {
   schema: ApicitySchema<FalFlux3FirstLastFrameToVideoRequest>;
 }
 
-type FalFlux3KeyframesToVideoFn = ((
-  params: FalFlux3KeyframesToVideoRequest,
+type FalFlux3KeyframesToVideoDraftFn = ((
+  params: FalFlux3KeyframesToVideoDraftRequest,
   signal?: AbortSignal
-) => Promise<FalFlux3VideoResponse>) & {
-  schema: ApicitySchema<FalFlux3KeyframesToVideoRequest>;
+) => Promise<FalFlux3KeyframesToVideoDraftResponse>) & {
+  schema: ApicitySchema<FalFlux3KeyframesToVideoDraftRequest>;
 };
+
+export interface FalRunFlux3KeyframesToVideoNamespace {
+  draft: FalFlux3KeyframesToVideoDraftFn;
+  (
+    params: FalFlux3KeyframesToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3VideoResponse>;
+  schema: ApicitySchema<FalFlux3KeyframesToVideoRequest>;
+}
 
 type FalFlux3ExtendVideoFn = ((
   params: FalFlux3ExtendVideoRequest,
@@ -3577,7 +3596,7 @@ export interface FalRunFlux3Namespace {
   extendVideo: FalFlux3ExtendVideoFn;
   firstLastFrameToVideo: FalRunFlux3FirstLastFrameToVideoNamespace;
   imageToVideo: FalRunFlux3ImageToVideoNamespace;
-  keyframesToVideo: FalFlux3KeyframesToVideoFn;
+  keyframesToVideo: FalRunFlux3KeyframesToVideoNamespace;
   textToVideo: FalRunFlux3TextToVideoNamespace;
 }
 

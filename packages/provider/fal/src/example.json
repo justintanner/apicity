@@ -300,6 +300,26 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.keyframesToVideo.draft": {
+    "source": "fal/flux3-keyframes-to-video-draft",
+    "payload": {
+      "prompt": "The camera moves smoothly from the cat to the man, ending on the final keyframe.",
+      "keyframes": [
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 0
+        },
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 120
+        }
+      ],
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.klein.base.editImage.lora": {
     "source": "fal/flux-3-klein-base-edit-image-lora",
     "payload": {

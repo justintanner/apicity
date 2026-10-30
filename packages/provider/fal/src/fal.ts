@@ -84,8 +84,10 @@ import {
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioResponse,
   FalKlingVideoO3ProTextToVideoRequest,
+  FalKlingVideoO3ProImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3ProTextToVideoResponse,
+  FalKlingVideoO3ProImageToVideoResponse,
   FalKlingVideoO3StandardImageToVideoResponse,
   FalFlux2FlexRequest,
   FalFlux2FlexResponse,
@@ -565,6 +567,7 @@ import {
   FalCreatifyBorealRequestSchema,
   FalVeedCleanAudioRequestSchema,
   FalKlingVideoO3ProTextToVideoRequestSchema,
+  FalKlingVideoO3ProImageToVideoRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
   FalKandinsky6ProImageToVideoRequestSchema,
@@ -3900,6 +3903,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/o3/pro/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video/api
+  const klingVideoO3ProImageToVideo = jsonBody<
+    FalKlingVideoO3ProImageToVideoRequest,
+    FalKlingVideoO3ProImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/pro/image-to-video",
+    FalKlingVideoO3ProImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/kling-video/o3/standard/image-to-video
   // Docs: https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
   const klingVideoO3StandardImageToVideo = jsonBody<
@@ -5120,6 +5136,10 @@ export function createFal(opts: FalOptions): FalProvider {
     klingVideo: {
       o3: {
         pro: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/fal-ai/kling-video/o3/pro/image-to-video
+          // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video/api
+          imageToVideo: klingVideoO3ProImageToVideo,
           // sig-ok: stylistic dotPath divergence from URL
           // POST https://fal.run/fal-ai/kling-video/o3/pro/text-to-video
           // Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/text-to-video/api

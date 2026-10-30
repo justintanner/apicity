@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling O3 Pro image-to-video with optional end frames, multi-shot prompts, and audio-dependent pricing (ac-cg2abc).
+
 - Added Kling O3 Pro text-to-video with three-to-fifteen-second durations and audio-dependent pricing (ac-yjtof3).
 
 - Added fal GPT Image 2 editing as a child of the existing callable, with reference images, optional mask, and dynamic token-pricing metadata (ac-613okl).

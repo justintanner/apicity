@@ -12169,6 +12169,84 @@ export type FalKlingVideoO3StandardImageToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3StandardImageToVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/fal-ai/kling-video/o3/pro/image-to-video/api
+export const FalKlingVideoO3ProImageToVideoRequestSchema = z
+  .object({
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Disabling safety checks requires account authorization; unauthorized requests are always checked."
+      ),
+    prompt: z
+      .string()
+      .max(2500)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt for video generation. Either prompt or multi_prompt must be provided, but not both."
+      ),
+    image_url: FalKlingVideoO3StandardImageToVideoImageUrlSchema.describe(
+      "URL of the start frame image. At most 50 MB, at least 300 px per side, with an aspect ratio from 0.4 to 2.5."
+    ),
+    end_image_url: FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable()
+      .optional()
+      .describe(
+        "URL of the end frame image (optional). At most 50 MB, at least 300 px per side, with an aspect ratio from 0.4 to 2.5."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video duration in seconds (3-15s)."),
+    generate_audio: z
+      .boolean()
+      .default(false)
+      .describe("Whether to generate native audio for the video."),
+    multi_prompt: z
+      .array(FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional()
+      .describe("List of prompts for multi-shot video generation."),
+    shot_type: z
+      .enum(["customize", "intelligent"])
+      .default("customize")
+      .describe(
+        "The type of multi-shot video generation. 'intelligent' lets the model automatically determine shot structure."
+      ),
+  })
+  .refine((v) => v.prompt != null || v.multi_prompt != null, {
+    message:
+      "fal-ai/kling-video/o3/pro/image-to-video needs prompt or multi_prompt",
+    path: ["prompt"],
+  })
+  .refine((v) => !(v.prompt != null && v.multi_prompt != null), {
+    message:
+      "fal-ai/kling-video/o3/pro/image-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoO3ProImageToVideoRequest = z.input<
+  typeof FalKlingVideoO3ProImageToVideoRequestSchema
+>;
+export type FalKlingVideoO3ProImageToVideoRequestInput =
+  FalKlingVideoO3ProImageToVideoRequest;
+export type FalKlingVideoO3ProImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3ProImageToVideoRequestSchema
+>;
+
 // VEED Clean Audio
 export const FalVeedCleanAudioRequestSchema = z.object({
   audio_url: z
@@ -17204,6 +17282,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
+  "fal-ai/kling-video/o3/pro/image-to-video":
+    FalKlingVideoO3ProImageToVideoRequestSchema,
   "fal-ai/kling-video/o3/pro/text-to-video":
     FalKlingVideoO3ProTextToVideoRequestSchema,
   "fal-ai/kling-video/o3/standard/image-to-video":

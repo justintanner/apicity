@@ -1303,6 +1303,7 @@ export const MODEL_DISPLAY = {
     "mureka/api/generate/instrumental": "Mureka Instrumental",
     "mureka/api/generate/podcast": "Mureka Podcast",
     "openai/gpt-image-2": "GPT Image 2",
+    "openai/gpt-image-2/edit": "GPT Image 2 Edit",
     "openai/gpt-image-2.5/flare/edit": "GPT Image 2.5 Flare Edit",
     "openai/gpt-image-2.5/flare/text-to-image": "GPT Image 2.5 Flare",
     "openai/gpt-image-2.5/sunburst/edit": "GPT Image 2.5 Sunburst Edit",

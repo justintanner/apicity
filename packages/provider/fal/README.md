@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-273 endpoints across 56 groups. Each method mirrors an upstream URL path.
+274 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -3827,6 +3827,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.openai.gptImage2({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2.edit</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2/edit/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

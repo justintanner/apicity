@@ -2906,6 +2906,14 @@ export const fal: Record<string, ModelPricing> = {
   // (4K). 720p and 1080p are unchanged. GET /v1/models/pricing reports
   // seconds at $0.085, half the 720p card, the same units-vs-seconds split
   // FLUX 3 Max documents. Siblings stay on FLUX_3_RATES.
+  // Full-quality enhancement: $0.29/output second at 1080p. The cache
+  // carries duration; estimation requires costHints.durationSeconds.
+  "blackforestlabs/flux-3/draft-enhance": perSecond(
+    "blackforestlabs/flux-3/draft-enhance",
+    0.29,
+    hintedSeconds,
+    "2026-10-30"
+  ),
   // Draft card: $0.06/output second at 720p. Auto needs a duration hint.
   "blackforestlabs/flux-3/text-to-video/draft": perSecond(
     "blackforestlabs/flux-3/text-to-video/draft",

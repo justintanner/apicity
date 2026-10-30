@@ -431,7 +431,9 @@ import {
   FalWanV2p7EditVideoResponse,
   FalFlux3TextToVideoRequest,
   FalFlux3TextToVideoDraftRequest,
+  FalFlux3DraftEnhanceRequest,
   FalFlux3TextToVideoDraftResponse,
+  FalFlux3DraftEnhanceResponse,
   FalFlux3ImageToVideoRequest,
   FalFlux3ImageToVideoDraftRequest,
   FalFlux3ExtendVideoDraftRequest,
@@ -709,6 +711,7 @@ import {
   FalWanV2p7EditVideoRequestSchema,
   FalFlux3TextToVideoRequestSchema,
   FalFlux3TextToVideoDraftRequestSchema,
+  FalFlux3DraftEnhanceRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3ImageToVideoDraftRequestSchema,
   FalFlux3ExtendVideoDraftRequestSchema,
@@ -1377,6 +1380,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/text-to-video/draft",
     FalFlux3TextToVideoDraftRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/draft-enhance
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/draft-enhance/api
+  const blackforestlabsFlux3DraftEnhance = jsonBody<
+    FalFlux3DraftEnhanceRequest,
+    FalFlux3DraftEnhanceResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/draft-enhance",
+    FalFlux3DraftEnhanceRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4802,6 +4817,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/blackforestlabs/flux-3/edit-image
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
         editImage: blackforestlabsFlux3EditImage,
+        // POST https://fal.run/blackforestlabs/flux-3/draft-enhance
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/draft-enhance/api
+        draftEnhance: blackforestlabsFlux3DraftEnhance,
         extendVideo: Object.assign(blackforestlabsFlux3ExtendVideo, {
           // POST https://fal.run/blackforestlabs/flux-3/extend-video/draft
           // Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/draft/api

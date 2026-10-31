@@ -315,6 +315,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `frontier("t2i")` and `frontier("i2i")` list OpenAI on every GPT Image
+  row: `v1.images.generations` (t2i) and `v1.images.edits` (i2i) with model
+  ids `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` and `gpt-image-2`, plus
+  `gpt-image-1.5` on t2i. Each model page on developers.openai.com marks
+  both calls supported (read 2026-10-31). The rows are `"unpriced"`, because
+  `PRICING.openai` has no image rate yet (ac-57h4kb).
 - `bytedance/seedance-2.5/us/text-to-video` and
   `bytedance/seedance-2.5/us/reference-to-video` price `draft: true` at
   480p, like the non-US 2.5 leaves, instead of at the requested resolution

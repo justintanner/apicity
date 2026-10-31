@@ -265,6 +265,24 @@ const FREE_STRING_IMAGE_MODELS: ReadonlyArray<{
     dotPath: "v1.publishers.google.models.generateContent",
     modelId: "gemini-3.1-flash-image",
   },
+  // Each https://developers.openai.com/api/docs/models/<id> page (read
+  // 2026-10-31) marks v1/images/generations and v1/images/edits supported.
+  ...(
+    [
+      ["t2i", "v1.images.generations"],
+      ["i2i", "v1.images.edits"],
+    ] as const
+  ).flatMap(([type, dotPath]) =>
+    ["gpt-image-2.5-sunburst", "gpt-image-2.5-flare", "gpt-image-2"].map(
+      (modelId) => ({ type, provider: "openai", dotPath, modelId })
+    )
+  ),
+  {
+    type: "t2i",
+    provider: "openai",
+    dotPath: "v1.images.generations",
+    modelId: "gpt-image-1.5",
+  },
 ];
 
 function readQuoted(block: string): string[] {
@@ -1033,7 +1051,7 @@ describe("frontier image snapshots", () => {
 
   // gptImage1p5 carries no type keyword; it resolves on t2i because its schema
   // takes a prompt and an image count and size, and no media input.
-  it("maps GPT Image 1.5 through the fal leaf and the KIE text-to-image id", () => {
+  it("maps GPT Image 1.5 through the fal leaf, the KIE id and OpenAI", () => {
     expect(t2i.endpointMap["GPT Image 1.5 (high)"]).toEqual([
       {
         provider: "fal",
@@ -1045,7 +1063,56 @@ describe("frontier image snapshots", () => {
         dotPath: "api.v1.jobs.createTask",
         modelId: "gpt-image/1.5-text-to-image",
       },
+      {
+        provider: "openai",
+        dotPath: "v1.images.generations",
+        modelId: "gpt-image-1.5",
+        pricingKey: "unpriced",
+      },
     ]);
+  });
+
+  // PRICING.openai has no image rate, so every OpenAI row is unpriced.
+  it("lists OpenAI's images calls on every GPT Image row", () => {
+    const openaiRows = (
+      map: Record<string, ReadonlyArray<{ provider: string }>>
+    ) =>
+      Object.fromEntries(
+        Object.entries(map).flatMap(([model, entries]) =>
+          entries
+            .filter((entry) => entry.provider === "openai")
+            .map((entry) => [model, entry])
+        )
+      );
+    const row = (dotPath: string, modelId: string) => ({
+      provider: "openai",
+      dotPath,
+      modelId,
+      pricingKey: "unpriced",
+    });
+    expect(openaiRows(t2i.endpointMap)).toEqual({
+      "GPT Image 2.5 Sunburst (max)": row(
+        "v1.images.generations",
+        "gpt-image-2.5-sunburst"
+      ),
+      "GPT Image 2.5 Flare (max)": row(
+        "v1.images.generations",
+        "gpt-image-2.5-flare"
+      ),
+      "GPT Image 2 (high)": row("v1.images.generations", "gpt-image-2"),
+      "GPT Image 1.5 (high)": row("v1.images.generations", "gpt-image-1.5"),
+    });
+    expect(openaiRows(i2i.endpointMap)).toEqual({
+      "GPT Image 2.5 Sunburst (max)": row(
+        "v1.images.edits",
+        "gpt-image-2.5-sunburst"
+      ),
+      "GPT Image 2.5 Flare (max)": row(
+        "v1.images.edits",
+        "gpt-image-2.5-flare"
+      ),
+      "GPT Image 2 (high)": row("v1.images.edits", "gpt-image-2"),
+    });
   });
 
   it("takes an unnamed t2i leaf only when its schema documents text to image", () => {

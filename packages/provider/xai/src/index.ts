@@ -46,6 +46,7 @@ export type {
   XaiGeneratedImage,
   XaiImageUsage,
   XaiImageResponse,
+  XaiImageDeferredResult,
   XaiVideoGenerateRequest,
   XaiVideoGenerateRequestInput,
   XaiVideoGenerateParsedRequest,

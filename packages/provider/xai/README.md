@@ -357,7 +357,7 @@ docs for session parameters and events.
 
 ## API Reference
 
-54 endpoints across 18 groups. Each method mirrors an upstream URL path.
+55 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### apiKey
 
@@ -748,6 +748,23 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 </details>
 
 ### images
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.images</code></b></summary>
+
+<code>GET https://api.x.ai/v1/images/{requestId}</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
+
+```typescript
+const res = await xai.get.v1.images({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>xai.v1.images.edits</code></b></summary>

@@ -201,6 +201,19 @@ export interface XaiImageResponse {
   model?: string;
   data: XaiGeneratedImage[];
   usage?: XaiImageUsage;
+  /** Set when the request was deferred; poll `get.v1.images(request_id)`. */
+  request_id?: string;
+}
+
+// Deferred image result (GET /v1/images/{request_id}): HTTP 202 while
+// pending, 200 with `data` when done or with `error` when the generation
+// failed. A failed generation is a body, not an HTTP error.
+export interface XaiImageDeferredResult {
+  request_id: string;
+  status: "pending" | "done" | "failed";
+  data?: XaiGeneratedImage[] | null;
+  error?: { code: string; message: string };
+  usage?: XaiImageUsage;
 }
 
 // File upload response
@@ -1513,6 +1526,10 @@ interface XaiGetV1 {
     ): Promise<XaiDeferredChatCompletionResult>;
   };
   videos(requestId: string, signal?: AbortSignal): Promise<XaiVideoResult>;
+  images(
+    requestId: string,
+    signal?: AbortSignal
+  ): Promise<XaiImageDeferredResult>;
   files: XaiGetFilesMethod;
   models: XaiGetModelsLikeMethod<XaiModelListResponse, XaiModel>;
   languageModels: XaiGetModelsLikeMethod<

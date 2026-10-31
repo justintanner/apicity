@@ -7,6 +7,7 @@ import {
   XaiImageEditRequest,
   XaiImageReference,
   XaiImageResponse,
+  XaiImageDeferredResult,
   XaiVideoGenerateRequest,
   XaiGrokImagineVideo15ImageToVideoRequest,
   XaiGrokImagineVideo15ImageToVideoResponse,
@@ -1470,6 +1471,19 @@ export function createXai(opts: XaiOptions): XaiProvider {
               return await makeRequest(
                 "GET",
                 `/videos/${requestId}`,
+                undefined,
+                signal
+              );
+            },
+            // GET https://api.x.ai/v1/images/{requestId}
+            // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
+            images: async function getImages(
+              requestId: string,
+              signal?: AbortSignal
+            ): Promise<XaiImageDeferredResult> {
+              return await makeRequest(
+                "GET",
+                `/images/${encodeURIComponent(requestId)}`,
                 undefined,
                 signal
               );

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `get.v1.images(requestId)`, `GET https://api.x.ai/v1/images/{request_id}`,
+  which polls a deferred image generation: HTTP 202 while pending, 200 with
+  `data` when done or with an `error` body when it failed
+  (`XaiImageDeferredResult`). `post.v1.images.generations` takes the matching
+  `deferred` flag, and `XaiImageResponse` carries the `request_id` a deferred
+  request returns. An unknown id is an `XaiError` 404 (ac-y399sf).
+
 - Added the `@apicity/xai/realtime` subpath export with `connectXaiRealtime`,
   an authenticated server-side Realtime WebSocket transport built on `ws`, now
   a runtime dependency (ac-j3d6ki.11). It sends the API key as an

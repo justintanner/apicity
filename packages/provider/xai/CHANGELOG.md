@@ -57,6 +57,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `reference_audios` on `v1.videos.generations` refuses
+  `grok-imagine-video-1.5-lite`. `isXaiGrokImagineVideo15Model` matched it
+  by its `grok-imagine-video-1.5-` prefix, so the schema guard and the
+  pre-fetch check let a lite request carry voices. xAI documents
+  `reference_audios` on grok-imagine-video-1.5 only, and the lite model
+  page lists text and image to video. The predicate now leaves lite and its
+  snapshots out of the 1.5 family; 1.5, its `-preview` alias and its dated
+  snapshots still pass. No probe was sent: a lite request that parses can
+  generate and bill (ac-kfekq8).
+
 - Published `.d.ts` files give every relative import an explicit `.js`
   extension, including the 2 inline `import("./x")` types, so a
   `moduleResolution: node16` or `nodenext` consumer with `skipLibCheck: false`

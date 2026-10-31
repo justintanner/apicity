@@ -4,6 +4,7 @@ import {
   XaiResponseRequestSchema,
   XaiVideoGenerateRequestSchema,
   XaiVideoReferenceAudioSchema,
+  isXaiGrokImagineVideo15Model,
 } from "../../packages/provider/xai/src/zod";
 
 // xAI's reference-to-video contract caps each request at 7 reference images;
@@ -199,6 +200,57 @@ describe("XaiVideoGenerateRequestSchema reference constraints", () => {
         ).toBe(true);
       }
     );
+
+    // docs.x.ai documents reference_audios on grok-imagine-video-1.5 only;
+    // 1.5-lite is its own model with text and image to video.
+    it.each([
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+      "grok-imagine-video-1.5-2026-05-30",
+    ])("accepts reference_audios on %s", (model) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a singer walks onto a stage",
+        model,
+        reference_audios: [{ voice_id: "eve" }],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it.each([
+      "grok-imagine-video-1.5-lite",
+      "grok-imagine-video-1.5-lite-2026-10-01",
+      "grok-imagine-video",
+    ])("rejects reference_audios on %s", (model) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a singer walks onto a stage",
+        model,
+        reference_audios: [{ voice_id: "eve" }],
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toContainEqual(
+        expect.objectContaining({
+          path: ["model"],
+          message:
+            "reference_audios requires the grok-imagine-video-1.5 model family",
+        })
+      );
+    });
+
+    it("keeps 1.5-lite and its snapshots out of the 1.5 family", () => {
+      expect(isXaiGrokImagineVideo15Model("grok-imagine-video-1.5")).toBe(true);
+      expect(
+        isXaiGrokImagineVideo15Model("grok-imagine-video-1.5-preview")
+      ).toBe(true);
+      expect(isXaiGrokImagineVideo15Model("grok-imagine-video-1.5-lite")).toBe(
+        false
+      );
+      expect(
+        isXaiGrokImagineVideo15Model("grok-imagine-video-1.5-lite-2026-10-01")
+      ).toBe(false);
+      expect(isXaiGrokImagineVideo15Model("grok-imagine-video-1.5lite")).toBe(
+        false
+      );
+    });
 
     it("exposes the standalone public voice-reference schema", () => {
       expect(

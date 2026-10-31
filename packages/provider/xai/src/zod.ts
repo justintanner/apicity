@@ -4,9 +4,22 @@ export const XAI_GROK_IMAGINE_VIDEO = "grok-imagine-video";
 export const XAI_GROK_IMAGINE_VIDEO_1_5 = "grok-imagine-video-1.5";
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW = `${XAI_GROK_IMAGINE_VIDEO_1_5}-preview`;
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = XAI_GROK_IMAGINE_VIDEO_1_5;
+export const XAI_GROK_IMAGINE_VIDEO_1_5_LITE = `${XAI_GROK_IMAGINE_VIDEO_1_5}-lite`;
 export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
 
+// grok-imagine-video-1.5 with its aliases and dated snapshots, such as
+// grok-imagine-video-1.5-preview and grok-imagine-video-1.5-2026-05-30.
+// grok-imagine-video-1.5-lite shares the prefix but is its own model, with
+// text and image to video only
+// (https://docs.x.ai/developers/models/grok-imagine-video-1.5-lite), so it and
+// its snapshots are outside the family.
 export function isXaiGrokImagineVideo15Model(model: string): boolean {
+  if (
+    model === XAI_GROK_IMAGINE_VIDEO_1_5_LITE ||
+    model.startsWith(`${XAI_GROK_IMAGINE_VIDEO_1_5_LITE}-`)
+  ) {
+    return false;
+  }
   return (
     model === XAI_GROK_IMAGINE_VIDEO_1_5 ||
     model.startsWith(`${XAI_GROK_IMAGINE_VIDEO_1_5}-`)

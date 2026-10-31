@@ -48,6 +48,7 @@ describe("Happy Horse video edit contract", () => {
       "v1p1",
       "videoEdit",
       "textToVideo",
+      "imageToVideo",
     ]);
     expectTypeOf<FalAlibabaHappyHorseVideoEditRequest>().toEqualTypeOf<
       z.input<typeof schema>

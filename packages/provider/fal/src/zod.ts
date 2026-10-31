@@ -8357,6 +8357,66 @@ export type FalAlibabaHappyHorseTextToVideoParsedRequest = z.output<
   typeof FalAlibabaHappyHorseTextToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-31
+// (sha256 93960e9d97e21a4681e2671bca46adb9f6c79a1fa10296f0762b44264e2f8d7a). Field order follows x-fal-order-properties.
+// It matches v1.1 image-to-video except for a 10 MB image cap. Unbilled 422
+// probes the same day showed the HappyHorse 1.0 URL rule on image_url.
+// Docs: https://fal.ai/models/alibaba/happy-horse/image-to-video/api
+export const FalAlibabaHappyHorseImageToVideoRequestSchema = z.object({
+  image_url: happyHorseMediaUrl.describe(
+    "URL of the first frame image. Formats: JPEG, JPG, PNG, BMP, WEBP. Dimensions must be at least 300px. Aspect ratio must be between 1:2.5 and 2.5:1. Max 10 MB."
+  ),
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional text prompt guiding the animation. Max 2500 characters."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseImageToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseImageToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseImageToVideoRequestInput =
+  FalAlibabaHappyHorseImageToVideoRequest;
+export type FalAlibabaHappyHorseImageToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseImageToVideoRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-08
 // (sha256 15115befba2212917f30e6792e1216e68c97023871654b7ac26f337d6fbe2752). Field order follows x-fal-order-properties.
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
@@ -17890,6 +17950,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/happy-horse/video-edit": FalAlibabaHappyHorseVideoEditRequestSchema,
   "alibaba/happy-horse/text-to-video":
     FalAlibabaHappyHorseTextToVideoRequestSchema,
+  "alibaba/happy-horse/image-to-video":
+    FalAlibabaHappyHorseImageToVideoRequestSchema,
   "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/image-to-video":
     FalKlingVideoV3TurboProImageToVideoRequestSchema,

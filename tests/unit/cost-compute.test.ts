@@ -872,6 +872,97 @@ describe("computeEstimate", () => {
       expect(result.breakdown.units).toBe(1);
     });
 
+    it("prices xai video 1.5 lite at its own per-second rate", () => {
+      const result = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload: { model: "grok-imagine-video-1.5-lite", duration: 6 },
+      });
+      expect(result.usd).toBeCloseTo(0.12, 10); // 6 seconds * 0.02
+      expect(result.breakdown).toEqual({
+        units: 6,
+        unit: "seconds",
+        perUnitUsd: 0.02,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    // docs.x.ai publishes 0.04 USD/image, the `low` rate; `auto` serves low
+    // for generation and medium (unpublished) for editing.
+    describe("xai grok-imagine-image-2.0", () => {
+      const floor =
+        "xai 'grok-imagine-image-2.0': served at medium quality (quality \"medium\", or an edit at the default auto), which bills above the published 0.04 USD/image low rate; xAI publishes no medium rate, so this estimate is a floor";
+
+      it("prices a generation per image at the low rate, scaling with n", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.generations",
+          payload: { model: "grok-imagine-image-2.0", prompt: "a cat", n: 2 },
+        });
+        expect(result.usd).toBeCloseTo(0.08, 10); // 2 generations * 0.04
+        expect(result.source).toBe("per-unit-table");
+        expect(result.breakdown).toEqual({
+          units: 2,
+          unit: "generations",
+          perUnitUsd: 0.04,
+        });
+        expect(result.warnings).toEqual([]);
+      });
+
+      it.each([
+        ["an edit at the default auto", { image: { url: "https://x/c.jpg" } }],
+        [
+          "an edit pinned to auto",
+          { images: [{ url: "https://x/c.jpg" }], quality: "auto" },
+        ],
+        ["a file-id edit", { image_file_id: "file_1" }],
+        ["a multi-file edit", { image_file_ids: ["file_1"] }],
+        ["a generation pinned to medium", { quality: "medium" }],
+      ])("keeps the low rate and warns for %s", (_label, body) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.edits",
+          payload: { model: "grok-imagine-image-2.0", prompt: "x", ...body },
+        });
+        expect(result.usd).toBeCloseTo(0.04, 10);
+        expect(result.warnings).toEqual([floor]);
+      });
+
+      it("does not warn for an edit pinned to low", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.edits",
+          payload: {
+            model: "grok-imagine-image-2.0",
+            prompt: "x",
+            image: { url: "https://x/c.jpg" },
+            quality: "low",
+          },
+        });
+        expect(result.usd).toBeCloseTo(0.04, 10);
+        expect(result.warnings).toEqual([]);
+      });
+
+      it("leaves the other image models unwarned", () => {
+        for (const model of [
+          "grok-imagine-image",
+          "grok-imagine-image-quality",
+        ])
+          expect(
+            computeEstimate({
+              provider: "xai" as const,
+              endpoint: "v1.images.edits",
+              payload: {
+                model,
+                prompt: "x",
+                image: { url: "https://x/c.jpg" },
+              },
+            }).warnings,
+            model
+          ).toEqual([]);
+      });
+    });
+
     it("warns when an xai video payload carries no duration", () => {
       const req = {
         provider: "xai" as const,

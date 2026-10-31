@@ -317,6 +317,11 @@ describe("modelSlug", () => {
     );
     expect(modelSlug("xai", "grok-imagine-image")).toBe("grokimgi");
     expect(modelSlug("xai", "grok-imagine-image-quality")).toBe("grokimgiq");
+    expect(modelSlug("xai", "grok-imagine-image-2.0")).toBe("grokimgi2p0");
+    // The lite model shares its slug with fal's resale of it.
+    expect(modelSlug("xai", "grok-imagine-video-1.5-lite")).toBe(
+      MODEL_SLUGS.fal["xai/grok-imagine-video/v1.5/lite/text-to-video"]
+    );
   });
 
   it("returns correct slug for fireworks deepseek-v3", () => {
@@ -488,6 +493,12 @@ describe("modelDisplay", () => {
     );
     expect(modelDisplay("xai", "grok-imagine-image")).toBe(
       "Grok Imagine Image"
+    );
+    expect(modelDisplay("xai", "grok-imagine-image-2.0")).toBe(
+      "Grok Imagine Image 2.0"
+    );
+    expect(modelDisplay("xai", "grok-imagine-video-1.5-lite")).toBe(
+      "Grok Imagine Video 1.5 Lite"
     );
   });
 

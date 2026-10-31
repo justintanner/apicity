@@ -199,6 +199,8 @@ import {
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequest,
   FalAlibabaHappyHorseVideoEditResponse,
   FalAlibabaHappyHorseVideoEditRequest,
+  FalAlibabaHappyHorseTextToVideoResponse,
+  FalAlibabaHappyHorseTextToVideoRequest,
   FalAlibabaQwenAudio3TtsResponse,
   FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoResponse,
@@ -636,6 +638,7 @@ import {
   FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
   FalAlibabaHappyHorseVideoEditRequestSchema,
+  FalAlibabaHappyHorseTextToVideoRequestSchema,
   FalAlibabaQwenAudio3TtsRequestSchema,
   FalKlingVideoV3TurboProImageToVideoRequestSchema,
   FalKlingVideoV3TurboProTextToVideoRequestSchema,
@@ -3336,6 +3339,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/alibaba/happy-horse/text-to-video
+  // Docs: https://fal.ai/models/alibaba/happy-horse/text-to-video/api
+  const alibabaHappyHorseTextToVideo = jsonBody<
+    FalAlibabaHappyHorseTextToVideoRequest,
+    FalAlibabaHappyHorseTextToVideoResponse
+  >(
+    "POST",
+    "/alibaba/happy-horse/text-to-video",
+    FalAlibabaHappyHorseTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/alibaba/happy-horse/v1.1/image-to-video
   // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api
@@ -4911,6 +4926,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/alibaba/happy-horse/video-edit
         // Docs: https://fal.ai/models/alibaba/happy-horse/video-edit/api
         videoEdit: alibabaHappyHorseVideoEdit,
+        // POST https://fal.run/alibaba/happy-horse/text-to-video
+        // Docs: https://fal.ai/models/alibaba/happy-horse/text-to-video/api
+        textToVideo: alibabaHappyHorseTextToVideo,
       },
       // POST https://fal.run/alibaba/qwen-audio-3-tts
       // Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api

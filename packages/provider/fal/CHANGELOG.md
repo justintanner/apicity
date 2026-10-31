@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Happy Horse 1.0 text-to-video (`alibaba/happy-horse/text-to-video`) as `run.alibaba.happyHorse.textToVideo`: v1.1's text-to-video fields with five aspect ratios (16:9, 9:16, 1:1, 4:3, 3:4), 720p or 1080p (the default), and 3 to 15 s (ac-4eryzy).
+
 - Added Happy Horse video edit (`alibaba/happy-horse/video-edit`) as `run.alibaba.happyHorse.videoEdit`: a 3-60 s source video and an edit prompt, up to 5 reference images, 720p or 1080p (the default), and `audio_setting` `auto` or `origin`. The output keeps the source's length, capped at 15 s. Media URLs must be http(s) URLs or data URIs, as fal's validator requires (ac-5zdfnw).
 
 - Added MiniMax H3 Max Turbo reference-to-video (`minimax/h3-max-turbo/reference-to-video`) as `run.minimax.h3MaxTurbo.referenceToVideo`: up to 9 image, 3 video and 3 audio references (12 in all) or an ordered `reference_conditions` list, 480P to 1080P, 0.92 to 15 s, without H3 Max's frame fields. The response reports `reference_tokens` (ac-88n2cz).

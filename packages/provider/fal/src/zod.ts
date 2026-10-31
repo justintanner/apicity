@@ -8300,6 +8300,63 @@ export type FalAlibabaHappyHorseVideoEditParsedRequest = z.output<
   typeof FalAlibabaHappyHorseVideoEditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-31
+// (sha256 3434de690251ddc092f4458c56b1f094d166399bdb4d1a75e8a187ecdcbb7f35). Field order follows x-fal-order-properties.
+// It matches v1.1 text-to-video except for the five aspect ratios.
+// Docs: https://fal.ai/models/alibaba/happy-horse/text-to-video/api
+export const FalAlibabaHappyHorseTextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("Text prompt describing the desired video. Max 2500 characters."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseTextToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseTextToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseTextToVideoRequestInput =
+  FalAlibabaHappyHorseTextToVideoRequest;
+export type FalAlibabaHappyHorseTextToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseTextToVideoRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-08
 // (sha256 15115befba2212917f30e6792e1216e68c97023871654b7ac26f337d6fbe2752). Field order follows x-fal-order-properties.
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
@@ -17831,6 +17888,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/happy-horse/v1.1/reference-to-video":
     FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
   "alibaba/happy-horse/video-edit": FalAlibabaHappyHorseVideoEditRequestSchema,
+  "alibaba/happy-horse/text-to-video":
+    FalAlibabaHappyHorseTextToVideoRequestSchema,
   "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/image-to-video":
     FalKlingVideoV3TurboProImageToVideoRequestSchema,

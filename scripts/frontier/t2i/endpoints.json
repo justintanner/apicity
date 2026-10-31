@@ -14,6 +14,12 @@
       "provider": "machgen",
       "dotPath": "api.v0.generate",
       "modelId": "GPT-Image-2.5-Sunburst"
+    },
+    {
+      "provider": "openai",
+      "dotPath": "v1.images.generations",
+      "modelId": "gpt-image-2.5-sunburst",
+      "pricingKey": "unpriced"
     }
   ],
   "GPT Image 2.5 Flare (max)": [
@@ -31,6 +37,12 @@
       "provider": "machgen",
       "dotPath": "api.v0.generate",
       "modelId": "GPT-Image-2.5-Flare"
+    },
+    {
+      "provider": "openai",
+      "dotPath": "v1.images.generations",
+      "modelId": "gpt-image-2.5-flare",
+      "pricingKey": "unpriced"
     }
   ],
   "GPT Image 2 (high)": [
@@ -48,6 +60,12 @@
       "provider": "machgen",
       "dotPath": "api.v0.generate",
       "modelId": "GPT-Image-2"
+    },
+    {
+      "provider": "openai",
+      "dotPath": "v1.images.generations",
+      "modelId": "gpt-image-2",
+      "pricingKey": "unpriced"
     }
   ],
   "Nano Banana 2.1": [
@@ -130,6 +148,12 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image/1.5-text-to-image"
+    },
+    {
+      "provider": "openai",
+      "dotPath": "v1.images.generations",
+      "modelId": "gpt-image-1.5",
+      "pricingKey": "unpriced"
     }
   ],
   "MAI-Image-2.6-Flash": []

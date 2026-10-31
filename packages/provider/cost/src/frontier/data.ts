@@ -103,6 +103,12 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.5-Sunburst",
           },
+          {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-2.5-sunburst",
+            pricingKey: "unpriced",
+          },
         ],
       },
       {
@@ -126,6 +132,12 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.5-Flare",
           },
+          {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-2.5-flare",
+            pricingKey: "unpriced",
+          },
         ],
       },
       {
@@ -148,6 +160,12 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2",
+          },
+          {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-2",
+            pricingKey: "unpriced",
           },
         ],
       },
@@ -267,6 +285,12 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image/1.5-text-to-image",
           },
+          {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-1.5",
+            pricingKey: "unpriced",
+          },
         ],
       },
       {
@@ -306,6 +330,12 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.5-Sunburst",
           },
+          {
+            provider: "openai",
+            dotPath: "v1.images.edits",
+            modelId: "gpt-image-2.5-sunburst",
+            pricingKey: "unpriced",
+          },
         ],
       },
       {
@@ -328,6 +358,12 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.5-Flare",
+          },
+          {
+            provider: "openai",
+            dotPath: "v1.images.edits",
+            modelId: "gpt-image-2.5-flare",
+            pricingKey: "unpriced",
           },
         ],
       },
@@ -401,6 +437,12 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2",
+          },
+          {
+            provider: "openai",
+            dotPath: "v1.images.edits",
+            modelId: "gpt-image-2",
+            pricingKey: "unpriced",
           },
         ],
       },

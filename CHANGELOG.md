@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The text-to-image and image-to-image frontier boards list OpenAI's own images calls on every GPT Image row, beside fal, KIE and MachGen: `v1.images.generations` for text-to-image and `v1.images.edits` for image-to-image, with the model ids `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare`, `gpt-image-2` and (text-to-image only) `gpt-image-1.5`. They show no price until `@apicity/cost` has an OpenAI image rate (ac-57h4kb).
+
 - The `@apicity/fal` Seedance 2.5 US text-, image- and reference-to-video leaves take `draft`, fal's documented flag for a 480p preview that returns the `draft_id` `seedance2p5.us.draft.complete` finishes at 1080p. Before, no typed request could obtain that id. `@apicity/cost` prices a US text- or reference-to-video draft at 480p, as it already did outside the US (ac-8wmej3).
 
 - `@apicity/fal` `gptImage1p5` documents the URL it posts to, `https://fal.run/fal-ai/gpt-image-1.5`, in place of `https://api.fal.ai/v1/fal-ai/gpt-image-1.5`, and links the model's API pages on fal.ai for it and its `edit` child. The text-to-image frontier board now maps GPT Image 1.5 (high), rank 9, to that fal leaf as well as the KIE `gpt-image/1.5-text-to-image` id (ac-annrf9).

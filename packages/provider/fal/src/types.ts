@@ -329,6 +329,9 @@ export type {
   FalAlibabaHappyHorseImageToVideoParsedRequest,
   FalAlibabaHappyHorseImageToVideoRequestInput,
   FalAlibabaHappyHorseImageToVideoRequest,
+  FalAlibabaHappyHorseReferenceToVideoParsedRequest,
+  FalAlibabaHappyHorseReferenceToVideoRequestInput,
+  FalAlibabaHappyHorseReferenceToVideoRequest,
   FalAlibabaQwenAudio3TtsParsedRequest,
   FalAlibabaQwenAudio3TtsRequestInput,
   FalAlibabaQwenAudio3TtsRequest,
@@ -992,6 +995,7 @@ import type {
   FalAlibabaHappyHorseVideoEditRequest,
   FalAlibabaHappyHorseTextToVideoRequest,
   FalAlibabaHappyHorseImageToVideoRequest,
+  FalAlibabaHappyHorseReferenceToVideoRequest,
   FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoRequest,
   FalKlingVideoV3TurboProTextToVideoRequest,
@@ -5395,6 +5399,32 @@ type FalAlibabaHappyHorseImageToVideoFn = ((
 
 export interface FalRunAlibabaHappyHorseNamespace {
   imageToVideo: FalAlibabaHappyHorseImageToVideoFn;
+}
+
+export interface FalAlibabaHappyHorseReferenceToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+  seed: number;
+}
+
+type FalAlibabaHappyHorseReferenceToVideoFn = ((
+  params: FalAlibabaHappyHorseReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalAlibabaHappyHorseReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalAlibabaHappyHorseReferenceToVideoRequest>;
+};
+
+export interface FalRunAlibabaHappyHorseNamespace {
+  referenceToVideo: FalAlibabaHappyHorseReferenceToVideoFn;
 }
 
 export interface FalBlackforestlabsFlux3EditVideoResponse {

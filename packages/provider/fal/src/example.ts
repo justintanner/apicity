@@ -76,6 +76,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.referenceToVideo": {
+    "source": "fal/alibaba-happy-horse-reference-to-video",
+    "payload": {
+      "prompt": "character1 slowly blinks, static camera.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.happyHorse.textToVideo": {
     "source": "fal/alibaba-happy-horse-text-to-video",
     "payload": {

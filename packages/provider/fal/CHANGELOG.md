@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Happy Horse 1.0 reference-to-video (`alibaba/happy-horse/reference-to-video`) as `run.alibaba.happyHorse.referenceToVideo`: a prompt and 1 to 9 reference `image_urls` (each an http(s) URL or a data URI, as fal's validator requires, at most 10 MB), five aspect ratios, 720p or 1080p (the default), and 3 to 15 s (ac-qy2sr1).
+
 - Added Happy Horse 1.0 image-to-video (`alibaba/happy-horse/image-to-video`) as `run.alibaba.happyHorse.imageToVideo`: a first-frame `image_url` (an http(s) URL or a data URI, as fal's validator requires, at most 10 MB), an optional prompt, 720p or 1080p (the default), and 3 to 15 s (ac-leydts).
 
 - Added Happy Horse 1.0 text-to-video (`alibaba/happy-horse/text-to-video`) as `run.alibaba.happyHorse.textToVideo`: v1.1's text-to-video fields with five aspect ratios (16:9, 9:16, 1:1, 4:3, 3:4), 720p or 1080p (the default), and 3 to 15 s (ac-4eryzy).

@@ -8,6 +8,7 @@ import {
   mintXaiOtp,
 } from "../harness";
 import { createXaiProvider } from "../xai-provider";
+import { computeEstimate } from "@apicity/cost";
 import type {
   XaiImageEditRequest,
   XaiImageGenerateRequest,
@@ -136,6 +137,12 @@ describe("xai image generation integration", () => {
       expect(result.data).toBeInstanceOf(Array);
       expect(result.data.length).toBeGreaterThan(0);
       expect(result.data[0].url || result.data[0].b64_json).toBeTruthy();
+      // xAI billed 0.022: 0.02 for the image and 0.002 for the input.
+      expect(result.usage?.cost_in_usd_ticks).toBe(
+        Math.round(
+          computeEstimate({ provider: "xai", payload: req }).usd * 1e10
+        )
+      );
     }
   );
 
@@ -158,5 +165,8 @@ describe("xai image generation integration", () => {
 
     expect(result.data).toBeInstanceOf(Array);
     expect(result.data.length).toBeGreaterThan(0);
+    expect(result.usage?.cost_in_usd_ticks).toBe(
+      Math.round(computeEstimate({ provider: "xai", payload: req }).usd * 1e10)
+    );
   });
 });

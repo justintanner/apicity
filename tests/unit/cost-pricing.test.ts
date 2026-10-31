@@ -390,27 +390,28 @@ describe("PRICING data", () => {
     );
   });
 
-  it("xai has per-second video rates", () => {
+  // The page's figure is the 480p rate; 1.5's 720p rate is a recorded bill.
+  it("xai has per-second video rates by resolution", () => {
     expect(PRICING.xai["grok-imagine-video"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.05 },
+      rates: { "480p": 0.05 },
     });
     expect(PRICING.xai["grok-imagine-video-1.5"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.08 },
+      rates: { "480p": 0.08, "720p": 0.14 },
     });
     // The provider exports the preview id; it prices at the released rate.
     expect(PRICING.xai["grok-imagine-video-1.5-preview"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.08 },
+      rates: { "480p": 0.08, "720p": 0.14 },
     });
     expect(PRICING.xai["grok-imagine-video-1.5-lite"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.02 },
+      rates: { "480p": 0.02 },
     });
   });
 
@@ -428,17 +429,29 @@ describe("PRICING data", () => {
     expect(PRICING.xai["grok-imagine-image-2.0"]).toMatchObject({
       kind: "perUnit",
       unit: "generations",
-      rates: { "": 0.04 },
+      rates: {
+        "low|1k": 0.04,
+        "low|1.5k": 0.05,
+        "low|2k": 0.06,
+        "medium|1k": 0.06,
+        "medium|1.5k": 0.07,
+        "medium|2k": 0.08,
+      },
     });
   });
 
   // The page's six Imagine rates were re-read on 2026-10-31; the preview id
-  // shares the 1.5 rate.
+  // shares the 1.5 rate. The grok-imagine-image-2.0 grid comes from the
+  // `pricing` list of GET /v1/image-generation-models, which the models
+  // reference documents.
   it("stamps the xai media rates with the pricing page read", () => {
     for (const [model, entry] of Object.entries(PRICING.xai)) {
       if (entry.kind !== "perUnit") continue;
       expect(entry.source, model).toEqual({
-        url: "https://docs.x.ai/developers/pricing",
+        url:
+          model === "grok-imagine-image-2.0"
+            ? "https://docs.x.ai/developers/rest-api-reference/inference/models"
+            : "https://docs.x.ai/developers/pricing",
         asOf: "2026-10-31",
       });
     }

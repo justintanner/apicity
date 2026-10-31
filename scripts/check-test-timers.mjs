@@ -91,6 +91,12 @@ const ALLOWLIST = new Map([
       "live-recording the HAR (waiting for xAI to index a document) and never " +
       "executes in replay/CI, so it adds no wall-time to the test suite.",
   ],
+  [
+    "tests/integration/xai-imagine-billing.test.ts",
+    'Real sleep is guarded behind `getPollyMode() === "replay"`; it only ' +
+      "paces the GET /v1/videos/{id} polls while recording the video bill, " +
+      "and offline replay never sleeps.",
+  ],
 ]);
 
 // A fal/xai test file: basename is `<p>.test.ts` / `<p>-*.test.ts`, or it lives

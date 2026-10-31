@@ -819,7 +819,7 @@ describe("computeEstimate", () => {
           model: "grok-imagine-video",
           prompt: "a cat on a rooftop",
           duration: 10,
-          resolution: "720p",
+          resolution: "480p",
         },
       };
       const result = computeEstimate(req);
@@ -842,6 +842,94 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBeCloseTo(0.4, 10); // 5 seconds * 0.08
       expect(result.breakdown.unit).toBe("seconds");
+    });
+
+    // docs.x.ai publishes one figure per video model, the 480p rate. A
+    // recorded 1 s grok-imagine-video-1.5 clip at 720p billed 0.14.
+    describe("xai video resolution", () => {
+      it.each([
+        ["grok-imagine-video-1.5", "480p", 0.08],
+        ["grok-imagine-video-1.5", "720p", 0.14],
+        ["grok-imagine-video-1.5-preview", "720p", 0.14],
+        ["grok-imagine-video-1.5-lite", "480p", 0.02],
+        ["grok-imagine-video", "480p", 0.05],
+      ])("prices %s at %s by its known rate", (model, resolution, rate) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: { model, prompt: "x", duration: 2, resolution },
+        });
+        expect(result.usd).toBeCloseTo(2 * rate, 10);
+        expect(result.breakdown.perUnitUsd).toBe(rate);
+        expect(result.warnings).toEqual([]);
+      });
+
+      it.each([
+        ["grok-imagine-video-1.5-lite", 0.02],
+        ["grok-imagine-video", 0.05],
+      ])("keeps the 480p rate and warns for %s at 720p", (model, rate480p) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: { model, prompt: "x", duration: 2, resolution: "720p" },
+        });
+        expect(result.usd).toBeCloseTo(2 * rate480p, 10);
+        expect(result.warnings).toEqual([
+          `xai '${model}': no 720p rate is known, and 720p bills above the published 480p rate of ${rate480p} USD/s, so this estimate is a floor`,
+        ]);
+      });
+
+      it("keeps the 480p rate and warns for an edit of a source video", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.edits",
+          payload: {
+            model: "grok-imagine-video",
+            prompt: "x",
+            video: { url: "https://x/v.mp4" },
+          },
+          costHints: { durationSeconds: 6 },
+        });
+        expect(result.usd).toBeCloseTo(0.3, 10); // 6 seconds * 0.05
+        expect(result.warnings).toEqual([
+          "xai 'grok-imagine-video': the output keeps the source video's resolution, and a source above 480p bills above the published 480p rate of 0.05 USD/s, so this estimate is a floor",
+        ]);
+      });
+
+      // The floor warning must not replace the advice to declare the
+      // duration when the estimate cannot derive seconds.
+      it("asks for a duration on a source-video edit without one", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.edits",
+          payload: {
+            model: "grok-imagine-video",
+            prompt: "x",
+            video: { url: "https://x/v.mp4" },
+          },
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([
+          "xai 'grok-imagine-video': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds",
+        ]);
+      });
+
+      it("fails closed at 1080p, which no xai video rate covers", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: {
+            model: "grok-imagine-video-1.5",
+            prompt: "x",
+            duration: 2,
+            resolution: "1080p",
+          },
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([
+          "xai 'grok-imagine-video-1.5': no rate for variant '1080p' (selectors: resolution)",
+        ]);
+      });
     });
 
     it("estimates xai images per generation, scaling with n", () => {
@@ -887,12 +975,10 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
-    // docs.x.ai publishes 0.04 USD/image, the `low` rate; `auto` serves low
-    // for generation and medium (unpublished) for editing.
+    // GET /v1/image-generation-models lists the quality x resolution grid;
+    // `auto` serves low for a generation and medium for an edit. Edits also
+    // bill each input image once per request (recorded bills, ac-k7qv4n).
     describe("xai grok-imagine-image-2.0", () => {
-      const floor =
-        "xai 'grok-imagine-image-2.0': served at medium quality (quality \"medium\", or an edit at the default auto), which bills above the published 0.04 USD/image low rate; xAI publishes no medium rate, so this estimate is a floor";
-
       it("prices a generation per image at the low rate, scaling with n", () => {
         const result = computeEstimate({
           provider: "xai" as const,
@@ -910,25 +996,93 @@ describe("computeEstimate", () => {
       });
 
       it.each([
-        ["an edit at the default auto", { image: { url: "https://x/c.jpg" } }],
+        ["low", "1k", 0.04],
+        ["low", "1.5k", 0.05],
+        ["low", "2k", 0.06],
+        ["medium", "1k", 0.06],
+        ["medium", "1.5k", 0.07],
+        ["medium", "2k", 0.08],
+        ["auto", "2k", 0.06],
+      ])(
+        "prices a %s generation at %s per image",
+        (quality, resolution, rate) => {
+          const result = computeEstimate({
+            provider: "xai" as const,
+            endpoint: "v1.images.generations",
+            payload: {
+              model: "grok-imagine-image-2.0",
+              prompt: "x",
+              quality,
+              resolution,
+            },
+          });
+          expect(result.usd).toBeCloseTo(rate, 10);
+          expect(result.breakdown).toEqual({
+            units: 1,
+            unit: "generations",
+            perUnitUsd: rate,
+          });
+          expect(result.warnings).toEqual([]);
+        }
+      );
+
+      it.each([
+        [
+          "an edit at the default auto",
+          { image: { url: "https://x/c.jpg" } },
+          0.06 + 0.01,
+        ],
         [
           "an edit pinned to auto",
           { images: [{ url: "https://x/c.jpg" }], quality: "auto" },
+          0.06 + 0.01,
         ],
-        ["a file-id edit", { image_file_id: "file_1" }],
-        ["a multi-file edit", { image_file_ids: ["file_1"] }],
-        ["a generation pinned to medium", { quality: "medium" }],
-      ])("keeps the low rate and warns for %s", (_label, body) => {
+        [
+          "an edit pinned to low",
+          { image: { url: "https://x/c.jpg" }, quality: "low" },
+          0.04 + 0.01,
+        ],
+        [
+          "a low edit of two inputs",
+          {
+            images: [{ url: "https://x/c.jpg" }, { url: "https://x/m.jpg" }],
+            quality: "low",
+          },
+          0.04 + 2 * 0.01,
+        ],
+        [
+          "a low edit at 2k",
+          {
+            image: { url: "https://x/c.jpg" },
+            quality: "low",
+            resolution: "2k",
+          },
+          0.06 + 0.01,
+        ],
+        [
+          "a low edit with two outputs",
+          { image: { url: "https://x/c.jpg" }, quality: "low", n: 2 },
+          2 * 0.04 + 0.01,
+        ],
+        ["a file-id edit", { image_file_id: "file_1" }, 0.06 + 0.01],
+        [
+          "a multi-file edit",
+          { image_file_ids: ["file_1", "file_2", "file_3"] },
+          0.06 + 3 * 0.01,
+        ],
+      ])("prices %s with its input images", (_label, body, usd) => {
         const result = computeEstimate({
           provider: "xai" as const,
           endpoint: "v1.images.edits",
           payload: { model: "grok-imagine-image-2.0", prompt: "x", ...body },
         });
-        expect(result.usd).toBeCloseTo(0.04, 10);
-        expect(result.warnings).toEqual([floor]);
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.warnings).toEqual([]);
       });
 
-      it("does not warn for an edit pinned to low", () => {
+      // The provider sends `image` over `image_file_id` and `images` over
+      // `image_file_ids`, so the dropped field bills nothing.
+      it("counts the input images the provider sends", () => {
         const result = computeEstimate({
           provider: "xai" as const,
           endpoint: "v1.images.edits",
@@ -936,31 +1090,62 @@ describe("computeEstimate", () => {
             model: "grok-imagine-image-2.0",
             prompt: "x",
             image: { url: "https://x/c.jpg" },
+            image_file_id: "file_1",
+            images: [{ url: "https://x/m.jpg" }],
+            image_file_ids: ["file_2", "file_3"],
             quality: "low",
           },
         });
-        expect(result.usd).toBeCloseTo(0.04, 10);
-        expect(result.warnings).toEqual([]);
+        expect(result.usd).toBeCloseTo(0.04 + 2 * 0.01, 10);
+        expect(result.breakdown.extraUsd).toBeCloseTo(0.02, 10);
       });
 
-      it("leaves the other image models unwarned", () => {
-        for (const model of [
-          "grok-imagine-image",
-          "grok-imagine-image-quality",
-        ])
-          expect(
-            computeEstimate({
-              provider: "xai" as const,
-              endpoint: "v1.images.edits",
-              payload: {
-                model,
-                prompt: "x",
-                image: { url: "https://x/c.jpg" },
-              },
-            }).warnings,
-            model
-          ).toEqual([]);
+      it.each([
+        [
+          "quality high, which has no listed price",
+          { quality: "high" },
+          "xai 'grok-imagine-image-2.0': no rate for variant 'high|1k' (selectors: quality, resolution)",
+        ],
+        [
+          "a non-string resolution",
+          { resolution: 2 },
+          "xai 'grok-imagine-image-2.0': missing required selector(s): resolution",
+        ],
+        [
+          "an images field that is not a list",
+          { images: "c.jpg", quality: "low" },
+          "xai 'grok-imagine-image-2.0': could not derive exact additional charge from payload",
+        ],
+      ])("fails closed for %s", (_label, body, warning) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.edits",
+          payload: { model: "grok-imagine-image-2.0", prompt: "x", ...body },
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([warning]);
       });
+    });
+
+    // A recorded grok-imagine-image edit of two inputs billed 0.024.
+    it("prices a grok-imagine-image edit with 0.002 per input image", () => {
+      const result = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.images.edits",
+        payload: {
+          model: "grok-imagine-image",
+          prompt: "x",
+          images: [{ url: "https://x/c.jpg" }, { url: "https://x/m.jpg" }],
+        },
+      });
+      expect(result.usd).toBeCloseTo(0.024, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 0.02,
+        extraUsd: 0.004,
+      });
+      expect(result.warnings).toEqual([]);
     });
 
     it("warns when an xai video payload carries no duration", () => {

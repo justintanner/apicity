@@ -315,6 +315,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `frontier("t2i")` maps GPT Image 1.5 (high), rank 9, to fal
+  `gptImage1p5` with pricingKey `fal-ai/gpt-image-1.5`, beside the KIE
+  `gpt-image/1.5-text-to-image` id. The fal leaf's endpoint-docs row named
+  `api.fal.ai/v1`, whose path did not match the pricing key; it now names
+  `fal.run` (ac-annrf9).
 - `frontier()` lists the endpoints shipped since the 2026-10-22 capture.
   `i2i` maps Krea 3 (Ultra) to fal `krea.v3.edit`, so 8 of its 10 models are
   mapped (was 7). GPT Image 2 (high) adds fal `openai.gptImage2` on `t2i` and

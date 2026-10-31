@@ -258,6 +258,11 @@ export const FRONTIER = {
         elo: 1123,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "gptImage1p5",
+            pricingKey: "fal-ai/gpt-image-1.5",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image/1.5-text-to-image",

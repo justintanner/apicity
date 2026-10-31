@@ -1031,8 +1031,15 @@ describe("frontier image snapshots", () => {
     ).toBe(true);
   });
 
-  it("maps GPT Image 1.5 through the KIE text-to-image id", () => {
+  // gptImage1p5 carries no type keyword; it resolves on t2i because its schema
+  // takes a prompt and an image count and size, and no media input.
+  it("maps GPT Image 1.5 through the fal leaf and the KIE text-to-image id", () => {
     expect(t2i.endpointMap["GPT Image 1.5 (high)"]).toEqual([
+      {
+        provider: "fal",
+        dotPath: "gptImage1p5",
+        pricingKey: "fal-ai/gpt-image-1.5",
+      },
       {
         provider: "kie",
         dotPath: "api.v1.jobs.createTask",

@@ -408,6 +408,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 2.5 reference-to-video drops its audio rule, which its live Input does
     not document.
 
+### Fixed
+
+- `gptImage1p5` names the URL it posts to. Its URL comment and its
+  `scripts/endpoint-docs.tsv` row said
+  `POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5`, but the leaf posts to
+  `https://fal.run/fal-ai/gpt-image-1.5`, so the README and the CLI catalog
+  named the wrong URL. The docs link of `gptImage1p5` and
+  `gptImage1p5.edit` now points at the model's API page on fal.ai instead
+  of the generic https://docs.fal.ai (ac-annrf9).
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

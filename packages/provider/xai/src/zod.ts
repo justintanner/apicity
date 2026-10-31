@@ -221,6 +221,13 @@ export const XaiImageGenerateRequestSchema = z.object({
   model: z.string().optional(),
   n: z.number().int().min(1).max(10).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
+  deferred: z
+    .boolean()
+    .nullable()
+    .optional()
+    .describe(
+      'If set, the request returns immediately with a request_id and the image is generated in the background. Poll GET /v1/images/{request_id} for the result. Only response_format: "url" is supported in this mode.'
+    ),
   aspect_ratio: XaiImageAspectRatioSchema.optional(),
   resolution: z.enum(["1k", "2k"]).optional(),
   storage_options: XaiImagineStorageOptionsSchema.optional(),

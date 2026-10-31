@@ -9366,6 +9366,22 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "xai\tGET\tv1.images": {
+    provider: "xai",
+    method: "GET",
+    dotPath: "v1.images",
+    positional: [
+      {
+        placeholder: "request_id",
+        param: "requestId",
+        optional: false,
+        alias: "request_id",
+      },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "xai\tGET\tv1.languageModels": {
     provider: "xai",
     method: "GET",

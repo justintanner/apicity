@@ -1838,6 +1838,7 @@ xai	v1.files.content	GET	expensive	Metered LLM/inference provider; per-call toke
 xai	v1.files.publicUrl	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 xai	v1.files.publicUrl.revoke	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 xai	v1.imageGenerationModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.images	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 xai	v1.images.edits	POST	prohibitive	Image edit; direct media-generation cost per image
 xai	v1.images.generations	POST	prohibitive	Image generation; direct media-generation cost per image
 xai	v1.languageModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money

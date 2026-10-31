@@ -116,16 +116,29 @@ export const OpenAiEmbeddingRequestSchema = z.object({
 
 const blobSchema = z.instanceof(Blob);
 
+// gpt-image-2 and the 2.5 models also take custom WIDTHxHEIGHT sizes, and the
+// 2.5 models add the xhigh and max qualities
+// (https://developers.openai.com/api/docs/guides/image-generation, read
+// 2026-10-31). OpenAI applies the per-model rules.
+const OpenAiImageEditSizeSchema = z
+  .enum(["256x256", "512x512", "1024x1024", "1536x1024", "1024x1536", "auto"])
+  .or(z.string().regex(/^[1-9]\d*x[1-9]\d*$/))
+  .describe(
+    "A listed size, or WIDTHxHEIGHT for gpt-image-2 and the 2.5 models: both edges multiples of 16, at most 3840 px and 3:1, 655,360 to 8,294,400 pixels."
+  );
+
+const OpenAiImageEditQualitySchema = z
+  .enum(["standard", "low", "medium", "high", "xhigh", "max", "auto"])
+  .describe("xhigh and max: gpt-image-2.5-sunburst and gpt-image-2.5-flare.");
+
 export const OpenAiImageEditRequestSchema = z.object({
   image: z.union([blobSchema, z.array(blobSchema)]),
   prompt: z.string().min(1),
   mask: blobSchema.optional(),
   model: z.string().optional(),
   n: z.number().int().min(1).max(10).optional(),
-  size: z
-    .enum(["256x256", "512x512", "1024x1024", "1536x1024", "1024x1536", "auto"])
-    .optional(),
-  quality: z.enum(["standard", "low", "medium", "high", "auto"]).optional(),
+  size: OpenAiImageEditSizeSchema.optional(),
+  quality: OpenAiImageEditQualitySchema.optional(),
   output_format: z.enum(["png", "jpeg", "webp"]).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
   background: z.enum(["transparent", "opaque", "auto"]).optional(),

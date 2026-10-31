@@ -498,6 +498,7 @@ endless	social.trends.public	GET	cheap	Free public social-trends API; no key, no
 fal	alibaba.happyHorse.v1p1.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.happyHorse.v1p1.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.happyHorse.v1p1.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	alibaba.happyHorse.videoEdit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.qwenAudio3Tts	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.qwenImage3.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.qwenImage3.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

@@ -960,6 +960,11 @@ export const FRONTIER = {
         elo: 1090,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "alibaba.happyHorse.videoEdit",
+            pricingKey: "alibaba/happy-horse/video-edit",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "happyhorse/video-edit",

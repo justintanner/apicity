@@ -788,8 +788,8 @@ export const FRONTIER = {
           },
           {
             provider: "xai",
-            dotPath: "v1.videos.generations.imageToVideo",
-            pricingKey: "grok-imagine-video-1.5-preview",
+            dotPath: "v1.videos.generations",
+            modelId: "grok-imagine-video-1.5",
           },
           {
             provider: "machgen",

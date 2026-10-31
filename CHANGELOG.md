@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The image-to-video frontier now names the model on its xAI row for Grok Imagine Video 1.5. `frontier("i2v")` lists it as the shared `v1.videos.generations` call with `modelId` `grok-imagine-video-1.5`, the row reference-to-video already has, instead of the `v1.videos.generations.imageToVideo` leaf, which carried no model id. An id built from the provider and model id was `xai:v1.videos.generations.imageToVideo` and matched no model; it is now `xai:grok-imagine-video-1.5`. xAI lists the leaf's `grok-imagine-video-1.5-preview` as an alias of that id, and the price is unchanged at 0.08 USD/s (ac-dp27py).
+
 - An unknown flag on an endpoint that already takes parameter flags now tells you to pass any other request field in `--data`. The agent skill's simplefunctions candles example passes the required `--ticker` and puts `limit` in `--data`, instead of a `marketId` that endpoint does not take (ac-7xgdzh).
 
 - `@apicity/free-media-upload`'s README no longer asks for an API key: its Quick Start and Middleware samples passed `process.env.FREE-MEDIA-UPLOAD_API_KEY`, which the keyless provider does not take, because doc-gen's settings for it sat under its old name, `free`. The Middleware sample now wraps `uguu.upload` instead of a `get.v1.models` the provider does not have (ac-37sz5l).

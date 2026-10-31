@@ -64,6 +64,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `v1.videos.generations` refuses `reference_images` and
+  `reference_image_file_ids` on `grok-imagine-video-1.5-lite` and its
+  snapshots. `collectXaiVideoReferenceIssues` reports an `"image-model"`
+  issue on path `["model"]`, so both the schema and the pre-fetch guard
+  fail the request before any billing. The lite model page lists text and
+  image to video only. `isXaiGrokImagineVideo15LiteModel` names the lite
+  family, so a future docs change is a one-line reversal. No probe was sent
+  (ac-p5g552).
+
 - `reference_audios` on `v1.videos.generations` refuses
   `grok-imagine-video-1.5-lite`. `isXaiGrokImagineVideo15Model` matched it
   by its `grok-imagine-video-1.5-` prefix, so the schema guard and the

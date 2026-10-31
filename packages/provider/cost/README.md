@@ -688,14 +688,15 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 
 ## Coverage
 
-| Provider                                                           | source                   | Notes                                                                               |
-| ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
-| `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`          |
-| `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`            |
-| `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints    |
-| `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
-| `free`                                                             | `free`                   | always $0                                                                           |
+| Provider                                                           | source                   | Notes                                                                                                                                                             |
+| ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                                                                                               |
+| `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`                                                                                        |
+| `openai` GPT Image models                                          | `per-unit-table`         | `gpt-image-2` and 2.5 per image output token from quality and size, `gpt-image-1.5` per image; `auto` fails closed, and input tokens are excluded (floor warning) |
+| `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`                                                                                          |
+| `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints                                                                                  |
+| `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno                                                                               |
+| `free`                                                             | `free`                   | always $0                                                                                                                                                         |
 
 **xAI voice is unpriced.** `grok-voice-think-fast-2.0` has no bundled rate.
 As of 2026-10-19, xAI's [pricing](https://docs.x.ai/developers/pricing) and

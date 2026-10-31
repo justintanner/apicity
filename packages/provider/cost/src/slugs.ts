@@ -375,6 +375,12 @@ export const MODEL_SLUGS = {
     "o4-mini": "o4m",
     "text-embedding-3-small": "emb3s",
     "text-embedding-3-large": "emb3l",
+    // GPT Image models. Same models kie resells as "gpt-image-*", so the
+    // slugs match kie's.
+    "gpt-image-1.5": "gi1p5",
+    "gpt-image-2": "gi2",
+    "gpt-image-2.5-sunburst": "gi2p5sb",
+    "gpt-image-2.5-flare": "gi2p5fl",
   },
 
   xai: {
@@ -1002,6 +1008,10 @@ export const MODEL_DISPLAY = {
     "o4-mini": "o4 Mini",
     "text-embedding-3-small": "Embedding 3 Small",
     "text-embedding-3-large": "Embedding 3 Large",
+    "gpt-image-1.5": "GPT Image 1.5",
+    "gpt-image-2": "GPT Image 2",
+    "gpt-image-2.5-sunburst": "GPT Image 2.5 Sunburst",
+    "gpt-image-2.5-flare": "GPT Image 2.5 Flare",
   },
 
   xai: {

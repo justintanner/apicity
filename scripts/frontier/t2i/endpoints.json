@@ -18,8 +18,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.generations",
-      "modelId": "gpt-image-2.5-sunburst",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2.5-sunburst"
     }
   ],
   "GPT Image 2.5 Flare (max)": [
@@ -41,8 +40,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.generations",
-      "modelId": "gpt-image-2.5-flare",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2.5-flare"
     }
   ],
   "GPT Image 2 (high)": [
@@ -64,8 +62,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.generations",
-      "modelId": "gpt-image-2",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2"
     }
   ],
   "Nano Banana 2.1": [
@@ -152,8 +149,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.generations",
-      "modelId": "gpt-image-1.5",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-1.5"
     }
   ],
   "MAI-Image-2.6-Flash": []

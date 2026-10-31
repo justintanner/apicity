@@ -199,6 +199,9 @@ export const XaiChatRequestSchema = z
 // Images
 // ---------------------------------------------------------------------------
 
+// The image aspect ratios and resolutions xAI's request parser accepts (free
+// 422 probes, 2026-10-31). 21:9, 5:2 and 1.5k arrived with
+// grok-imagine-image-2.0.
 const XaiImageAspectRatioSchema = z.enum([
   "1:1",
   "16:9",
@@ -213,8 +216,21 @@ const XaiImageAspectRatioSchema = z.enum([
   "9:19.5",
   "20:9",
   "9:20",
+  "21:9",
+  "5:2",
   "auto",
 ]);
+
+const XaiImageResolutionSchema = z.enum(["1k", "2k", "1.5k"]);
+
+// docs.x.ai lists low, medium and auto
+// (/developers/model-capabilities/images/generation#quality). The request
+// parser also takes "high", which the docs do not list, so it stays out.
+const XaiImageQualitySchema = z
+  .enum(["low", "medium", "auto"])
+  .describe(
+    "grok-imagine-image-2.0 only. auto, the default, serves low for generation and medium for editing; the image is billed at the quality served."
+  );
 
 export const XaiImageGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
@@ -229,7 +245,8 @@ export const XaiImageGenerateRequestSchema = z.object({
       'If set, the request returns immediately with a request_id and the image is generated in the background. Poll GET /v1/images/{request_id} for the result. Only response_format: "url" is supported in this mode.'
     ),
   aspect_ratio: XaiImageAspectRatioSchema.optional(),
-  resolution: z.enum(["1k", "2k"]).optional(),
+  resolution: XaiImageResolutionSchema.optional(),
+  quality: XaiImageQualitySchema.optional(),
   storage_options: XaiImagineStorageOptionsSchema.optional(),
   user: z.string().optional(),
 });
@@ -240,12 +257,15 @@ export const XaiImageEditRequestSchema = z
     model: z.string().optional(),
     image: XaiImageReferenceSchema.optional(),
     image_file_id: z.string().min(1).optional(),
-    images: z.array(XaiImageReferenceSchema).min(1).max(3).optional(),
-    image_file_ids: z.array(z.string().min(1)).min(1).max(3).optional(),
+    // Up to five sources with grok-imagine-image-2.0; earlier models take
+    // three (docs.x.ai multi-image editing and the 2026-11-02 migration note).
+    images: z.array(XaiImageReferenceSchema).min(1).max(5).optional(),
+    image_file_ids: z.array(z.string().min(1)).min(1).max(5).optional(),
     n: z.number().int().min(1).max(10).optional(),
     response_format: z.enum(["url", "b64_json"]).optional(),
     aspect_ratio: XaiImageAspectRatioSchema.optional(),
-    resolution: z.enum(["1k", "2k"]).optional(),
+    resolution: XaiImageResolutionSchema.optional(),
+    quality: XaiImageQualitySchema.optional(),
     storage_options: XaiImagineStorageOptionsSchema.optional(),
     user: z.string().optional(),
   })

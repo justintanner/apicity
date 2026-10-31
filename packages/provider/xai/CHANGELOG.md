@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `v1.images.generations` and `v1.images.edits` take
+  grok-imagine-image-2.0's request fields:
+  - `quality` (`low`, `medium` or `auto`, 2.0 only);
+  - `resolution: "1.5k"`;
+  - the `21:9` and `5:2` aspect ratios;
+  - up to five edit sources in `images` or `image_file_ids` (was three).
+
+  Free 422 probes on 2026-10-31 listed each value from xAI's request
+  parser. The parser also takes `quality: "high"`, which the docs do not
+  list, so the schema leaves it out (ac-k9mqsp).
+
 - Added `get.v1.images(requestId)`, `GET https://api.x.ai/v1/images/{request_id}`,
   which polls a deferred image generation: HTTP 202 while pending, 200 with
   `data` when done or with an `error` body when it failed

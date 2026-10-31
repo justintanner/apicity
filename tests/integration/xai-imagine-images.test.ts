@@ -377,6 +377,8 @@ describe("xai Grok Imagine image generation and edits", () => {
           { image_url: "data:image/png;base64,AA==" },
           { file_id: "file_ref_123" },
           { url: "https://example.com/4.png" },
+          { url: "https://example.com/5.png" },
+          { url: "https://example.com/6.png" },
         ],
       }).success
     ).toBe(false);

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/xai` `v1.videos.generations` refuses `reference_audios` on `grok-imagine-video-1.5-lite`, in the schema and before fetch. The 1.5-family check matched lite by prefix, but xAI documents voice references on grok-imagine-video-1.5 only, and lite takes text and image to video (ac-kfekq8).
+
 - `@apicity/openai` `v1.images.edits` accepts the GPT Image 2 and 2.5 options: `quality` `xhigh` and `max` (gpt-image-2.5-sunburst and -flare), and any `WIDTHxHEIGHT` size such as `2048x2048` or `3840x2160` (gpt-image-2 and 2.5). The schema refused both, so `apicity describe` and `.schema.safeParse` rejected documented edit requests. The known sizes stay listed; OpenAI applies the per-model size rules (ac-r8riqc).
 
 - `@apicity/fal` `xai.grokImagineImage` and `qwenImage` document the URLs they post to, `https://fal.run/xai/grok-imagine-image` and `https://fal.run/fal-ai/qwen-image`, in place of `https://api.fal.ai/v1/...`, and link each model's API page on fal.ai. The fal README and the CLI catalog named the wrong URLs (ac-nacco3).

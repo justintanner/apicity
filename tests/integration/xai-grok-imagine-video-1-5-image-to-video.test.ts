@@ -384,6 +384,15 @@ describe("xai video generations default model", () => {
         duration: 11 as const,
       },
     },
+    // docs.x.ai documents voices on grok-imagine-video-1.5 only.
+    {
+      label: "a voice on 1.5-lite",
+      request: {
+        prompt: "A singer walks onto a stage",
+        model: "grok-imagine-video-1.5-lite",
+        reference_audios: [{ voice_id: "eve" }],
+      },
+    },
   ])("rejects $label before fetch", async ({ request }) => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_never_sent" },

@@ -299,6 +299,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `frontier("i2v")` names the model on the xAI Grok Imagine Video 1.5 row:
+  it is the shared `v1.videos.generations` call with `modelId`
+  `grok-imagine-video-1.5`, as on `r2v`, instead of the
+  `v1.videos.generations.imageToVideo` leaf with no model id. A
+  `provider:modelId` id is now `xai:grok-imagine-video-1.5`. xAI lists the
+  leaf's `grok-imagine-video-1.5-preview` as an alias of that id, and the
+  price is unchanged at 0.08 USD/s (ac-dp27py).
 - KIE declared-token estimates (`google/gemini-2-5-pro-tts` and
   `google/gemini-3-1-flash-tts`) reject NaN, negative, fractional and
   non-number `costHints` token counts. An invalid count fails closed with

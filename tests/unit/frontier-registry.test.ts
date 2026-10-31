@@ -412,6 +412,16 @@ function liveRegistry() {
         }).success
     )
   );
+  const xaiImageVideo = new Set(
+    [XAI_GROK_IMAGINE_VIDEO, XAI_GROK_IMAGINE_VIDEO_1_5].filter(
+      (model) =>
+        XaiVideoGenerateRequestSchema.safeParse({
+          model,
+          prompt: "frontier",
+          image: { url: "https://example.com/frame.png" },
+        }).success
+    )
+  );
   const fal = createFal({ apiKey: "frontier" }) as unknown as Record<
     string,
     unknown
@@ -490,6 +500,9 @@ function liveRegistry() {
       entry.dotPath === ALIBABA_VIDEO_SYNTHESIS
     ) {
       return alibabaVideo.has(entry.modelId);
+    }
+    if (entry.provider === "xai" && entry.dotPath === "v1.videos.generations") {
+      return xaiImageVideo.has(entry.modelId);
     }
     return false;
   };
@@ -1229,6 +1242,13 @@ describe("frontier video snapshots", () => {
         modelId: "grok-imagine-image-quality",
       })
     ).toBe(true);
+    expect(
+      refused("i2v", {
+        provider: "xai",
+        dotPath: "v1.videos.generations",
+        modelId: "grok-imagine-image-quality",
+      })
+    ).toBe(true);
   });
 
   it("lists MachGen through its generate call for t2v, i2v and r2v", () => {
@@ -1329,6 +1349,28 @@ describe("frontier video snapshots", () => {
     delete withoutModel.r2v["HappyHorse-1.1"];
     expect(crossTypeProblems(withoutModel, ctx)).toContain(
       "HappyHorse-1.1: i2v kie happyhorse-1-1/image-to-video implies r2v kie happyhorse-1-1/reference-to-video"
+    );
+
+    // The image-to-video leaf names no model id (it sends the preview
+    // alias), so the r2v shared callable's i2v twin is missing.
+    const withLeaf = {
+      ...maps,
+      i2v: {
+        ...maps.i2v,
+        "Grok Imagine Video 1.5": maps.i2v["Grok Imagine Video 1.5"].map(
+          (entry) =>
+            entry.provider === "xai"
+              ? {
+                  provider: "xai",
+                  dotPath: "v1.videos.generations.imageToVideo",
+                  pricingKey: "grok-imagine-video-1.5-preview",
+                }
+              : entry
+        ),
+      },
+    };
+    expect(crossTypeProblems(withLeaf, ctx)).toContain(
+      "Grok Imagine Video 1.5: r2v xai grok-imagine-video-1.5 implies i2v xai grok-imagine-video-1.5"
     );
   });
 });
@@ -1692,6 +1734,10 @@ describe("frontier prices", () => {
     const xai = frontierFiles("i2v").endpointMap[
       "Grok Imagine Video 1.5"
     ]?.find((entry) => entry.provider === "xai");
-    expect(xai?.pricingKey).toBe(`${XAI_GROK_IMAGINE_VIDEO_1_5}-preview`);
+    expect(xai).toEqual({
+      provider: "xai",
+      dotPath: "v1.videos.generations",
+      modelId: XAI_GROK_IMAGINE_VIDEO_1_5,
+    });
   });
 });

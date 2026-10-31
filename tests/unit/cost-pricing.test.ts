@@ -407,6 +407,11 @@ describe("PRICING data", () => {
       unit: "seconds",
       rates: { "": 0.08 },
     });
+    expect(PRICING.xai["grok-imagine-video-1.5-lite"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.02 },
+    });
   });
 
   it("xai has per-generation image rates", () => {
@@ -420,6 +425,23 @@ describe("PRICING data", () => {
       unit: "generations",
       rates: { "": 0.05 },
     });
+    expect(PRICING.xai["grok-imagine-image-2.0"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.04 },
+    });
+  });
+
+  // The page's six Imagine rates were re-read on 2026-10-31; the preview id
+  // shares the 1.5 rate.
+  it("stamps the xai media rates with the pricing page read", () => {
+    for (const [model, entry] of Object.entries(PRICING.xai)) {
+      if (entry.kind !== "perUnit") continue;
+      expect(entry.source, model).toEqual({
+        url: "https://docs.x.ai/developers/pricing",
+        asOf: "2026-10-31",
+      });
+    }
   });
 
   it("every xai media rate carries a source url and asOf stamp", () => {
@@ -440,9 +462,11 @@ describe("PRICING data", () => {
       .sort();
     expect(perUnit).toEqual([
       "grok-imagine-image",
+      "grok-imagine-image-2.0",
       "grok-imagine-image-quality",
       "grok-imagine-video",
       "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-lite",
       "grok-imagine-video-1.5-preview",
     ]);
   });

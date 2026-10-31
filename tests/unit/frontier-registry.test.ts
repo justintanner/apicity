@@ -1101,11 +1101,11 @@ describe("frontier image snapshots", () => {
       }).success
     ).toBe(true);
 
-    // Neither table has a rate for these ids, so both rows are unpriced.
+    // PRICING.xai prices the Grok id, so its row carries no pricingKey;
+    // PRICING.google has no rate for the Gemini id, so that row is unpriced.
     expect(t2i.endpointMap["Grok Imagine Image 2.0"]).toContainEqual({
       ...xai,
       modelId: "grok-imagine-image-2.0",
-      pricingKey: "unpriced",
     });
     expect(
       t2i.endpointMap["Nano Banana 2 (Gemini 3.1 Flash Image)"]

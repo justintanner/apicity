@@ -392,8 +392,11 @@ export const MODEL_SLUGS = {
     "grok-imagine-video": "grokimgv",
     "grok-imagine-video-1.5": "grokimgv1p5",
     "grok-imagine-video-1.5-preview": "grokimgv1p5",
+    // fal's xai/grok-imagine-video/v1.5/lite rows carry the same slug.
+    "grok-imagine-video-1.5-lite": "grok15lt",
     "grok-imagine-image": "grokimgi",
     "grok-imagine-image-quality": "grokimgiq",
+    "grok-imagine-image-2.0": "grokimgi2p0",
   },
 
   alibaba: {
@@ -1014,8 +1017,10 @@ export const MODEL_DISPLAY = {
     "grok-imagine-video": "Grok Imagine Video",
     "grok-imagine-video-1.5": "Grok Imagine Video 1.5",
     "grok-imagine-video-1.5-preview": "Grok Imagine Video 1.5",
+    "grok-imagine-video-1.5-lite": "Grok Imagine Video 1.5 Lite",
     "grok-imagine-image": "Grok Imagine Image",
     "grok-imagine-image-quality": "Grok Imagine Image Quality",
+    "grok-imagine-image-2.0": "Grok Imagine Image 2.0",
   },
 
   alibaba: {

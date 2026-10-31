@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added xAI rates for `grok-imagine-image-2.0` ($0.04 per image) and `grok-imagine-video-1.5-lite` ($0.02 per second) from docs.x.ai/developers/pricing, with the slugs `grokimgi2p0` and `grok15lt`. The $0.04 is the published low-quality rate; a request served at medium quality (`quality: "medium"`, or an edit at the default `auto`) keeps it and warns that the estimate is a floor, since xAI publishes no medium rate. All xAI Imagine rates now cite the pricing page as of 2026-10-31. The xAI row of the `t2i` Grok Imagine Image 2.0 frontier entry drops its `"unpriced"` pricingKey and prices at 0.04 USD/generation (ac-bf3zo7).
+
 - Added `alibaba/happy-horse/reference-to-video` pricing: $0.14/s at 720p and $0.28/s at 1080p on the requested seconds. The recorded 3 s 720p call with one reference billed 3 units, $0.42 (ac-qy2sr1).
 
 - Added `alibaba/happy-horse/image-to-video` pricing: $0.14/s at 720p and $0.28/s at 1080p on the requested seconds. The recorded 3 s 720p call billed 3 units, $0.42 (ac-leydts).

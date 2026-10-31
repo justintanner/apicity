@@ -82,8 +82,7 @@
     {
       "provider": "xai",
       "dotPath": "v1.images.generations",
-      "modelId": "grok-imagine-image-2.0",
-      "pricingKey": "unpriced"
+      "modelId": "grok-imagine-image-2.0"
     }
   ],
   "Nano Banana 2 (Gemini 3.1 Flash Image)": [

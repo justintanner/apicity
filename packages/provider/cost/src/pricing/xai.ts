@@ -14,13 +14,14 @@ const grokBuild01: ModelPricing = {
   source: grokBuild01Source,
 };
 
-// Media rates come from the model table on docs.x.ai/docs/models, which
+// Media rates come from the Imagine Pricing table on
+// docs.x.ai/developers/pricing (docs.x.ai/developers/models repeats it), which
 // publishes video as USD/sec and images as USD/image. In-repo tests cannot
 // verify these against upstream — refresh them from the same page and bump
 // `asOf` when they change.
 const mediaSource = {
-  url: "https://docs.x.ai/docs/models",
-  asOf: "2026-07-20",
+  url: "https://docs.x.ai/developers/pricing",
+  asOf: "2026-10-31",
 };
 
 // Video generation bills per second of output. `duration` is a real top-level
@@ -55,6 +56,34 @@ const perGenerationImage = (perUnit: number): ModelPricing => ({
   source: mediaSource,
 });
 
+// grok-imagine-image-2.0 bills at the quality it serves
+// (docs.x.ai/developers/model-capabilities/images/generation#quality). The
+// published 0.04 USD/image is the `low` rate: the grok-imagine-image-quality
+// retirement note puts 2.0 at `low` 0.01 under that model's 0.05. xAI publishes
+// no `medium` rate, and `auto`, the default, serves `medium` for edits, so a
+// medium-served request keeps the low rate and is warned as a floor.
+const servesMediumQuality = (p: Record<string, unknown>): boolean =>
+  p.quality === "medium" ||
+  ((p.quality === undefined || p.quality === "auto") &&
+    [p.image, p.images, p.image_file_id, p.image_file_ids].some(
+      (source) => source !== undefined
+    ));
+
+const grokImagineImage2: ModelPricing = {
+  kind: "perUnit",
+  unit: "generations",
+  units: imageCount,
+  select: [],
+  rates: { "": 0.04 },
+  warn: (p) =>
+    servesMediumQuality(p)
+      ? [
+          "xai 'grok-imagine-image-2.0': served at medium quality (quality \"medium\", or an edit at the default auto), which bills above the published 0.04 USD/image low rate; xAI publishes no medium rate, so this estimate is a floor",
+        ]
+      : [],
+  source: mediaSource,
+};
+
 export const xai: Record<string, ModelPricing> = {
   "grok-build-0.1": grokBuild01,
   "grok-code-fast-1": grokBuild01,
@@ -77,9 +106,15 @@ export const xai: Record<string, ModelPricing> = {
   // packages/provider/xai/src/zod.ts); docs list only the released "1.5" id.
   // Same rate, registered so preview payloads price instead of missing.
   "grok-imagine-video-1.5-preview": perSecondVideo(0.08),
+  "grok-imagine-video-1.5-lite": perSecondVideo(0.02),
 
   // Grok Imagine image — USD per generated image. `units` follows `n`, so a
   // batch request scales linearly.
   "grok-imagine-image": perGenerationImage(0.02),
+  // xAI retires this slug on 2026-11-02
+  // (docs.x.ai/developers/migration/imagine-image-quality-nov-2): it keeps
+  // resolving, but grok-imagine-image-2.0 at `low` serves it and bills it at
+  // that rate. 0.05 holds until the switch.
   "grok-imagine-image-quality": perGenerationImage(0.05),
+  "grok-imagine-image-2.0": grokImagineImage2,
 };

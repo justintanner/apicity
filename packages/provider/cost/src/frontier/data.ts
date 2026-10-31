@@ -201,7 +201,6 @@ export const FRONTIER = {
             provider: "xai",
             dotPath: "v1.images.generations",
             modelId: "grok-imagine-image-2.0",
-            pricingKey: "unpriced",
           },
         ],
       },

@@ -317,6 +317,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The xAI video entries price every resolution and the input images from recorded 1 s bills (`tests/integration/xai-imagine-billing.test.ts`, V2 to V9, 0.762 USD):
+  - `grok-imagine-video`: 0.05 and 0.07 USD/s at 480p and 720p.
+  - `grok-imagine-video-1.5` and its preview id: 0.08, 0.14 and 0.25 at 480p, 720p and 1080p.
+  - `grok-imagine-video-1.5-lite`: 0.02, 0.03 and 0.14.
+
+  The `extra` hook adds each input image once per request: `image` (or `image_file_id`) and each `reference_images` entry (or `reference_image_file_ids`), at 0.002 USD on `grok-imagine-video` and 0.01 on the 1.5 models. The image charge from a 1 s clip cannot tell per request from per second; fal's cards, which matched xAI on every cell checked, bill it per image. `inputImageCharge` now takes the list field names, so image edits and videos share it. The 720p floor warning is gone. A source-video request (an edit or extension) still prices at 480p with its floor warning, and 1080p on `grok-imagine-video` fails closed (ac-9jsawg).
+
 - xAI Grok Imagine estimates match what xAI bills, from the `usage.cost_in_usd_ticks` of nine recorded calls (0.62 USD in total) in `tests/integration/xai-imagine-billing.test.ts`, which pins each bill to its estimate. An image edit adds each input image through the `extra` hook, once per request, whatever `n`, quality, output resolution or input size: 0.002 USD on `grok-imagine-image` and 0.01 USD on `grok-imagine-image-2.0`. `image_file_id` and `image_file_ids` count as `image` and `images`. `grok-imagine-image-2.0` selects on the served quality and on the resolution (default 1k), from the `pricing` grid of `GET /v1/image-generation-models`, read 2026-10-31: low 0.04, 0.05 and 0.06 USD and medium 0.06, 0.07 and 0.08 USD at 1k, 1.5k and 2k. `auto` serves low for a generation and medium for an edit. The medium floor warning is gone, and `quality: "high"`, which has no listed price, fails closed. The video entries select on `resolution` (default 480p). The page's figure is the 480p rate, and `grok-imagine-video-1.5` (and its preview id) bills 0.14 USD/s at 720p. No 720p rate is known for `grok-imagine-video` or `grok-imagine-video-1.5-lite`, so 720p keeps the 480p rate and warns that it is a floor. A request with a source video (an edit or extension keeps the source's resolution) warns the same way, and 1080p fails closed (ac-k7qv4n).
 
 - `frontier("t2i")` and `frontier("i2i")` list OpenAI on every GPT Image

@@ -12,6 +12,8 @@ import type {
   XaiImageEditRequest,
   XaiImageGenerateRequest,
   XaiImageResponse,
+  XaiVideoGenerateRequest,
+  XaiVideoResult,
 } from "@apicity/xai";
 
 // Billing probes for PRICING.xai (ac-k7qv4n, 2026-10-31). Each response
@@ -38,6 +40,30 @@ function expectBilled(
 ): void {
   expect(result.data).toHaveLength(images);
   expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+}
+
+// Submits a one-second clip and polls GET /v1/videos/{id} to the end; the
+// final poll carries the bill.
+async function billVideo(
+  req: XaiVideoGenerateRequest
+): Promise<XaiVideoResult> {
+  const provider = createXaiProvider();
+  const { request_id } = await provider.post.v1.videos.generations(
+    req,
+    mintXaiOtp("v1.videos.generations", req)
+  );
+  expect(request_id).toBeTruthy();
+
+  const pollDelay = getPollyMode() === "replay" ? 0 : 5_000;
+  let result = await provider.get.v1.videos(request_id);
+  for (let i = 0; i < 160 && result.status === "pending"; i++) {
+    if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+    result = await provider.get.v1.videos(request_id);
+  }
+
+  expect(result.status).toBe("done");
+  expect(result.video?.duration).toBe(1);
+  return result;
 }
 
 describe("xai Grok Imagine billing", () => {
@@ -208,28 +234,148 @@ describe("xai Grok Imagine billing", () => {
     { timeout: 900_000 },
     async () => {
       ctx = setupPolly("xai/imagine-billing-video-1-5-720p");
-      const provider = createXaiProvider();
       const req = {
         prompt: "A paper boat drifting across a calm pond",
         model: "grok-imagine-video-1.5" as const,
         duration: 1 as const,
         resolution: "720p" as const,
       };
-      const { request_id } = await provider.post.v1.videos.generations(
-        req,
-        mintXaiOtp("v1.videos.generations", req)
-      );
-      expect(request_id).toBeTruthy();
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
 
-      const pollDelay = getPollyMode() === "replay" ? 0 : 5_000;
-      let result = await provider.get.v1.videos(request_id);
-      for (let i = 0; i < 160 && result.status === "pending"; i++) {
-        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
-        result = await provider.get.v1.videos(request_id);
-      }
+  // ac-9jsawg: the other resolution tiers and the image input charges.
+  it(
+    "V2: bills a one-second grok-imagine-video clip at 720p",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-0-720p");
+      const req = {
+        prompt: "A paper boat drifting across a calm pond",
+        model: "grok-imagine-video",
+        duration: 1 as const,
+        resolution: "720p" as const,
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
 
-      expect(result.status).toBe("done");
-      expect(result.video?.duration).toBe(1);
+  it(
+    "V3: bills a one-second grok-imagine-video-1.5-lite clip at 720p",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-lite-720p");
+      const req = {
+        prompt: "A paper boat drifting across a calm pond",
+        model: "grok-imagine-video-1.5-lite",
+        duration: 1 as const,
+        resolution: "720p" as const,
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V4: bills a one-second grok-imagine-video-1.5 clip at 1080p",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-1080p");
+      const req: XaiVideoGenerateRequest = {
+        prompt: "A paper boat drifting across a calm pond",
+        model: "grok-imagine-video-1.5",
+        duration: 1,
+        // @ts-expect-error docs.x.ai lists 1080p; the schema adds it in ac-nw0cw3.
+        resolution: "1080p",
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V5: bills a one-second grok-imagine-video-1.5-lite clip at 1080p",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-lite-1080p");
+      const req: XaiVideoGenerateRequest = {
+        prompt: "A paper boat drifting across a calm pond",
+        model: "grok-imagine-video-1.5-lite",
+        duration: 1,
+        // @ts-expect-error docs.x.ai lists 1080p; the schema adds it in ac-nw0cw3.
+        resolution: "1080p",
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V6: bills a one-second grok-imagine-video-1.5 image-to-video clip",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-i2v-480p");
+      const req = {
+        prompt: "The man smiles and nods at the camera",
+        model: "grok-imagine-video-1.5",
+        image: { url: MAN_URL },
+        duration: 1 as const,
+        resolution: "480p" as const,
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V7: bills a one-second grok-imagine-video-1.5 clip from two references",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-r2v-two-480p");
+      const req = {
+        prompt: "The man from <IMAGE_0> pets the cat from <IMAGE_1>",
+        model: "grok-imagine-video-1.5",
+        reference_images: [{ url: MAN_URL }, { url: CAT1_URL }],
+        duration: 1 as const,
+        resolution: "480p" as const,
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V8: bills a one-second grok-imagine-video image-to-video clip",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-0-i2v-480p");
+      const req = {
+        prompt: "The man smiles and nods at the camera",
+        model: "grok-imagine-video",
+        image: { url: MAN_URL },
+        duration: 1 as const,
+        resolution: "480p" as const,
+      };
+      const result = await billVideo(req);
+      expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
+    }
+  );
+
+  it(
+    "V9: bills a one-second grok-imagine-video-1.5-lite image-to-video clip",
+    { timeout: 900_000 },
+    async () => {
+      ctx = setupPolly("xai/imagine-billing-video-1-5-lite-i2v-480p");
+      const req = {
+        prompt: "The man smiles and nods at the camera",
+        model: "grok-imagine-video-1.5-lite",
+        image: { url: MAN_URL },
+        duration: 1 as const,
+        resolution: "480p" as const,
+      };
+      const result = await billVideo(req);
       expect(result.usage?.cost_in_usd_ticks).toBe(estimatedTicks(req));
     }
   );

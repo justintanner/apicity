@@ -9371,12 +9371,7 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     method: "GET",
     dotPath: "v1.images",
     positional: [
-      {
-        placeholder: "request_id",
-        param: "requestId",
-        optional: false,
-        alias: "request_id",
-      },
+      { placeholder: "requestId", param: "requestId", optional: false },
     ],
     fields: [],
     injected: [],

@@ -1633,7 +1633,7 @@ xai	v1.files.content	GET	https://api.x.ai/v1/files/{fileId}/content	https://docs
 xai	v1.files.publicUrl	POST	https://api.x.ai/v1/files/{fileId}/public-url	https://docs.x.ai/developers/files/public-urls
 xai	v1.files.publicUrl.revoke	POST	https://api.x.ai/v1/files/{fileId}/public-url/revoke	https://docs.x.ai/developers/files/public-urls
 xai	v1.imageGenerationModels	GET	https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
-xai	v1.images	GET	https://api.x.ai/v1/images/{request_id}	https://docs.x.ai/developers/rest-api-reference/inference/images
+xai	v1.images	GET	https://api.x.ai/v1/images/{requestId}	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.images.edits	POST	https://api.x.ai/v1/images/edits	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.images.generations	POST	https://api.x.ai/v1/images/generations	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.languageModels	GET	https://api.x.ai/v1/language-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference

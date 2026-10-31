@@ -1475,7 +1475,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 signal
               );
             },
-            // GET https://api.x.ai/v1/images/{request_id}
+            // GET https://api.x.ai/v1/images/{requestId}
             // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
             images: async function getImages(
               requestId: string,

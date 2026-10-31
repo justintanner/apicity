@@ -418,6 +418,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `xai.grokImagineImage` and `qwenImage` name the URLs they post to. Their
+  URL comments and `scripts/endpoint-docs.tsv` rows said
+  `POST https://api.fal.ai/v1/xai/grok-imagine-image` and
+  `POST https://api.fal.ai/v1/fal-ai/qwen-image`, but the leaves post to
+  `https://fal.run/xai/grok-imagine-image` and
+  `https://fal.run/fal-ai/qwen-image`, so the README and the CLI catalog
+  named the wrong URLs. Their docs links now point at each model's API page
+  on fal.ai instead of the generic https://docs.fal.ai. No fal leaf comment
+  names api.fal.ai/v1 for a model endpoint any more (ac-nacco3).
+
 - `gptImage1p5` names the URL it posts to. Its URL comment and its
   `scripts/endpoint-docs.tsv` row said
   `POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5`, but the leaf posts to

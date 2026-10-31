@@ -4220,11 +4220,11 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.qwenImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/qwen-image</code>
+<code>POST https://fal.run/fal-ai/qwen-image</code>
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.fal.ai)
+[Upstream docs ↗](https://fal.ai/models/fal-ai/qwen-image/api)
 
 ```typescript
 const res = await fal.run.qwenImage({ /* ... */ });
@@ -4837,11 +4837,11 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-image</code>
+<code>POST https://fal.run/xai/grok-imagine-image</code>
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.fal.ai)
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-image/api)
 
 ```typescript
 const res = await fal.run.xai.grokImagineImage({ /* ... */ });

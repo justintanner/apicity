@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/xai` image requests accept grok-imagine-image-2.0's documented options: `quality` (`low`, `medium` or `auto`), `resolution: "1.5k"`, the `21:9` and `5:2` aspect ratios, and up to five edit sources instead of three. Before, the request schemas refused these values, so `apicity describe` and `.schema.safeParse` rejected valid 2.0 requests (ac-k9mqsp).
+
 - The text-to-image and image-to-image frontier boards list OpenAI's own images calls on every GPT Image row, beside fal, KIE and MachGen: `v1.images.generations` for text-to-image and `v1.images.edits` for image-to-image, with the model ids `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare`, `gpt-image-2` and (text-to-image only) `gpt-image-1.5`. They show no price until `@apicity/cost` has an OpenAI image rate (ac-57h4kb).
 
 - The `@apicity/fal` Seedance 2.5 US text-, image- and reference-to-video leaves take `draft`, fal's documented flag for a 480p preview that returns the `draft_id` `seedance2p5.us.draft.complete` finishes at 1080p. Before, no typed request could obtain that id. `@apicity/cost` prices a US text- or reference-to-video draft at 480p, as it already did outside the US (ac-8wmej3).

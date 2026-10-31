@@ -4,6 +4,7 @@ import {
   OpenAiChatRequestSchema,
   OpenAiSpeechRequestSchema,
   OpenAiEmbeddingRequestSchema,
+  OpenAiImageEditRequestSchema,
   OpenAiImageGenerationRequestSchema,
   OpenAiImageVariationRequestSchema,
   OpenAiModerationRequestSchema,
@@ -210,6 +211,58 @@ describe("OpenAI Zod schemas", () => {
         output_compression: 150,
       });
       expect(result.success).toBe(false);
+    });
+  });
+
+  // gpt-image-2 and the 2.5 models take custom WIDTHxHEIGHT sizes, and the
+  // 2.5 models add xhigh and max (image generation guide, 2026-10-31).
+  describe("OpenAiImageEditRequestSchema", () => {
+    const edit = (body: Record<string, unknown>) =>
+      OpenAiImageEditRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        prompt: "Make it a watercolor",
+        ...body,
+      });
+
+    it.each(["xhigh", "max", "low", "medium", "high", "standard", "auto"])(
+      "accepts quality %s",
+      (quality) => {
+        expect(edit({ model: "gpt-image-2.5-sunburst", quality }).success).toBe(
+          true
+        );
+      }
+    );
+
+    it.each([
+      "2048x2048",
+      "2048x1152",
+      "3840x2160",
+      "2160x3840",
+      "1536x864",
+      "1024x1024",
+      "256x256",
+      "auto",
+    ])("accepts size %s", (size) => {
+      expect(edit({ model: "gpt-image-2", size }).success).toBe(true);
+    });
+
+    it.each(["ultra", "XHIGH", ""])("rejects quality %j", (quality) => {
+      expect(edit({ quality }).success).toBe(false);
+    });
+
+    it.each(["2048X2048", "2048x", "x2048", "0x1024", "2048 x 2048", "big"])(
+      "rejects size %j",
+      (size) => {
+        expect(edit({ size }).success).toBe(false);
+      }
+    );
+
+    it("documents both fields in its JSON Schema", () => {
+      const json = JSON.stringify(
+        z.toJSONSchema(OpenAiImageEditRequestSchema, { unrepresentable: "any" })
+      );
+      expect(json).toContain("xhigh");
+      expect(json).toContain("WIDTHxHEIGHT");
     });
   });
 

@@ -1304,6 +1304,8 @@ export const MODEL_DISPLAY = {
     "minimax/h3-max/insert-video": "H3 Max Insert",
     "minimax/h3-max/lip-sync/image-to-video": "H3 Max Lip Sync",
     "minimax/h3-max/reference-to-video": "H3 Max Reference To Video",
+    "minimax/h3-max-turbo/reference-to-video":
+      "H3 Max Turbo Reference To Video",
     "minimax/h3/image-to-video": "MiniMax H3",
     "minimax/h3/image-to-video/lora": "MiniMax H3 Image-to-Video LoRA",
     "minimax/h3/reference-to-video/lora": "MiniMax H3 Reference-to-Video LoRA",

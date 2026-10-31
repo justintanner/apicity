@@ -2257,6 +2257,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3MaxTurbo.referenceToVideo": {
+    "source": "fal/minimax-h3-max-turbo-reference-to-video",
+    "payload": {
+      "prompt": "Image 1 is the cat. The cat slowly blinks, static camera.",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 2,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3MaxTurbo.textToVideo": {
     "source": "fal/minimax-h3-max-turbo-text-to-video",
     "payload": {

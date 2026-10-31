@@ -1143,6 +1143,11 @@ export const FRONTIER = {
             dotPath: "minimax.h3Max.referenceToVideo",
             pricingKey: "minimax/h3-max/reference-to-video",
           },
+          {
+            provider: "fal",
+            dotPath: "minimax.h3MaxTurbo.referenceToVideo",
+            pricingKey: "minimax/h3-max-turbo/reference-to-video",
+          },
         ],
       },
       {

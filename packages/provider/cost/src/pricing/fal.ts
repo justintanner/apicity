@@ -1098,6 +1098,13 @@ const gptImagePerImage = (
 //     carry, so no request field determines the charge. Same card language
 //     as minimax/h3-max/extend-video above. The recorded 0.92 s 480P call
 //     with one square reference image billed 0.92 units, $0.046.
+//   - minimax/h3-max-turbo/reference-to-video: the official card (read
+//     2026-10-31) bills each second of output video at $0.05/$0.08/$0.16
+//     at 480p/768p/1080p, plus $0.016 per 1,000 reference tokens beyond the
+//     4,096 included. The tokens depend on the references as for
+//     minimax/h3-max/reference-to-video above, and the output can run about
+//     0.7 s past the requested duration, so no request field determines the
+//     charge.
 //   - minimax/h3-max/3d-to-video: the official card (read 2026-10-07) bills
 //     every output second at $0.05/$0.08/$0.16 at 480p/768p/1080p (5 s
 //     minimum), plus input-video and reference-image tokens priced as for
@@ -1441,6 +1448,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "meshy/v7/image-to-3d",
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",
+  "minimax/h3-max-turbo/reference-to-video",
   "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",

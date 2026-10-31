@@ -47,6 +47,7 @@ describe("Happy Horse video edit contract", () => {
     expect(Object.keys(provider.run.alibaba.happyHorse)).toEqual([
       "v1p1",
       "videoEdit",
+      "textToVideo",
     ]);
     expectTypeOf<FalAlibabaHappyHorseVideoEditRequest>().toEqualTypeOf<
       z.input<typeof schema>

@@ -65,6 +65,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.textToVideo": {
+    "source": "fal/alibaba-happy-horse-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.happyHorse.v1p1.imageToVideo": {
     "source": "fal/alibaba-happy-horse-v1-1-image-to-video",
     "payload": {

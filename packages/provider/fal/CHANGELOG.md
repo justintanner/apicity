@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.bytedance.seedance2p5.us.textToVideo`, `.imageToVideo` and
+  `.referenceToVideo` take `draft` (boolean, default `false`), as fal's queue
+  OpenAPI documents for all three (read 2026-10-31): it renders a 480p preview
+  whatever `resolution` says and returns the `draft_id` that
+  `run.bytedance.seedance2p5.us.draft.complete` finishes at 1080p within 14
+  days. Free 422 probes confirmed fal's validator takes a boolean `draft` on
+  each and refuses a string (ac-8wmej3).
+
 - Added Happy Horse 1.0 reference-to-video (`alibaba/happy-horse/reference-to-video`) as `run.alibaba.happyHorse.referenceToVideo`: a prompt and 1 to 9 reference `image_urls` (each an http(s) URL or a data URI, as fal's validator requires, at most 10 MB), five aspect ratios, 720p or 1080p (the default), and 3 to 15 s (ac-qy2sr1).
 
 - Added Happy Horse 1.0 image-to-video (`alibaba/happy-horse/image-to-video`) as `run.alibaba.happyHorse.imageToVideo`: a first-frame `image_url` (an http(s) URL or a data URI, as fal's validator requires, at most 10 MB), an optional prompt, 720p or 1080p (the default), and 3 to 15 s (ac-leydts).

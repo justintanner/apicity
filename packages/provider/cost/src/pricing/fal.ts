@@ -3267,7 +3267,7 @@ export const fal: Record<string, ModelPricing> = {
   // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p, the card's
   // figure. No US 1080p call is recorded; if it carries the same 1.094 factor
   // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
-  // schemas have no draft flag.
+  // draft flag also renders a 480p preview (queue OpenAPI read 2026-10-31).
   "bytedance/seedance-2.5/us/text-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/text-to-video",
     sizes: SEEDANCE_2P5_SIZES,
@@ -3277,6 +3277,7 @@ export const fal: Record<string, ModelPricing> = {
       "720p": 0.02568 / 1000,
       "1080p": 0.02808 / 1000,
     },
+    draftFlag: true,
   }),
   "bytedance/seedance-2.5/us/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/reference-to-video",
@@ -3288,6 +3289,7 @@ export const fal: Record<string, ModelPricing> = {
       "1080p": 0.02808 / 1000,
     },
     operation: "reference",
+    draftFlag: true,
     taskField: true,
   }),
   // A completed 2.5 draft: always 1080p, at the billed $0.0234116 (above).

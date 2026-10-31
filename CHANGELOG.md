@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The `@apicity/fal` Seedance 2.5 US text-, image- and reference-to-video leaves take `draft`, fal's documented flag for a 480p preview that returns the `draft_id` `seedance2p5.us.draft.complete` finishes at 1080p. Before, no typed request could obtain that id. `@apicity/cost` prices a US text- or reference-to-video draft at 480p, as it already did outside the US (ac-8wmej3).
+
 - `@apicity/fal` `gptImage1p5` documents the URL it posts to, `https://fal.run/fal-ai/gpt-image-1.5`, in place of `https://api.fal.ai/v1/fal-ai/gpt-image-1.5`, and links the model's API pages on fal.ai for it and its `edit` child. The text-to-image frontier board now maps GPT Image 1.5 (high), rank 9, to that fal leaf as well as the KIE `gpt-image/1.5-text-to-image` id (ac-annrf9).
 
 - The text-to-image, image-to-image and video-to-video frontier boards now list the endpoints shipped since their 2026-10-22 capture. Krea 3 (Ultra), image-to-image #5, maps to fal `krea.v3.edit` instead of "not yet in apicity", so `frontier("i2i")` maps 8 of 10 models. GPT Image 2 (high) adds fal `openai.gptImage2` and `openai.gptImage2.edit`, and Kling 3.0 Omni 1080p (Pro) adds fal `klingVideo.o3.pro.videoToVideo.edit` and `klingVideo.o3.pro.videoToVideo.reference`. MachGen `api.v0.generate` joins the GPT Image 2.5 Sunburst, GPT Image 2.5 Flare, GPT Image 2 and Nano Banana 2.1 rows of both image boards and the Nano Banana 2 row of text-to-image. Text-to-image also lists xAI `v1.images.generations` with `grok-imagine-image-2.0` and Google `generateContent` with `gemini-3.1-flash-image`; both are `unpriced`, because `@apicity/cost` has no rate for either id (ac-0hjfmt).

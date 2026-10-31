@@ -14188,6 +14188,12 @@ export const FalBytedanceSeedance2p5UsTextToVideoRequestSchema = z.object({
     .describe(
       "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
     ),
+  draft: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
+    ),
   duration: z
     .enum([
       "auto",
@@ -14288,6 +14294,12 @@ export const FalBytedanceSeedance2p5UsImageToVideoRequestSchema = z.object({
     .default("720p")
     .describe(
       "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
+    ),
+  draft: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
     ),
   duration: z
     .enum([
@@ -14405,6 +14417,12 @@ export const FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema = z.object({
     .default("720p")
     .describe(
       "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
+    ),
+  draft: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
     ),
   duration: z
     .enum([

@@ -123,6 +123,7 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
     expect(schema.parse({ image_url: payload.image_url })).toEqual({
       image_url: payload.image_url,
       resolution: "720p",
+      draft: false,
       duration: "auto",
       aspect_ratio: "auto",
       generate_audio: true,
@@ -131,6 +132,7 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
     });
     for (const key of [
       "resolution",
+      "draft",
       "duration",
       "aspect_ratio",
       "generate_audio",
@@ -181,6 +183,12 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
     for (const generate_audio of [true, false])
       expect(valid({ generate_audio })).toBe(true);
     expect(valid({ generate_audio: "false" })).toBe(false);
+  });
+  // fal's validator answers a string draft with bool_parsing (free 422
+  // probe, 2026-10-31).
+  it("takes a boolean draft only", () => {
+    for (const draft of [true, false]) expect(valid({ draft })).toBe(true);
+    expect(valid({ draft: "true" })).toBe(false);
   });
   it("accepts null or omission for the optional end user id", () => {
     expect(valid({ end_user_id: null })).toBe(true);

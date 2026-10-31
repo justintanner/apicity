@@ -22,6 +22,8 @@ export const MACHGEN_REF_VIDEO =
 const REF_VIDEO_SECS = 4;
 /** A completed MiniMax-H3-Turbo I2V task (4 s, 864x480): the upscale source. */
 export const MACHGEN_UPSCALE_SOURCE = "4cef7130-22ce-4fcb-a237-a776791e22f1";
+/** The 1 s 864x480 MiniMax-H3 T2V of machgen/minimax-h3-t2v: the sharpen source. */
+export const MACHGEN_SHARPEN_SOURCE = "2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a";
 export const MACHGEN_CASES = [
   ["minimax-h3", "MiniMax-H3", 1, 480, true],
   ["seedance-2-5", "Seedance-2.5", 4, 480, true],
@@ -402,6 +404,44 @@ export async function recordMachgenUpscale(
       provider.api.v0.upscale.quote,
       { hints: { inputDurationSeconds: opts.sourceSecs } }
     );
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeGreaterThan(0);
+    const { billing } = await runTask(provider, payload, name, estimate.usd);
+    expect(billing.generation_cost_micros / 1e6).toBeCloseTo(estimate.usd, 6);
+  } finally {
+    await teardownPolly(ctx);
+  }
+}
+
+/**
+ * Records a SHARPEN of `sourceTaskId`, an owned MiniMax-H3 output. MachGen
+ * bills the source's seconds at the source's height, so the estimate takes
+ * the source's length as a hint.
+ */
+export async function recordMachgenSharpen(
+  name: string,
+  setup: () => PollyContext,
+  opts: { sourceTaskId: string; height: number; sourceSecs: number }
+) {
+  const ctx = setup();
+  const apiKey = process.env.MACHGEN_API_KEY ?? "test-key";
+  const provider = createMachGen({ apiKey, timeout: 120000 });
+  try {
+    const payload: MachGenGenerateRequest = {
+      prompt: "",
+      model: "MiniMax-H3",
+      task_type: "SHARPEN",
+      src_task_ids: [opts.sourceTaskId],
+      video_config: { height: opts.height, duration_secs: opts.sourceSecs },
+    };
+    expect(provider.api.v0.generate.schema.safeParse(payload).success).toBe(
+      true
+    );
+    const estimate = computeEstimate({
+      provider: "machgen",
+      payload,
+      costHints: { inputDurationSeconds: opts.sourceSecs },
+    });
     expect(estimate.warnings).toEqual([]);
     expect(estimate.usd).toBeGreaterThan(0);
     const { billing } = await runTask(provider, payload, name, estimate.usd);

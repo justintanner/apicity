@@ -1,0 +1,334 @@
+{
+  "capturedAt": "2026-10-31",
+  "source": "Probes of POST https://api.machgen.ai/api/v0/upscale/quote (MachGen's price check; it never creates a task) with task_type SHARPEN. Each 400 restates the rule it enforces, and each 200 is the exact cost. The sources are owned MiniMax-H3 T2V outputs: 2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a (1 s, 864x480, from machgen/minimax-h3-t2v) and b0bf718d-aafc-454e-a988-11cf7156d084 (5 s, 768p, the source in machgen/minimax-h3-upscale).",
+  "sharpen": {
+    "MiniMax-H3": {
+      "heights": [480, 768]
+    }
+  },
+  "notes": [
+    "The web app's capability contract lists sharpenHeights [480, 768, 1440]; the quote refuses 1440 (allowed heights: [480, 768]), and the public pricebook has SHARPEN rows for 480 and 768 only.",
+    "The quote prices the source, not the request: the 1 s 480p source cost 15000 micros at duration_secs 1, 2 and 5 and at height 768; the 5 s 768p source cost 330000 micros (5 s x 66000) at height 480 and 768 and at duration_secs 1 and 5.",
+    "MiniMax-H3-Turbo resolves to MiniMax-H3-MultiMax, which has no SHARPEN; Seedance-2.5 has none either.",
+    "A quote with duration_secs -1 is refused; a missing duration_secs is a 422 (set exactly one of duration_secs and num_frames), and num_frames is refused."
+  ],
+  "probes": [
+    {
+      "utc": "2026-10-31T06:30:35.590Z",
+      "label": "Q1-pin-480-d1",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 15000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:30:37.304Z",
+      "label": "Q2-height-720",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 720,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3 does not support SHARPEN height=720; allowed heights: [480, 768]"
+    },
+    {
+      "utc": "2026-10-31T06:30:38.986Z",
+      "label": "Q3-model-seedance",
+      "request": {
+        "model": "Seedance-2.5",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "Seedance-2.5 does not support task_type=SHARPEN; allowed task types: ['F2F', 'I2V', 'R2V', 'T2V']"
+    },
+    {
+      "utc": "2026-10-31T06:30:40.651Z",
+      "label": "Q4-no-source",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "SHARPEN requires an owned uploaded or generated video"
+    },
+    {
+      "utc": "2026-10-31T06:30:42.327Z",
+      "label": "Q5-duration-minus1",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": -1
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3 SHARPEN duration_secs=-1 matches the reference video's length, so it needs a reference video; pick a fixed duration otherwise"
+    },
+    {
+      "utc": "2026-10-31T06:30:44.283Z",
+      "label": "Q6-height-768-from-480",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 768,
+          "duration_secs": 1
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 15000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:30:45.964Z",
+      "label": "Q7-height-1440-from-480",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 1440,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3 does not support SHARPEN height=1440; allowed heights: [480, 768]"
+    },
+    {
+      "utc": "2026-10-31T06:30:47.901Z",
+      "label": "Q8-upscale-control",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "UPSCALE",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 1440,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3 UPSCALE only accepts a completed video generated by MiniMax-H3 at 768p, or an upload in that format"
+    },
+    {
+      "utc": "2026-10-31T06:31:22.115Z",
+      "label": "Q9-480src-480-d2",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 2
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 15000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:31:24.118Z",
+      "label": "Q10-480src-480-d5",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 5
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 15000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:31:25.789Z",
+      "label": "Q11-480src-no-duration",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480
+        }
+      },
+      "status": 422,
+      "response": [
+        {
+          "type": "value_error",
+          "loc": ["body", "video_config"],
+          "msg": "Value error, set exactly one of duration_secs and num_frames",
+          "input": {
+            "height": 480
+          },
+          "ctx": {
+            "error": {}
+          }
+        }
+      ]
+    },
+    {
+      "utc": "2026-10-31T06:31:27.968Z",
+      "label": "Q12-768src-768-d5",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["b0bf718d-aafc-454e-a988-11cf7156d084"],
+        "video_config": {
+          "height": 768,
+          "duration_secs": 5
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 330000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:31:29.988Z",
+      "label": "Q13-768src-480-d5",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["b0bf718d-aafc-454e-a988-11cf7156d084"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 5
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 330000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:31:31.713Z",
+      "label": "Q14-768src-768-d1",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["b0bf718d-aafc-454e-a988-11cf7156d084"],
+        "video_config": {
+          "height": 768,
+          "duration_secs": 1
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 330000
+      }
+    },
+    {
+      "utc": "2026-10-31T06:31:33.381Z",
+      "label": "Q15-public-video-url",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4
+        }
+      },
+      "status": 400,
+      "response": "SHARPEN requires an owned uploaded or generated video"
+    },
+    {
+      "utc": "2026-10-31T06:31:35.074Z",
+      "label": "Q16-turbo-model",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3-MultiMax does not support task_type=SHARPEN; allowed task types: ['F2F', 'I2V', 'R2V', 'T2V']"
+    },
+    {
+      "utc": "2026-10-31T06:31:36.756Z",
+      "label": "Q17-two-sources",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": [
+          "2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a",
+          "b0bf718d-aafc-454e-a988-11cf7156d084"
+        ],
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "response": "SHARPEN accepts one source video"
+    },
+    {
+      "utc": "2026-10-31T06:31:38.415Z",
+      "label": "Q18-num-frames",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "SHARPEN",
+        "prompt": "",
+        "src_task_ids": ["2de70e29-9e0a-4bbe-a5c8-58f8aed00c7a"],
+        "video_config": {
+          "height": 480,
+          "num_frames": 22
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3 SHARPEN does not accept num_frames"
+    }
+  ]
+}

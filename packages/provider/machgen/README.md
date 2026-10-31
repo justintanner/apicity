@@ -35,41 +35,43 @@ Pass a `model` id with a `task_type` it supports. For the ids below,
 `machgen.api.v0.generate.schema` also checks the height, `duration_secs`
 and `aspect_ratio` against the model's grid (`MACHGEN_VIDEO_GRIDS`, which
 holds each T2V and R2V grid too), the I2V frame rules, the R2V reference
-limits and the UPSCALE targets (`MACHGEN_VIDEO_UPSCALE`); other ids pass
-unchecked. MachGen answers an off-grid request with HTTP 400 before it
-accepts the task, and does not bill it. The grids were read from those
-400 responses on 2026-10-25. `-1` asks the model for a Smart length.
+limits, the UPSCALE targets (`MACHGEN_VIDEO_UPSCALE`) and the SHARPEN
+heights (`MACHGEN_VIDEO_SHARPEN`); other ids pass unchecked. MachGen
+answers an off-grid request with HTTP 400 before it accepts the task, and
+does not bill it. The grids were read from those 400 responses on
+2026-10-25, and the SHARPEN heights on 2026-10-31. `-1` asks the model for
+a Smart length.
 
-| Model | T2V | I2V | R2V | UPSCALE | I2V frames | I2V heights | I2V seconds | Priced |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `Wan2.2-A14B` | ✓ | ✓ |  |  |  | 480, 720 | 5 | T2V, I2V |
-| `LTX-2.3-Pro` | ✓ | ✓ |  |  | start + end | 1080, 1440, 2160 | 6, 8, 10 | T2V, I2V |
-| `Vidu-Q3-Turbo` | ✓ | ✓ | ✓ |  | start + end | 540, 720 | 1-16 | T2V, I2V, R2V |
-| `Vidu-Q3-Pro` | ✓ | ✓ | ✓ |  | start + end | 540, 720, 1080 | 1-16 | T2V, I2V, R2V |
-| `MiniMax-H3` | ✓ | ✓ | ✓ | ✓ | start + end, or end only | 480, 768, 1080, 1440 | 1-30 | T2V, I2V, R2V, UPSCALE |
-| `MiniMax-H3-Turbo` | ✓ | ✓ | ✓ |  | start + end, or end only | 480, 768, 1080 | 4-15 | T2V, I2V, R2V |
-| `Seedance-2.5` | ✓ | ✓ | ✓ |  | start + end | 480, 720, 1080 | -1, 4-30 | T2V, I2V, R2V |
-| `Seedance-2.0` | ✓ | ✓ | ✓ |  | start + end | 480, 720, 1080, 2160 | -1, 4-15 | T2V, I2V, R2V |
-| `Seedance-2.0-Fast` | ✓ | ✓ | ✓ |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
-| `Seedance-2.0-Mini` | ✓ | ✓ | ✓ |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
-| `Kling-v3` | ✓ | ✓ |  |  | start + end | 720, 1080, 2160 | 3-15 | T2V, I2V |
-| `Kling-o3` | ✓ |  | ✓ |  |  |  |  | T2V, R2V |
-| `Vidu-Q3` |  |  | ✓ |  |  |  |  | R2V |
-| `Vidu-Q4-Preview` |  | ✓ | ✓ |  |  | 540, 720, 1080, 1440, 2160 | 3-16 | I2V, R2V |
-| `Vidu-Q3-Pro-Fast` |  | ✓ |  |  |  | 720, 1080 | 1-16 | I2V |
-| `Alibaba-Wan-3.0` | ✓ | ✓ | ✓ |  | start + end | 480, 720, 1080 | -1, 2-30 | T2V, I2V, R2V |
-| `Veo-3.1` | ✓ |  |  |  |  |  |  | T2V |
-| `Veo-3.1-Fast` | ✓ |  |  |  |  |  |  | T2V |
-| `Pixverse-V6` | ✓ | ✓ | ✓ |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
-| `Pixverse-C1` | ✓ | ✓ | ✓ |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
-| `HappyHorse-1.1` | ✓ | ✓ | ✓ |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
-| `HappyHorse-1.0` | ✓ | ✓ | ✓ |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
-| `Grok-Imagine-Video` | ✓ |  |  |  |  |  |  | T2V |
-| `Grok-Imagine-Video-1.5` |  | ✓ |  |  |  | 480, 720, 1080 | 1-15 | I2V |
-| `Topaz-Video-Precision` |  |  |  | ✓ |  |  |  |  |
-| `Topaz-Video-Precision-Animation` |  |  |  | ✓ |  |  |  |  |
-| `Topaz-Video-Generative` |  |  |  | ✓ |  |  |  |  |
-| `Topaz-Video-Generative-Fast` |  |  |  | ✓ |  |  |  |  |
+| Model | T2V | I2V | R2V | UPSCALE | SHARPEN | I2V frames | I2V heights | I2V seconds | Priced |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `Wan2.2-A14B` | ✓ | ✓ |  |  |  |  | 480, 720 | 5 | T2V, I2V |
+| `LTX-2.3-Pro` | ✓ | ✓ |  |  |  | start + end | 1080, 1440, 2160 | 6, 8, 10 | T2V, I2V |
+| `Vidu-Q3-Turbo` | ✓ | ✓ | ✓ |  |  | start + end | 540, 720 | 1-16 | T2V, I2V, R2V |
+| `Vidu-Q3-Pro` | ✓ | ✓ | ✓ |  |  | start + end | 540, 720, 1080 | 1-16 | T2V, I2V, R2V |
+| `MiniMax-H3` | ✓ | ✓ | ✓ | ✓ | ✓ | start + end, or end only | 480, 768, 1080, 1440 | 1-30 | T2V, I2V, R2V, UPSCALE, SHARPEN |
+| `MiniMax-H3-Turbo` | ✓ | ✓ | ✓ |  |  | start + end, or end only | 480, 768, 1080 | 4-15 | T2V, I2V, R2V |
+| `Seedance-2.5` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080 | -1, 4-30 | T2V, I2V, R2V |
+| `Seedance-2.0` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080, 2160 | -1, 4-15 | T2V, I2V, R2V |
+| `Seedance-2.0-Fast` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
+| `Seedance-2.0-Mini` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
+| `Kling-v3` | ✓ | ✓ |  |  |  | start + end | 720, 1080, 2160 | 3-15 | T2V, I2V |
+| `Kling-o3` | ✓ |  | ✓ |  |  |  |  |  | T2V, R2V |
+| `Vidu-Q3` |  |  | ✓ |  |  |  |  |  | R2V |
+| `Vidu-Q4-Preview` |  | ✓ | ✓ |  |  |  | 540, 720, 1080, 1440, 2160 | 3-16 | I2V, R2V |
+| `Vidu-Q3-Pro-Fast` |  | ✓ |  |  |  |  | 720, 1080 | 1-16 | I2V |
+| `Alibaba-Wan-3.0` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080 | -1, 2-30 | T2V, I2V, R2V |
+| `Veo-3.1` | ✓ |  |  |  |  |  |  |  | T2V |
+| `Veo-3.1-Fast` | ✓ |  |  |  |  |  |  |  | T2V |
+| `Pixverse-V6` | ✓ | ✓ | ✓ |  |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
+| `Pixverse-C1` | ✓ | ✓ | ✓ |  |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
+| `HappyHorse-1.1` | ✓ | ✓ | ✓ |  |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
+| `HappyHorse-1.0` | ✓ | ✓ | ✓ |  |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
+| `Grok-Imagine-Video` | ✓ |  |  |  |  |  |  |  | T2V |
+| `Grok-Imagine-Video-1.5` |  | ✓ |  |  |  |  | 480, 720, 1080 | 1-15 | I2V |
+| `Topaz-Video-Precision` |  |  |  | ✓ |  |  |  |  |  |
+| `Topaz-Video-Precision-Animation` |  |  |  | ✓ |  |  |  |  |  |
+| `Topaz-Video-Generative` |  |  |  | ✓ |  |  |  |  |  |
+| `Topaz-Video-Generative-Fast` |  |  |  | ✓ |  |  |  |  |  |
 
 An I2V request takes one start frame in `src_image_urls`. Where the table
 lists "start + end", entry 1 is the end frame; "end only" means
@@ -109,7 +111,7 @@ ignores `duration_secs`.
 | `HappyHorse-1.1` | 720, 1080 | 3-15 | not checked | not checked |
 | `HappyHorse-1.0` | 720, 1080 | 3-15 | not checked | not checked |
 
-### Upscale
+### Upscale and sharpen
 
 An `UPSCALE` task re-renders a finished video, named in `src_task_ids` or
 `src_video_urls`, at the target `video_config.height`; set
@@ -126,12 +128,24 @@ source, so the schema cannot check them.
 | `Topaz-Video-Generative` | 1080, 1440, 2160 | `starlight-hq`, `starlight-mini`, `starlight-precise-2-5`, `starlight-sharp` |  |
 | `Topaz-Video-Generative-Fast` | 1080, 1440, 2160 | `starlight-fast-2` |  |
 
+A `SHARPEN` task sharpens one owned video and keeps its length: a MachGen
+output named in `src_task_ids`, or an upload referenced as
+`@input/<artifact_path>` in `src_video_urls`. MachGen refuses a public
+URL. It takes `duration_secs`, not `num_frames`. MachGen's quote prices
+the source's height and seconds, whatever the request's height or
+`duration_secs`, so set `video_config.height` to the source's height.
+
+| Model | Heights | Priced |
+| --- | --- | --- |
+| `MiniMax-H3` | 480, 768 | ✓ |
+
 **Priced** lists the task types `computeEstimate` from `@apicity/cost`
 prices per output second. An R2V reference video also bills the seconds
 MachGen reads from it, after any start offset, so pass their total as
 `costHints.inputDurationSeconds`; an edit's output is that long too. An
 upscale bills by its source's length, so it needs the same hint;
-MiniMax-H3 bills those seconds in and out. Topaz bills vendor credits that
+MiniMax-H3 bills those seconds in and out. A sharpen needs the hint too
+and bills the seconds once. Topaz bills vendor credits that
 depend on the source's frames and resolution, so `computeEstimate` does
 not price it; `api.v0.upscale.quote` asks MachGen for the exact price, and
 `resolveMachGenUpscaleEstimate` turns that quote into an estimate.

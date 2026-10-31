@@ -20,6 +20,7 @@ export type {
   MachGenImageConfig,
 } from "./types";
 export type {
+  MachGenSharpenGrid,
   MachGenUpscaleGrid,
   MachGenVideoGrid,
   MachGenVideoModel,
@@ -30,6 +31,7 @@ export {
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_UPSCALE,
+  MACHGEN_VIDEO_SHARPEN,
   MachGenUpscaleConfigSchema,
   MachGenUpscaleQuoteRequestSchema,
   MachGenModelAliasSchema,

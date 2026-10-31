@@ -7,19 +7,23 @@ export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = XAI_GROK_IMAGINE_VIDEO_1_5;
 export const XAI_GROK_IMAGINE_VIDEO_1_5_LITE = `${XAI_GROK_IMAGINE_VIDEO_1_5}-lite`;
 export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
 
-// grok-imagine-video-1.5 with its aliases and dated snapshots, such as
-// grok-imagine-video-1.5-preview and grok-imagine-video-1.5-2026-05-30.
-// grok-imagine-video-1.5-lite shares the prefix but is its own model, with
-// text and image to video only
-// (https://docs.x.ai/developers/models/grok-imagine-video-1.5-lite), so it and
-// its snapshots are outside the family.
-export function isXaiGrokImagineVideo15Model(model: string): boolean {
-  if (
+// grok-imagine-video-1.5-lite and its dated snapshots. The lite model page
+// lists text and image to video only
+// (https://docs.x.ai/developers/models/grok-imagine-video-1.5-lite), so it
+// takes no reference images or voices.
+export function isXaiGrokImagineVideo15LiteModel(model: string): boolean {
+  return (
     model === XAI_GROK_IMAGINE_VIDEO_1_5_LITE ||
     model.startsWith(`${XAI_GROK_IMAGINE_VIDEO_1_5_LITE}-`)
-  ) {
-    return false;
-  }
+  );
+}
+
+// grok-imagine-video-1.5 with its aliases and dated snapshots, such as
+// grok-imagine-video-1.5-preview and grok-imagine-video-1.5-2026-05-30.
+// grok-imagine-video-1.5-lite shares the prefix but is its own model, so it
+// and its snapshots are outside the family.
+export function isXaiGrokImagineVideo15Model(model: string): boolean {
+  if (isXaiGrokImagineVideo15LiteModel(model)) return false;
   return (
     model === XAI_GROK_IMAGINE_VIDEO_1_5 ||
     model.startsWith(`${XAI_GROK_IMAGINE_VIDEO_1_5}-`)
@@ -417,6 +421,7 @@ export type XaiVideoReferenceIssueKind =
   | "audio-count"
   | "voice-id"
   | "audio-model"
+  | "image-model"
   | "duration";
 
 export interface XaiVideoReferenceIssue {
@@ -433,6 +438,8 @@ export interface XaiVideoReferenceValidationCandidate extends XaiVideoModeGroups
 const XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE = `reference images must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
 const XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE = `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
 const XAI_VIDEO_REFERENCE_AUDIO_COUNT_MESSAGE = `reference_audios must contain at most ${XAI_VIDEO_REFERENCE_AUDIO_MAX} items`;
+const XAI_VIDEO_REFERENCE_IMAGE_MODEL_MESSAGE =
+  "reference images are not supported on grok-imagine-video-1.5-lite, which takes text and image to video only";
 const XAI_VIDEO_REFERENCE_AUDIO_MODEL_MESSAGE =
   "reference_audios requires the grok-imagine-video-1.5 model family";
 const XAI_VIDEO_REFERENCE_DURATION_MESSAGE =
@@ -512,6 +519,19 @@ export function collectXaiVideoReferenceIssues(
     });
   }
 
+  if (
+    ((candidate.reference_images?.length ?? 0) > 0 ||
+      (candidate.reference_image_file_ids?.length ?? 0) > 0) &&
+    model !== undefined &&
+    isXaiGrokImagineVideo15LiteModel(model)
+  ) {
+    issues.push({
+      kind: "image-model",
+      path: ["model"],
+      message: XAI_VIDEO_REFERENCE_IMAGE_MODEL_MESSAGE,
+    });
+  }
+
   if (groups.reference && typeof candidate.duration === "number") {
     const maxDuration =
       model === XAI_GROK_IMAGINE_VIDEO
@@ -576,6 +596,7 @@ export const XaiVideoGenerateRequestSchema = z
     const crossFieldKinds = new Set<XaiVideoReferenceIssueKind>([
       "mode",
       "audio-model",
+      "image-model",
       "duration",
     ]);
     for (const issue of collectXaiVideoReferenceIssues(value)) {

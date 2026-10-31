@@ -4,6 +4,7 @@ import {
   XaiResponseRequestSchema,
   XaiVideoGenerateRequestSchema,
   XaiVideoReferenceAudioSchema,
+  isXaiGrokImagineVideo15LiteModel,
   isXaiGrokImagineVideo15Model,
 } from "../../packages/provider/xai/src/zod";
 
@@ -150,6 +151,74 @@ describe("XaiVideoGenerateRequestSchema reference constraints", () => {
       });
 
       expect(result.success).toBe(false);
+    });
+  });
+
+  // The lite model page lists text and image to video only, so lite takes no
+  // reference images (mayor ruling on ac-p5g552; no probe).
+  describe("reference images on grok-imagine-video-1.5-lite", () => {
+    const LITE_MESSAGE =
+      "reference images are not supported on grok-imagine-video-1.5-lite, which takes text and image to video only";
+
+    it.each([
+      ["reference_images", { reference_images: [reference(0)] }],
+      ["reference_image_file_ids", { reference_image_file_ids: ["file_1"] }],
+    ])("rejects %s on lite and its snapshots", (_label, body) => {
+      for (const model of [
+        "grok-imagine-video-1.5-lite",
+        "grok-imagine-video-1.5-lite-2026-10-01",
+      ]) {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "a dancer in a sunlit loft",
+          model,
+          ...body,
+        });
+        expect(result.success, model).toBe(false);
+        expect(result.error?.issues, model).toContainEqual(
+          expect.objectContaining({ path: ["model"], message: LITE_MESSAGE })
+        );
+      }
+    });
+
+    it.each([
+      "grok-imagine-video",
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+    ])("keeps reference images on %s", (model) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a dancer in a sunlit loft",
+        model,
+        reference_images: [reference(0)],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("keeps text and image to video on lite", () => {
+      for (const body of [{}, { image: { url: "https://x/still.png" } }]) {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "a dancer in a sunlit loft",
+          model: "grok-imagine-video-1.5-lite",
+          ...body,
+        });
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it("names the lite family", () => {
+      expect(
+        isXaiGrokImagineVideo15LiteModel("grok-imagine-video-1.5-lite")
+      ).toBe(true);
+      expect(
+        isXaiGrokImagineVideo15LiteModel(
+          "grok-imagine-video-1.5-lite-2026-10-01"
+        )
+      ).toBe(true);
+      expect(isXaiGrokImagineVideo15LiteModel("grok-imagine-video-1.5")).toBe(
+        false
+      );
+      expect(isXaiGrokImagineVideo15Model("grok-imagine-video-1.5-lite")).toBe(
+        false
+      );
     });
   });
 

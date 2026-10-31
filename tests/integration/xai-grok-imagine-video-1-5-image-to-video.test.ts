@@ -384,6 +384,23 @@ describe("xai video generations default model", () => {
         duration: 11 as const,
       },
     },
+    // The lite model page lists text and image to video only.
+    {
+      label: "reference images on 1.5-lite",
+      request: {
+        prompt: "A dancer moves through a sunlit loft",
+        model: "grok-imagine-video-1.5-lite",
+        reference_images: [{ url: "https://example.com/dancer.png" }],
+      },
+    },
+    {
+      label: "reference file ids on 1.5-lite",
+      request: {
+        prompt: "A dancer moves through a sunlit loft",
+        model: "grok-imagine-video-1.5-lite",
+        reference_image_file_ids: ["file_dancer"],
+      },
+    },
     // docs.x.ai documents voices on grok-imagine-video-1.5 only.
     {
       label: "a voice on 1.5-lite",

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/xai` `v1.videos.generations` refuses `reference_images` and `reference_image_file_ids` on `grok-imagine-video-1.5-lite` and its snapshots, in the schema and before fetch. The lite model page lists text and image to video only, the guide gives lite 1080p for those two modes only, and fal exposes lite as text and image to video only; a lite request that parses can bill, so no probe was sent (ac-p5g552).
+
 - `@apicity/xai` `v1.videos.generations` accepts `resolution: "1080p"`, which xAI documents for grok-imagine-video-1.5 text and image to video and for 1.5-lite. The schema listed only `480p` and `720p`, so `apicity describe` and `.schema.safeParse` refused valid 1080p requests. A free 422 probe on 2026-10-31 listed exactly `480p`, `720p` and `1080p`, and `@apicity/cost` already prices 1080p for 1.5 and lite (ac-nw0cw3).
 
 - `@apicity/cost` prices every xAI Grok Imagine video resolution and the video input images from recorded bills. `grok-imagine-video` bills 0.05 and 0.07 USD/s at 480p and 720p. `grok-imagine-video-1.5` bills 0.08, 0.14 and 0.25 at 480p, 720p and 1080p, and `grok-imagine-video-1.5-lite` bills 0.02, 0.03 and 0.14. Each input image (`image`, or each reference image) adds 0.002 USD on `grok-imagine-video` and 0.01 on the 1.5 models. Before, 720p on `grok-imagine-video` and lite priced at the 480p rate with a floor warning, and 1080p failed closed; 1080p on `grok-imagine-video`, which renders up to 720p, still fails closed. Eight more recorded 1 s calls (0.762 USD) pin each bill to its estimate (ac-9jsawg).

@@ -496,6 +496,7 @@ elevenlabs	v2.voices	GET	expensive	Metered text-to-speech / audio provider; per-
 endless	social.tiktokTrends.public	GET	cheap	Free public social-trends API; no key, no per-call USD cost
 endless	social.trends.public	GET	cheap	Free public social-trends API; no key, no per-call USD cost
 fal	alibaba.happyHorse.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	alibaba.happyHorse.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.happyHorse.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.happyHorse.v1p1.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	alibaba.happyHorse.v1p1.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

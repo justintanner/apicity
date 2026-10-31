@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `alibaba/happy-horse/reference-to-video` pricing: $0.14/s at 720p and $0.28/s at 1080p on the requested seconds. The recorded 3 s 720p call with one reference billed 3 units, $0.42 (ac-qy2sr1).
+
 - Added `alibaba/happy-horse/image-to-video` pricing: $0.14/s at 720p and $0.28/s at 1080p on the requested seconds. The recorded 3 s 720p call billed 3 units, $0.42 (ac-leydts).
 
 - Added `alibaba/happy-horse/text-to-video` pricing: $0.14/s at 720p and $0.28/s at 1080p on the requested seconds. The recorded 3 s 720p call billed 3 units, $0.42 (ac-4eryzy).

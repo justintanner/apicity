@@ -231,6 +231,8 @@ import {
   FalMinimaxH3MaxTurboTextToVideoRequest,
   FalMinimaxH3MaxTurboImageToVideoResponse,
   FalMinimaxH3MaxTurboImageToVideoRequest,
+  FalMinimaxH3MaxTurboReferenceToVideoResponse,
+  FalMinimaxH3MaxTurboReferenceToVideoRequest,
   FalMinimaxH3MaxLipSyncImageToVideoResponse,
   FalMinimaxH3MaxLipSyncImageToVideoRequest,
   FalMinimaxH3MaxThreeDToVideoResponse,
@@ -648,6 +650,7 @@ import {
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   FalMinimaxH3MaxTurboTextToVideoRequestSchema,
   FalMinimaxH3MaxTurboImageToVideoRequestSchema,
+  FalMinimaxH3MaxTurboReferenceToVideoRequestSchema,
   FalMinimaxH3MaxLipSyncImageToVideoRequestSchema,
   FalMinimaxH3MaxThreeDToVideoRequestSchema,
   FalMinimaxH3MaxReferenceToVideoRequestSchema,
@@ -3160,6 +3163,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max-turbo/reference-to-video
+  // Docs: https://fal.ai/models/minimax/h3-max-turbo/reference-to-video/api
+  const minimaxH3MaxTurboReferenceToVideo = jsonBody<
+    FalMinimaxH3MaxTurboReferenceToVideoRequest,
+    FalMinimaxH3MaxTurboReferenceToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max-turbo/reference-to-video",
+    FalMinimaxH3MaxTurboReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/xai/grok-imagine-video/v1.5/text-to-video
   // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api
   const xaiGrokImagineVideoV1p5TextToVideo = jsonBody<
@@ -5132,6 +5147,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/minimax/h3-max-turbo/extend-video
         // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
         extendVideo: minimaxH3MaxTurboExtendVideo,
+        // POST https://fal.run/minimax/h3-max-turbo/reference-to-video
+        // Docs: https://fal.ai/models/minimax/h3-max-turbo/reference-to-video/api
+        referenceToVideo: minimaxH3MaxTurboReferenceToVideo,
       },
       h3: {
         textToVideo: Object.assign(minimaxH3TextToVideo, {

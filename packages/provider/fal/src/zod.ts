@@ -6723,6 +6723,133 @@ export type FalMinimaxH3MaxReferenceToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
 >;
 
+// H3 Max Turbo reference-to-video takes H3 Max reference-to-video's fields
+// without the first, middle and last frames, plus an ordered
+// `reference_conditions` list (queue OpenAPI read 2026-10-31). Unbilled 422
+// probes the same day showed the same validator as H3 Max: only `prompt` is
+// required, a whitespace-only prompt is refused, `prompt_expansion_mode`
+// takes four modes, and each condition needs an image, video or audio type
+// and a non-empty URL. A non-null `image_url` is refused, so the frame fields
+// are left out. The two refinements restate published rules: at most 12
+// reference files, and the ordered list in place of the per-type lists.
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/reference-to-video/api
+const FalMinimaxH3MaxTurboReferenceConditionSchema = z.object({
+  type: z
+    .enum(["image", "video", "audio"])
+    .describe("Reference modality. Cross-modality list order is semantic."),
+  url: z.string().min(1).describe("URL of the reference media."),
+});
+export const FalMinimaxH3MaxTurboReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(50000)
+      .regex(/\S/, "Prompt cannot be empty or contain only whitespace")
+      .describe(
+        "Text prompt for video generation. Refer to reference assets by their modality and order in the reference lists: Image 1, Image 2, Video 1, Audio 1, and so on."
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "URLs of subject/style reference images, referenced in the prompt as Image 1, Image 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_video_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of motion/reference video clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Video 1, Video 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_audio_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of reference audio clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Audio 1, Audio 2, and so on. Images, videos, and audio can be provided individually or together. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    duration: z
+      .number()
+      .min(0.92)
+      .max(15)
+      .default(5)
+      .describe(
+        "Video length in seconds. The output can run up to about 0.7 s longer than requested."
+      ),
+    resolution: z
+      .enum(["480P", "768P", "1080P"])
+      .default("768P")
+      .describe(
+        "The native generation resolution, or 1080P latent refinement from a native 768P source."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed. A random seed is selected when omitted."),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe("If set to true, the safety checker will be enabled."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return the generated video as base64 instead of a CDN URL."),
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .default("balanced")
+      .describe(
+        "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+      ),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("adaptive")
+      .describe("The aspect ratio of the generated video."),
+    reference_conditions: z
+      .array(FalMinimaxH3MaxTurboReferenceConditionSchema)
+      .max(12)
+      .optional()
+      .describe(
+        "Ordered reference list; cross-modality order is semantic and is preserved end-to-end. Do not combine with reference_*_urls."
+      ),
+  })
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message:
+        "minimax/h3-max-turbo/reference-to-video accepts at most 12 reference files across reference_image_urls, reference_video_urls, and reference_audio_urls",
+      path: ["reference_image_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      (v.reference_conditions?.length ?? 0) === 0 ||
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) ===
+        0,
+    {
+      message:
+        "reference_conditions replaces reference_image_urls, reference_video_urls, and reference_audio_urls; do not combine them",
+      path: ["reference_conditions"],
+    }
+  );
+export type FalMinimaxH3MaxTurboReferenceToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboReferenceToVideoRequestInput =
+  FalMinimaxH3MaxTurboReferenceToVideoRequest;
+export type FalMinimaxH3MaxTurboReferenceToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboReferenceToVideoRequestSchema
+>;
+
 // Upstream refuses every media URL here, `video_url` and each
 // `reference_image_urls` entry, unless it is "an HTTPS URL without
 // credentials or fragments" (unbilled 422 probes, 2026-10-07): an `http:`
@@ -17668,6 +17795,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalMinimaxH3MaxTurboTextToVideoRequestSchema,
   "minimax/h3-max-turbo/image-to-video":
     FalMinimaxH3MaxTurboImageToVideoRequestSchema,
+  "minimax/h3-max-turbo/reference-to-video":
+    FalMinimaxH3MaxTurboReferenceToVideoRequestSchema,
   "minimax/h3-max/lip-sync/image-to-video":
     FalMinimaxH3MaxLipSyncImageToVideoRequestSchema,
   "minimax/h3-max/3d-to-video": FalMinimaxH3MaxThreeDToVideoRequestSchema,

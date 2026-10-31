@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `minimax/h3-max-turbo/reference-to-video` to `FAL_DYNAMIC_PRICING_ENDPOINTS` with the display name "H3 Max Turbo Reference To Video": it bills output seconds plus reference tokens beyond the 4,096 included, which no request field determines, like H3 Max reference-to-video. The recorded 2 s 480P call billed 2 units, $0.10. `frontier("r2v")` lists it on MiniMax H3 Max beside H3 Max reference-to-video (ac-88n2cz).
+
 - Added Seedance 2.5 US draft completion pricing from the draft's `durationSeconds` and `aspectRatio` hints, at the 2.5 completion's billed $0.0234116 per 1K 1080p tokens: the US card repeats the 2.5 card, and no US completion is billed yet (ac-jjngde).
 
 - Added MachGen SHARPEN pricing for MiniMax-H3: the pricebook's 0.015 USD/s at 480p and 0.066 USD/s at 768p on the source's seconds (`costHints.inputDurationSeconds`); MachGen's quote bills the source's height and length whatever the request says. The `video_config.sharpen` warning now names those rates, and MachGen's MiniMax-H3 frontier price range starts at 0.015 USD/s (ac-xug9gr).

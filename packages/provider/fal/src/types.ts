@@ -371,6 +371,9 @@ export type {
   FalMinimaxH3MaxTurboImageToVideoParsedRequest,
   FalMinimaxH3MaxTurboImageToVideoRequestInput,
   FalMinimaxH3MaxTurboImageToVideoRequest,
+  FalMinimaxH3MaxTurboReferenceToVideoParsedRequest,
+  FalMinimaxH3MaxTurboReferenceToVideoRequestInput,
+  FalMinimaxH3MaxTurboReferenceToVideoRequest,
   FalMinimaxH3MaxLipSyncImageToVideoParsedRequest,
   FalMinimaxH3MaxLipSyncImageToVideoRequestInput,
   FalMinimaxH3MaxLipSyncImageToVideoRequest,
@@ -994,6 +997,7 @@ import type {
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
   FalMinimaxH3MaxTurboTextToVideoRequest,
   FalMinimaxH3MaxTurboImageToVideoRequest,
+  FalMinimaxH3MaxTurboReferenceToVideoRequest,
   FalMinimaxH3MaxLipSyncImageToVideoRequest,
   FalMinimaxH3MaxThreeDToVideoRequest,
   FalMinimaxH3MaxReferenceToVideoRequest,
@@ -4074,6 +4078,13 @@ export interface FalRunMinimaxH3MaxTurboNamespace {
   ) => Promise<FalMinimaxH3MaxTurboExtendVideoResponse>) & {
     schema: ApicitySchema<FalMinimaxH3MaxTurboExtendVideoRequest>;
   };
+
+  referenceToVideo: ((
+    params: FalMinimaxH3MaxTurboReferenceToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxTurboReferenceToVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxTurboReferenceToVideoRequest>;
+  };
 }
 export interface FalRunMinimaxNamespace {
   h3MaxTurbo: FalRunMinimaxH3MaxTurboNamespace;
@@ -4914,6 +4925,20 @@ export interface FalMinimaxH3MaxReferenceToVideoResponse {
   };
   expanded_prompt?: string | null;
   seed: number;
+  timings?: Record<string, number> | null;
+}
+
+export interface FalMinimaxH3MaxTurboReferenceToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  expanded_prompt?: string | null;
+  seed: number;
+  /** Reference rows encoded; the first 4,096 are included in the clip price. */
+  reference_tokens?: number | null;
   timings?: Record<string, number> | null;
 }
 

@@ -103,13 +103,12 @@
     "runByDefault": false
   },
   "POST v1.images.edits": {
-    "source": "xai/image-edit-single",
+    "source": "xai/imagine-billing-2-0-edit-auto-one-input",
     "payload": {
-      "prompt": "Render this as a pencil sketch with detailed shading",
-      "model": "grok-imagine-image",
+      "prompt": "Render this photo as a pencil sketch",
+      "model": "grok-imagine-image-2.0",
       "image": {
-        "url": "<inline image/jpeg data URL — replace with a real URL or upload>",
-        "type": "image_url"
+        "url": "https://raw.githubusercontent.com/justintanner/apicity/22505b16d876d3b024c304554ae0e16432b4e92d/tests/fixtures/man.jpg"
       }
     },
     "tier": "prohibitive",
@@ -218,12 +217,11 @@
     "runByDefault": false
   },
   "POST v1.videos.generations": {
-    "source": "xai/video-text-to-video",
+    "source": "xai/imagine-billing-video-1-5-720p",
     "payload": {
-      "prompt": "A white cat with heterochromia eyes walking across a rooftop at golden hour, cinematic drone shot",
-      "model": "grok-imagine-video",
-      "duration": 10,
-      "aspect_ratio": "16:9",
+      "prompt": "A paper boat drifting across a calm pond",
+      "model": "grok-imagine-video-1.5",
+      "duration": 1,
       "resolution": "720p"
     },
     "tier": "prohibitive",

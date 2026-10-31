@@ -31,10 +31,10 @@ function rateLimitedFetch(
     .then(() => fetch(input, init).finally(() => limiter._release()));
 }
 
-export function createXaiProvider() {
+export function createXaiProvider(timeout = 60_000) {
   return createXai({
     apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    timeout: 60_000,
+    timeout,
     fetch: rateLimitedFetch,
     paygate: { secret: TEST_PAYGATE_SECRET },
   });

@@ -599,6 +599,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/us/text-to-video": "sd2p5",
     "bytedance/seedance-2.5/us/reference-to-video": "sd2p5",
     "bytedance/seedance-2.5/draft/complete": "sd2p5",
+    "bytedance/seedance-2.5/us/draft/complete": "sd2p5",
 
     // Video — Wan 3.0. Base shares kie's wan3p0; Prime stays wan3p0p.
     "alibaba/wan-3.0/text-to-video": "wan3p0",
@@ -1209,6 +1210,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/us/text-to-video": "Seedance 2.5 US",
     "bytedance/seedance-2.5/us/reference-to-video": "Seedance 2.5 US",
     "bytedance/seedance-2.5/draft/complete": "Seedance 2.5",
+    "bytedance/seedance-2.5/us/draft/complete": "Seedance 2.5 US",
 
     "alibaba/wan-3.0-prime/text-to-video": "Wan 3.0 Prime",
     "alibaba/wan-3.0-prime/image-to-video": "Wan 3.0 Prime",

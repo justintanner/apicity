@@ -47,6 +47,8 @@ import {
   FalMeshyV6LiteRetextureResponse,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5DraftCompleteResponse,
+  FalBytedanceSeedance2p5UsDraftCompleteRequest,
+  FalBytedanceSeedance2p5UsDraftCompleteResponse,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -554,6 +556,7 @@ import {
   FalHeygenHeygenVoiceRequestSchema,
   FalMeshyV6LiteRetextureRequestSchema,
   FalBytedanceSeedance2p5DraftCompleteRequestSchema,
+  FalBytedanceSeedance2p5UsDraftCompleteRequestSchema,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
   FalBytedanceSeedance2p5UsTextToVideoRequestSchema,
@@ -4193,6 +4196,18 @@ export function createFal(opts: FalOptions): FalProvider {
     FalBytedanceSeedance2p5DraftCompleteRequestSchema,
     { base: runBaseURL }
   );
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.5/us/draft/complete
+  // Docs: https://fal.ai/models/bytedance/seedance-2.5/us/draft/complete/api
+  const bytedanceSeedance2p5UsDraftComplete = jsonBody<
+    FalBytedanceSeedance2p5UsDraftCompleteRequest,
+    FalBytedanceSeedance2p5UsDraftCompleteResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.5/us/draft/complete",
+    FalBytedanceSeedance2p5UsDraftCompleteRequestSchema,
+    { base: runBaseURL }
+  );
   // POST https://fal.run/meshy/v6-lite/retexture
   // Docs: https://fal.ai/models/meshy/v6-lite/retexture/api
   const meshyV6LiteRetexture = jsonBody<
@@ -5006,6 +5021,11 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.5/us/reference-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.5/us/reference-to-video/api
           referenceToVideo: bytedanceSeedance2p5UsReferenceToVideo,
+          draft: {
+            // POST https://fal.run/bytedance/seedance-2.5/us/draft/complete
+            // Docs: https://fal.ai/models/bytedance/seedance-2.5/us/draft/complete/api
+            complete: bytedanceSeedance2p5UsDraftComplete,
+          },
         },
         draft: {
           // POST https://fal.run/bytedance/seedance-2.5/draft/complete

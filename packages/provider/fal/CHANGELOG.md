@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Seedance 2.5 US draft completion (`bytedance/seedance-2.5/us/draft/complete`) as `run.bytedance.seedance2p5.us.draft.complete`, the US twin of the 2.5 completion: a `draft_id`, 1080p only, and three codecs. It is recorded on fal's free validator 422 only (ac-jjngde).
+
 - Added Kling O3 Pro video-to-video reference with output duration/aspect controls and per-second pricing (ac-hpnzx5).
 
 - Added Kling O3 Pro video editing with reference images/elements and duration-hinted pricing (ac-uxyuke).

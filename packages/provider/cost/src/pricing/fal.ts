@@ -696,6 +696,8 @@ interface SeedanceSpec {
   // video_urls) divided by 1000. Its divisor without video is unrecorded, so
   // such a request fails closed.
   videoOnlyDivisor?: number;
+  // When the card was read, for an id added after the family's sweep.
+  asOf?: string;
 }
 
 // An own entry of a lookup table, or undefined: a request value such as
@@ -875,7 +877,7 @@ const seedance = (spec: SeedanceSpec): ModelPricing => ({
   },
   select: [{ name: "resolution", pick: (p) => seedanceResolution(spec, p) }],
   rates: spec.rates,
-  source: source(spec.endpointId, seedanceAsOf),
+  source: source(spec.endpointId, spec.asOf ?? seedanceAsOf),
 });
 
 // Rate tables shared by the variants of one family — the generation/edit
@@ -3214,6 +3216,18 @@ export const fal: Record<string, ModelPricing> = {
     maxSeconds: 30,
     rates: { "1080p": 0.0234116 / 1000 },
     operation: "complete",
+  }),
+  // A completed 2.5 US draft. No US completion is billed yet. Its card (read
+  // 2026-10-31) repeats the 2.5 completion's "$1.164 per second" and "roughly
+  // $0.0234" per 1K tokens, so it is priced like that completion. If it bills
+  // US 2.5 text-to-video's $0.02808 at 1080p instead, this is 17% low.
+  "bytedance/seedance-2.5/us/draft/complete": seedance({
+    endpointId: "bytedance/seedance-2.5/us/draft/complete",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: { "1080p": 0.0234116 / 1000 },
+    operation: "complete",
+    asOf: "2026-10-31",
   }),
 
   // Wan 3.0 and Wan 3.0 Prime, cards read 2026-10-29. Base is

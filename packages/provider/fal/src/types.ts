@@ -101,6 +101,9 @@ export type {
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5DraftCompleteRequestInput,
   FalBytedanceSeedance2p5DraftCompleteParsedRequest,
+  FalBytedanceSeedance2p5UsDraftCompleteRequest,
+  FalBytedanceSeedance2p5UsDraftCompleteRequestInput,
+  FalBytedanceSeedance2p5UsDraftCompleteParsedRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -901,6 +904,7 @@ import type {
   FalBriaFibo2GenerateRequest,
   FalMeshyV6LiteRetextureRequest,
   FalBytedanceSeedance2p5DraftCompleteRequest,
+  FalBytedanceSeedance2p5UsDraftCompleteRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -7096,6 +7100,31 @@ export interface FalRunBytedanceSeedance2p5DraftNamespace {
 }
 export interface FalRunBytedanceSeedance2p5Namespace {
   draft: FalRunBytedanceSeedance2p5DraftNamespace;
+}
+
+export interface FalBytedanceSeedance2p5UsDraftCompleteResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
+}
+export interface FalRunBytedanceSeedance2p5UsDraftNamespace {
+  complete: ((
+    params: FalBytedanceSeedance2p5UsDraftCompleteRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p5UsDraftCompleteResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p5UsDraftCompleteRequest>;
+  };
+}
+export interface FalRunBytedanceSeedance2p5UsNamespace {
+  draft: FalRunBytedanceSeedance2p5UsDraftNamespace;
 }
 
 // Upstream requires only `model_glb` and `model_urls`; the style fields echo

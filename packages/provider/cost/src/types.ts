@@ -102,9 +102,9 @@ export interface CostHints {
   // The fal Seedance 2.0 US, 2.5 and 2.5 US reference-to-video entries read
   // it as the summed length of their `video_urls` clips, billed at the
   // output size, and fail closed below 4 s. For fal
-  // `bytedance/seedance-2.5/draft/complete`, whose request carries no media,
-  // a valid value means the draft had video inputs, and prices the
-  // completion with them.
+  // `bytedance/seedance-2.5/draft/complete` and its US twin, whose requests
+  // carry no media, a valid value means the draft had video inputs, and
+  // prices the completion with them.
   // Ignored when the payload has no video input; a zero, negative, non-finite
   // or non-numeric value counts as absent, and a reference-video request with
   // no valid value fails closed with a warning that names this field.
@@ -112,7 +112,8 @@ export interface CostHints {
   // canonicalHash'd, never signed.
   inputDurationSeconds?: number;
   // The fixed aspect ratio of a fal Seedance 2.5 draft, for
-  // `bytedance/seedance-2.5/draft/complete`. A completed draft keeps the
+  // `bytedance/seedance-2.5/draft/complete` and
+  // `bytedance/seedance-2.5/us/draft/complete`. A completed draft keeps the
   // draft's duration (`durationSeconds`), aspect ratio and inputs, and its
   // request carries only the `draft_id`, so the output size is not in the
   // request. "auto" or any value outside the six fixed ratios counts as

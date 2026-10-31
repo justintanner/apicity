@@ -499,6 +499,33 @@ const hintedSeconds = (
   hints?: CostHints
 ): number | undefined => hintSeconds(hints);
 
+// HappyHorse video edit bills each source second in and each output second
+// out, and the output keeps the source's length, capped at 15 s. The source is
+// a URL, so its length comes from costHints.durationSeconds. A longer source is
+// truncated to its first 15 s, and fal does not say whether the rest of it
+// bills, so it fails closed.
+const HAPPY_HORSE_EDIT_MAX_SECONDS = 15;
+const happyHorseEditSeconds = (
+  _p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const source = hintSeconds(hints);
+  return source === undefined || source > HAPPY_HORSE_EDIT_MAX_SECONDS
+    ? undefined
+    : 2 * source;
+};
+const happyHorseEditWarn = (
+  _p: Record<string, unknown>,
+  hints?: CostHints
+): string[] => {
+  const source = hintSeconds(hints);
+  return source !== undefined && source > HAPPY_HORSE_EDIT_MAX_SECONDS
+    ? [
+        `fal 'alibaba/happy-horse/video-edit': a ${source} s source is truncated to its first 15 s, and fal does not say whether the rest of it bills`,
+      ]
+    : [];
+};
+
 const resolutionTier = (defaultTier: string) => ({
   name: "resolution",
   pick: (p: Record<string, unknown>) => asString(p.resolution) ?? defaultTier,
@@ -2362,6 +2389,20 @@ export const fal: Record<string, ModelPricing> = {
     numericSeconds(5),
     "2026-10-08"
   ),
+
+  // Happy Horse video edit bills $0.14 per input second plus $0.14 per
+  // output second at 720p, and $0.28 each at 1080p, its default (card read
+  // 2026-10-31). The recorded edit of a 3 s source at 720p billed
+  // x-fal-billable-units 6, three seconds in and three out, $0.84.
+  "alibaba/happy-horse/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: happyHorseEditSeconds,
+    warn: happyHorseEditWarn,
+    select: [resolutionTier("1080p")],
+    rates: { "720p": 0.14, "1080p": 0.28 },
+    source: source("alibaba/happy-horse/video-edit", "2026-10-31"),
+  },
 
   // Qwen Audio 3 bills $0.05 per 1,000 input characters (pricing API
   // unit "1000 characters"; the card is blank). The request's text

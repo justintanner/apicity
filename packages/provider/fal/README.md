@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-281 endpoints across 56 groups. Each method mirrors an upstream URL path.
+282 endpoints across 56 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -170,6 +170,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.alibaba.happyHorse.v1p1.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.happyHorse.videoEdit</code></b></summary>
+
+<code>POST https://fal.run/alibaba/happy-horse/video-edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/happy-horse/video-edit/api)
+
+```typescript
+const res = await fal.run.alibaba.happyHorse.videoEdit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

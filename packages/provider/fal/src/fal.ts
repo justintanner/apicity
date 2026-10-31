@@ -197,6 +197,8 @@ import {
   FalAlibabaHappyHorseV1p1ImageToVideoRequest,
   FalAlibabaHappyHorseV1p1ReferenceToVideoResponse,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequest,
+  FalAlibabaHappyHorseVideoEditResponse,
+  FalAlibabaHappyHorseVideoEditRequest,
   FalAlibabaQwenAudio3TtsResponse,
   FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoResponse,
@@ -633,6 +635,7 @@ import {
   FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
+  FalAlibabaHappyHorseVideoEditRequestSchema,
   FalAlibabaQwenAudio3TtsRequestSchema,
   FalKlingVideoV3TurboProImageToVideoRequestSchema,
   FalKlingVideoV3TurboProTextToVideoRequestSchema,
@@ -3321,6 +3324,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/alibaba/happy-horse/video-edit
+  // Docs: https://fal.ai/models/alibaba/happy-horse/video-edit/api
+  const alibabaHappyHorseVideoEdit = jsonBody<
+    FalAlibabaHappyHorseVideoEditRequest,
+    FalAlibabaHappyHorseVideoEditResponse
+  >(
+    "POST",
+    "/alibaba/happy-horse/video-edit",
+    FalAlibabaHappyHorseVideoEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/alibaba/happy-horse/v1.1/image-to-video
   // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api
@@ -4893,6 +4908,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/reference-to-video/api
           referenceToVideo: alibabaHappyHorseV1p1ReferenceToVideo,
         },
+        // POST https://fal.run/alibaba/happy-horse/video-edit
+        // Docs: https://fal.ai/models/alibaba/happy-horse/video-edit/api
+        videoEdit: alibabaHappyHorseVideoEdit,
       },
       // POST https://fal.run/alibaba/qwen-audio-3-tts
       // Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api

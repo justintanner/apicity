@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `alibaba/happy-horse/video-edit` pricing: $0.14 per input second plus $0.14 per output second at 720p ($0.28 each at 1080p), on the source length passed as `costHints.durationSeconds`. The recorded 3 s 720p edit billed 6 units, $0.84. A source over 15 s fails closed, since fal truncates it and does not say whether the rest bills. `frontier("v2v")` lists it on HappyHorse-1.0 beside KIE's `happyhorse/video-edit` (ac-5zdfnw).
+
 - Added `minimax/h3-max-turbo/reference-to-video` to `FAL_DYNAMIC_PRICING_ENDPOINTS` with the display name "H3 Max Turbo Reference To Video": it bills output seconds plus reference tokens beyond the 4,096 included, which no request field determines, like H3 Max reference-to-video. The recorded 2 s 480P call billed 2 units, $0.10. `frontier("r2v")` lists it on MiniMax H3 Max beside H3 Max reference-to-video (ac-88n2cz).
 
 - Added Seedance 2.5 US draft completion pricing from the draft's `durationSeconds` and `aspectRatio` hints, at the 2.5 completion's billed $0.0234116 per 1K 1080p tokens: the US card repeats the 2.5 card, and no US completion is billed yet (ac-jjngde).

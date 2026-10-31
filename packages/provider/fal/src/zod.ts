@@ -8233,6 +8233,73 @@ export type FalAlibabaHappyHorseV1p1TextToVideoParsedRequest = z.output<
   typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
 >;
 
+// A HappyHorse 1.0 media URL. Unbilled 422 probes on 2026-10-31 refused ""
+// and ftp:// and an upper-case HTTPS:// scheme, and accepted http://,
+// https:// and a data URI, with the message restated here.
+const happyHorseMediaUrl = z
+  .string()
+  .regex(
+    /^(https?:\/\/|data:)/,
+    "Input must be a valid HTTPS URL or a Data URI"
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-31
+// (sha256 09b7bf1c49675e4031b99e43fd365628d7deab19aa0bc8432e6374b1d5d91b12). Field order follows x-fal-order-properties.
+// The same day's unbilled 422 probes also showed the URL rule above and a
+// cap of 5 reference images. A prompt over 2,500 characters and a seed
+// outside 0-2147483647 drew no field error, so those stay in the
+// descriptions.
+// Docs: https://fal.ai/models/alibaba/happy-horse/video-edit/api
+export const FalAlibabaHappyHorseVideoEditRequestSchema = z.object({
+  video_url: happyHorseMediaUrl.describe(
+    "URL of the source video to edit. Formats: MP4, MOV (H.264 recommended). Duration: 3-60 s. Longer side ≤ 2160 px, shorter side ≥ 320 px. Aspect ratio between 1:2.5 and 2.5:1. Frame rate > 8 fps. Max 100 MB. The output video preserves the source aspect ratio. Output duration matches the input video, capped at 15 s (longer inputs are truncated to the first 15 s)."
+  ),
+  prompt: z
+    .string()
+    .min(1)
+    .describe(
+      "Text prompt describing the desired edit. Reference any supplied reference images using @Image1, @Image2, ... up to @Image5. Max 2500 characters."
+    ),
+  reference_image_urls: z
+    .array(happyHorseMediaUrl)
+    .max(5, "Maximum 5 reference images allowed")
+    .nullable()
+    .optional()
+    .describe(
+      "Optional reference images used to guide the edit (up to 5). Formats: JPEG, JPG, PNG, WEBP. Dimensions must be at least 300px. Aspect ratio between 1:2.5 and 2.5:1. Max 10 MB each."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  audio_setting: z
+    .enum(["auto", "origin"])
+    .default("auto")
+    .describe(
+      "Audio handling. 'auto': model decides whether to regenerate audio. 'origin': preserve the original audio from the input video."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseVideoEditRequest = z.input<
+  typeof FalAlibabaHappyHorseVideoEditRequestSchema
+>;
+export type FalAlibabaHappyHorseVideoEditRequestInput =
+  FalAlibabaHappyHorseVideoEditRequest;
+export type FalAlibabaHappyHorseVideoEditParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseVideoEditRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-08
 // (sha256 15115befba2212917f30e6792e1216e68c97023871654b7ac26f337d6fbe2752). Field order follows x-fal-order-properties.
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
@@ -17763,6 +17830,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   "alibaba/happy-horse/v1.1/reference-to-video":
     FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
+  "alibaba/happy-horse/video-edit": FalAlibabaHappyHorseVideoEditRequestSchema,
   "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/image-to-video":
     FalKlingVideoV3TurboProImageToVideoRequestSchema,

@@ -83,6 +83,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.videoEdit": {
+    "source": "fal/alibaba-happy-horse-video-edit",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "prompt": "Make the cat's fur bright orange.",
+      "resolution": "720p",
+      "audio_setting": "origin"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenAudio3Tts": {
     "source": "fal/alibaba-qwen-audio-3-tts",
     "payload": {

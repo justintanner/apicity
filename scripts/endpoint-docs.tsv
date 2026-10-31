@@ -884,7 +884,7 @@ fal	nanoBanana2Lite.edit	POST	https://fal.run/google/nano-banana-lite/edit	https
 fal	nanoBanana2Lite.textToImage	POST	https://fal.run/google/nano-banana-2-lite	https://fal.ai/models/google/nano-banana-2-lite/api
 fal	nanoBananaPro.edit	POST	https://fal.run/fal-ai/nano-banana-pro/edit	https://docs.fal.ai
 fal	nanoBananaPro.textToImage	POST	https://fal.run/fal-ai/nano-banana-pro	https://docs.fal.ai
-fal	qwenImage	POST	https://api.fal.ai/v1/fal-ai/qwen-image	https://docs.fal.ai
+fal	qwenImage	POST	https://fal.run/fal-ai/qwen-image	https://fal.ai/models/fal-ai/qwen-image/api
 fal	qwenImage.edit	POST	https://fal.run/fal-ai/qwen-image-edit	https://docs.fal.ai
 fal	sora2.imageToVideo	POST	https://fal.run/fal-ai/sora-2/image-to-video	https://docs.fal.ai
 fal	sora2.textToVideo	POST	https://fal.run/fal-ai/sora-2/text-to-video	https://docs.fal.ai
@@ -923,7 +923,7 @@ fal	wan.v2p7.pro.textToImage	POST	https://fal.run/fal-ai/wan/v2.7/pro/text-to-im
 fal	wan.v2p7.referenceToVideo	POST	https://fal.run/fal-ai/wan/v2.7/reference-to-video
 fal	wan.v2p7.textToImage	POST	https://fal.run/fal-ai/wan/v2.7/text-to-image	https://docs.fal.ai
 fal	wan.v2p7.textToVideo	POST	https://fal.run/fal-ai/wan/v2.7/text-to-video	https://docs.fal.ai
-fal	xai.grokImagineImage	POST	https://api.fal.ai/v1/xai/grok-imagine-image	https://docs.fal.ai
+fal	xai.grokImagineImage	POST	https://fal.run/xai/grok-imagine-image	https://fal.ai/models/xai/grok-imagine-image/api
 fal	xai.grokImagineImage.edit	POST	https://fal.run/xai/grok-imagine-image/edit	https://docs.fal.ai
 fal	xai.grokImagineImage.v2p0.edit	POST	https://fal.run/xai/grok-imagine-image/v2.0/edit	https://fal.ai/models/xai/grok-imagine-image/v2.0/edit/api
 fal	xai.grokImagineImage.v2p0.textToImage	POST	https://fal.run/xai/grok-imagine-image/v2.0/text-to-image	https://fal.ai/models/xai/grok-imagine-image/v2.0/text-to-image/api

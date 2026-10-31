@@ -2700,8 +2700,8 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-image
-  // Docs: https://docs.fal.ai
+  // POST https://fal.run/xai/grok-imagine-image
+  // Docs: https://fal.ai/models/xai/grok-imagine-image/api
   const xaiGrokImagineImage = Object.assign(
     jsonBody<FalXaiGrokImagineImageRequest, FalXaiGrokImagineImageResponse>(
       "POST",
@@ -2754,8 +2754,8 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/qwen-image
-  // Docs: https://docs.fal.ai
+  // POST https://fal.run/fal-ai/qwen-image
+  // Docs: https://fal.ai/models/fal-ai/qwen-image/api
   const qwenImage = Object.assign(
     jsonBody<FalQwenImageRequest, FalQwenImageResponse>(
       "POST",

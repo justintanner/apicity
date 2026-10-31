@@ -18,8 +18,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.edits",
-      "modelId": "gpt-image-2.5-sunburst",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2.5-sunburst"
     }
   ],
   "GPT Image 2.5 Flare (max)": [
@@ -41,8 +40,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.edits",
-      "modelId": "gpt-image-2.5-flare",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2.5-flare"
     }
   ],
   "MAI-Image-2.6": [],
@@ -90,8 +88,7 @@
     {
       "provider": "openai",
       "dotPath": "v1.images.edits",
-      "modelId": "gpt-image-2",
-      "pricingKey": "unpriced"
+      "modelId": "gpt-image-2"
     }
   ],
   "Seedream 5.0 Pro": [

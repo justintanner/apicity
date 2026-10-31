@@ -66,6 +66,24 @@ describe("MODEL_SLUGS", () => {
     );
   });
 
+  it("shares the GPT Image slugs between openai and kie", () => {
+    expect(MODEL_SLUGS.openai["gpt-image-1.5"]).toBe(
+      MODEL_SLUGS.kie["gpt-image/1.5-text-to-image"]
+    );
+    expect(MODEL_SLUGS.openai["gpt-image-2"]).toBe(
+      MODEL_SLUGS.kie["gpt-image-2-text-to-image"]
+    );
+    expect(MODEL_SLUGS.openai["gpt-image-2.5-sunburst"]).toBe(
+      MODEL_SLUGS.kie["gpt-image-2-5-sunburst-text-to-image"]
+    );
+    expect(MODEL_SLUGS.openai["gpt-image-2.5-flare"]).toBe(
+      MODEL_SLUGS.kie["gpt-image-2-5-flare-text-to-image"]
+    );
+    expect(MODEL_DISPLAY.openai["gpt-image-2.5-flare"]).toBe(
+      "GPT Image 2.5 Flare"
+    );
+  });
+
   it("registers a slug for every fal pricing entry", () => {
     expect(Object.keys(MODEL_SLUGS.fal).sort()).toEqual(
       Object.keys(PRICING.fal).sort()

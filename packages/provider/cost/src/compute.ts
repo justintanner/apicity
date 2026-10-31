@@ -727,6 +727,16 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
     case "openai": {
       const model = asString(req.payload.model);
       const entry = model ? PRICING.openai[model] : undefined;
+      // The GPT Image models price per image or per image output token, keyed
+      // by model; route on the entry's own `kind`, as xai and alibaba do.
+      if (entry?.kind === "perUnit") {
+        return evaluatePerUnit(
+          "openai",
+          req.payload,
+          { keyedBy: "model" },
+          req.costHints
+        );
+      }
       if (
         model &&
         (hasDeclaredUsage(req.costHints) ||

@@ -1067,12 +1067,11 @@ describe("frontier image snapshots", () => {
         provider: "openai",
         dotPath: "v1.images.generations",
         modelId: "gpt-image-1.5",
-        pricingKey: "unpriced",
       },
     ]);
   });
 
-  // PRICING.openai has no image rate, so every OpenAI row is unpriced.
+  // PRICING.openai prices each GPT Image id, so the rows carry no pricingKey.
   it("lists OpenAI's images calls on every GPT Image row", () => {
     const openaiRows = (
       map: Record<string, ReadonlyArray<{ provider: string }>>
@@ -1088,7 +1087,6 @@ describe("frontier image snapshots", () => {
       provider: "openai",
       dotPath,
       modelId,
-      pricingKey: "unpriced",
     });
     expect(openaiRows(t2i.endpointMap)).toEqual({
       "GPT Image 2.5 Sunburst (max)": row(

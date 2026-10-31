@@ -1744,11 +1744,11 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.gptImage1p5</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5</code>
+<code>POST https://fal.run/fal-ai/gpt-image-1.5</code>
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.fal.ai)
+[Upstream docs ↗](https://fal.ai/models/fal-ai/gpt-image-1.5/api)
 
 ```typescript
 const res = await fal.run.gptImage1p5({ /* ... */ });
@@ -1765,7 +1765,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.fal.ai)
+[Upstream docs ↗](https://fal.ai/models/fal-ai/gpt-image-1.5/edit/api)
 
 ```typescript
 const res = await fal.run.gptImage1p5.edit({ /* ... */ });

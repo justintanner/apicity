@@ -122,6 +122,11 @@
   ],
   "GPT Image 1.5 (high)": [
     {
+      "provider": "fal",
+      "dotPath": "gptImage1p5",
+      "pricingKey": "fal-ai/gpt-image-1.5"
+    },
+    {
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image/1.5-text-to-image"

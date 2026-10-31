@@ -2730,7 +2730,7 @@ export function createFal(opts: FalOptions): FalProvider {
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/gpt-image-1.5/edit
-  // Docs: https://docs.fal.ai
+  // Docs: https://fal.ai/models/fal-ai/gpt-image-1.5/edit/api
   const gptImage1p5Edit = jsonBody<
     FalGptImage1p5EditRequest,
     FalGptImage1p5EditResponse
@@ -2739,8 +2739,8 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5
-  // Docs: https://docs.fal.ai
+  // POST https://fal.run/fal-ai/gpt-image-1.5
+  // Docs: https://fal.ai/models/fal-ai/gpt-image-1.5/api
   const gptImage1p5 = Object.assign(
     jsonBody<FalGptImage1p5Request, FalGptImage1p5Response>(
       "POST",

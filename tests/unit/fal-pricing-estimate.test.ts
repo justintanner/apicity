@@ -657,6 +657,33 @@ describe("fal video pricing estimates", () => {
     expect(draft.usd).toBeCloseTo(1.0365691875, 10);
     expect(draft.warnings).toEqual([]);
 
+    // So does the US 2.5 draft flag (queue OpenAPI read 2026-10-31):
+    // 854 x 480 x 121 / 1024 = 48,437.8125 tokens at $0.02568.
+    const usDraft = seedance("bytedance/seedance-2.5/us/text-to-video", {
+      ...seedanceRecorded,
+      resolution: "1080p",
+      draft: true,
+      aspect_ratio: "16:9",
+      duration: "5",
+    });
+    expect(usDraft.usd).toBeCloseTo(1.243883025, 10);
+    expect(usDraft.warnings).toEqual([]);
+    // A 1080p US reference draft prices like the recorded 480p reference call.
+    // Without the flag, 1080p bills 0.6 x 1440 x 1440 x (96 + 97) / 1024 =
+    // 234,495 tokens at $0.02808.
+    for (const [draftFlag, usd] of [
+      [true, 1.1894976],
+      [false, 6.5846196],
+    ] as const) {
+      const usReferenceDraft = seedance(
+        "bytedance/seedance-2.5/us/reference-to-video",
+        { ...seedanceReference, resolution: "1080p", draft: draftFlag },
+        { inputDurationSeconds: 4 }
+      );
+      expect(usReferenceDraft.usd, String(draftFlag)).toBeCloseTo(usd, 10);
+      expect(usReferenceDraft.warnings, String(draftFlag)).toEqual([]);
+    }
+
     // An images-only reference bills the output alone, without the 0.6.
     const imagesOnly = seedance("bytedance/seedance-2.5/reference-to-video", {
       ...seedanceRecorded,

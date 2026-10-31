@@ -124,6 +124,7 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
     expect(schema.parse({})).toEqual({
       task: "reference",
       resolution: "720p",
+      draft: false,
       duration: "auto",
       aspect_ratio: "auto",
       generate_audio: true,
@@ -133,6 +134,7 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
     for (const key of [
       "task",
       "resolution",
+      "draft",
       "duration",
       "aspect_ratio",
       "generate_audio",
@@ -212,6 +214,12 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
     for (const generate_audio of [true, false])
       expect(valid({ generate_audio })).toBe(true);
     expect(valid({ generate_audio: "false" })).toBe(false);
+  });
+  // fal's validator answers a string draft with bool_parsing (free 422
+  // probe, 2026-10-31).
+  it("takes a boolean draft only", () => {
+    for (const draft of [true, false]) expect(valid({ draft })).toBe(true);
+    expect(valid({ draft: "true" })).toBe(false);
   });
   it("leaves the input open, as upstream does not close it", () => {
     expect(valid({ fps: 24 })).toBe(true);

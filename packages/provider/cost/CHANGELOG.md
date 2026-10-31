@@ -315,6 +315,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `bytedance/seedance-2.5/us/text-to-video` and
+  `bytedance/seedance-2.5/us/reference-to-video` price `draft: true` at
+  480p, like the non-US 2.5 leaves, instead of at the requested resolution
+  (`draftFlag`). `bytedance/seedance-2.5/us/image-to-video` stays dynamic
+  (ac-8wmej3).
 - `frontier("t2i")` maps GPT Image 1.5 (high), rank 9, to fal
   `gptImage1p5` with pricingKey `fal-ai/gpt-image-1.5`, beside the KIE
   `gpt-image/1.5-text-to-image` id. The fal leaf's endpoint-docs row named

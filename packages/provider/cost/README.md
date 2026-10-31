@@ -263,21 +263,22 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 
 ### Endpoints that need it
 
-| Provider     | Pricing key                             | Length follows                           |
-| ------------ | --------------------------------------- | ---------------------------------------- |
-| `kie`        | `veo3` / `veo3_fast`                    | model-fixed clip                         |
-| `kie`        | `happyhorse/video-edit`                 | source `video_url`, billed on both sides |
-| `kie`        | `kling-3.0/motion-control`              | motion video                             |
-| `kie`        | `omnihuman-1-5`                         | driving audio                            |
-| `kie`        | `omnihuman-2-0`                         | driving audio                            |
-| `kie`        | `volcengine/video-to-video-lip-sync`    | source video                             |
-| `xai`        | `v1/videos/edits`                       | source video                             |
-| `fal`        | `fal-ai/wan/v2.7/edit-video`            | source video                             |
-| `fal`        | Seedance 2.0 / 2.5, duration `"auto"`   | the model's pick                         |
-| `fal`        | `bytedance/seedance-2.5/draft/complete` | the draft, with `aspectRatio`            |
-| `elevenlabs` | `scribe_v2`                             | input audio                              |
-| `elevenlabs` | `scribe_v2_medical`                     | input audio                              |
-| `elevenlabs` | `scribe_v2_realtime`                    | input audio                              |
+| Provider     | Pricing key                                | Length follows                           |
+| ------------ | ------------------------------------------ | ---------------------------------------- |
+| `kie`        | `veo3` / `veo3_fast`                       | model-fixed clip                         |
+| `kie`        | `happyhorse/video-edit`                    | source `video_url`, billed on both sides |
+| `kie`        | `kling-3.0/motion-control`                 | motion video                             |
+| `kie`        | `omnihuman-1-5`                            | driving audio                            |
+| `kie`        | `omnihuman-2-0`                            | driving audio                            |
+| `kie`        | `volcengine/video-to-video-lip-sync`       | source video                             |
+| `xai`        | `v1/videos/edits`                          | source video                             |
+| `fal`        | `fal-ai/wan/v2.7/edit-video`               | source video                             |
+| `fal`        | Seedance 2.0 / 2.5, duration `"auto"`      | the model's pick                         |
+| `fal`        | `bytedance/seedance-2.5/draft/complete`    | the draft, with `aspectRatio`            |
+| `fal`        | `bytedance/seedance-2.5/us/draft/complete` | the draft, with `aspectRatio`            |
+| `elevenlabs` | `scribe_v2`                                | input audio                              |
+| `elevenlabs` | `scribe_v2_medical`                        | input audio                              |
+| `elevenlabs` | `scribe_v2_realtime`                       | input audio                              |
 
 wan edit-video defaults `duration` to `0` ("match the source clip"). That is
 not a length, so it reaches the hint exactly like an omitted field would. The
@@ -357,8 +358,9 @@ guarantee](#hash-and-otp-guarantee) below.
 The fal Seedance entries bill the clips' frames (24 per declared second) at
 the output's size, then multiply the whole count by 0.6. A clip length under
 4 s fails closed, and an images- or audio-only reference bills the output
-alone. `bytedance/seedance-2.5/draft/complete` reads the same field as the
-draft's clip length: a valid value prices the completion with video inputs.
+alone. `bytedance/seedance-2.5/draft/complete` and its US twin read the same
+field as the draft's clip length: a valid value prices the completion with
+video inputs.
 
 `happyhorse/video-edit` needs no second hint in the common case: the output
 matches the source clip, so `{ durationSeconds: 6 }` alone prices 12 s

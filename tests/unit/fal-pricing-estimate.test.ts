@@ -842,7 +842,7 @@ describe("fal video pricing estimates", () => {
     );
   });
 
-  it("keeps four Seedance ids dynamic and slugs the twelve priced ones", () => {
+  it("keeps four Seedance ids dynamic and slugs the thirteen priced ones", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
     const slugs = MODEL_SLUGS.fal as Record<string, string>;
     const names = MODEL_DISPLAY.fal as Record<string, string>;
@@ -890,6 +890,12 @@ describe("fal video pricing estimates", () => {
       expect(slugs[endpoint], endpoint).toBe(slug);
       expect(names[endpoint], endpoint).toBe(name);
     }
+    // The US draft completion came after that sweep (ac-jjngde).
+    const usComplete = "bytedance/seedance-2.5/us/draft/complete";
+    expect(dynamic).not.toContain(usComplete);
+    expect(falPricing[usComplete].source.asOf).toBe("2026-10-31");
+    expect(slugs[usComplete]).toBe("sd2p5");
+    expect(names[usComplete]).toBe("Seedance 2.5 US");
     // The same models kie resells keep the same slugs.
     expect(MODEL_SLUGS.kie["bytedance/seedance-2"]).toBe("sd2");
     expect(MODEL_SLUGS.kie["bytedance/seedance-2-fast"]).toBe("sd2f");

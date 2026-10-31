@@ -14138,6 +14138,35 @@ export type FalBytedanceSeedance2p5DraftCompleteParsedRequest = z.output<
   typeof FalBytedanceSeedance2p5DraftCompleteRequestSchema
 >;
 
+// Bytedance Seedance 2.5 US draft completion, queue OpenAPI read 2026-10-31.
+export const FalBytedanceSeedance2p5UsDraftCompleteRequestSchema = z.object({
+  draft_id: z
+    .string()
+    .min(1)
+    .max(8192)
+    .describe(
+      "The draft_id returned with draft enabled. Valid for 14 days and only for the original caller."
+    ),
+  resolution: z
+    .literal("1080p")
+    .default("1080p")
+    .describe("Completed drafts only support 1080p output."),
+  codec: z
+    .enum(["auto", "H264", "H265"])
+    .default("auto")
+    .describe(
+      "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+    ),
+});
+export type FalBytedanceSeedance2p5UsDraftCompleteRequest = z.input<
+  typeof FalBytedanceSeedance2p5UsDraftCompleteRequestSchema
+>;
+export type FalBytedanceSeedance2p5UsDraftCompleteRequestInput =
+  FalBytedanceSeedance2p5UsDraftCompleteRequest;
+export type FalBytedanceSeedance2p5UsDraftCompleteParsedRequest = z.output<
+  typeof FalBytedanceSeedance2p5UsDraftCompleteRequestSchema
+>;
+
 // Meshy 6 Lite retexture
 export const FalMeshyV6LiteRetextureRequestSchema = z
   .object({
@@ -17500,6 +17529,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":
     FalBytedanceSeedance2p5DraftCompleteRequestSchema,
+  "bytedance/seedance-2.5/us/draft/complete":
+    FalBytedanceSeedance2p5UsDraftCompleteRequestSchema,
   "bytedance/seedance-2.5/us/reference-to-video":
     FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   "bytedance/seedance-2.5/us/image-to-video":

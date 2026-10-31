@@ -40,6 +40,7 @@ describe("Bytedance Seedance 2.5 US text-to-video", () => {
       "textToVideo",
       "imageToVideo",
       "referenceToVideo",
+      "draft",
     ]);
     expect(p.run.bytedance.seedance2p5.us.textToVideo).toBe(
       p.post.run.bytedance.seedance2p5.us.textToVideo

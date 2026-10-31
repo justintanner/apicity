@@ -52,7 +52,7 @@ function shapePayload(
 ): Record<string, unknown> {
   const [task, ...parts] = shape.split("+");
   const image = "https://example.com/start.jpg";
-  if (task === "UPSCALE")
+  if (task === "UPSCALE" || task === "SHARPEN")
     return {
       model: row.apiModel,
       task_type: task,
@@ -142,8 +142,9 @@ describe("MachGen pricing", () => {
         if (clip) {
           usd = Number(clip[1]);
           seconds = Number(clip[2]);
-          // An upscale renders its source's length.
-          if (shape === "UPSCALE") hints = { inputDurationSeconds: seconds };
+          // An upscale or a sharpen renders its source's length.
+          if (shape === "UPSCALE" || shape === "SHARPEN")
+            hints = { inputDurationSeconds: seconds };
         } else if (input) {
           usd = Number(input[1]);
           seconds = Number(input[2]);
@@ -169,7 +170,7 @@ describe("MachGen pricing", () => {
       }
     }
     expect(historical).toBe(35);
-    expect(checked + historical).toBe(332);
+    expect(checked + historical).toBe(334);
   });
   it("prices exactly the models the evidence prices", () => {
     const priced = new Set(
@@ -288,6 +289,13 @@ describe("MachGen pricing", () => {
     ).toEqual([
       "@apicity/cost prices MachGen Vidu-Q4-Preview for I2V, R2V only.",
     ]);
+    expect(
+      estimate({
+        video_config: { height: 480, duration_secs: 1, sharpen: true },
+      }).warnings
+    ).toEqual([
+      "MachGen publishes SHARPEN task rates (0.015 USD/s at 480p, 0.066 USD/s at 768p, none at 1440p) but not what video_config.sharpen adds to a generation; price a separate SHARPEN task instead.",
+    ]);
   });
   it("requires duration hints for Smart length and input-video charges", () => {
     const smart = { video_config: { height: 480, duration_secs: -1 } };
@@ -397,6 +405,27 @@ describe("MachGen pricing", () => {
     expect(upscale("MiniMax-H3", 1440).warnings).toEqual([
       "MachGen bills an upscale by its source's length; pass costHints.inputDurationSeconds.",
     ]);
+    // A sharpen bills the source's seconds once, whatever duration_secs says
+    // (quotes: 15000 micros for 1 s at 480p, 330000 for 5 s at 768p).
+    const sharpen = (height: number, hints?: CostHints) =>
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model: "MiniMax-H3",
+          task_type: "SHARPEN",
+          prompt: "",
+          src_task_ids: ["source"],
+          video_config: { height, duration_secs: 5 },
+        },
+        costHints: hints,
+      });
+    expect(sharpen(480, { inputDurationSeconds: 1 }).usd).toBeCloseTo(0.015);
+    expect(sharpen(768, { inputDurationSeconds: 5 }).usd).toBeCloseTo(0.33);
+    expect(sharpen(480, { inputDurationSeconds: 1 }).warnings).toEqual([]);
+    expect(sharpen(480).warnings).toEqual([
+      "MachGen bills a sharpen by its source's length; pass costHints.inputDurationSeconds.",
+    ]);
+    expect(sharpen(1440, { inputDurationSeconds: 1 }).usd).toBe(0);
     // Topaz bills vendor credits that depend on the source, and MachGen
     // answered HTTP 500 to every Vidu-Upscale-Pro request.
     for (const model of ["Topaz-Video-Precision", "Vidu-Upscale-Pro"]) {

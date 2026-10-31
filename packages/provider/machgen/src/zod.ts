@@ -3,13 +3,15 @@ import { z } from "zod";
 // Video task types per model, from https://www.machgen.ai/docs/models
 // (2026-10-25). Vidu-Upscale-Pro is on the pricebook but not in the models
 // table, and MachGen answered HTTP 500 to every request for it that day, so it
-// passes unchecked like any other id.
+// passes unchecked like any other id. SHARPEN is in the TaskInput reference
+// (https://www.machgen.ai/docs/reference#taskinput), not the models table;
+// MachGen's quote priced it for MiniMax-H3 alone on 2026-10-31.
 export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "Wan2.2-A14B": ["T2V", "I2V"],
   "LTX-2.3-Pro": ["T2V", "I2V"],
   "Vidu-Q3-Turbo": ["T2V", "I2V", "R2V"],
   "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
-  "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE"],
+  "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE", "SHARPEN"],
   "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
   "Seedance-2.5": ["T2V", "I2V", "R2V"],
   "Seedance-2.0": ["T2V", "I2V", "R2V"],
@@ -68,6 +70,11 @@ export interface MachGenUpscaleGrid {
   heights: readonly number[];
   /** Accepted `upscale_config.engine` values, when MachGen checks them. */
   engines?: readonly string[];
+}
+
+/** SHARPEN heights per model. */
+export interface MachGenSharpenGrid {
+  heights: readonly number[];
 }
 
 const secs = (from: number, to: number) =>
@@ -409,6 +416,15 @@ export const MACHGEN_VIDEO_UPSCALE: Readonly<
   },
 };
 
+// SHARPEN heights, read from 400s of MachGen's upscale quote on 2026-10-31
+// (tests/fixtures/machgen-evidence/machgen-sharpen-2026-10-31.json). The web
+// app's capability contract also lists 1440, which the quote refuses.
+export const MACHGEN_VIDEO_SHARPEN: Readonly<
+  Record<string, MachGenSharpenGrid>
+> = {
+  "MiniMax-H3": { heights: [480, 768] },
+};
+
 export const MachGenModelAliasSchema = z
   .string()
   .regex(/^[A-Za-z][A-Za-z0-9.]*(?:-[A-Za-z0-9.]+)+$/);
@@ -473,7 +489,15 @@ export const MachGenGenerateRequestSchema = z
       )
       .or(z.enum(MACHGEN_IMAGE_MODELS))
       .or(MachGenModelAliasSchema),
-    task_type: z.enum(["T2V", "I2V", "R2V", "UPSCALE", "T2I", "I2I"]),
+    task_type: z.enum([
+      "T2V",
+      "I2V",
+      "R2V",
+      "UPSCALE",
+      "SHARPEN",
+      "T2I",
+      "I2I",
+    ]),
     prompt: z.string(),
     video_config: MachGenVideoConfigSchema.optional(),
     image_config: MachGenImageConfigSchema.optional(),
@@ -566,13 +590,15 @@ export const MachGenGenerateRequestSchema = z
         ["video_config"],
         "set exactly one of duration_secs and num_frames"
       );
-    videos.forEach((url, i) => {
-      if (!isHttpUrl(url))
-        issue(
-          ["src_video_urls", i],
-          "src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids"
-        );
-    });
+    // SHARPEN takes an owned upload instead; its branch below checks that.
+    if (req.task_type !== "SHARPEN")
+      videos.forEach((url, i) => {
+        if (!isHttpUrl(url))
+          issue(
+            ["src_video_urls", i],
+            "src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids"
+          );
+      });
     const subjects = new Map<string, string>();
     for (const [map, refs] of [
       ["subject_to_image_ids", images],
@@ -642,6 +668,35 @@ export const MachGenGenerateRequestSchema = z
         issue(
           ["upscale_config", "engine"],
           `${model} does not support UPSCALE engine=${engine}; allowed engines: ${list(upscale.engines)}`
+        );
+      return;
+    }
+    if (req.task_type === "SHARPEN") {
+      // One owned video: a MachGen task's output, or an upload referenced as
+      // @input/<artifact_path>. A public URL is not owned.
+      if (videos.some((url) => !url.startsWith("@input/")))
+        issue(
+          ["src_video_urls"],
+          "SHARPEN requires an owned uploaded or generated video"
+        );
+      const sources = (req.src_task_ids?.length ?? 0) + videos.length;
+      if (sources === 0)
+        issue(
+          ["src_task_ids"],
+          "SHARPEN requires an owned uploaded or generated video"
+        );
+      if (sources > 1)
+        issue(["src_task_ids"], "SHARPEN accepts one source video");
+      if (num_frames !== undefined)
+        issue(
+          ["video_config", "num_frames"],
+          `${model} SHARPEN does not accept num_frames`
+        );
+      const sharpen = MACHGEN_VIDEO_SHARPEN[model];
+      if (sharpen && !sharpen.heights.includes(height))
+        issue(
+          ["video_config", "height"],
+          `${model} does not support SHARPEN height=${height}; allowed heights: ${list(sharpen.heights)}`
         );
       return;
     }

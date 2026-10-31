@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MachGen SHARPEN pricing for MiniMax-H3: the pricebook's 0.015 USD/s at 480p and 0.066 USD/s at 768p on the source's seconds (`costHints.inputDurationSeconds`); MachGen's quote bills the source's height and length whatever the request says. The `video_config.sharpen` warning now names those rates, and MachGen's MiniMax-H3 frontier price range starts at 0.015 USD/s (ac-xug9gr).
+
 - Added MachGen T2I/I2I schemas for five frontier image models and size/quality-aware public-pricebook estimates (ac-qu8m4t).
 
 - Added Kling O3 Pro video-to-video reference with output duration/aspect controls and per-second pricing (ac-hpnzx5).

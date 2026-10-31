@@ -5,6 +5,7 @@ import {
   MachGenError,
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
+  MACHGEN_VIDEO_SHARPEN,
   MACHGEN_VIDEO_UPSCALE,
   MachGenGenerateRequestSchema,
 } from "@apicity/machgen";
@@ -14,6 +15,7 @@ import {
   MACHGEN_CASES,
   MACHGEN_RECORDED,
   MACHGEN_REF_VIDEO,
+  MACHGEN_SHARPEN_SOURCE,
   MACHGEN_UPSCALE_SOURCE,
 } from "../machgen-helpers";
 
@@ -37,6 +39,17 @@ const evidence = JSON.parse(
   upscale: Record<string, { heights: number[]; engines?: string[] }>;
 };
 
+// SHARPEN rules and heights from MachGen's quote on 2026-10-31.
+const sharpenEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-sharpen-2026-10-31.json",
+    { encoding: "utf8" }
+  )
+) as {
+  sharpen: Record<string, { heights: number[] }>;
+  probes: Array<{ label: string; status: number; response: unknown }>;
+};
+
 const issues = (overrides: Record<string, unknown>, index = 0) => {
   const result = MachGenGenerateRequestSchema.safeParse({
     ...machgenPayload(index, "I2V"),
@@ -56,7 +69,7 @@ describe("MachGen", () => {
       "LTX-2.3-Pro": ["T2V", "I2V"],
       "Vidu-Q3-Turbo": ["T2V", "I2V", "R2V"],
       "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
-      "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE"],
+      "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE", "SHARPEN"],
       "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
       "Seedance-2.5": ["T2V", "I2V", "R2V"],
       "Seedance-2.0": ["T2V", "I2V", "R2V"],
@@ -135,6 +148,7 @@ describe("MachGen", () => {
       expect(MACHGEN_VIDEO_GRIDS[model]?.R2V, model).toBeDefined();
     // Upscale tiers and engines from the quote's 400s.
     expect(MACHGEN_VIDEO_UPSCALE).toEqual(evidence.upscale);
+    expect(MACHGEN_VIDEO_SHARPEN).toEqual(sharpenEvidence.sharpen);
   });
   it("accepts every recorded payload", () => {
     for (const [i, task, variant] of MACHGEN_RECORDED)
@@ -146,7 +160,7 @@ describe("MachGen", () => {
     // Every case's model accepts its other declared tasks too.
     for (const [i, [, model]] of MACHGEN_CASES.entries())
       for (const task of MACHGEN_VIDEO_MODEL_TASK_TYPES[model])
-        if (task !== "UPSCALE")
+        if (task !== "UPSCALE" && task !== "SHARPEN")
           expect(
             MachGenGenerateRequestSchema.safeParse(machgenPayload(i, task))
               .success,
@@ -373,6 +387,70 @@ describe("MachGen", () => {
     ).toEqual([
       "video_config: set exactly one of duration_secs and num_frames",
     ]);
+  });
+  it("restates MachGen's SHARPEN rules", () => {
+    const sharpen = (overrides: Record<string, unknown>) => {
+      const result = MachGenGenerateRequestSchema.safeParse({
+        prompt: "",
+        model: "MiniMax-H3",
+        task_type: "SHARPEN",
+        src_task_ids: [MACHGEN_SHARPEN_SOURCE],
+        video_config: { height: 480, duration_secs: 1 },
+        ...overrides,
+      });
+      return result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    };
+    // Each rule below restates a quote 400 in the evidence.
+    const quoted = (label: string) =>
+      sharpenEvidence.probes.find((probe) => probe.label === label)?.response;
+    expect(sharpen({})).toEqual([]);
+    expect(quoted("Q1-pin-480-d1")).toEqual({ cost_micros: 15000 });
+    expect(
+      sharpen({ video_config: { height: 768, duration_secs: 1 } })
+    ).toEqual([]);
+    expect(
+      sharpen({ video_config: { height: 720, duration_secs: 1 } })
+    ).toEqual([
+      "video_config.height: MiniMax-H3 does not support SHARPEN height=720; allowed heights: 480, 768",
+    ]);
+    expect(quoted("Q2-height-720")).toBe(
+      "MiniMax-H3 does not support SHARPEN height=720; allowed heights: [480, 768]"
+    );
+    expect(sharpen({ model: "Seedance-2.5" })).toEqual([
+      "task_type: Seedance-2.5 does not support task_type=SHARPEN; allowed task types: T2V, I2V, R2V",
+    ]);
+    expect(sharpen({ src_task_ids: undefined })).toEqual([
+      "src_task_ids: SHARPEN requires an owned uploaded or generated video",
+    ]);
+    expect(quoted("Q4-no-source")).toBe(
+      "SHARPEN requires an owned uploaded or generated video"
+    );
+    expect(
+      sharpen({ src_task_ids: undefined, src_video_urls: [MACHGEN_REF_VIDEO] })
+    ).toEqual([
+      "src_video_urls: SHARPEN requires an owned uploaded or generated video",
+    ]);
+    expect(quoted("Q15-public-video-url")).toBe(
+      "SHARPEN requires an owned uploaded or generated video"
+    );
+    // An upload is owned: MachGen references it as @input/<artifact_path>.
+    expect(
+      sharpen({ src_task_ids: undefined, src_video_urls: ["@input/clip.mp4"] })
+    ).toEqual([]);
+    expect(
+      sharpen({
+        src_task_ids: [MACHGEN_SHARPEN_SOURCE, MACHGEN_UPSCALE_SOURCE],
+      })
+    ).toEqual(["src_task_ids: SHARPEN accepts one source video"]);
+    expect(quoted("Q17-two-sources")).toBe("SHARPEN accepts one source video");
+    expect(sharpen({ video_config: { height: 480, num_frames: 22 } })).toEqual([
+      "video_config.num_frames: MiniMax-H3 SHARPEN does not accept num_frames",
+    ]);
+    expect(quoted("Q18-num-frames")).toBe(
+      "MiniMax-H3 SHARPEN does not accept num_frames"
+    );
   });
   it("keeps video task types closed and model aliases grammar-bound", () => {
     const payload = machgenPayload(0, "T2V");

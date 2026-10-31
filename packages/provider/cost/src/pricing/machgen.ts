@@ -30,7 +30,7 @@ const inputVideo = (p: Record<string, unknown>) =>
 const ALL = ["T2V", "I2V", "R2V"];
 const T2V_I2V = ["T2V", "I2V"];
 const PRICED_TASKS: Record<string, readonly string[]> = {
-  "MiniMax-H3": [...ALL, "UPSCALE"],
+  "MiniMax-H3": [...ALL, "UPSCALE", "SHARPEN"],
   "Seedance-2.5": ALL,
   "Seedance-2.0": ALL,
   "Alibaba-Wan-3.0": ALL,
@@ -104,12 +104,18 @@ function upscaleSeconds(hints?: CostHints): number | undefined {
   return source === undefined ? undefined : 2 * source;
 }
 
+// A sharpen bills its source's seconds once, at the source's height: MachGen
+// quoted a 5 s 768p source at 330000 micros with height 480 or 768 and
+// duration_secs 1 or 5, and a 1 s 480p source at 15000 (2026-10-31). The
+// request names neither, so pass the source's length as
+// costHints.inputDurationSeconds and its height as video_config.height.
 function seconds(
   p: Record<string, unknown>,
   hints?: CostHints
 ): number | undefined {
   if (!pricedTask(p)) return undefined;
   if (p.task_type === "UPSCALE") return upscaleSeconds(hints);
+  if (p.task_type === "SHARPEN") return hintInputSeconds(hints);
   if (has(p, "src_task_ids")) return undefined;
   if (p.model === "MiniMax-H3" && config(p).sharpen === true) return undefined;
   if (audioUnset(p)) return undefined;
@@ -131,6 +137,12 @@ function warn(p: Record<string, unknown>, hints?: CostHints): string[] {
           "MachGen bills an upscale by its source's length; pass costHints.inputDurationSeconds.",
         ]
       : [];
+  if (p.task_type === "SHARPEN")
+    return hintInputSeconds(hints) === undefined
+      ? [
+          "MachGen bills a sharpen by its source's length; pass costHints.inputDurationSeconds.",
+        ]
+      : [];
   if (has(p, "src_task_ids"))
     return [
       "MachGen src_task_ids hides the input type and billed seconds; an exact estimate is unavailable.",
@@ -143,7 +155,9 @@ function warn(p: Record<string, unknown>, hints?: CostHints): string[] {
       "MachGen renders an edit at its source's length; pass costHints.inputDurationSeconds for one reference video, or costHints.durationSeconds.",
     ];
   if (p.model === "MiniMax-H3" && config(p).sharpen === true)
-    return ["MachGen has not published the sharpen surcharge."];
+    return [
+      "MachGen publishes SHARPEN task rates (0.015 USD/s at 480p, 0.066 USD/s at 768p, none at 1440p) but not what video_config.sharpen adds to a generation; price a separate SHARPEN task instead.",
+    ];
   if (audioUnset(p))
     return [
       `MachGen prices ${String(p.model)} with audio on and off at different rates; set video_config.audio.`,
@@ -233,6 +247,7 @@ const graduated = (
 // Frame to Frame one: 2 s at 480p billed 70000 micros (ac-fs70lj receipt).
 const h3Mode = (p: Record<string, unknown>): string | undefined => {
   if (p.task_type === "UPSCALE") return "upscale";
+  if (p.task_type === "SHARPEN") return "sharpen";
   if (p.task_type === "R2V")
     return has(p, "src_video_urls") ? "r2v-video" : "r2v-f2f";
   if (p.task_type === "I2V" || p.task_type === "T2V") return "t2v-i2v";
@@ -267,8 +282,13 @@ for (const [mode, normal, adapter, extra, adapterExtra] of [
 }
 // 2K regeneration of the model's own 768p outputs, on input plus output seconds.
 h3Rates["upscale|1440"] = 0.05;
+// SHARPEN, on the source's seconds; the pricebook has no 1440 row.
+h3Rates["sharpen|480"] = 0.015;
+h3Rates["sharpen|768"] = 0.066;
 const h3Flat = (p: Record<string, unknown>) =>
-  h3Mode(p) === "r2v-video" || h3Mode(p) === "upscale";
+  h3Mode(p) === "r2v-video" ||
+  h3Mode(p) === "upscale" ||
+  h3Mode(p) === "sharpen";
 export const machgen: Record<string, ModelPricing> = {
   ...machgenImages,
   "MiniMax-H3": {

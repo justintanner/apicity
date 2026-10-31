@@ -1015,7 +1015,8 @@
       "seconds": null,
       "usdPerSecond": 0.015,
       "example": "($0.075 / 5s clip)",
-      "unpriced": "MachGen does not say how video_config.sharpen bills; SHARPEN is its own task type"
+      "billing": "billed on the source's seconds at the source's height (quotes, 2026-10-31)",
+      "prices": ["SHARPEN"]
     },
     {
       "display": "MiniMax H3",
@@ -1027,7 +1028,8 @@
       "seconds": null,
       "usdPerSecond": 0.066,
       "example": "($0.33 / 5s clip)",
-      "unpriced": "MachGen does not say how video_config.sharpen bills; SHARPEN is its own task type"
+      "billing": "billed on the source's seconds at the source's height (quotes, 2026-10-31)",
+      "prices": ["SHARPEN"]
     },
     {
       "display": "MiniMax H3",

@@ -390,28 +390,28 @@ describe("PRICING data", () => {
     );
   });
 
-  // The page's figure is the 480p rate; 1.5's 720p rate is a recorded bill.
+  // The page's figure is the 480p rate; the other tiers are recorded bills.
   it("xai has per-second video rates by resolution", () => {
     expect(PRICING.xai["grok-imagine-video"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "480p": 0.05 },
+      rates: { "480p": 0.05, "720p": 0.07 },
     });
     expect(PRICING.xai["grok-imagine-video-1.5"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "480p": 0.08, "720p": 0.14 },
+      rates: { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
     });
     // The provider exports the preview id; it prices at the released rate.
     expect(PRICING.xai["grok-imagine-video-1.5-preview"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "480p": 0.08, "720p": 0.14 },
+      rates: { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
     });
     expect(PRICING.xai["grok-imagine-video-1.5-lite"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "480p": 0.02 },
+      rates: { "480p": 0.02, "720p": 0.03, "1080p": 0.14 },
     });
   });
 

@@ -234,10 +234,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST v1.videos.generations": {
-    "source": "xai/imagine-billing-video-1-5-720p",
+    "source": "xai/imagine-billing-video-1-0-720p",
     "payload": {
       "prompt": "A paper boat drifting across a calm pond",
-      "model": "grok-imagine-video-1.5",
+      "model": "grok-imagine-video",
       "duration": 1,
       "resolution": "720p"
     },

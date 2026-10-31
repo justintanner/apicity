@@ -844,15 +844,19 @@ describe("computeEstimate", () => {
       expect(result.breakdown.unit).toBe("seconds");
     });
 
-    // docs.x.ai publishes one figure per video model, the 480p rate. A
-    // recorded 1 s grok-imagine-video-1.5 clip at 720p billed 0.14.
+    // docs.x.ai publishes one figure per video model, the 480p rate. The
+    // other tiers and the input-image charges are recorded 1 s bills.
     describe("xai video resolution", () => {
       it.each([
         ["grok-imagine-video-1.5", "480p", 0.08],
         ["grok-imagine-video-1.5", "720p", 0.14],
+        ["grok-imagine-video-1.5", "1080p", 0.25],
         ["grok-imagine-video-1.5-preview", "720p", 0.14],
         ["grok-imagine-video-1.5-lite", "480p", 0.02],
+        ["grok-imagine-video-1.5-lite", "720p", 0.03],
+        ["grok-imagine-video-1.5-lite", "1080p", 0.14],
         ["grok-imagine-video", "480p", 0.05],
+        ["grok-imagine-video", "720p", 0.07],
       ])("prices %s at %s by its known rate", (model, resolution, rate) => {
         const result = computeEstimate({
           provider: "xai" as const,
@@ -865,17 +869,65 @@ describe("computeEstimate", () => {
       });
 
       it.each([
-        ["grok-imagine-video-1.5-lite", 0.02],
-        ["grok-imagine-video", 0.05],
-      ])("keeps the 480p rate and warns for %s at 720p", (model, rate480p) => {
+        [
+          "a 1.5 image-to-video clip",
+          "grok-imagine-video-1.5",
+          { image: { url: "https://x/m.jpg" } },
+          0.08 + 0.01,
+        ],
+        [
+          "a 1.5 clip from two references",
+          "grok-imagine-video-1.5",
+          {
+            reference_images: [
+              { url: "https://x/m.jpg" },
+              { url: "https://x/c.jpg" },
+            ],
+          },
+          0.08 + 2 * 0.01,
+        ],
+        [
+          "a 1.5 clip from three reference file ids",
+          "grok-imagine-video-1.5",
+          { reference_image_file_ids: ["f1", "f2", "f3"] },
+          0.08 + 3 * 0.01,
+        ],
+        [
+          "a grok-imagine-video image-to-video clip",
+          "grok-imagine-video",
+          { image_file_id: "f1" },
+          0.05 + 0.002,
+        ],
+        [
+          "a 1.5-lite image-to-video clip",
+          "grok-imagine-video-1.5-lite",
+          { image: "https://x/m.jpg" },
+          0.02 + 0.01,
+        ],
+      ])("adds the input images of %s", (_label, model, body, usd) => {
         const result = computeEstimate({
           provider: "xai" as const,
           endpoint: "v1.videos.generations",
-          payload: { model, prompt: "x", duration: 2, resolution: "720p" },
+          payload: { model, prompt: "x", duration: 1, ...body },
         });
-        expect(result.usd).toBeCloseTo(2 * rate480p, 10);
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.warnings).toEqual([]);
+      });
+
+      it("fails closed when reference_images is not a list", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: {
+            model: "grok-imagine-video-1.5",
+            prompt: "x",
+            duration: 1,
+            reference_images: "https://x/m.jpg",
+          },
+        });
+        expect(result.usd).toBe(0);
         expect(result.warnings).toEqual([
-          `xai '${model}': no 720p rate is known, and 720p bills above the published 480p rate of ${rate480p} USD/s, so this estimate is a floor`,
+          "xai 'grok-imagine-video-1.5': could not derive exact additional charge from payload",
         ]);
       });
 
@@ -914,12 +966,13 @@ describe("computeEstimate", () => {
         ]);
       });
 
-      it("fails closed at 1080p, which no xai video rate covers", () => {
+      // grok-imagine-video renders up to 720p.
+      it("fails closed at 1080p on grok-imagine-video", () => {
         const result = computeEstimate({
           provider: "xai" as const,
           endpoint: "v1.videos.generations",
           payload: {
-            model: "grok-imagine-video-1.5",
+            model: "grok-imagine-video",
             prompt: "x",
             duration: 2,
             resolution: "1080p",
@@ -927,7 +980,7 @@ describe("computeEstimate", () => {
         });
         expect(result.usd).toBe(0);
         expect(result.warnings).toEqual([
-          "xai 'grok-imagine-video-1.5': no rate for variant '1080p' (selectors: resolution)",
+          "xai 'grok-imagine-video': no rate for variant '1080p' (selectors: resolution)",
         ]);
       });
     });

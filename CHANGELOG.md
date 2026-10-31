@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/cost` prices every xAI Grok Imagine video resolution and the video input images from recorded bills. `grok-imagine-video` bills 0.05 and 0.07 USD/s at 480p and 720p. `grok-imagine-video-1.5` bills 0.08, 0.14 and 0.25 at 480p, 720p and 1080p, and `grok-imagine-video-1.5-lite` bills 0.02, 0.03 and 0.14. Each input image (`image`, or each reference image) adds 0.002 USD on `grok-imagine-video` and 0.01 on the 1.5 models. Before, 720p on `grok-imagine-video` and lite priced at the 480p rate with a floor warning, and 1080p failed closed; 1080p on `grok-imagine-video`, which renders up to 720p, still fails closed. Eight more recorded 1 s calls (0.762 USD) pin each bill to its estimate (ac-9jsawg).
+
 - `@apicity/xai` `v1.videos.generations` refuses `reference_audios` on `grok-imagine-video-1.5-lite`, in the schema and before fetch. The 1.5-family check matched lite by prefix, but xAI documents voice references on grok-imagine-video-1.5 only, and lite takes text and image to video (ac-kfekq8).
 
 - `@apicity/openai` `v1.images.edits` accepts the GPT Image 2 and 2.5 options: `quality` `xhigh` and `max` (gpt-image-2.5-sunburst and -flare), and any `WIDTHxHEIGHT` size such as `2048x2048` or `3840x2160` (gpt-image-2 and 2.5). The schema refused both, so `apicity describe` and `.schema.safeParse` rejected documented edit requests. The known sizes stay listed; OpenAI applies the per-model size rules (ac-r8riqc).

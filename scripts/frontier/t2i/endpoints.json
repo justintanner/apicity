@@ -9,6 +9,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-5-sunburst-text-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2.5-Sunburst"
     }
   ],
   "GPT Image 2.5 Flare (max)": [
@@ -21,13 +26,28 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-5-flare-text-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2.5-Flare"
     }
   ],
   "GPT Image 2 (high)": [
     {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2",
+      "pricingKey": "openai/gpt-image-2"
+    },
+    {
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-text-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2"
     }
   ],
   "Nano Banana 2.1": [
@@ -40,6 +60,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "nano-banana-2-1"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Nano-Banana-2.1"
     }
   ],
   "MAI-Image-2.6": [],
@@ -53,6 +78,12 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "grok-imagine-image-2-0/text-to-image"
+    },
+    {
+      "provider": "xai",
+      "dotPath": "v1.images.generations",
+      "modelId": "grok-imagine-image-2.0",
+      "pricingKey": "unpriced"
     }
   ],
   "Nano Banana 2 (Gemini 3.1 Flash Image)": [
@@ -70,6 +101,17 @@
       "provider": "googleflow",
       "dotPath": "v1.images",
       "modelId": "nano-banana-2"
+    },
+    {
+      "provider": "google",
+      "dotPath": "v1.publishers.google.models.generateContent",
+      "modelId": "gemini-3.1-flash-image",
+      "pricingKey": "unpriced"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Nano-Banana-2"
     }
   ],
   "Muse Image": [

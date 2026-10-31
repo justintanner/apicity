@@ -18,10 +18,14 @@ import {
 import { createFal } from "@apicity/fal";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
 import { VeoGenerateRequestSchema } from "@apicity/kie/zod";
-import { MACHGEN_VIDEO_MODEL_TASK_TYPES } from "@apicity/machgen";
+import {
+  MACHGEN_IMAGE_MODELS,
+  MACHGEN_VIDEO_MODEL_TASK_TYPES,
+} from "@apicity/machgen";
 import {
   XAI_GROK_IMAGINE_VIDEO,
   XAI_GROK_IMAGINE_VIDEO_1_5,
+  XaiImageGenerateRequestSchema,
   XaiVideoGenerateRequestSchema,
 } from "@apicity/xai/zod";
 import { resolveEndpointFn } from "../../packages/cli/src/registry";
@@ -104,7 +108,7 @@ const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 ];
 
 const T2I_UNMAPPED = ["MAI-Image-2.6", "MAI-Image-2.6-Flash"];
-const I2I_UNMAPPED = ["MAI-Image-2.6", "Krea 3 (Ultra)", "MAI-Image-2.6-Flash"];
+const I2I_UNMAPPED = ["MAI-Image-2.6", "MAI-Image-2.6-Flash"];
 
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "MiniMax H3 (768p)", "MiniMax", 1140],
@@ -192,8 +196,10 @@ const KIE_NOT_AN_EDIT =
 const ALIBABA_VIDEO_SYNTHESIS =
   "api.v1.services.aigc.videoGeneration.videoSynthesis";
 
-/** MachGen task types per frontier type. It has no image or V2V task type. */
+/** MachGen task types per frontier type. It has no V2V task type. */
 const MACHGEN_TASK: Readonly<Record<string, string>> = {
+  t2i: "T2I",
+  i2i: "I2I",
   t2v: "T2V",
   i2v: "I2V",
   r2v: "R2V",
@@ -209,13 +215,57 @@ const MACHGEN_IDS: Readonly<Record<string, string>> = {
   "HappyHorse-1.1": "HappyHorse-1.1",
 };
 
-/** True when MachGen lists the frontier type's task for this model id. */
+/** The MachGen image ids per frontier model, on the same generate call. */
+const MACHGEN_IMAGE_IDS: Readonly<Record<string, string>> = {
+  "GPT Image 2.5 Sunburst (max)": "GPT-Image-2.5-Sunburst",
+  "GPT Image 2.5 Flare (max)": "GPT-Image-2.5-Flare",
+  "GPT Image 2 (high)": "GPT-Image-2",
+  "Nano Banana 2.1": "Nano-Banana-2.1",
+  "Nano Banana 2 (Gemini 3.1 Flash Image)": "Nano-Banana-2",
+};
+
+/**
+ * True when MachGen lists the frontier type's task for this model id. Every
+ * image model runs both T2I and I2I, and no video task.
+ */
 function machgenHas(type: string, modelId: string): boolean {
+  const task = MACHGEN_TASK[type];
+  if (task === undefined) return false;
+  if (task === "T2I" || task === "I2I") {
+    return (MACHGEN_IMAGE_MODELS as readonly string[]).includes(modelId);
+  }
   const tasks: Readonly<Record<string, readonly string[]>> =
     MACHGEN_VIDEO_MODEL_TASK_TYPES;
-  const task = MACHGEN_TASK[type];
-  return task !== undefined && (tasks[modelId] ?? []).includes(task);
+  return (tasks[modelId] ?? []).includes(task);
 }
+
+/**
+ * Image ids on shared calls whose model is a free string. Their schemas name
+ * no model, so each id is pinned here from the upstream list that names it
+ * for the call.
+ */
+const FREE_STRING_IMAGE_MODELS: ReadonlyArray<{
+  type: "t2i" | "i2i";
+  provider: string;
+  dotPath: string;
+  modelId: string;
+}> = [
+  // https://docs.x.ai/developers/models lists it at 0.04 USD/image.
+  {
+    type: "t2i",
+    provider: "xai",
+    dotPath: "v1.images.generations",
+    modelId: "grok-imagine-image-2.0",
+  },
+  // https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/start/express-mode/overview
+  // lists it among the express-mode models.
+  {
+    type: "t2i",
+    provider: "google",
+    dotPath: "v1.publishers.google.models.generateContent",
+    modelId: "gemini-3.1-flash-image",
+  },
+];
 
 function readQuoted(block: string): string[] {
   return [...block.matchAll(/"([^"]+)"/g)].map((match) => match[1]);
@@ -359,6 +409,27 @@ function falLeafEditsVideo(
   );
 }
 
+/**
+ * A fal leaf documents text-to-image when the request schema `apicity
+ * describe` prints takes a prompt and an image count or size, and no media
+ * input: GPT Image 2's `openai/gpt-image-2` names no type in its path.
+ */
+function falLeafMakesImageFromText(
+  fal: Record<string, unknown>,
+  dotPath: string
+): boolean {
+  const schema = resolveEndpointFn(fal, "POST", dotPath)?.schema;
+  if (schema === undefined) return false;
+  const inputs = Object.keys(
+    (zodToJsonSchema(schema).properties ?? {}) as JsonSchema
+  );
+  return (
+    inputs.includes("prompt") &&
+    inputs.some((name) => name === "num_images" || name === "image_size") &&
+    !inputs.some((name) => /_urls?$|^(image|images|video|audio)$/.test(name))
+  );
+}
+
 function liveRegistry() {
   const kieZod = readFileSync(
     path.join(repoRoot, "packages/provider/kie/src/zod.ts"),
@@ -454,7 +525,13 @@ function liveRegistry() {
       if (entry.provider === "googleflow" && entry.dotPath === "v1.images") {
         return googleflowImages.has(entry.modelId);
       }
-      return false;
+      return FREE_STRING_IMAGE_MODELS.some(
+        (pinned) =>
+          pinned.type === type &&
+          pinned.provider === entry.provider &&
+          pinned.dotPath === entry.dotPath &&
+          pinned.modelId === entry.modelId
+      );
     }
     if (type === "t2v" || type === "v2v" || type === "r2v") {
       if (entry.modelId === undefined) return false;
@@ -510,9 +587,9 @@ function liveRegistry() {
     type: string,
     entry: { provider: string; dotPath: string }
   ) =>
-    type === "v2v" &&
     entry.provider === "fal" &&
-    falLeafEditsVideo(fal, entry.dotPath);
+    ((type === "v2v" && falLeafEditsVideo(fal, entry.dotPath)) ||
+      (type === "t2i" && falLeafMakesImageFromText(fal, entry.dotPath)));
   return {
     docsRows: loadEndpointDocRows(),
     sourceHasUrl,
@@ -526,6 +603,39 @@ interface EndpointRecord {
   dotPath: string;
   modelId?: string;
   pricingKey?: string;
+}
+
+/** Each model's MachGen rows; a model with none is left out. */
+function machgenRows(
+  map: Record<string, EndpointRecord[]>
+): Record<string, EndpointRecord[]> {
+  return Object.fromEntries(
+    Object.entries(map)
+      .map(
+        ([model, list]) =>
+          [model, list.filter((entry) => entry.provider === "machgen")] as const
+      )
+      .filter(([, list]) => list.length > 0)
+  );
+}
+
+/** One MachGen generate row per model, with the id `ids` maps it to. */
+function machgenGenerate(
+  models: string[],
+  ids: Readonly<Record<string, string>>
+): Record<string, EndpointRecord[]> {
+  return Object.fromEntries(
+    models.map((model) => [
+      model,
+      [
+        {
+          provider: "machgen",
+          dotPath: "api.v0.generate",
+          modelId: ids[model],
+        },
+      ],
+    ])
+  );
 }
 
 function frontierFiles(type: string) {
@@ -853,7 +963,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(I2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(i2i.snapshot)).toEqual([]);
     expect(unmappedNames(i2i.endpointMap)).toEqual(I2I_UNMAPPED);
-    expect(mappedCount(i2i.endpointMap)).toBe(7);
+    expect(mappedCount(i2i.endpointMap)).toBe(8);
     expect(Object.keys(i2i.endpointMap)).toHaveLength(10);
   });
 
@@ -929,6 +1039,98 @@ describe("frontier image snapshots", () => {
         modelId: "gpt-image/1.5-text-to-image",
       },
     ]);
+  });
+
+  it("takes an unnamed t2i leaf only when its schema documents text to image", () => {
+    const ctx = liveRegistry();
+    expect(
+      ctx.leafDocuments("t2i", { provider: "fal", dotPath: "openai.gptImage2" })
+    ).toBe(true);
+    for (const dotPath of [
+      "openai.gptImage2.edit",
+      "krea.v3.edit",
+      "minimax.h3.textToVideo",
+    ]) {
+      expect(ctx.leafDocuments("t2i", { provider: "fal", dotPath })).toBe(
+        false
+      );
+    }
+    expect(
+      resolutionProblems(
+        "t2i",
+        { Demo: [{ provider: "fal", dotPath: "openai.gptImage2.edit" }] },
+        ctx
+      )
+    ).toEqual(['"Demo"[0] fal openai.gptImage2.edit is not a t2i endpoint']);
+    expect(
+      ctx.leafDocuments("i2i", { provider: "fal", dotPath: "openai.gptImage2" })
+    ).toBe(false);
+  });
+
+  it("takes a free-string image id only from the pinned upstream list", () => {
+    const ctx = liveRegistry();
+    const xai = { provider: "xai", dotPath: "v1.images.generations" };
+    const google = {
+      provider: "google",
+      dotPath: "v1.publishers.google.models.generateContent",
+    };
+    const refused = (type: string, entry: EndpointRecord) =>
+      resolutionProblems(type, { Demo: [entry] }, ctx).some((problem) =>
+        problem.includes(`${type} model registry`)
+      );
+    expect(refused("t2i", { ...xai, modelId: "grok-imagine-image-2.0" })).toBe(
+      false
+    );
+    expect(refused("t2i", { ...xai, modelId: "grok-imagine-image" })).toBe(
+      true
+    );
+    expect(refused("i2i", { ...xai, modelId: "grok-imagine-image-2.0" })).toBe(
+      true
+    );
+    expect(
+      refused("t2i", { ...google, modelId: "gemini-3.1-flash-image" })
+    ).toBe(false);
+    expect(refused("t2i", { ...google, modelId: "gemini-3-pro-image" })).toBe(
+      true
+    );
+    // The schema takes any model string, so the pin is the only list.
+    expect(
+      XaiImageGenerateRequestSchema.safeParse({
+        prompt: "frontier",
+        model: "grok-imagine-image-2.0",
+      }).success
+    ).toBe(true);
+
+    // Neither table has a rate for these ids, so both rows are unpriced.
+    expect(t2i.endpointMap["Grok Imagine Image 2.0"]).toContainEqual({
+      ...xai,
+      modelId: "grok-imagine-image-2.0",
+      pricingKey: "unpriced",
+    });
+    expect(
+      t2i.endpointMap["Nano Banana 2 (Gemini 3.1 Flash Image)"]
+    ).toContainEqual({
+      ...google,
+      modelId: "gemini-3.1-flash-image",
+      pricingKey: "unpriced",
+    });
+  });
+
+  it("lists MachGen through its generate call for t2i and i2i", () => {
+    expect(machgenRows(t2i.endpointMap)).toEqual(
+      machgenGenerate(Object.keys(MACHGEN_IMAGE_IDS), MACHGEN_IMAGE_IDS)
+    );
+    expect(machgenRows(i2i.endpointMap)).toEqual(
+      machgenGenerate(
+        [
+          "GPT Image 2.5 Sunburst (max)",
+          "GPT Image 2.5 Flare (max)",
+          "Nano Banana 2.1",
+          "GPT Image 2 (high)",
+        ],
+        MACHGEN_IMAGE_IDS
+      )
+    );
   });
 });
 
@@ -1252,31 +1454,7 @@ describe("frontier video snapshots", () => {
   });
 
   it("lists MachGen through its generate call for t2v, i2v and r2v", () => {
-    const machgenRows = (map: Record<string, EndpointRecord[]>) =>
-      Object.fromEntries(
-        Object.entries(map)
-          .map(
-            ([model, list]) =>
-              [
-                model,
-                list.filter((entry) => entry.provider === "machgen"),
-              ] as const
-          )
-          .filter(([, list]) => list.length > 0)
-      );
-    const expected = (models: string[]) =>
-      Object.fromEntries(
-        models.map((model) => [
-          model,
-          [
-            {
-              provider: "machgen",
-              dotPath: "api.v0.generate",
-              modelId: MACHGEN_IDS[model],
-            },
-          ],
-        ])
-      );
+    const expected = (models: string[]) => machgenGenerate(models, MACHGEN_IDS);
     expect(machgenRows(t2v.endpointMap)).toEqual(
       expected([
         "Wan 3.0",
@@ -1297,9 +1475,7 @@ describe("frontier video snapshots", () => {
         "HappyHorse-1.1",
       ])
     );
-    for (const type of ["t2i", "i2i", "v2v"]) {
-      expect(machgenRows(frontierFiles(type).endpointMap), type).toEqual({});
-    }
+    expect(machgenRows(v2v.endpointMap)).toEqual({});
   });
 
   it("refuses a MachGen id on a type MachGen does not run it for", () => {
@@ -1322,6 +1498,10 @@ describe("frontier video snapshots", () => {
     expect(refused("t2v", "Vidu-Q4-Preview")).toBe(true);
     expect(refused("v2v", "Seedance-2.5")).toBe(true);
     expect(refused("t2i", "MiniMax-H3")).toBe(true);
+    expect(refused("t2i", "GPT-Image-2")).toBe(false);
+    expect(refused("i2i", "Nano-Banana-2")).toBe(false);
+    expect(refused("i2v", "GPT-Image-2")).toBe(true);
+    expect(refused("v2v", "Nano-Banana-2.1")).toBe(true);
   });
 
   it("lists the same model's endpoints across t2v, i2v and r2v", () => {
@@ -1652,8 +1832,9 @@ describe("frontier prices", () => {
         list.forEach((entry, index) => {
           const where = `${type} ${model}[${index}] ${entry.provider}`;
           const table = tables[entry.provider];
+          // A shared call prices by its modelId once the table has a rate,
+          // so an "unpriced" row has to drop its pricingKey when one lands.
           if (
-            (entry.provider === "kie" || entry.provider === "machgen") &&
             entry.modelId !== undefined &&
             table?.[entry.modelId] !== undefined
           ) {

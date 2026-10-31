@@ -98,6 +98,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-5-sunburst-text-to-image",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.5-Sunburst",
+          },
         ],
       },
       {
@@ -116,6 +121,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-5-flare-text-to-image",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.5-Flare",
+          },
         ],
       },
       {
@@ -125,9 +135,19 @@ export const FRONTIER = {
         elo: 1186,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "openai.gptImage2",
+            pricingKey: "openai/gpt-image-2",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-text-to-image",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2",
           },
         ],
       },
@@ -146,6 +166,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "nano-banana-2-1",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Nano-Banana-2.1",
           },
         ],
       },
@@ -172,6 +197,12 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "grok-imagine-image-2-0/text-to-image",
           },
+          {
+            provider: "xai",
+            dotPath: "v1.images.generations",
+            modelId: "grok-imagine-image-2.0",
+            pricingKey: "unpriced",
+          },
         ],
       },
       {
@@ -194,6 +225,17 @@ export const FRONTIER = {
             provider: "googleflow",
             dotPath: "v1.images",
             modelId: "nano-banana-2",
+          },
+          {
+            provider: "google",
+            dotPath: "v1.publishers.google.models.generateContent",
+            modelId: "gemini-3.1-flash-image",
+            pricingKey: "unpriced",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Nano-Banana-2",
           },
         ],
       },
@@ -255,6 +297,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-5-sunburst-image-to-image",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.5-Sunburst",
+          },
         ],
       },
       {
@@ -272,6 +319,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-5-flare-image-to-image",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.5-Flare",
           },
         ],
       },
@@ -298,6 +350,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "nano-banana-2-1",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Nano-Banana-2.1",
+          },
         ],
       },
       {
@@ -305,7 +362,13 @@ export const FRONTIER = {
         model: "Krea 3 (Ultra)",
         creator: "Krea",
         elo: 1152,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "krea.v3.edit",
+            pricingKey: "krea/v3/edit",
+          },
+        ],
       },
       {
         rank: 6,
@@ -321,9 +384,19 @@ export const FRONTIER = {
         elo: 1137,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "openai.gptImage2.edit",
+            pricingKey: "openai/gpt-image-2/edit",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-image-to-image",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2",
           },
         ],
       },
@@ -936,6 +1009,16 @@ export const FRONTIER = {
         creator: "KlingAI",
         elo: 1000,
         endpoints: [
+          {
+            provider: "fal",
+            dotPath: "klingVideo.o3.pro.videoToVideo.edit",
+            pricingKey: "fal-ai/kling-video/o3/pro/video-to-video/edit",
+          },
+          {
+            provider: "fal",
+            dotPath: "klingVideo.o3.pro.videoToVideo.reference",
+            pricingKey: "fal-ai/kling-video/o3/pro/video-to-video/reference",
+          },
           {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",

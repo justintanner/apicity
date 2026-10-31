@@ -299,6 +299,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `frontier()` lists the endpoints shipped since the 2026-10-22 capture.
+  `i2i` maps Krea 3 (Ultra) to fal `krea.v3.edit`, so 8 of its 10 models are
+  mapped (was 7). GPT Image 2 (high) adds fal `openai.gptImage2` on `t2i` and
+  `openai.gptImage2.edit` on `i2i`, and Kling 3.0 Omni 1080p (Pro) on `v2v`
+  adds fal `klingVideo.o3.pro.videoToVideo.edit` and
+  `klingVideo.o3.pro.videoToVideo.reference`. MachGen `api.v0.generate` joins
+  the GPT Image 2.5 Sunburst, GPT Image 2.5 Flare, GPT Image 2 and Nano Banana
+  2.1 rows of both image types and the Nano Banana 2 row of `t2i`. `t2i` also
+  lists xAI `v1.images.generations` (`grok-imagine-image-2.0`) and Google
+  `v1.publishers.google.models.generateContent` (`gemini-3.1-flash-image`),
+  both with pricingKey `"unpriced"` until the bundled tables have a rate
+  (ac-0hjfmt).
 - `frontier("i2v")` names the model on the xAI Grok Imagine Video 1.5 row:
   it is the shared `v1.videos.generations` call with `modelId`
   `grok-imagine-video-1.5`, as on `r2v`, instead of the

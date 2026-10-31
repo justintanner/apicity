@@ -49,6 +49,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.imageToVideo": {
+    "source": "fal/alibaba-happy-horse-image-to-video",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "The cat slowly blinks.",
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.happyHorse.textToVideo": {
     "source": "fal/alibaba-happy-horse-text-to-video",
     "payload": {

@@ -287,7 +287,6 @@ describe("xai Grok Imagine billing", () => {
         prompt: "A paper boat drifting across a calm pond",
         model: "grok-imagine-video-1.5",
         duration: 1,
-        // @ts-expect-error docs.x.ai lists 1080p; the schema adds it in ac-nw0cw3.
         resolution: "1080p",
       };
       const result = await billVideo(req);
@@ -304,7 +303,6 @@ describe("xai Grok Imagine billing", () => {
         prompt: "A paper boat drifting across a calm pond",
         model: "grok-imagine-video-1.5-lite",
         duration: 1,
-        // @ts-expect-error docs.x.ai lists 1080p; the schema adds it in ac-nw0cw3.
         resolution: "1080p",
       };
       const result = await billVideo(req);

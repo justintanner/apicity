@@ -308,7 +308,16 @@ const XaiVideoAspectRatioSchema = z.enum([
   "2:3",
 ]);
 
-const XaiVideoResolutionSchema = z.enum(["480p", "720p"]);
+// xAI's request parser takes 480p, 720p and 1080p (free 422 probe,
+// 2026-10-31). 1080p is for grok-imagine-video-1.5 (text and image to video)
+// and 1.5-lite; grok-imagine-video and reference-to-video go up to 720p
+// (docs.x.ai/developers/model-capabilities/video/generation). The server
+// applies the per-model limits.
+const XaiVideoResolutionSchema = z
+  .enum(["480p", "720p", "1080p"])
+  .describe(
+    "480p (the default), 720p or 1080p. 1080p: grok-imagine-video-1.5 text and image to video, and grok-imagine-video-1.5-lite; grok-imagine-video and reference-to-video go up to 720p."
+  );
 
 // Keep finite literal unions so exported request types and request schemas
 // show the supported second values, not an unbounded number.

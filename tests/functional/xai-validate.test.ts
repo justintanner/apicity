@@ -191,10 +191,23 @@ describe("xAI Zod schema validation", () => {
       expect(result.error?.issues.length).toBeGreaterThan(0);
     });
 
+    // xAI's parser lists 480p, 720p and 1080p (free 422 probe, 2026-10-31).
+    it.each(["480p", "720p", "1080p"])(
+      "accepts resolution %s",
+      (resolution) => {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "test",
+          model: "grok-imagine-video-1.5",
+          resolution,
+        });
+        expect(result.success).toBe(true);
+      }
+    );
+
     it("rejects invalid resolution", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "test",
-        resolution: "1080p",
+        resolution: "4k",
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);

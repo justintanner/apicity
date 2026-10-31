@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `v1.videos.generations` (and the 1.5 `imageToVideo` leaf) take
+  `resolution: "1080p"`. xAI documents it for grok-imagine-video-1.5 text
+  and image to video and for 1.5-lite, and a free 422 probe on 2026-10-31
+  had the request parser list exactly `480p`, `720p` and `1080p`. The
+  server applies the per-model limits: grok-imagine-video and
+  reference-to-video go up to 720p (ac-nw0cw3).
+
 - `v1.images.generations` and `v1.images.edits` take
   grok-imagine-image-2.0's request fields:
   - `quality` (`low`, `medium` or `auto`, 2.0 only);

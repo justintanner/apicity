@@ -70,7 +70,7 @@ describe("apicity frontier", () => {
     const t2i = envelope.data.find((row) => row.type === "t2i");
     expect(t2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "7/10", captured: "2026-10-22" });
+    expect(i2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "9/10", captured: "2026-10-22" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
@@ -173,6 +173,10 @@ describe("apicity frontier", () => {
     expect(table).toContain("gpt-image-2-5-sunburst-text-to-image");
     expect(table).toContain("nano-banana-2");
     expect(table).toContain("v1.images");
+    expect(table).toContain("openai.gptImage2");
+    expect(table).toContain("grok-imagine-image-2.0");
+    expect(table).toContain("gemini-3.1-flash-image");
+    expect(table).toContain("GPT-Image-2.5-Sunburst");
     expect(table).toContain(
       "not yet in apicity: MAI-Image-2.6, MAI-Image-2.6-Flash"
     );
@@ -192,10 +196,12 @@ describe("apicity frontier", () => {
     expect(table).toContain("bytedance.seedream.v5.pro.edit");
     expect(table).toContain("meta.museImage.edit");
     expect(table).toContain("microsoft.maiImage2p5Pro.edit");
+    expect(table).toContain("openai.gptImage2.edit");
     expect(table).not.toContain("kie");
     expect(table).toContain("Krea 3 (Ultra)");
+    expect(table).toContain("krea.v3.edit");
     expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.6, Krea 3 (Ultra), MAI-Image-2.6-Flash"
+      "not yet in apicity: MAI-Image-2.6, MAI-Image-2.6-Flash"
     );
   });
 
@@ -228,6 +234,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("wan.v2p7.editVideo");
     expect(table).toContain("wan2.7-videoedit");
     expect(table).toContain("kling-3.0-omni/transformation");
+    expect(table).toContain("klingVideo.o3.pro.videoToVideo.reference");
     expect(table).toContain(
       "not yet in apicity: Wan 3.0, MiniMax H3 (768p), Dreamina Seedance 2.0, Aleph 2.0"
     );
@@ -269,10 +276,10 @@ describe("apicity frontier", () => {
     expect(table.out.join("\n")).not.toContain("not yet in apicity");
   });
 
-  it("filters the video types to MachGen's generate rows", async () => {
+  it("filters the image and video types to MachGen's generate rows", async () => {
     const env = { MACHGEN_API_KEY: "present" };
     const counts: Record<string, number> = {};
-    for (const type of ["t2v", "i2v", "r2v"]) {
+    for (const type of ["t2i", "i2i", "t2v", "i2v", "r2v"]) {
       const { writer, out } = capture();
       await expect(
         runMain(["frontier", type, "--provider", "machgen", "--json"], writer, {
@@ -290,7 +297,7 @@ describe("apicity frontier", () => {
       ).toBe(true);
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2v: 4, i2v: 6, r2v: 5 });
+    expect(counts).toEqual({ t2i: 5, i2i: 4, t2v: 4, i2v: 6, r2v: 5 });
 
     const { writer, err } = capture();
     await expect(

@@ -53,6 +53,16 @@
   "Aleph 2.0": [],
   "Kling 3.0 Omni 1080p (Pro)": [
     {
+      "provider": "fal",
+      "dotPath": "klingVideo.o3.pro.videoToVideo.edit",
+      "pricingKey": "fal-ai/kling-video/o3/pro/video-to-video/edit"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "klingVideo.o3.pro.videoToVideo.reference",
+      "pricingKey": "fal-ai/kling-video/o3/pro/video-to-video/reference"
+    },
+    {
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "kling-3.0-omni/transformation"

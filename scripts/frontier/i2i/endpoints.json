@@ -9,6 +9,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-5-sunburst-image-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2.5-Sunburst"
     }
   ],
   "GPT Image 2.5 Flare (max)": [
@@ -21,6 +26,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-5-flare-image-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2.5-Flare"
     }
   ],
   "MAI-Image-2.6": [],
@@ -34,15 +44,36 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "nano-banana-2-1"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Nano-Banana-2.1"
     }
   ],
-  "Krea 3 (Ultra)": [],
+  "Krea 3 (Ultra)": [
+    {
+      "provider": "fal",
+      "dotPath": "krea.v3.edit",
+      "pricingKey": "krea/v3/edit"
+    }
+  ],
   "MAI-Image-2.6-Flash": [],
   "GPT Image 2 (high)": [
+    {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2.edit",
+      "pricingKey": "openai/gpt-image-2/edit"
+    },
     {
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "gpt-image-2-image-to-image"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2"
     }
   ],
   "Seedream 5.0 Pro": [

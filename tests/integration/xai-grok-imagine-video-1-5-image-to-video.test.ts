@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createXai, XaiError } from "@apicity/xai";
+import {
+  createXai,
+  XaiError,
+  type XaiVideoGenerateRequest,
+} from "@apicity/xai";
 
 import { TEST_PAYGATE_SECRET, mintXaiOtp } from "../harness";
 
@@ -357,24 +361,96 @@ describe("xai video generations default model", () => {
       },
     },
     {
-      label: "eight raw reference images",
+      label: "fifteen raw reference images",
       request: {
         prompt: "A singer walks onto a stage",
+        reference_images: Array.from({ length: 15 }, (_, index) => ({
+          url: `https://example.com/reference-${index}.png`,
+        })),
+      },
+    },
+    {
+      label: "fifteen reference image file IDs",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_image_file_ids: Array.from(
+          { length: 15 },
+          (_, index) => `file_reference_${index}`
+        ),
+      },
+    },
+    {
+      label: "eight reference images on grok-imagine-video",
+      request: {
+        prompt: "A singer walks onto a stage",
+        model: "grok-imagine-video",
         reference_images: Array.from({ length: 8 }, (_, index) => ({
           url: `https://example.com/reference-${index}.png`,
         })),
       },
     },
     {
-      label: "eight reference image file IDs",
+      label: "five keyframes",
       request: {
-        prompt: "A singer walks onto a stage",
-        reference_image_file_ids: Array.from(
-          { length: 8 },
-          (_, index) => `file_reference_${index}`
-        ),
+        keyframes: [1, 2, 3, 4, 5].map((timestamp_s) => ({
+          image: { url: `https://example.com/key-${timestamp_s}.png` },
+          timestamp_s,
+        })),
       },
     },
+    {
+      label: "a keyframe at 0 seconds",
+      request: {
+        keyframes: [
+          { image: { url: "https://example.com/key.png" }, timestamp_s: 0 },
+        ],
+      },
+    },
+    {
+      label: "a keyframe at the end of a 4-second clip",
+      request: {
+        duration: 4 as const,
+        keyframes: [
+          { image: { url: "https://example.com/key.png" }, timestamp_s: 4 },
+        ],
+      },
+    },
+    {
+      label: "two keyframes in one 1/3-second slot",
+      request: {
+        keyframes: [
+          { image: { url: "https://example.com/a.png" }, timestamp_s: 2 },
+          { image: { url: "https://example.com/b.png" }, timestamp_s: 2.1 },
+        ],
+      },
+    },
+    {
+      label: "a last frame on grok-imagine-video",
+      request: {
+        model: "grok-imagine-video",
+        last_frame: { url: "https://example.com/last.png" },
+      },
+    },
+    {
+      label: "keyframes on 1.5-lite",
+      request: {
+        model: "grok-imagine-video-1.5-lite",
+        keyframes: [
+          { image: { url: "https://example.com/key.png" }, timestamp_s: 2 },
+        ],
+      },
+    },
+    {
+      label: "reference images without a prompt",
+      request: {
+        reference_images: [{ url: "https://example.com/ref.png" }],
+      },
+    },
+    {
+      label: "voices without a prompt",
+      request: { reference_audios: [{ voice_id: "eve" }] },
+    },
+    { label: "an empty request", request: {} },
     {
       label: "legacy duration",
       request: {
@@ -428,7 +504,9 @@ describe("xai video generations default model", () => {
 
 // REQ-001/REQ-006/REQ-010 pre-transport guard call path: the generations leaf
 // throws XaiError(400) before any billed request for incompatible modes or
-// invalid reference inputs.
+// invalid reference inputs. A source video excludes every other mode, and
+// grok-imagine-video refuses an image beside references; the 1.5 family
+// pins that image as the first frame.
 describe("xai video generations pre-transport mode guard", () => {
   it("rejects a mixed-mode request without consuming the queued fetch", async () => {
     const { calls, fetch } = createQueuedFetch([
@@ -437,6 +515,7 @@ describe("xai video generations pre-transport mode guard", () => {
     const provider = createProvider(fetch);
     const req = {
       prompt: "A camera pulls back through a neon city",
+      model: "grok-imagine-video",
       image: { url: "https://example.com/still.png" },
       reference_images: [{ url: "https://example.com/ref.png" }],
     };
@@ -487,29 +566,78 @@ describe("xai video generations pre-transport mode guard", () => {
       },
     ];
 
-    for (const referenceMode of referenceModes) {
-      for (const sourceMode of sourceModes) {
-        const { calls, fetch } = createQueuedFetch([
-          { request_id: "vid_req_never_sent" },
-        ]);
-        const provider = createProvider(fetch);
-        const request = {
-          prompt: "A camera pulls back through a neon city",
-          ...referenceMode.fields,
-          ...sourceMode.fields,
-        };
+    // grok-imagine-video refuses every pair; elsewhere only a source video.
+    for (const model of [
+      "grok-imagine-video",
+      "grok-imagine-video-1.5",
+      undefined,
+    ]) {
+      for (const referenceMode of referenceModes) {
+        for (const sourceMode of sourceModes) {
+          if (
+            model !== "grok-imagine-video" &&
+            !sourceMode.label.startsWith("video")
+          )
+            continue;
+          const { calls, fetch } = createQueuedFetch([
+            { request_id: "vid_req_never_sent" },
+          ]);
+          const provider = createProvider(fetch);
+          const request = {
+            prompt: "A camera pulls back through a neon city",
+            ...(model === undefined ? {} : { model }),
+            ...referenceMode.fields,
+            ...sourceMode.fields,
+          };
 
-        const error = await provider.post.v1.videos
-          .generations(request, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, request))
-          .catch((caught: unknown) => caught);
+          const error = await provider.post.v1.videos
+            .generations(
+              request,
+              mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, request)
+            )
+            .catch((caught: unknown) => caught);
 
-        expect(
-          error,
-          `${referenceMode.label} + ${sourceMode.label}`
-        ).toBeInstanceOf(XaiError);
-        expect((error as XaiError).status).toBe(400);
-        expect(calls).toHaveLength(0);
+          const label = `${model ?? "no model"}: ${referenceMode.label} + ${sourceMode.label}`;
+          expect(error, label).toBeInstanceOf(XaiError);
+          expect((error as XaiError).status, label).toBe(400);
+          expect((error as XaiError).message, label).toContain(
+            "Only one video mode can be active per request"
+          );
+          expect(calls, label).toHaveLength(0);
+        }
       }
+    }
+  });
+
+  it("rejects a source video beside a pinned frame on the 1.5 family", async () => {
+    for (const pin of [
+      { last_frame: { url: "https://example.com/last.png" } },
+      { last_frame_file_id: "file_last" },
+      {
+        keyframes: [
+          { image: { url: "https://example.com/key.png" }, timestamp_s: 2 },
+        ],
+      },
+    ]) {
+      const { calls, fetch } = createQueuedFetch([
+        { request_id: "vid_req_never_sent" },
+      ]);
+      const provider = createProvider(fetch);
+      const request = {
+        model: "grok-imagine-video-1.5",
+        video_file_id: "file_video",
+        ...pin,
+      };
+
+      const error = await provider.post.v1.videos
+        .generations(request, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, request))
+        .catch((caught: unknown) => caught);
+
+      expect(error).toBeInstanceOf(XaiError);
+      expect((error as XaiError).message).toContain(
+        "Only one video mode can be active per request"
+      );
+      expect(calls).toHaveLength(0);
     }
   });
 
@@ -559,13 +687,14 @@ describe("xai video generations pre-transport mode guard", () => {
     expect(calls).toHaveLength(0);
   });
 
-  it("rejects audio plus image-to-video before fetch", async () => {
+  it("rejects audio plus image-to-video on grok-imagine-video before fetch", async () => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_never_sent" },
     ]);
     const provider = createProvider(fetch);
     const req = {
       prompt: "A camera pulls back through a neon city",
+      model: "grok-imagine-video",
       reference_audios: [{ voice_id: "eve" }],
       image: { url: "https://example.com/still.png" },
     };
@@ -580,6 +709,146 @@ describe("xai video generations pre-transport mode guard", () => {
       "Only one video mode can be active"
     );
     expect(calls).toHaveLength(0);
+  });
+});
+
+// grok-imagine-video-1.5 pins "`image` as the first frame alongside
+// references, `last_frame`, and up to **4** `keyframes`", and the prompt is
+// optional whenever a frame is pinned (reference-to-video doc, read
+// 2026-11-01).
+describe("xai video generations pinned frames", () => {
+  const FIRST = { url: "https://example.com/first.png" };
+  const LAST = { url: "https://example.com/last.png" };
+  const REFERENCE = { url: "https://example.com/reference.png" };
+  const key = (timestamp_s: number) => ({
+    image: { url: `https://example.com/key-${timestamp_s}.png` },
+    timestamp_s,
+  });
+  const SHAPES: { label: string; request: XaiVideoGenerateRequest }[] = [
+    {
+      label: "image + last_frame",
+      request: { image: FIRST, last_frame: LAST },
+    },
+    { label: "last_frame alone", request: { last_frame: LAST } },
+    {
+      label: "last_frame_file_id alone",
+      request: { last_frame_file_id: "file_last" },
+    },
+    {
+      label: "last_frame + reference_images",
+      request: { last_frame: LAST, reference_images: [REFERENCE] },
+    },
+    {
+      label: "image + reference_images",
+      request: { image: FIRST, reference_images: [REFERENCE] },
+    },
+    {
+      label: "image_file_id + reference_image_file_ids",
+      request: {
+        image_file_id: "file_first",
+        reference_image_file_ids: ["file_reference"],
+      },
+    },
+    {
+      label: "image + reference_audios",
+      request: { image: FIRST, reference_audios: [{ voice_id: "eve" }] },
+    },
+    { label: "one keyframe", request: { keyframes: [key(2)] } },
+    { label: "four keyframes", request: { keyframes: [1, 2, 3, 4].map(key) } },
+    {
+      label: "every pin with references and voices",
+      request: {
+        image: FIRST,
+        keyframes: [key(2), key(4)],
+        last_frame: LAST,
+        reference_images: [REFERENCE],
+        reference_audios: [{ voice_id: "eve" }],
+      },
+    },
+  ];
+
+  it.each(SHAPES)("parses and sends $label once", async ({ request }) => {
+    for (const model of [
+      undefined,
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+      "grok-imagine-video-1.5-2026-05-30",
+    ]) {
+      const { calls, fetch } = createQueuedFetch([{ request_id: "vid_pin" }]);
+      const provider = createProvider(fetch);
+      const req = model === undefined ? request : { ...request, model };
+
+      expect(
+        provider.post.v1.videos.generations.schema.safeParse(req).success,
+        model
+      ).toBe(true);
+      await provider.post.v1.videos.generations(
+        req,
+        mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+      );
+
+      expect(calls, model).toHaveLength(1);
+      const body = calls[0]?.body as Record<string, unknown>;
+      // Pinned frames and references default to the canonical 1.5 model.
+      expect(body.model, model).toBe(model ?? "grok-imagine-video-1.5");
+      for (const alias of [
+        "image_file_id",
+        "last_frame_file_id",
+        "reference_image_file_ids",
+      ]) {
+        expect(body, model).not.toHaveProperty(alias);
+      }
+    }
+  });
+
+  it("sends last_frame_file_id as last_frame without mutating the caller", async () => {
+    const { calls, fetch } = createQueuedFetch([{ request_id: "vid_last" }]);
+    const provider = createProvider(fetch);
+    const req = { last_frame_file_id: "file_last" };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls[0]?.body).toEqual({
+      last_frame: { file_id: "file_last" },
+      model: "grok-imagine-video-1.5",
+    });
+    expect(req).toEqual({ last_frame_file_id: "file_last" });
+  });
+
+  it("lets last_frame win over last_frame_file_id", async () => {
+    const { calls, fetch } = createQueuedFetch([{ request_id: "vid_both" }]);
+    const provider = createProvider(fetch);
+    const req = {
+      model: "grok-imagine-video-1.5",
+      last_frame: LAST,
+      last_frame_file_id: "file_last",
+    };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls[0]?.body).toEqual({
+      model: "grok-imagine-video-1.5",
+      last_frame: LAST,
+    });
+  });
+
+  it("keeps the preview default for plain image-to-video", async () => {
+    const { calls, fetch } = createQueuedFetch([{ request_id: "vid_i2v" }]);
+    const provider = createProvider(fetch);
+    const req = { image: FIRST };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls[0]?.body).toEqual({ image: FIRST, model: MODEL });
   });
 });
 
@@ -759,6 +1028,42 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
           public_url: true,
         },
       },
+    });
+  });
+
+  // The image is always pinned, so the prompt is optional.
+  it("submits without a prompt and sends no prompt key", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_no_prompt" },
+      {
+        status: "done",
+        progress: 100,
+        video: {
+          url: "https://vidgen.x.ai/still.mp4",
+          duration: 8,
+          respect_moderation: true,
+        },
+      },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      image: "https://example.com/still.png",
+      pollIntervalMs: 0,
+      maxPolls: 1,
+    };
+
+    expect(
+      provider.post.v1.videos.generations.imageToVideo.schema.safeParse(req)
+        .success
+    ).toBe(true);
+    await provider.post.v1.videos.generations.imageToVideo(
+      req,
+      mintXaiOtp(DOT_PATH, req)
+    );
+
+    expect(calls[0]?.body).toEqual({
+      model: MODEL,
+      image: { url: req.image },
     });
   });
 

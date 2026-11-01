@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `v1.videos.generations` takes grok-imagine-video-1.5's pinned frames:
+  `last_frame` (a URL, data URI or `{ file_id }`), its
+  `last_frame_file_id` alias (sent as `last_frame: { file_id }`), and up to
+  4 `keyframes` of `{ image, timestamp_s }` (type `XaiVideoKeyframe`). Each
+  `timestamp_s` must be greater than 0 and less than `duration` (8 when
+  omitted), and two keyframes in the same 1/3-second slot are refused.
+  Reference images go up to 14 per request on the 1.5 family. xAI's
+  reference-to-video doc (read 2026-11-01) documents all of it. The schema
+  and the pre-fetch guard check every rule through the same helper
+  (ac-dlb6li).
+
 - `v1.videos.generations` (and the 1.5 `imageToVideo` leaf) take
   `resolution: "1080p"`. xAI documents it for grok-imagine-video-1.5 text
   and image to video and for 1.5-lite, and a free 422 probe on 2026-10-31
@@ -52,6 +63,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `v1.videos.generations` follows xAI's current reference-to-video rules.
+  On the grok-imagine-video-1.5 family and with no model, `image` or
+  `image_file_id` beside references, voices, `last_frame` or `keyframes` is
+  the pinned first frame, where it used to be refused as a second mode.
+  grok-imagine-video and other named models outside the 1.5 family still
+  refuse an image beside references, and refuse `last_frame`,
+  `last_frame_file_id` and `keyframes` with "<field> requires the
+  grok-imagine-video-1.5 model family". `video` or `video_file_id` still
+  excludes every other mode on every model (ac-dlb6li).
+- `prompt` is optional on `v1.videos.generations` whenever a frame is
+  pinned (`image`, `image_file_id`, `last_frame`, `last_frame_file_id` or
+  `keyframes`), and always on the `imageToVideo` leaf, which then sends no
+  `prompt` key. The request types widen to `prompt?: string`; the schema
+  and the pre-fetch guard still require a prompt for text-to-video and
+  reference-only requests (ac-dlb6li).
+- The 7-reference-image cap and the 10-second reference duration cap now
+  apply to the grok-imagine-video family, the bare id and its dated
+  snapshots (`isXaiGrokImagineVideoLegacyModel`), instead of the bare id
+  only. A model-less request with references, `last_frame` or `keyframes`
+  defaults to grok-imagine-video-1.5; other model-less requests keep the
+  -preview default (ac-dlb6li).
 - **Breaking:** the six paid image and video rows (`v1.images.generations`,
   `v1.images.edits`, `v1.videos.generations`,
   `v1.videos.generations.imageToVideo`, `v1.videos.edits` and

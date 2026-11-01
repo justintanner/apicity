@@ -348,12 +348,17 @@ describe("Zod schema conversion", () => {
     const properties = propertiesOf(json);
     expect(properties.reference_images).toMatchObject({
       type: "array",
-      maxItems: 7,
+      maxItems: 14,
     });
     expect(properties.reference_audios).toMatchObject({
       type: "array",
       maxItems: 3,
     });
+    expect(properties.keyframes).toMatchObject({
+      type: "array",
+      maxItems: 4,
+    });
+    expect(properties.last_frame).toBeDefined();
     const audioItems = properties.reference_audios.items as JsonSchema;
     expect(propertiesOf(audioItems)).toMatchObject({
       voice_id: { type: "string", minLength: 1 },

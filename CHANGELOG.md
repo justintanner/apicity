@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/xai` `v1.videos.generations` follows xAI's current reference-to-video doc (read 2026-11-01) on grok-imagine-video-1.5. It takes `last_frame`, its `last_frame_file_id` alias and up to 4 `keyframes`, accepts `image` beside references as the pinned first frame, allows 14 reference images (7 stay on the grok-imagine-video family), and makes `prompt` optional whenever a frame is pinned, on the `imageToVideo` leaf too. grok-imagine-video and other models outside the 1.5 family still refuse an image beside references and refuse the new fields, and a source video still excludes every other mode. `@apicity/cost` prices each pinned frame as one input image, 0.01 USD on the 1.5 models, which xAI's cookbook bills corroborate. Zero spend: no probe (ac-dlb6li).
+
 - `@apicity/xai` `v1.videos.generations` refuses `reference_images` and `reference_image_file_ids` on `grok-imagine-video-1.5-lite` and its snapshots, in the schema and before fetch. The lite model page lists text and image to video only, the guide gives lite 1080p for those two modes only, and fal exposes lite as text and image to video only; a lite request that parses can bill, so no probe was sent (ac-p5g552).
 
 - `@apicity/xai` `v1.videos.generations` accepts `resolution: "1080p"`, which xAI documents for grok-imagine-video-1.5 text and image to video and for 1.5-lite. The schema listed only `480p` and `720p`, so `apicity describe` and `.schema.safeParse` refused valid 1080p requests. A free 422 probe on 2026-10-31 listed exactly `480p`, `720p` and `1080p`, and `@apicity/cost` already prices 1080p for 1.5 and lite (ac-nw0cw3).

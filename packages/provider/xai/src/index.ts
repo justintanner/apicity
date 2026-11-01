@@ -62,6 +62,7 @@ export type {
   XaiVideoExtendParsedRequest,
   XaiVideoReference,
   XaiVideoReferenceAudio,
+  XaiVideoKeyframe,
   XaiVideoReferenceInput,
   XaiVideoAsyncResponse,
   XaiVideoData,

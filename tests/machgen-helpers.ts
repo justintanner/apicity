@@ -31,7 +31,8 @@ export const MACHGEN_CASES = [
   ["wan-3-0", "Alibaba-Wan-3.0", 2, 480, true],
   ["happyhorse-1-1", "HappyHorse-1.1", 3, 720, false],
   ["grok-imagine-video-1-5", "Grok-Imagine-Video-1.5", 1, 480, false],
-  // MachGen's cheapest tier: 0.01 USD/s while the promotion lasts, 4 s minimum.
+  // MachGen's cheapest tier when recorded: 0.01 USD/s until its promotion
+  // ended on 2026-11-01T06:59Z, 4 s minimum.
   ["minimax-h3-turbo", "MiniMax-H3-Turbo", 4, 480, true],
   // Price checks, one per newly priced model: the shortest clip (2 s where the
   // model allows it) at the lowest height (operator order, 2026-10-25).
@@ -123,6 +124,9 @@ export const MACHGEN_RECORDED: ReadonlyArray<
   [4, "I2V", undefined, 0.396],
   [4, "R2V", undefined, 0.396],
   [5, "I2V", undefined, 0.095],
+  // 4 s at 480p. The 2026-10-25 receipts bill the promotional 0.01 USD/s,
+  // the pricebook's discounted_unit_price_micros until 2026-11-01T06:59Z;
+  // a 0.015 USD/s promotion (list 0.02) followed it.
   [6, "I2V", undefined, 0.04],
   [6, "I2V", { frames: "end-frame" }, 0.04],
   [6, "I2V", { frames: "lone-end-frame" }, 0.04],
@@ -326,11 +330,13 @@ export async function recordMachgen(
       estimate.usd
     );
     // Seedance 2.5 and 2.0 receipts are the 2026-10-25 bills in
-    // MACHGEN_RECORDED. Replay must not re-record them to match the
-    // 2026-10-29 forward rate.
-    const historical =
-      MACHGEN_CASES[index]![1] === "Seedance-2.5" ||
-      MACHGEN_CASES[index]![1] === "Seedance-2.0";
+    // MACHGEN_RECORDED, and MiniMax-H3-Turbo's bill its first promotion.
+    // Replay must not re-record them to match the forward rate.
+    const historical = [
+      "Seedance-2.5",
+      "Seedance-2.0",
+      "MiniMax-H3-Turbo",
+    ].includes(MACHGEN_CASES[index]![1]);
     const recorded = MACHGEN_RECORDED.find(
       ([i, recordedTask, recordedVariant]) =>
         i === index &&

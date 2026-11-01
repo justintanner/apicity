@@ -9,8 +9,10 @@ import { asNumber, asObject, hintSeconds, hintInputSeconds } from "./helpers";
 // machgen-pricebook-2026-10-25.json holds the exact micro-USD rates. Each
 // machgen replay test asserts its recorded billing receipt equals the estimate
 // from that day. Seedance 2.5 and Seedance 2.0 were re-read on 2026-10-29
-// from the public pricebook (the JSON the pricing page renders) and carry
-// that later source; the 2026-10-25 fixture stays the historical snapshot.
+// from the public pricebook (the JSON the pricing page renders), and
+// MiniMax-H3-Turbo on 2026-11-01 (machgen-turbo-pricebook-2026-11-01.json),
+// when its first promotion ended; each carries its later source. The
+// 2026-10-25 fixture stays the historical snapshot.
 const source = { url: "https://www.machgen.ai/pricing", asOf: "2026-10-25" };
 const pricebookSource = {
   url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
@@ -367,16 +369,18 @@ export const machgen: Record<string, ModelPricing> = {
     ],
   }),
   "Vidu-Q3-Pro": flat({ "540": 0.053, "720": 0.118, "1080": 0.142 }),
-  // Promotional rate until 2026-11-01T06:59Z (the pricebook's
-  // discount_ends_at); the list price is 0.02 USD/s.
+  // Promotional rate until 2027-01-01T07:59Z (the pricebook's
+  // discount_ends_at, re-read 2026-11-01); the list price is 0.02 USD/s.
+  // MachGen billed 0.01 USD/s until 2026-11-01T06:59Z.
   "MiniMax-H3-Turbo": flat(
     {
-      "no-video|480": 0.01,
-      "no-video|768": 0.01,
-      "video|480": 0.01,
-      "video|768": 0.01,
+      "no-video|480": 0.015,
+      "no-video|768": 0.015,
+      "video|480": 0.015,
+      "video|768": 0.015,
     },
-    [videoInput, height]
+    [videoInput, height],
+    { ...pricebookSource, asOf: "2026-11-01" }
   ),
   "Seedance-2.0-Fast": flat(
     {

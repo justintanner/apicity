@@ -66,13 +66,16 @@ const rows = readFileSync("scripts/endpoint-docs.tsv", "utf8")
   });
 
 // Index exact derived payloads, not just endpoint names: a recording can
-// contain both successful and failed attempts at the same endpoint.
-function recordedCarriers(): Map<string, Carrier[]> {
+// contain both successful and failed attempts at the same endpoint. Only the
+// recordings an example names are matched; matching every corpus entry
+// against every tsv row is what makes this scan slow.
+function recordedCarriers(sources: Set<string>): Map<string, Carrier[]> {
   const index = new Map<string, Carrier[]>();
   for (const path of filesUnder("tests/recordings", "recording.har")) {
     const har = JSON.parse(readFileSync(path, "utf8")) as {
       log: { _recordingName: string; entries: HarEntry[] };
     };
+    if (!sources.has(har.log._recordingName)) continue;
     const hint = path
       .split("/")[2]
       .replace(/_\d+$/, "")
@@ -96,8 +99,17 @@ function recordedCarriers(): Map<string, Carrier[]> {
 }
 
 describe("example provenance", () => {
+  // A whole-corpus scan: under a parallel full-suite replay it ran past the
+  // default 30 s, so it carries its own timeout (ac-i7tk8h).
   it("derives each recorded example from its own successful exchange", () => {
-    const index = recordedCarriers();
+    const sources = new Set(
+      examples.flatMap(({ entries }) =>
+        Object.values(entries)
+          .map(({ source }) => source)
+          .filter((source) => !source.startsWith("static:"))
+      )
+    );
+    const index = recordedCarriers(sources);
     const problems: string[] = [];
     for (const { provider, entries } of examples) {
       for (const [key, example] of Object.entries(entries)) {
@@ -132,7 +144,7 @@ describe("example provenance", () => {
       }
     }
     expect(problems, problems.join("\n")).toEqual([]);
-  });
+  }, 120_000);
 
   it("attaches every static example and validates its endpoint schema", () => {
     // Explicit map: adding a static provider without a factory must fail.

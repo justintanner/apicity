@@ -1,0 +1,125 @@
+{
+  "capturedAt": "2026-11-01",
+  "source": "MachGen's capability contract in the web app's /_next/static/chunks of https://www.machgen.ai/generate (the model registry chunk, 2jsye56xujnb_.js when read), under the keys gptimage2, gptimage25sunburst, gptimage25flare, nanobanana2 and nanobanana21. Bare identifiers such as w, P, a and _ are constants of that chunk, kept as source text; !0 and !1 are true and false.",
+  "contract": {
+    "GPT-Image-2": {
+      "key": "gptimage2",
+      "t2i": {
+        "supportsOptimizationLevel": true,
+        "optimizationLevels": ["STANDARD", "EXPRESS"],
+        "priceByOptimizationLevel": true,
+        "sizeGrid": "w",
+        "supportsSeed": false,
+        "pricing": "by_size"
+      },
+      "i2i": {
+        "supportsOptimizationLevel": true,
+        "optimizationLevels": ["STANDARD", "EXPRESS"],
+        "priceByOptimizationLevel": true,
+        "sizeGrid": "w",
+        "maxInputImages": 16,
+        "supportsSeed": false,
+        "pricing": "by_size"
+      }
+    },
+    "GPT-Image-2.5-Sunburst": {
+      "key": "gptimage25sunburst",
+      "t2i": {
+        "sizeGrid": "w",
+        "supportsSeed": false,
+        "pricing": "by_size"
+      },
+      "i2i": {
+        "sizeGrid": "w",
+        "maxInputImages": 16,
+        "supportsSeed": false,
+        "pricing": "by_size"
+      }
+    },
+    "GPT-Image-2.5-Flare": {
+      "key": "gptimage25flare",
+      "t2i": {
+        "sizeGrid": "w",
+        "supportsSeed": false,
+        "pricing": "by_size"
+      },
+      "i2i": {
+        "sizeGrid": "w",
+        "maxInputImages": 16,
+        "supportsSeed": false,
+        "pricing": "by_size"
+      }
+    },
+    "Nano-Banana-2": {
+      "key": "nanobanana2",
+      "t2i": {
+        "heights": "P",
+        "resolutionTierLabels": "_",
+        "aspectRatios": "a",
+        "supportsSeed": true,
+        "minSeed": 0,
+        "maxSeed": 2147483647,
+        "pricing": "by_height"
+      },
+      "i2i": {
+        "heights": "P",
+        "resolutionTierLabels": "_",
+        "aspectRatios": "a",
+        "maxInputImages": 14,
+        "referenceImageLimits": {
+          "objects": 10,
+          "characters": 4,
+          "styles": null
+        },
+        "supportsSeed": true,
+        "minSeed": 0,
+        "maxSeed": 2147483647,
+        "pricing": "by_height"
+      }
+    },
+    "Nano-Banana-2.1": {
+      "key": "nanobanana21",
+      "t2i": {
+        "heights": "P",
+        "resolutionTierLabels": "_",
+        "aspectRatios": "a",
+        "supportsSeed": false,
+        "pricing": "by_height"
+      },
+      "i2i": {
+        "heights": "P",
+        "resolutionTierLabels": "_",
+        "aspectRatios": "a",
+        "maxInputImages": 14,
+        "referenceImageLimits": {
+          "objects": 10,
+          "characters": 4,
+          "styles": null
+        },
+        "referenceInputLimits": {
+          "image": {
+            "formats": ["png", "jpeg", "webp", "heic", "heif"],
+            "maxBytes": 7000000
+          }
+        },
+        "supportsSeed": false,
+        "pricing": "by_height"
+      }
+    }
+  },
+  "docs": [
+    {
+      "url": "https://www.machgen.ai/docs/mcp",
+      "text": "With reference images, choose a model with an `I2I` surface in `list_models`. Its `max_input_images` is the total number of images allowed in `sources`. Models without I2I support and requests exceeding the limit are rejected."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api#reference-video-and-audio",
+      "text": "| `src_image_urls` |  9  | JPG / PNG / WebP, 50 MB |"
+    }
+  ],
+  "notes": [
+    "No t2i entry sets maxInputImages. The Playground switches a T2I prompt to I2I when an image is added, so it never sends a T2I request with source images.",
+    "The Nano Banana i2i entries also list referenceImageLimits (10 objects, 4 characters). The generate API has no field that marks an image as either, so the schema checks maxInputImages alone.",
+    "No request was sent: the caps come from the contract and the docs above, and an edit within them can bill."
+  ]
+}

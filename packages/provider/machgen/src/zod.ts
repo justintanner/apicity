@@ -486,6 +486,23 @@ export const MACHGEN_IMAGE_MODELS = [
   "Nano-Banana-2.1",
 ] as const;
 
+// The most I2I source images each image model takes: its i2i maxInputImages
+// in MachGen's capability contract, read from the
+// https://www.machgen.ai/generate bundle on 2026-11-01
+// (tests/fixtures/machgen-evidence/machgen-image-caps-2026-11-01.json).
+export const MACHGEN_I2I_MAX_IMAGES: Readonly<Record<string, number>> = {
+  "GPT-Image-2": 16,
+  "GPT-Image-2.5-Sunburst": 16,
+  "GPT-Image-2.5-Flare": 16,
+  "Nano-Banana-2": 14,
+  "Nano-Banana-2.1": 14,
+};
+
+// MachGen's REST docs cap reference images at 9
+// (https://www.machgen.ai/docs/rest_api#reference-video-and-audio). Every
+// video task keeps that ceiling; I2V and some R2V grids allow fewer.
+const VIDEO_MAX_IMAGES = 9;
+
 export const MachGenImageConfigSchema = z.object({
   height: z.number().int().positive(),
   width: z.number().int().positive().optional(),
@@ -526,7 +543,8 @@ export const MachGenGenerateRequestSchema = z
     seed: z.number().int().optional(),
     optimization_level: z.enum(["STANDARD", "FAST", "EXPRESS"]).optional(),
     adapter: z.string().optional(),
-    src_image_urls: z.array(z.string()).max(9).optional(),
+    // The image cap depends on the task and model, so the refinement checks it.
+    src_image_urls: z.array(z.string()).optional(),
     keyframe_indices: z
       .array(z.union([z.literal(0), z.literal(-1)]))
       .optional(),
@@ -585,6 +603,12 @@ export const MachGenGenerateRequestSchema = z
         !req.src_task_ids?.length
       )
         issue(["src_image_urls"], "I2I requires a source image or source task");
+      const cap = imageModel ? MACHGEN_I2I_MAX_IMAGES[req.model] : undefined;
+      if (req.task_type === "I2I" && cap !== undefined && images.length > cap)
+        issue(
+          ["src_image_urls"],
+          `${req.model} I2I accepts at most ${cap} source images; got ${images.length}`
+        );
       images.forEach((url, i) => {
         if (!isHttpUrl(url))
           issue(
@@ -596,6 +620,20 @@ export const MachGenGenerateRequestSchema = z
     }
     if (imageModel)
       issue(["task_type"], `${req.model} supports only T2I and I2I`);
+    // I2V and an R2V grid with its own image cap check a lower cap below.
+    const r2v = req.task_type === "R2V";
+    const gridImageCap = r2v
+      ? MACHGEN_VIDEO_GRIDS[req.model]?.R2V?.references?.images
+      : undefined;
+    if (
+      images.length > VIDEO_MAX_IMAGES &&
+      req.task_type !== "I2V" &&
+      gridImageCap === undefined
+    )
+      issue(
+        ["src_image_urls"],
+        `${req.task_type} accepts at most ${VIDEO_MAX_IMAGES} ${r2v ? "reference" : "source"} images; got ${images.length}`
+      );
     if (!req.video_config) {
       issue(["video_config"], "video_config is required for video tasks");
       return;

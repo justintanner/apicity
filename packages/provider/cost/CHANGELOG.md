@@ -207,6 +207,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- MachGen MiniMax H3 Turbo prices at 0.015 USD/s for T2V, I2V and R2V, at
+  480p and 768p, with or without an input video. The public pricebook was
+  re-read on 2026-11-01 after the 50% promotion (0.01 USD/s) ended at
+  06:59Z. MachGen now takes 25% off the 0.02 USD/s list rate until
+  2027-01-01T07:59Z. The model's `source` is the pricebook URL dated
+  2026-11-01, and `machgen-turbo-pricebook-2026-11-01.json` holds the four
+  rows. The recorded Turbo receipts stay the 2026-10-25 promotional bills,
+  checked against the dated discount in each snapshot (ac-lyovv1).
 - Frontier video list prices re-read 2026-10-29 from fal.ai cards and
   MachGen's public pricebook. MachGen Seedance 2.5 is now
   0.1028/0.23112/0.56862 USD/s (video input 0.061488/0.13824/0.3402) and

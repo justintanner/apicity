@@ -232,6 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `@apicity/cost` prices MachGen MiniMax H3 Turbo at 0.015 USD/s, re-read from the public pricebook on 2026-11-01: the 50% promotion (0.01 USD/s) ended at 06:59Z, and a 25% one off the 0.02 USD/s list rate runs until 2027-01-01T07:59Z. The recorded Turbo receipts stay the 2026-10-25 promotional bills, checked against the dated discount in each pricebook snapshot (ac-lyovv1).
 - The `api-key` request header no longer enters a Polly recording's match identity, like the other credential headers, in the test harness and in `@apicity/har` `pollyEntryId`. The header was already scrubbed to `***` on disk, but a recording made with the real key matched only that key, so it could not replay without it. No committed recording sent the header before `@apicity/omkar` (ac-4ev2i7).
 - **Breaking:** MachGen `reference_video_start_secs` is now a list (`number[]`) with one start second per `src_video_urls` entry, as MachGen requires. The schema typed it as a single number, which MachGen rejects with HTTP 400 "Input should be a valid list", so no request that set it could succeed (ac-ks4no2).
 - **Breaking:** KIE `Seedance25RequestSchema` and `Seedance25InputSchema`

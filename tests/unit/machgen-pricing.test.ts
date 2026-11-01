@@ -33,6 +33,45 @@ const evidence = JSON.parse(
     "utf8"
   )
 ) as { rows: EvidenceRow[] };
+interface PricebookRow {
+  model: string;
+  height: number | null;
+  has_input_video: boolean | null;
+  unit_price_micros: number;
+  discounted_unit_price_micros: number | null;
+  discount_ends_at: string | null;
+}
+const pricebook = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-pricebook-2026-10-25.json",
+    "utf8"
+  )
+) as { prices: PricebookRow[] };
+// MiniMax-H3-MultiMax, the API's MiniMax-H3-Turbo, re-read once the
+// 2026-10-25 snapshot's promotion had ended.
+const turboPricebook = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-turbo-pricebook-2026-11-01.json",
+    "utf8"
+  )
+) as { readAt: string; prices: PricebookRow[] };
+const turboRow = (
+  prices: PricebookRow[],
+  height: number | null,
+  video: boolean
+) =>
+  prices.find(
+    (r) =>
+      r.model === "MiniMax-H3-MultiMax" &&
+      r.height === height &&
+      r.has_input_video === video
+  )!;
+// Models re-read from the public pricebook after the 2026-10-25 snapshot.
+const repricedAsOf: Record<string, string> = {
+  "Seedance-2.5": "2026-10-29",
+  "Seedance-2.0": "2026-10-29",
+  "MiniMax-H3-Turbo": "2026-11-01",
+};
 
 const estimate = (
   overrides: Record<string, unknown> = {},
@@ -86,7 +125,8 @@ function shapePayload(
 describe("MachGen pricing", () => {
   it("prices every recorded request at its billing receipt", () => {
     // Seedance 2.5 and 2.0 were re-read from the public pricebook on
-    // 2026-10-29. MACHGEN_RECORDED keeps the 2026-10-25 receipt; the
+    // 2026-10-29, and MiniMax-H3-Turbo on 2026-11-01, when its first
+    // promotion ended. MACHGEN_RECORDED keeps the receipts as billed; the
     // forward estimate uses the new per-second micros.
     const refreshedUsd = (
       model: string,
@@ -97,6 +137,8 @@ describe("MachGen pricing", () => {
         const seconds = variant?.operation ? 8 : 4;
         return seconds * (video ? 0.061488 : 0.1028);
       }
+      // 4 s out, plus the 4 s read from a reference video.
+      if (model === "MiniMax-H3-Turbo") return (video ? 8 : 4) * 0.015;
       return 4 * 0.070308;
     };
     for (const [i, task, variant, usd] of MACHGEN_RECORDED) {
@@ -107,14 +149,47 @@ describe("MachGen pricing", () => {
       });
       const model = MACHGEN_CASES[i]![1];
       const label = `${MACHGEN_CASES[i]![0]} ${task} ${JSON.stringify(variant ?? {})}`;
-      const refreshed = model === "Seedance-2.5" || model === "Seedance-2.0";
-      const forward = refreshed ? refreshedUsd(model, variant) : usd;
+      const asOf = repricedAsOf[model];
+      const forward = asOf ? refreshedUsd(model, variant) : usd;
       expect(result.usd, label).toBeCloseTo(forward, 8);
       expect(result.warnings, label).toEqual([]);
-      expect(result.rateAsOf, label).toBe(
-        refreshed ? "2026-10-29" : "2026-10-25"
+      expect(result.rateAsOf, label).toBe(asOf ?? "2026-10-25");
+      if (asOf) expect(usd, label).not.toBeCloseTo(forward, 6);
+    }
+  });
+  it("checks MiniMax-H3-Turbo's receipts against its dated promotions", () => {
+    // MachGen bills MiniMax-H3-MultiMax, the API's MiniMax-H3-Turbo, at
+    // discounted_unit_price_micros until discount_ends_at. Every Turbo
+    // receipt was recorded on 2026-10-25, inside the first promotion; the
+    // forward estimate prices the one read after it ended.
+    const turbo = MACHGEN_RECORDED.filter(
+      ([i]) => MACHGEN_CASES[i]![1] === "MiniMax-H3-Turbo"
+    );
+    expect(turbo).toHaveLength(5);
+    for (const [i, task, variant, usd] of turbo) {
+      const label = `${task} ${JSON.stringify(variant ?? {})}`;
+      const height = MACHGEN_CASES[i]![3];
+      const video = variant?.video !== undefined;
+      const then = turboRow(pricebook.prices, height, video);
+      const now = turboRow(turboPricebook.prices, height, video);
+      expect(then.discount_ends_at, label).toBe("2026-11-01T06:59:00+00:00");
+      expect(Date.parse(turboPricebook.readAt), label).toBeGreaterThan(
+        Date.parse(then.discount_ends_at!)
       );
-      if (refreshed) expect(usd, label).not.toBeCloseTo(forward, 6);
+      expect(now.discount_ends_at, label).toBe("2027-01-01T07:59:00+00:00");
+      expect(now.unit_price_micros, label).toBe(then.unit_price_micros);
+      const forward = computeEstimate({
+        provider: "machgen",
+        payload: machgenPayload(i, task, variant),
+        costHints: machgenHints(variant),
+      });
+      // The receipt bills the forward estimate's seconds at the first
+      // promotion's discount.
+      expect(usd, label).toBeCloseTo(
+        (forward.usd * then.discounted_unit_price_micros!) /
+          now.discounted_unit_price_micros!,
+        8
+      );
     }
   });
   it("matches every priced pricebook row's own example", () => {
@@ -154,6 +229,16 @@ describe("MachGen pricing", () => {
           seconds = 5;
           hints = { inputDurationSeconds: 5 };
           usd = 10 * row.usdPerSecond;
+        }
+        // MiniMax H3 Turbo's examples bill its first promotion's rate; it
+        // now prices at the 2026-11-01 pricebook's discounted rate.
+        if (row.apiModel === "MiniMax-H3-Turbo") {
+          const now = turboRow(
+            turboPricebook.prices,
+            row.height,
+            row.section === "With input video"
+          );
+          usd *= now.discounted_unit_price_micros! / 1e6 / row.usdPerSecond;
         }
         const result = computeEstimate({
           provider: "machgen",
@@ -351,14 +436,15 @@ describe("MachGen pricing", () => {
         { inputDurationSeconds: 4 }
       ).usd
     ).toBeCloseTo(0.16);
-    // A 4 s clip read from 1 s bills 3 s of input (receipt: 70000 micros).
+    // A 4 s clip read from 1 s bills 3 s of input: 7 s in all, a 70000
+    // micros receipt at the first promotion's 0.01 USD/s (2026-10-25).
     expect(
       r2v(
         "MiniMax-H3-Turbo",
         { src_video_urls: [video], reference_video_start_secs: [1] },
         { inputDurationSeconds: 3 }
       ).usd
-    ).toBeCloseTo(0.07);
+    ).toBeCloseTo(0.105, 6);
     // An edit renders its source's length, whatever duration_secs says.
     const edit = { src_video_urls: [video], reference_video_operation: "edit" };
     expect(
@@ -523,10 +609,10 @@ describe("MachGen pricing", () => {
               url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
               asOf: "2026-10-30",
             }
-          : model === "Seedance-2.5" || model === "Seedance-2.0"
+          : repricedAsOf[model]
             ? {
                 url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
-                asOf: "2026-10-29",
+                asOf: repricedAsOf[model],
               }
             : {
                 url: "https://www.machgen.ai/pricing",

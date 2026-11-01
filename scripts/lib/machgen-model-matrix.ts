@@ -286,7 +286,7 @@ const lines = [
   "  status = await machgen.api.v0.tasks(task.task_id);",
   "}",
   "const bill = await machgen.api.v0.tasks.billing(task.task_id);",
-  "console.log(bill.generation_cost_micros / 1e6); // 0.04",
+  "console.log(bill.generation_cost_micros / 1e6); // 0.06",
   "```",
   "",
 ];

@@ -160,7 +160,7 @@ describe("Zod schema validation edge cases", () => {
     it("should reject invalid aspect ratio", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "A cat",
-        aspect_ratio: "21:9", // Not in enum
+        aspect_ratio: "7:3", // Not in enum
       });
 
       expect(result.success).toBe(false);

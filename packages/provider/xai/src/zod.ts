@@ -327,6 +327,10 @@ export const XaiImageEditRequestSchema = z
 // Videos
 // ---------------------------------------------------------------------------
 
+// The REST reference (docs.x.ai/developers/rest-api-reference/inference/videos)
+// and the video overview list these nine ratios for grok-imagine-video-1.5,
+// 1.5-lite and grok-imagine-video, and xAI's request parser lists the same
+// nine (free 422 probe, 2026-11-01).
 const XaiVideoAspectRatioSchema = z.enum([
   "1:1",
   "16:9",
@@ -335,6 +339,8 @@ const XaiVideoAspectRatioSchema = z.enum([
   "3:4",
   "3:2",
   "2:3",
+  "21:9",
+  "5:2",
 ]);
 
 // xAI's request parser takes 480p, 720p and 1080p (free 422 probe,
@@ -749,6 +755,15 @@ export const XaiVideoGenerateRequestSchema = z
       )
       .optional(),
     storage_options: XaiImagineStorageOptionsSchema.optional(),
+    // The video generation guide's Audio section sends
+    // `"generate_audio": false` for a silent clip
+    // (docs.x.ai/developers/model-capabilities/video/generation); the REST
+    // reference does not list the field.
+    generate_audio: z.boolean().optional(),
+    // A signed PUT URL for the finished video, and an end-user id (REST
+    // reference, as on the edits endpoint).
+    output: z.object({ upload_url: z.string() }).optional(),
+    user: z.string().optional(),
   })
   // xAI's reference-to-video doc (read 2026-11-01)
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:

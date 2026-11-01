@@ -5,6 +5,7 @@ import {
   XaiImageGenerateRequestSchema,
   XaiImageEditRequestSchema,
   XaiVideoGenerateRequestSchema,
+  XaiGrokImagineVideo15ImageToVideoRequestSchema,
   XaiVideoEditRequestSchema,
   XaiVideoExtendRequestSchema,
   XaiBatchCreateRequestSchema,
@@ -185,10 +186,43 @@ describe("xAI Zod schema validation", () => {
     it("rejects invalid aspect_ratio", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "test",
-        aspect_ratio: "21:9",
+        aspect_ratio: "7:3",
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+
+    // xAI's parser lists 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9 and 5:2
+    // (free 422 probe, 2026-11-01), as the REST reference does.
+    it.each(["21:9", "5:2"])("accepts aspect_ratio %s", (aspect_ratio) => {
+      expect(
+        XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "test",
+          aspect_ratio,
+        }).success
+      ).toBe(true);
+      expect(
+        XaiGrokImagineVideo15ImageToVideoRequestSchema.safeParse({
+          image: "https://example.com/still.png",
+          aspect_ratio,
+        }).success
+      ).toBe(true);
+    });
+
+    it("accepts generate_audio, output and user", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "A paper boat drifting down a rain-soaked street",
+        generate_audio: false,
+        output: { upload_url: "https://bucket.example.com/video.mp4?sig=1" },
+        user: "user-123",
+      });
+      expect(result.success).toBe(true);
+      expect(
+        XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "test",
+          generate_audio: "no",
+        }).success
+      ).toBe(false);
     });
 
     // xAI's parser lists 480p, 720p and 1080p (free 422 probe, 2026-10-31).

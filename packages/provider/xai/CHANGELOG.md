@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `v1.videos.generations` takes the `21:9` and `5:2` aspect ratios (so does
+  the `imageToVideo` leaf) and the optional `generate_audio` (boolean),
+  `output: { upload_url }` and `user` fields. The REST reference and the
+  video overview list the nine ratios for all three video models, and a free
+  422 probe on 2026-11-01 had xAI's request parser list the same nine.
+  `generate_audio: false` requests a silent clip, per the video generation
+  guide's Audio section; the REST reference lists `output` and `user`. The
+  three fields are docs-only (no probe), and `@apicity/cost` rates are
+  unchanged (ac-zjpet9).
+
 - `v1.videos.generations` takes grok-imagine-video-1.5's pinned frames:
   `last_frame` (a URL, data URI or `{ file_id }`), its
   `last_frame_file_id` alias (sent as `last_frame: { file_id }`), and up to

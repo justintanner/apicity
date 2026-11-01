@@ -122,6 +122,36 @@ describe("xai video generations default model", () => {
     });
   });
 
+  // generate_audio comes from the video generation guide, output and user
+  // from the REST reference; each is sent as written.
+  it("sends generate_audio, output and user unchanged", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_extras" },
+    ]);
+    const provider = createProvider(fetch);
+    const req: XaiVideoGenerateRequest = {
+      prompt: "A paper boat drifting down a rain-soaked street",
+      model: "grok-imagine-video-1.5",
+      aspect_ratio: "21:9",
+      generate_audio: false,
+      output: { upload_url: "https://bucket.example.com/boat.mp4?sig=abc" },
+      user: "user-123",
+    };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/videos/generations",
+        method: "POST",
+        body: req,
+      },
+    ]);
+  });
+
   // REQ-003/REQ-005 transport default, per the current reference-to-video doc
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
   // reference inputs are supported by the 1.5 family, so model-less reference

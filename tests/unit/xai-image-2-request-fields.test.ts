@@ -59,13 +59,17 @@ describe("xAI image request fields for grok-imagine-image-2.0", () => {
     }
   );
 
-  it("leaves the video aspect ratios unchanged", () => {
-    expect(
-      XaiVideoGenerateRequestSchema.safeParse({
-        prompt: "a cat",
-        aspect_ratio: "21:9",
-      }).success
-    ).toBe(false);
+  // The video parser lists nine ratios, 21:9 and 5:2 among them (free 422
+  // probe, 2026-11-01); the image-only ratios stay off video.
+  it("keeps the image-only aspect ratios off video", () => {
+    for (const aspect_ratio of ["2:1", "20:9", "auto"])
+      expect(
+        XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "a cat",
+          aspect_ratio,
+        }).success,
+        aspect_ratio
+      ).toBe(false);
   });
 
   it("edits up to five sources, as images or stored file ids", () => {

@@ -6,6 +6,9 @@ import { z } from "zod";
 // passes unchecked like any other id. SHARPEN is in the TaskInput reference
 // (https://www.machgen.ai/docs/reference#taskinput), not the models table;
 // MachGen's quote priced it for MiniMax-H3 alone on 2026-10-31.
+// MiniMax-H3-Omni is hidden from the models table but has a model page
+// (https://www.machgen.ai/models/machgen/minimax-h3-omni) and pricebook rows;
+// MachGen's 400s named R2V as its one task type on 2026-11-01.
 export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "Wan2.2-A14B": ["T2V", "I2V"],
   "LTX-2.3-Pro": ["T2V", "I2V"],
@@ -13,6 +16,7 @@ export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
   "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE", "SHARPEN"],
   "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
+  "MiniMax-H3-Omni": ["R2V"],
   "Seedance-2.5": ["T2V", "I2V", "R2V"],
   "Seedance-2.0": ["T2V", "I2V", "R2V"],
   "Seedance-2.0-Fast": ["T2V", "I2V", "R2V"],
@@ -176,6 +180,18 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
     T2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_T2V },
     I2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_I2V },
     R2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_R2V },
+  },
+  // Read from 400s on 2026-11-01
+  // (tests/fixtures/machgen-evidence/machgen-omni-2026-11-01.json).
+  "MiniMax-H3-Omni": {
+    R2V: {
+      heights: [768],
+      durations: secs(1, 15),
+      aspectRatios: ADAPTIVE,
+      references: { images: 9, videos: 3, audios: 3, total: 12 },
+      visualReference: true,
+      operations: ["reference"],
+    },
   },
   "Seedance-2.5": {
     T2V: {

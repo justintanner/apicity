@@ -54,6 +54,8 @@ export const MACHGEN_CASES = [
   ["veo-3-1", "Veo-3.1", 4, 720, false],
   ["veo-3-1-fast", "Veo-3.1-Fast", 4, 720, false],
   ["grok-imagine-video", "Grok-Imagine-Video", 1, 480, false],
+  // R2V only, at 768p; MachGen's models table omits it (2026-11-01).
+  ["minimax-h3-omni", "MiniMax-H3-Omni", 1, 768, true],
 ] as const;
 // The task metadata names the model an alias resolves to.
 const resolvedModel = (model: string, task: string) =>
@@ -167,6 +169,9 @@ export const MACHGEN_RECORDED: ReadonlyArray<
   [21, "T2V", undefined, 1.884],
   [22, "T2V", undefined, 0.472],
   [23, "T2V", undefined, 0.059],
+  [24, "R2V", undefined, 0.02],
+  // 4 s read from the reference video plus 1 s out.
+  [24, "R2V", { video: {} }, 0.1],
 ];
 export function machgenPayload(
   index: number,

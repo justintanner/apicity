@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen pricing for MiniMax H3 Omni (`MiniMax-H3-Omni`): R2V at 768p for
+  0.02 USD/s, with or without a reference video, whose seconds bill on top
+  of the output. The rates come from the 2026-11-01 public pricebook, held in
+  `machgen-omni-2026-11-01.json`, and two recorded receipts match them (a 1 s
+  clip from an image billed 20000 micros; from a 4 s reference video,
+  100000). `MODEL_SLUGS.machgen` gives it the new slug `mmh3o` (ac-1aklsl).
 - xAI video estimates count every pinned frame as an input image at the model's per-input-image rate (0.01 USD on the 1.5 models): `image` or `image_file_id`, `last_frame` or `last_frame_file_id`, and each `keyframes` entry, beside the reference images already counted. Preset voices still add nothing, and a `keyframes` value that is not a list fails closed. xAI's cookbook bills corroborate it: a 10 s 720p grok-imagine-video-1.5 clip with a first frame, 2 keyframes and a last frame cost 1.44 USD (10 x 0.14 + 4 x 0.01), and reference clips with voices cost 1.42 and 0.71 (ac-dlb6li).
 
 - Added OpenAI GPT Image rates, keyed by model. `gpt-image-2`, `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare` are per-unit on image output tokens at 0.00003 USD each. The units are `n` times the tokens that the image generation guide's calculator gives for the quality and the `WIDTHxHEIGHT` size: the long edge takes 16, 48 or 96 patches (gpt-image-2 low, medium, high) or 16, 24, 48, 64 or 96 (2.5 low to max), the short edge that count scaled by the aspect ratio and rounded half to even, and the tokens are the ceiling of patches x (2e6 + W x H) / 4e6. It reproduces OpenAI's published gpt-image-2 table and the recorded calls' 1756 tokens at medium 1024x1024. `gpt-image-1.5` is per image from its model page's quality x size grid. `auto` quality or size, an unknown quality and a size outside the rules (multiples of 16, 655,360 to 8,294,400 pixels, edges at most 3840 and 3:1) fail closed with a warning that names the inputs needed. Every priced estimate warns that text and image input tokens bill on top. `computeEstimate` routes OpenAI per-unit entries to the per-unit table by model, as xai and alibaba do. The slugs reuse kie's (`gi1p5`, `gi2`, `gi2p5sb`, `gi2p5fl`), the seven t2i and i2i frontier OpenAI rows drop `"unpriced"`, and the `slugs.ts` hash in the KIE pricing manifest is re-pinned (ac-b12rs0).

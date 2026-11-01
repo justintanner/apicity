@@ -338,6 +338,8 @@ const files = readdirSync(root, { recursive: true }).filter(
   (f): f is string => typeof f === "string" && f.endsWith("recording.har")
 );
 describe("committed corpus parity", () => {
+  // A whole-corpus scan: under a parallel full-suite replay it took half the
+  // default 30 s, so it carries its own timeout (ac-zpa6nt).
   it("is idempotent across the committed corpus and leaves clean recordings unchanged", () => {
     let unchanged = 0;
     for (const file of files) {
@@ -352,7 +354,7 @@ describe("committed corpus parity", () => {
       expect(JSON.stringify(har), file).toBe(after);
     }
     expect(unchanged).toBeGreaterThan(3);
-  });
+  }, 120_000);
   it("matches identity and directory names for three committed recordings", () => {
     const matches = [
       "anthropic_2966493235/batches-list_981440878/recording.har",

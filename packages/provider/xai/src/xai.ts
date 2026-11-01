@@ -235,13 +235,21 @@ function normalizeVideoReference(
 function normalizeVideoGenerateRequest(
   req: XaiVideoGenerateRequest
 ): XaiVideoGenerateRequest {
-  const { image_file_id, video_file_id, reference_image_file_ids, ...rest } =
-    req;
+  const {
+    image_file_id,
+    last_frame_file_id,
+    video_file_id,
+    reference_image_file_ids,
+    ...rest
+  } = req;
   const normalized: XaiVideoGenerateRequest = {
     ...rest,
   };
   if (normalized.image === undefined && image_file_id !== undefined) {
     normalized.image = { file_id: image_file_id };
+  }
+  if (normalized.last_frame === undefined && last_frame_file_id !== undefined) {
+    normalized.last_frame = { file_id: last_frame_file_id };
   }
   if (normalized.video === undefined && video_file_id !== undefined) {
     normalized.video = { file_id: video_file_id };
@@ -297,13 +305,14 @@ function applyVideoGenerationDefaults(
   const groups = computeXaiVideoModeGroups(req);
   const normalized = normalizeVideoGenerateRequest(req);
   if (normalized.model !== undefined) return normalized;
-  // Reference inputs require the canonical 1.5 capability. Requests without
-  // references retain the historical preview default.
+  // References, a last frame and keyframes require the canonical 1.5
+  // capability. Other requests retain the historical preview default.
   return {
     ...normalized,
-    model: groups.reference
-      ? XAI_GROK_IMAGINE_VIDEO_1_5
-      : XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+    model:
+      groups.reference || groups.lastFrame || groups.keyframes
+        ? XAI_GROK_IMAGINE_VIDEO_1_5
+        : XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
   };
 }
 
@@ -428,7 +437,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
       );
     }
     const generationRequest: XaiVideoGenerateRequest = {
-      prompt: req.prompt,
+      ...(req.prompt !== undefined ? { prompt: req.prompt } : {}),
       model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
       image: imageReference,
     };

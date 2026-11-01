@@ -42,15 +42,51 @@ const videoSeconds = (
 // provider sends the *_file_id fields as file references in `image` and in
 // the list field, so they count alike. As on the wire, `image` wins over
 // `image_file_id` and the list over its file-id twin.
-const inputImageCharge =
-  (perImage: number, list: string, fileIdList: string) =>
+const inputImageCount =
+  (list: string, fileIdList: string) =>
   (p: Record<string, unknown>): number | undefined => {
     const single =
       p.image !== undefined || p.image_file_id !== undefined ? 1 : 0;
     const many = p[list] ?? p[fileIdList];
-    if (many === undefined) return single * perImage;
-    return Array.isArray(many) ? (single + many.length) * perImage : undefined;
+    if (many === undefined) return single;
+    return Array.isArray(many) ? single + many.length : undefined;
   };
+
+const inputImageCharge =
+  (perImage: number, list: string, fileIdList: string) =>
+  (p: Record<string, unknown>): number | undefined => {
+    const count = inputImageCount(list, fileIdList)(p);
+    return count === undefined ? undefined : count * perImage;
+  };
+
+// A video request also bills each frame it pins as an input image: the first
+// frame (`image`), the last frame (`last_frame` or `last_frame_file_id`) and
+// each keyframe, beside each reference image. Preset voices add nothing.
+// The reference-image charge is measured (PR 565); xAI's cookbook bills match
+// the same rate on pinned frames. A 10 s 720p grok-imagine-video-1.5 clip
+// with a first frame, 2 keyframes and a last frame cost 1.44 = 10 x 0.14 +
+// 4 x 0.01 (docs.x.ai/cookbook/examples/photo-to-time-lapse.md), and 10 s
+// from two references and two voices cost 1.42 = 10 x 0.14 + 2 x 0.01
+// (docs.x.ai/cookbook/examples/photo-to-talking-character.md).
+const videoInputImageCount = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const firstFrameAndReferences = inputImageCount(
+    "reference_images",
+    "reference_image_file_ids"
+  )(p);
+  const keyframes =
+    p.keyframes === undefined
+      ? 0
+      : Array.isArray(p.keyframes)
+        ? p.keyframes.length
+        : undefined;
+  if (firstFrameAndReferences === undefined || keyframes === undefined)
+    return undefined;
+  const lastFrame =
+    p.last_frame !== undefined || p.last_frame_file_id !== undefined ? 1 : 0;
+  return firstFrameAndReferences + lastFrame + keyframes;
+};
 
 // The per-second rate depends on the output resolution, and the page's single
 // figure is the 480p rate. Recorded 1 s clips billed 0.07 at 720p on
@@ -66,11 +102,11 @@ const videoResolution = (p: Record<string, unknown>): string | undefined =>
 const keepsSourceResolution = (p: Record<string, unknown>): boolean =>
   p.video !== undefined || p.video_file_id !== undefined;
 
-// Each input image bills on top, once per request (see inputImageCharge):
-// 0.002 on grok-imagine-video and 0.01 on the 1.5 models, for `image` and for
-// each reference image. A 1 s clip cannot tell a per-request charge from a
-// per-second one; fal's cards, which matched xAI on every cell checked, bill
-// it per image.
+// Each input image bills on top, once per request (see inputImageCharge and
+// videoInputImageCount): 0.002 on grok-imagine-video and 0.01 on the 1.5
+// models, for each pinned frame and each reference image. A 1 s clip cannot
+// tell a per-request charge from a per-second one; fal's cards, which matched
+// xAI on every cell checked, bill it per image.
 const perSecondVideo = (
   model: string,
   rates: { "480p": number; "720p": number; "1080p"?: number },
@@ -87,11 +123,10 @@ const perSecondVideo = (
     },
   ],
   rates,
-  extra: inputImageCharge(
-    perInputImage,
-    "reference_images",
-    "reference_image_file_ids"
-  ),
+  extra: (p) => {
+    const images = videoInputImageCount(p);
+    return images === undefined ? undefined : images * perInputImage;
+  },
   // Without units the estimate fails, and evaluatePerUnit would report this
   // warning in place of its costHints.durationSeconds advice.
   warn: (p, hints) =>

@@ -150,8 +150,9 @@ assets directly and can persist generated assets back to Files storage.
 - Inputs: anywhere Imagine accepts a public URL or base64 image/video,
   pass a stored `file_id` instead. Apicity accepts the raw REST shape
   (`image: { file_id }`, `images: [{ file_id }]`,
-  `video: { file_id }`, `reference_images: [{ file_id }]`) plus
-  convenience aliases (`image_file_id`, `image_file_ids`,
+  `last_frame: { file_id }`, `video: { file_id }`,
+  `reference_images: [{ file_id }]`) plus convenience aliases
+  (`image_file_id`, `image_file_ids`, `last_frame_file_id`,
   `video_file_id`, and `reference_image_file_ids`) that are normalized
   before the HTTP request.
 - Outputs: pass `storage_options` with a required `filename` to persist
@@ -163,16 +164,18 @@ assets directly and can persist generated assets back to Files storage.
   persistent Files metadata is returned as `file_output` on the
   generated image or completed video.
 
-### Reference-to-video with preset voices
+### Reference-to-video, pinned frames and preset voices
 
 `xai.post.v1.videos.generations` supports reference-to-video requests with
-reference images, one to three preset voices, or both. Image references may
-use public HTTPS URLs, data URIs, or Files API IDs in any mixture. Preset
-voices use open, case-insensitive xAI voice identifiers; Apicity preserves
-each `voice_id` exactly and leaves voice recognition to xAI. The preset-voice
-capability requires the `grok-imagine-video-1.5` family, including its
-`-preview` and dated aliases. Model-less reference requests default to the
-canonical `grok-imagine-video-1.5` model.
+up to 14 reference images on the `grok-imagine-video-1.5` family (7 on
+`grok-imagine-video`), one to three preset voices, or both. Image
+references may use public HTTPS URLs, data URIs, or Files API IDs in any
+mixture. Preset voices use open, case-insensitive xAI voice identifiers;
+Apicity preserves each `voice_id` exactly and leaves voice recognition to
+xAI. Preset voices and pinned frames require the `grok-imagine-video-1.5`
+family, including its `-preview` and dated aliases. Model-less requests
+with references, a last frame or keyframes default to the canonical
+`grok-imagine-video-1.5` model.
 
 ```typescript
 const video = await xai.post.v1.videos.generations({
@@ -184,9 +187,35 @@ const video = await xai.post.v1.videos.generations({
 });
 ```
 
-The same callable accepts image-only and audio-only reference requests. Empty
-reference arrays are inactive; reference inputs cannot be combined with the
-`image`, `image_file_id`, `video`, or `video_file_id` source fields. Prompt
+On the 1.5 family a request can also pin frames. `image` (or
+`image_file_id`) is the first frame, alone or beside references;
+`last_frame` (or `last_frame_file_id`) is the last frame; and `keyframes`
+pins up to four images inside the clip. Each keyframe's `timestamp_s` must
+be greater than 0 and less than `duration` (8 seconds when omitted). xAI
+snaps keyframes to a 1/3-second grid, so two keyframes that round to the
+same slot are rejected. `prompt` is optional whenever a frame is pinned;
+text-to-video and reference-only requests still need one. A pinned first
+frame takes `<IMAGE_0>`, and the reference images then start at
+`<IMAGE_1>`.
+
+```typescript
+const timeLapse = await xai.post.v1.videos.generations({
+  model: "grok-imagine-video-1.5",
+  image: { url: "https://example.com/dawn.png" },
+  keyframes: [
+    { image: { url: "https://example.com/noon.png" }, timestamp_s: 3.5 },
+    { image: { url: "https://example.com/dusk.png" }, timestamp_s: 6.5 },
+  ],
+  last_frame: { url: "https://example.com/night.png" },
+  duration: 10,
+  resolution: "720p",
+});
+```
+
+The same callable accepts image-only and audio-only reference requests.
+Empty reference and keyframe arrays are inactive. A source video (`video`
+or `video_file_id`) excludes references and pinned frames on every model,
+and `grok-imagine-video` also refuses an `image` beside references. Prompt
 markers such as `<IMAGE_0>` and `<AUDIO_0>` are passed through unchanged.
 
 ### Stored input field map
@@ -200,6 +229,7 @@ storage. Apicity normalizes the convenience aliases into the REST
 | `xai.post.v1.images.edits` | `image_file_id` | `image: { file_id }` |
 | `xai.post.v1.images.edits` | `image_file_ids` | `images: [{ file_id }]` |
 | `xai.post.v1.videos.generations` | `image_file_id` | `image: { file_id }` |
+| `xai.post.v1.videos.generations` | `last_frame_file_id` | `last_frame: { file_id }` |
 | `xai.post.v1.videos.generations` | `reference_image_file_ids` | `reference_images: [{ file_id }]` |
 | `xai.post.v1.videos.generations.imageToVideo` | `image_file_id` | `image: { file_id }` |
 | `xai.post.v1.videos.edits` | `video_file_id` | `video: { file_id }` |

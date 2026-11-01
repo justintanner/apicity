@@ -30,6 +30,16 @@ export function isXaiGrokImagineVideo15Model(model: string): boolean {
   );
 }
 
+// The classic grok-imagine-video and its dated snapshots, such as
+// grok-imagine-video-2026-01-01. It never matches 1.5, 1.5-lite or another
+// version.
+export function isXaiGrokImagineVideoLegacyModel(model: string): boolean {
+  return (
+    model === XAI_GROK_IMAGINE_VIDEO ||
+    /^grok-imagine-video-\d{4}-\d{2}-\d{2}$/.test(model)
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
@@ -94,14 +104,29 @@ export const XaiVideoReferenceAudioSchema = z.object({
     ),
 });
 
-// xAI's reference-to-video docs cap each request at 7 reference images and
-// support up to 3 preset voice references. The legacy reference-image model
-// retains its 10-second cap; the 1.5 family supports the normal 15 seconds.
+// xAI's reference-to-video doc (read 2026-11-01)
 // https://docs.x.ai/developers/model-capabilities/video/reference-to-video
-export const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
+// allows "Up to **14** per request on `grok-imagine-video-1.5`; up to **7** on
+// `grok-imagine-video`" reference images and up to 3 preset voices. Keyframes:
+// "At most 4 keyframes per request", each `timestamp_s` "greater than 0 and
+// less than `duration`", and "Anchors snap to a 1/3-second grid. Two
+// keyframes that round to the same slot are rejected." The REST reference
+// (docs.x.ai/developers/rest-api-reference/inference/videos) gives duration
+// "Range: [1, 15]. Default: 8." Legacy reference-to-video keeps its 10-second
+// cap; the 1.5 family supports the normal 15 seconds.
+export const XAI_VIDEO_REFERENCE_IMAGE_MAX = 14;
+export const XAI_VIDEO_LEGACY_REFERENCE_IMAGE_MAX = 7;
 export const XAI_VIDEO_REFERENCE_AUDIO_MAX = 3;
 export const XAI_VIDEO_REFERENCE_DURATION_MAX = 15;
 export const XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX = 10;
+export const XAI_VIDEO_KEYFRAME_MAX = 4;
+export const XAI_VIDEO_DEFAULT_DURATION = 8;
+export const XAI_VIDEO_KEYFRAME_SLOTS_PER_SECOND = 3;
+
+export const XaiVideoKeyframeSchema = z.object({
+  image: XaiVideoReferenceSchema,
+  timestamp_s: z.number().positive(),
+});
 
 const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
@@ -362,6 +387,9 @@ const XaiVideoExtendDurationSchema = z.union([
 export interface XaiVideoModeGroupsCandidate {
   image?: unknown;
   image_file_id?: unknown;
+  last_frame?: unknown;
+  last_frame_file_id?: unknown;
+  keyframes?: readonly unknown[];
   video?: unknown;
   video_file_id?: unknown;
   reference_images?: readonly unknown[];
@@ -372,6 +400,8 @@ export interface XaiVideoModeGroupsCandidate {
 export interface XaiVideoModeGroups {
   reference: boolean;
   imageToVideo: boolean;
+  lastFrame: boolean;
+  keyframes: boolean;
   videoEdit: boolean;
 }
 
@@ -380,23 +410,30 @@ export function computeXaiVideoModeGroups(
 ): XaiVideoModeGroups {
   return {
     // An empty array on either reference spelling does NOT activate
-    // reference mode.
+    // reference mode, and an empty keyframes array pins nothing.
     reference:
       (candidate.reference_images?.length ?? 0) > 0 ||
       (candidate.reference_image_file_ids?.length ?? 0) > 0 ||
       (candidate.reference_audios?.length ?? 0) > 0,
     imageToVideo:
       candidate.image !== undefined || candidate.image_file_id !== undefined,
+    lastFrame:
+      candidate.last_frame !== undefined ||
+      candidate.last_frame_file_id !== undefined,
+    keyframes: (candidate.keyframes?.length ?? 0) > 0,
     videoEdit:
       candidate.video !== undefined || candidate.video_file_id !== undefined,
   };
 }
 
+// Video editing leads, so a conflict with it names video editing first.
 const XAI_VIDEO_MODE_GROUP_LABELS: Record<keyof XaiVideoModeGroups, string> = {
+  videoEdit: "video editing (video/video_file_id)",
   reference:
     "reference (reference_images/reference_image_file_ids/reference_audios)",
   imageToVideo: "image-to-video (image/image_file_id)",
-  videoEdit: "video editing (video/video_file_id)",
+  lastFrame: "last frame (last_frame/last_frame_file_id)",
+  keyframes: "keyframes (keyframes)",
 };
 
 // Names only the mode groups actually active; call with >= 2 active groups.
@@ -418,11 +455,18 @@ export function buildXaiVideoModeExclusivityMessage(
 export type XaiVideoReferenceIssueKind =
   | "mode"
   | "image-count"
+  | "legacy-image-count"
   | "audio-count"
   | "voice-id"
   | "audio-model"
   | "image-model"
-  | "duration";
+  | "frame-model"
+  | "keyframe-count"
+  | "keyframe-time"
+  | "keyframe-window"
+  | "keyframe-slot"
+  | "duration"
+  | "prompt";
 
 export interface XaiVideoReferenceIssue {
   kind: XaiVideoReferenceIssueKind;
@@ -433,6 +477,7 @@ export interface XaiVideoReferenceIssue {
 export interface XaiVideoReferenceValidationCandidate extends XaiVideoModeGroupsCandidate {
   model?: unknown;
   duration?: unknown;
+  prompt?: unknown;
 }
 
 const XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE = `reference images must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
@@ -444,43 +489,76 @@ const XAI_VIDEO_REFERENCE_AUDIO_MODEL_MESSAGE =
   "reference_audios requires the grok-imagine-video-1.5 model family";
 const XAI_VIDEO_REFERENCE_DURATION_MESSAGE =
   "duration must be at most 10 seconds for legacy reference-to-video";
+const XAI_VIDEO_KEYFRAME_COUNT_MESSAGE = `keyframes must contain at most ${XAI_VIDEO_KEYFRAME_MAX} items`;
+const XAI_VIDEO_KEYFRAME_TIME_MESSAGE =
+  "timestamp_s must be a number greater than 0";
+const XAI_VIDEO_PROMPT_MESSAGE =
+  "prompt is required unless the request pins a frame (image, image_file_id, last_frame, last_frame_file_id or keyframes)";
+const XAI_VIDEO_INACTIVE_GROUPS: XaiVideoModeGroups = {
+  reference: false,
+  imageToVideo: false,
+  lastFrame: false,
+  keyframes: false,
+  videoEdit: false,
+};
 
 export function collectXaiVideoReferenceIssues(
   candidate: XaiVideoReferenceValidationCandidate
 ): XaiVideoReferenceIssue[] {
   const issues: XaiVideoReferenceIssue[] = [];
   const groups = computeXaiVideoModeGroups(candidate);
-  const activeGroupCount =
-    Number(groups.reference) +
-    Number(groups.imageToVideo) +
-    Number(groups.videoEdit);
+  const model =
+    typeof candidate.model === "string" ? candidate.model : undefined;
+  // Pinned frames and image plus references are reference-to-video on the
+  // 1.5 family; a model-less request is sent as 1.5.
+  const frameModel = model === undefined || isXaiGrokImagineVideo15Model(model);
+  const legacyModel =
+    model !== undefined && isXaiGrokImagineVideoLegacyModel(model);
 
-  if (activeGroupCount >= 2) {
+  // A source video excludes every other group on every model. Elsewhere only
+  // a named model outside the 1.5 family keeps the one-mode rule, for image
+  // plus references.
+  if (
+    groups.videoEdit &&
+    (groups.reference ||
+      groups.imageToVideo ||
+      groups.lastFrame ||
+      groups.keyframes)
+  ) {
     issues.push({
       kind: "mode",
       path: [],
       message: buildXaiVideoModeExclusivityMessage(groups),
     });
+  } else if (!frameModel && groups.imageToVideo && groups.reference) {
+    issues.push({
+      kind: "mode",
+      path: [],
+      message: buildXaiVideoModeExclusivityMessage({
+        ...XAI_VIDEO_INACTIVE_GROUPS,
+        reference: true,
+        imageToVideo: true,
+      }),
+    });
   }
 
-  if (
-    (candidate.reference_images?.length ?? 0) > XAI_VIDEO_REFERENCE_IMAGE_MAX
-  ) {
-    issues.push({
-      kind: "image-count",
-      path: ["reference_images"],
-      message: XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE,
-    });
-  }
-  if (
-    (candidate.reference_image_file_ids?.length ?? 0) >
-    XAI_VIDEO_REFERENCE_IMAGE_MAX
-  ) {
-    issues.push({
-      kind: "image-count",
-      path: ["reference_image_file_ids"],
-      message: XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE,
-    });
+  for (const [field, message] of [
+    ["reference_images", XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE],
+    [
+      "reference_image_file_ids",
+      XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE,
+    ],
+  ] as const) {
+    const count = candidate[field]?.length ?? 0;
+    if (legacyModel && count > XAI_VIDEO_LEGACY_REFERENCE_IMAGE_MAX) {
+      issues.push({
+        kind: "legacy-image-count",
+        path: [field],
+        message: `${field} must contain at most ${XAI_VIDEO_LEGACY_REFERENCE_IMAGE_MAX} items on grok-imagine-video`,
+      });
+    } else if (count > XAI_VIDEO_REFERENCE_IMAGE_MAX) {
+      issues.push({ kind: "image-count", path: [field], message });
+    }
   }
 
   const referenceAudios = candidate.reference_audios;
@@ -505,8 +583,6 @@ export function collectXaiVideoReferenceIssues(
     }
   });
 
-  const model =
-    typeof candidate.model === "string" ? candidate.model : undefined;
   if (
     (referenceAudios?.length ?? 0) > 0 &&
     model !== undefined &&
@@ -532,11 +608,78 @@ export function collectXaiVideoReferenceIssues(
     });
   }
 
+  if (!frameModel) {
+    for (const [field, present] of [
+      ["last_frame", candidate.last_frame !== undefined],
+      ["last_frame_file_id", candidate.last_frame_file_id !== undefined],
+      ["keyframes", groups.keyframes],
+    ] as const) {
+      if (!present) continue;
+      issues.push({
+        kind: "frame-model",
+        path: ["model"],
+        message: `${field} requires the grok-imagine-video-1.5 model family`,
+      });
+    }
+  }
+
+  const keyframes = candidate.keyframes;
+  if ((keyframes?.length ?? 0) > XAI_VIDEO_KEYFRAME_MAX) {
+    issues.push({
+      kind: "keyframe-count",
+      path: ["keyframes"],
+      message: XAI_VIDEO_KEYFRAME_COUNT_MESSAGE,
+    });
+  }
+  const clipSeconds =
+    typeof candidate.duration === "number"
+      ? candidate.duration
+      : XAI_VIDEO_DEFAULT_DURATION;
+  const slots = new Map<number, number>();
+  keyframes?.forEach((keyframe, index) => {
+    const path = ["keyframes", index, "timestamp_s"];
+    const seconds =
+      typeof keyframe === "object" && keyframe !== null
+        ? (keyframe as { timestamp_s?: unknown }).timestamp_s
+        : undefined;
+    if (
+      typeof seconds !== "number" ||
+      !Number.isFinite(seconds) ||
+      seconds <= 0
+    ) {
+      issues.push({
+        kind: "keyframe-time",
+        path,
+        message: XAI_VIDEO_KEYFRAME_TIME_MESSAGE,
+      });
+      return;
+    }
+    if (seconds >= clipSeconds) {
+      issues.push({
+        kind: "keyframe-window",
+        path,
+        message: `timestamp_s must be less than the clip duration of ${clipSeconds} seconds`,
+      });
+      return;
+    }
+    // xAI's own cookbook rounds to the nearest slot (placeStages).
+    const slot = Math.round(seconds * XAI_VIDEO_KEYFRAME_SLOTS_PER_SECOND);
+    const earlier = slots.get(slot);
+    if (earlier === undefined) {
+      slots.set(slot, index);
+      return;
+    }
+    issues.push({
+      kind: "keyframe-slot",
+      path,
+      message: `keyframes ${earlier} and ${index} round to the same 1/3-second slot; keep keyframes at least 1/3 s apart`,
+    });
+  });
+
   if (groups.reference && typeof candidate.duration === "number") {
-    const maxDuration =
-      model === XAI_GROK_IMAGINE_VIDEO
-        ? XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX
-        : XAI_VIDEO_REFERENCE_DURATION_MAX;
+    const maxDuration = legacyModel
+      ? XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX
+      : XAI_VIDEO_REFERENCE_DURATION_MAX;
     if (candidate.duration > maxDuration) {
       issues.push({
         kind: "duration",
@@ -549,18 +692,39 @@ export function collectXaiVideoReferenceIssues(
     }
   }
 
+  // Text-to-video and reference-only requests need a prompt; a pinned frame
+  // makes it optional.
+  if (
+    !groups.imageToVideo &&
+    !groups.lastFrame &&
+    !groups.keyframes &&
+    typeof candidate.prompt !== "string"
+  ) {
+    issues.push({
+      kind: "prompt",
+      path: ["prompt"],
+      message: XAI_VIDEO_PROMPT_MESSAGE,
+    });
+  }
+
   return issues;
 }
 
 export const XaiVideoGenerateRequestSchema = z
   .object({
-    prompt: z.string().min(1),
+    prompt: z.string().min(1).optional(),
     model: z.string().optional(),
     duration: XaiVideoGenerateDurationSchema.optional(),
     aspect_ratio: XaiVideoAspectRatioSchema.optional(),
     resolution: XaiVideoResolutionSchema.optional(),
     image: XaiVideoReferenceSchema.optional(),
     image_file_id: z.string().min(1).optional(),
+    last_frame: XaiVideoReferenceSchema.optional(),
+    last_frame_file_id: z.string().min(1).optional(),
+    keyframes: z
+      .array(XaiVideoKeyframeSchema)
+      .max(XAI_VIDEO_KEYFRAME_MAX, XAI_VIDEO_KEYFRAME_COUNT_MESSAGE)
+      .optional(),
     video: XaiVideoReferenceSchema.optional(),
     video_file_id: z.string().min(1).optional(),
     reference_images: z
@@ -586,18 +750,29 @@ export const XaiVideoGenerateRequestSchema = z
       .optional(),
     storage_options: XaiImagineStorageOptionsSchema.optional(),
   })
-  // Verified live 2026-07-28 against xAI's primary reference-to-video doc
+  // xAI's reference-to-video doc (read 2026-11-01)
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
-  // "Reference images cannot be combined with image-to-video or video
-  // editing. Only one mode can be active per request, determined by the
-  // parameters on the request."
-  // Reference images and preset voices are supported by the 1.5 family.
+  // "`image` combined with `reference_images`, `reference_audios`, or
+  // `last_frame` is the matching first-frame pin." Its video generation doc
+  // (.../video/generation): "On `grok-imagine-video-1.5`, `image` combined
+  // with `reference_images`, `reference_audios`, `last_frame`, or `keyframes`
+  // is reference-to-video with a pinned first frame. ... Classic
+  // `grok-imagine-video` still rejects `last_frame` and `keyframes` and
+  // rejects combining `image` with reference inputs." A source video still
+  // excludes every other mode. The field level checks counts and values;
+  // this adds only the rules it cannot express, so no issue is reported
+  // twice.
   .superRefine((value, ctx) => {
     const crossFieldKinds = new Set<XaiVideoReferenceIssueKind>([
       "mode",
+      "legacy-image-count",
       "audio-model",
       "image-model",
+      "frame-model",
+      "keyframe-window",
+      "keyframe-slot",
       "duration",
+      "prompt",
     ]);
     for (const issue of collectXaiVideoReferenceIssues(value)) {
       if (!crossFieldKinds.has(issue.kind)) continue;
@@ -611,7 +786,8 @@ export const XaiVideoGenerateRequestSchema = z
 
 export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z
   .object({
-    prompt: z.string().min(1),
+    // The image is always pinned, so the prompt is optional.
+    prompt: z.string().min(1).optional(),
     model: z.literal(XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW).optional(),
     image: XaiVideoReferenceInputSchema.optional(),
     image_file_id: z.string().min(1).optional(),
@@ -1118,6 +1294,7 @@ export type XaiVideoReference = z.infer<typeof XaiVideoReferenceSchema>;
 export type XaiVideoReferenceAudio = z.infer<
   typeof XaiVideoReferenceAudioSchema
 >;
+export type XaiVideoKeyframe = z.infer<typeof XaiVideoKeyframeSchema>;
 export type XaiVideoReferenceInput = z.infer<
   typeof XaiVideoReferenceInputSchema
 >;

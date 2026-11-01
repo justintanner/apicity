@@ -214,11 +214,13 @@ describe("xAI Zod schema validation", () => {
     });
   });
 
-  // REQ-001 mode exclusivity, per xAI's primary reference-to-video doc
+  // REQ-001 mode rules, per xAI's reference-to-video doc (read 2026-11-01)
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
-  // "Reference images cannot be combined with image-to-video or video
-  // editing. Only one mode can be active per request, determined by the
-  // parameters on the request."
+  // "`image` combined with `reference_images`, `reference_audios`, or
+  // `last_frame` is the matching first-frame pin." The video generation doc
+  // adds: "Classic `grok-imagine-video` still rejects `last_frame` and
+  // `keyframes` and rejects combining `image` with reference inputs." A
+  // source video still excludes every other mode.
   describe("video generation mode exclusivity (REQ-001)", () => {
     const MODE_GROUPS = {
       reference: {
@@ -236,6 +238,23 @@ describe("xAI Zod schema validation", () => {
           { image_file_id: "file_image" },
         ],
       },
+      lastFrame: {
+        label: "last_frame/last_frame_file_id",
+        spellings: [
+          { last_frame: { url: "https://example.com/last.jpg" } },
+          { last_frame_file_id: "file_last" },
+        ],
+      },
+      keyframes: {
+        label: "keyframes (keyframes)",
+        spellings: [
+          {
+            keyframes: [
+              { image: { url: "https://example.com/key.jpg" }, timestamp_s: 2 },
+            ],
+          },
+        ],
+      },
       videoEdit: {
         label: "video/video_file_id",
         spellings: [
@@ -244,44 +263,83 @@ describe("xAI Zod schema validation", () => {
         ],
       },
     } as const;
-
-    const CROSS_GROUP_PAIRS: [
-      keyof typeof MODE_GROUPS,
-      keyof typeof MODE_GROUPS,
-    ][] = [
-      ["reference", "imageToVideo"],
-      ["reference", "videoEdit"],
-      ["imageToVideo", "videoEdit"],
+    type ModeGroup = keyof typeof MODE_GROUPS;
+    const FRAME_MODELS = [
+      undefined,
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+      "grok-imagine-video-1.5-2026-05-30",
     ];
 
-    for (const [groupA, groupB] of CROSS_GROUP_PAIRS) {
-      MODE_GROUPS[groupA].spellings.forEach((fieldsA, indexA) => {
-        MODE_GROUPS[groupB].spellings.forEach((fieldsB, indexB) => {
-          it(
-            `rejects ${groupA} x ${groupB} ` +
-              `(spellings ${indexA + 1} x ${indexB + 1})`,
-            () => {
-              const result = XaiVideoGenerateRequestSchema.safeParse({
-                prompt: "A cat walking",
-                ...fieldsA,
-                ...fieldsB,
-              });
-              expect(result.success).toBe(false);
-              const messages = (result.error?.issues ?? []).map(
-                (issue) => issue.message
-              );
-              expect(
-                messages.some(
-                  (message) =>
-                    message.includes(MODE_GROUPS[groupA].label) &&
-                    message.includes(MODE_GROUPS[groupB].label)
-                )
-              ).toBe(true);
-            }
-          );
-        });
+    const modeMessages = (
+      model: string | undefined,
+      fields: Record<string, unknown>
+    ) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "A cat walking",
+        ...(model === undefined ? {} : { model }),
+        ...fields,
       });
+      return {
+        success: result.success,
+        messages: (result.error?.issues ?? []).map((issue) => issue.message),
+      };
+    };
+    const namesBoth = (messages: string[], a: ModeGroup, b: ModeGroup) =>
+      messages.some(
+        (message) =>
+          message.includes("Only one video mode can be active per request") &&
+          message.includes(MODE_GROUPS[a].label) &&
+          message.includes(MODE_GROUPS[b].label)
+      );
+
+    for (const model of ["grok-imagine-video", ...FRAME_MODELS]) {
+      for (const group of [
+        "reference",
+        "imageToVideo",
+        "lastFrame",
+        "keyframes",
+      ] as const) {
+        MODE_GROUPS.videoEdit.spellings.forEach((video, indexA) => {
+          MODE_GROUPS[group].spellings.forEach((fields, indexB) => {
+            it(
+              `rejects videoEdit x ${group} on ${model ?? "no model"} ` +
+                `(spellings ${indexA + 1} x ${indexB + 1})`,
+              () => {
+                const { success, messages } = modeMessages(model, {
+                  ...video,
+                  ...fields,
+                });
+                expect(success).toBe(false);
+                expect(namesBoth(messages, "videoEdit", group)).toBe(true);
+              }
+            );
+          });
+        });
+      }
     }
+
+    MODE_GROUPS.reference.spellings.forEach((reference, indexA) => {
+      MODE_GROUPS.imageToVideo.spellings.forEach((image, indexB) => {
+        const spellings = `(spellings ${indexA + 1} x ${indexB + 1})`;
+        it(`rejects reference x imageToVideo on grok-imagine-video ${spellings}`, () => {
+          const { success, messages } = modeMessages("grok-imagine-video", {
+            ...reference,
+            ...image,
+          });
+          expect(success).toBe(false);
+          expect(namesBoth(messages, "reference", "imageToVideo")).toBe(true);
+        });
+        for (const model of FRAME_MODELS) {
+          it(`accepts reference x imageToVideo on ${model ?? "no model"} ${spellings}`, () => {
+            expect(modeMessages(model, { ...reference, ...image })).toEqual({
+              success: true,
+              messages: [],
+            });
+          });
+        }
+      });
+    });
 
     it("accepts an empty reference_images array with image-to-video", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
@@ -292,9 +350,16 @@ describe("xAI Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
-    for (const group of Object.keys(
-      MODE_GROUPS
-    ) as (keyof typeof MODE_GROUPS)[]) {
+    it("accepts an empty keyframes array with a source video", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "Add rain",
+        video: { url: "https://example.com/video.mp4" },
+        keyframes: [],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    for (const group of Object.keys(MODE_GROUPS) as ModeGroup[]) {
       MODE_GROUPS[group].spellings.forEach((fields, index) => {
         it(`accepts ${group} alone (spelling ${index + 1})`, () => {
           const result = XaiVideoGenerateRequestSchema.safeParse({
@@ -305,6 +370,59 @@ describe("xAI Zod schema validation", () => {
         });
       });
     }
+  });
+
+  // A pinned frame makes the prompt optional: "`prompt` is optional in every
+  // first & last frame request" and "optional whenever a frame is pinned"
+  // (reference-to-video doc). Text-to-video and reference-only requests
+  // still need one.
+  describe("video generation prompt", () => {
+    it.each([
+      ["image", { image: { url: "https://example.com/first.jpg" } }],
+      ["image_file_id", { image_file_id: "file_first" }],
+      ["last_frame", { last_frame: { url: "https://example.com/last.jpg" } }],
+      ["last_frame_file_id", { last_frame_file_id: "file_last" }],
+      [
+        "keyframes",
+        {
+          keyframes: [
+            { image: { url: "https://example.com/key.jpg" }, timestamp_s: 2 },
+          ],
+        },
+      ],
+    ])("accepts %s without a prompt", (_label, fields) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse(fields);
+      expect(result.success).toBe(true);
+    });
+
+    it.each([
+      ["no input", {}],
+      [
+        "reference images only",
+        { reference_images: [{ url: "https://example.com/ref.jpg" }] },
+      ],
+      ["voices only", { reference_audios: [{ voice_id: "eve" }] }],
+    ])("rejects %s without a prompt", (_label, fields) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        model: "grok-imagine-video-1.5",
+        ...fields,
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toContainEqual(
+        expect.objectContaining({ path: ["prompt"] })
+      );
+    });
+
+    it("rejects an empty prompt beside a pinned frame", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "",
+        image: { url: "https://example.com/first.jpg" },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("prompt"))).toBe(
+        true
+      );
+    });
   });
 
   // REQ-002/REQ-004 reference model matrix: the current capability supports

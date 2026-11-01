@@ -914,6 +914,89 @@ describe("computeEstimate", () => {
         expect(result.warnings).toEqual([]);
       });
 
+      // A pinned frame bills as one input image (planning ac-yrfzhy D6). xAI's
+      // cookbook reports 1.44 for a 10 s 720p time-lapse with a first frame,
+      // 2 keyframes and a last frame, and 1.42 and 0.71 for clips from
+      // references and voices.
+      it.each([
+        [
+          "a first frame, two keyframes and a last frame",
+          10,
+          {
+            image: { url: "https://x/first.jpg" },
+            keyframes: [
+              { image: { url: "https://x/k1.jpg" }, timestamp_s: 3 },
+              { image: { url: "https://x/k2.jpg" }, timestamp_s: 6 },
+            ],
+            last_frame: { url: "https://x/last.jpg" },
+          },
+          1.44,
+        ],
+        [
+          "a stored last frame",
+          10,
+          {
+            image: { url: "https://x/first.jpg" },
+            keyframes: [
+              { image: { url: "https://x/k1.jpg" }, timestamp_s: 3 },
+              { image: { url: "https://x/k2.jpg" }, timestamp_s: 6 },
+            ],
+            last_frame_file_id: "file_last",
+          },
+          1.44,
+        ],
+        [
+          "two references and two voices",
+          10,
+          {
+            reference_images: [
+              { url: "https://x/a.jpg" },
+              { url: "https://x/b.jpg" },
+            ],
+            reference_audios: [{ voice_id: "eve" }, { voice_id: "leo" }],
+          },
+          1.42,
+        ],
+        [
+          "one reference and one voice",
+          5,
+          {
+            reference_images: [{ url: "https://x/a.jpg" }],
+            reference_audios: [{ voice_id: "eve" }],
+          },
+          0.71,
+        ],
+      ])("prices %s on 1.5", (_label, duration, body, usd) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: {
+            model: "grok-imagine-video-1.5",
+            duration,
+            resolution: "720p",
+            ...body,
+          },
+        });
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.warnings).toEqual([]);
+      });
+
+      it("fails closed when keyframes is not a list", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.videos.generations",
+          payload: {
+            model: "grok-imagine-video-1.5",
+            duration: 1,
+            keyframes: { image: { url: "https://x/k.jpg" }, timestamp_s: 0.5 },
+          },
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([
+          "xai 'grok-imagine-video-1.5': could not derive exact additional charge from payload",
+        ]);
+      });
+
       it("fails closed when reference_images is not a list", () => {
         const result = computeEstimate({
           provider: "xai" as const,

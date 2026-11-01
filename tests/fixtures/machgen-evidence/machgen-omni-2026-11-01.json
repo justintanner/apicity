@@ -1,0 +1,501 @@
+{
+  "capturedAt": "2026-11-01",
+  "source": "Free probes of POST https://api.machgen.ai/api/v0/generate with model MiniMax-H3-Omni (each request off-grid, so MachGen answered HTTP 400 before accepting a task; none was billed), the public pricebook GET https://api.machgen.ai/api/v0/billing/pricebook/public, the model page https://www.machgen.ai/models/machgen/minimax-h3-omni, and the web app's capability contract in that page's /_next/static/chunks (key minimaxh3omni).",
+  "pricebook": {
+    "source": "https://api.machgen.ai/api/v0/billing/pricebook/public",
+    "readAt": "2026-11-01T07:08:13Z",
+    "prices": [
+      {
+        "model": "MiniMax-H3-Omni",
+        "width": null,
+        "height": 768,
+        "audio": null,
+        "has_input_video": false,
+        "task_type": null,
+        "optimization_level": null,
+        "uses_adapter": null,
+        "unit": "PER_SECOND",
+        "duration_start": null,
+        "duration_end": null,
+        "unit_price_micros": 20000,
+        "version": 1,
+        "updated_by": null,
+        "inherited": false,
+        "discount_percent": 0,
+        "discounted_unit_price_micros": null,
+        "fixed_unit_price_micros": null,
+        "task_type_discounts": {},
+        "discount_announced": false,
+        "discount_ends_at": null,
+        "task_type_discount_ends_at": {},
+        "discount_note": null,
+        "task_type_discount_notes": {},
+        "generation_credit_percent": 0
+      },
+      {
+        "model": "MiniMax-H3-Omni",
+        "width": null,
+        "height": 768,
+        "audio": null,
+        "has_input_video": true,
+        "task_type": null,
+        "optimization_level": null,
+        "uses_adapter": null,
+        "unit": "PER_SECOND",
+        "duration_start": null,
+        "duration_end": null,
+        "unit_price_micros": 20000,
+        "version": 1,
+        "updated_by": null,
+        "inherited": false,
+        "discount_percent": 0,
+        "discounted_unit_price_micros": null,
+        "fixed_unit_price_micros": null,
+        "task_type_discounts": {},
+        "discount_announced": false,
+        "discount_ends_at": null,
+        "task_type_discount_ends_at": {},
+        "discount_note": null,
+        "task_type_discount_notes": {},
+        "generation_credit_percent": 0
+      }
+    ]
+  },
+  "contract": {
+    "modelId": "MiniMax-H3-Omni",
+    "group": "hosted",
+    "hideInGeneratePicker": true,
+    "showInDocs": false,
+    "r2v": {
+      "fpsOptions": [24],
+      "heights": [768],
+      "apiOnlyAspectRatios": ["adaptive"],
+      "durations": "t(1,16)",
+      "supportsSeed": true,
+      "supportsPromptEnhancement": true,
+      "supportsAudio": true,
+      "maxPromptChars": 65535,
+      "requiresPrompt": true,
+      "maxReferenceImages": 9,
+      "maxReferenceVideos": 3,
+      "maxReferenceAudios": 3,
+      "maxReferenceVideoTotalDurationSecs": 15,
+      "maxReferenceAudioTotalDurationSecs": 15,
+      "maxReferenceFiles": 12,
+      "minReferenceFiles": 1,
+      "requiresVisualReference": true,
+      "referenceVideoOperationControls": {
+        "reference": {
+          "aspectRatio": "requested",
+          "duration": "requested"
+        }
+      },
+      "priceByInputVideo": true,
+      "pricing": "by_height"
+    }
+  },
+  "taskTypes": {
+    "MiniMax-H3-Omni": ["R2V"]
+  },
+  "grids": {
+    "MiniMax-H3-Omni": {
+      "R2V": {
+        "heights": [768],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    }
+  },
+  "notes": [
+    "The contract sets showInDocs false and hideInGeneratePicker true, so https://www.machgen.ai/docs/models and the Playground's model picker omit MiniMax-H3-Omni; it has its own model page, llms.txt entry and pricebook rows, and the generate API accepts it for R2V.",
+    "MachGen checks duration_secs before the reference counts, so the reference-limit probes (O11-O18) sent a valid duration_secs of 1 and were refused on the rule under test.",
+    "A made-up id answers 'Invalid model id' (O10), unlike MiniMax-H3-Omni's grid errors."
+  ],
+  "probes": [
+    {
+      "utc": "2026-11-01T08:01:03.997Z",
+      "label": "O1-t2v",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "T2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support task_type=T2V; allowed task types: ['R2V']"
+    },
+    {
+      "utc": "2026-11-01T08:01:05.710Z",
+      "label": "O2-i2v",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "I2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support task_type=I2V; allowed task types: ['R2V']"
+    },
+    {
+      "utc": "2026-11-01T08:01:07.453Z",
+      "label": "O3-r2v-h480",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V height=480; allowed heights: [768]"
+    },
+    {
+      "utc": "2026-11-01T08:01:09.185Z",
+      "label": "O4-r2v-ar54",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "5:4",
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V aspect_ratio='5:4'; allowed aspect ratios: ['adaptive', '16:9', '9:16', '1:1', '4:3', '3:4', '21:9']"
+    },
+    {
+      "utc": "2026-11-01T08:01:10.921Z",
+      "label": "O5-r2v-d999",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    },
+    {
+      "utc": "2026-11-01T08:01:12.659Z",
+      "label": "O6-r2v-noref-d999",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    },
+    {
+      "utc": "2026-11-01T08:01:14.403Z",
+      "label": "O7-r2v-10img-d999",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    },
+    {
+      "utc": "2026-11-01T08:01:16.134Z",
+      "label": "O8-r2v-4vid-d999",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    },
+    {
+      "utc": "2026-11-01T08:01:17.863Z",
+      "label": "O9-r2v-h1080",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 1080,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni does not support R2V height=1080; allowed heights: [768]"
+    },
+    {
+      "utc": "2026-11-01T08:01:19.517Z",
+      "label": "O10-bogus-model",
+      "request": {
+        "model": "MiniMax-H3-Omnix",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "Invalid model id: MiniMax-H3-Omnix - check https://www.machgen.ai/docs/models for the full list of supported models"
+    },
+    {
+      "utc": "2026-11-01T08:01:59.506Z",
+      "label": "O11-10img-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V accepts at most 9 reference images; got 10"
+    },
+    {
+      "utc": "2026-11-01T08:02:01.237Z",
+      "label": "O12-4vid-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V accepts at most 3 reference videos; got 4"
+    },
+    {
+      "utc": "2026-11-01T08:02:03.008Z",
+      "label": "O13-1img-4aud-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V accepts at most 3 reference audio clips; got 4"
+    },
+    {
+      "utc": "2026-11-01T08:02:04.753Z",
+      "label": "O14-13files-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V accepts at most 12 reference files; got 13"
+    },
+    {
+      "utc": "2026-11-01T08:02:06.481Z",
+      "label": "O16-offset9-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": [9]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V reads every reference video from its start; it does not support reference_video_start_secs"
+    },
+    {
+      "utc": "2026-11-01T08:02:08.220Z",
+      "label": "O15-audio-only-d1",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3"
+        ]
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V audio references require at least one image or video reference"
+    },
+    {
+      "utc": "2026-11-01T08:02:09.938Z",
+      "label": "O17-edit",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_operation": "edit"
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V does not support reference_video_operation='edit'; allowed operations: ['reference']"
+    },
+    {
+      "utc": "2026-11-01T08:02:11.655Z",
+      "label": "O18-extend",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 768,
+          "aspect_ratio": "16:9",
+          "duration_secs": 1
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_operation": "extend"
+      },
+      "status": 400,
+      "response": "MiniMax-H3-Omni R2V does not support reference_video_operation='extend'; allowed operations: ['reference']"
+    }
+  ]
+}

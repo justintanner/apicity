@@ -39,8 +39,8 @@ limits, the UPSCALE targets (`MACHGEN_VIDEO_UPSCALE`) and the SHARPEN
 heights (`MACHGEN_VIDEO_SHARPEN`); other ids pass unchecked. MachGen
 answers an off-grid request with HTTP 400 before it accepts the task, and
 does not bill it. The grids were read from those 400 responses on
-2026-10-25, and the SHARPEN heights on 2026-10-31. `-1` asks the model for
-a Smart length.
+2026-10-25, MiniMax-H3-Omni's on 2026-11-01, and the SHARPEN heights on
+2026-10-31. `-1` asks the model for a Smart length.
 
 | Model | T2V | I2V | R2V | UPSCALE | SHARPEN | I2V frames | I2V heights | I2V seconds | Priced |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -50,6 +50,7 @@ a Smart length.
 | `Vidu-Q3-Pro` | ✓ | ✓ | ✓ |  |  | start + end | 540, 720, 1080 | 1-16 | T2V, I2V, R2V |
 | `MiniMax-H3` | ✓ | ✓ | ✓ | ✓ | ✓ | start + end, or end only | 480, 768, 1080, 1440 | 1-30 | T2V, I2V, R2V, UPSCALE, SHARPEN |
 | `MiniMax-H3-Turbo` | ✓ | ✓ | ✓ |  |  | start + end, or end only | 480, 768, 1080 | 4-15 | T2V, I2V, R2V |
+| `MiniMax-H3-Omni` |  |  | ✓ |  |  |  |  |  | R2V |
 | `Seedance-2.5` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080 | -1, 4-30 | T2V, I2V, R2V |
 | `Seedance-2.0` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080, 2160 | -1, 4-15 | T2V, I2V, R2V |
 | `Seedance-2.0-Fast` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
@@ -90,7 +91,8 @@ An R2V request takes reference images, videos and audio clips in
 `reference_video_start_secs` lists one start second per reference video.
 `reference_video_operation` edits or extends the video instead of using
 it as a reference; an edit renders at the video's own length, so MachGen
-ignores `duration_secs`.
+ignores `duration_secs`. MiniMax-H3-Omni is missing from MachGen's models
+table, but its model page and pricebook list it, and it takes R2V only.
 
 | Model | R2V heights | R2V seconds | References | Reference video |
 | --- | --- | --- | --- | --- |
@@ -98,6 +100,7 @@ ignores `duration_secs`.
 | `Vidu-Q3-Pro` | 540, 720 | 1-16 | up to 7 images; no videos or audio | none |
 | `MiniMax-H3` | 480, 768, 1080, 1440 | 1-30 | up to 9 images, 3 videos, 3 audio; 15 in all | reference; start offsets |
 | `MiniMax-H3-Turbo` | 480, 768, 1080 | 4-15 | up to 9 images, 3 videos, 3 audio; 15 in all | reference; start offsets |
+| `MiniMax-H3-Omni` | 768 | 1-15 | up to 9 images, 3 videos, 3 audio; 12 in all; audio needs an image or video | reference |
 | `Seedance-2.5` | 480, 720, 1080 | -1, 4-30 | not checked | reference, edit, extend |
 | `Seedance-2.0` | 480, 720, 1080, 2160 | -1, 4-15 | up to 9 images, 3 videos, 3 audio; audio needs an image or video | reference |
 | `Seedance-2.0-Fast` | 480, 720 | -1, 4-15 | up to 9 images, 3 videos, 3 audio; 12 in all; audio needs an image or video | reference |

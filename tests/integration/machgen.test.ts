@@ -39,6 +39,15 @@ const evidence = JSON.parse(
   upscale: Record<string, { heights: number[]; engines?: string[] }>;
 };
 
+// MiniMax-H3-Omni's task type and R2V grid from MachGen's 400s on 2026-11-01.
+const omniEvidence = JSON.parse(
+  readFileSync("tests/fixtures/machgen-evidence/machgen-omni-2026-11-01.json", {
+    encoding: "utf8",
+  })
+) as Pick<typeof evidence, "grids" | "taskTypes"> & {
+  probes: Array<{ label: string; status: number; response: unknown }>;
+};
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -71,6 +80,7 @@ describe("MachGen", () => {
       "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
       "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE", "SHARPEN"],
       "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
+      "MiniMax-H3-Omni": ["R2V"],
       "Seedance-2.5": ["T2V", "I2V", "R2V"],
       "Seedance-2.0": ["T2V", "I2V", "R2V"],
       "Seedance-2.0-Fast": ["T2V", "I2V", "R2V"],
@@ -99,7 +109,10 @@ describe("MachGen", () => {
       .map(([model]) => model);
     expect(i2v).toHaveLength(19);
     // Every task-type list MachGen named in a 400 matches the matrix.
-    for (const [model, tasks] of Object.entries(evidence.taskTypes)) {
+    for (const [model, tasks] of Object.entries({
+      ...evidence.taskTypes,
+      ...omniEvidence.taskTypes,
+    })) {
       if (!Object.hasOwn(MACHGEN_VIDEO_MODEL_TASK_TYPES, model)) continue;
       expect(
         [...MACHGEN_VIDEO_MODEL_TASK_TYPES[model as "Kling-v3"]].sort(),
@@ -108,10 +121,11 @@ describe("MachGen", () => {
     }
   });
   it("pins every T2V, I2V and R2V grid to MachGen's own 400 responses", () => {
+    const grids = { ...evidence.grids, ...omniEvidence.grids };
     expect(Object.keys(MACHGEN_VIDEO_GRIDS).sort()).toEqual(
-      Object.keys(evidence.grids).sort()
+      Object.keys(grids).sort()
     );
-    for (const [model, tasks] of Object.entries(evidence.grids))
+    for (const [model, tasks] of Object.entries(grids))
       for (const [task, grid] of Object.entries(tasks)) {
         const ours = MACHGEN_VIDEO_GRIDS[model]?.[task as "T2V" | "I2V"];
         expect(ours?.heights, `${model} ${task}`).toEqual(grid.heights);
@@ -143,7 +157,7 @@ describe("MachGen", () => {
     const r2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("R2V"))
       .map(([model]) => model);
-    expect(r2v).toHaveLength(16);
+    expect(r2v).toHaveLength(17);
     for (const model of r2v)
       expect(MACHGEN_VIDEO_GRIDS[model]?.R2V, model).toBeDefined();
     // Upscale tiers and engines from the quote's 400s.
@@ -343,6 +357,69 @@ describe("MachGen", () => {
     expect(r2v({ subject_to_image_ids: { cat: [3] } }, 2)).toEqual([
       "subject_to_image_ids.cat: subject_to_image_ids cat points at index 3, but there are 1 references",
     ]);
+    // MiniMax-H3-Omni (case 24): each rule restates a 400 MachGen answered on
+    // 2026-11-01, Python list brackets aside.
+    const omni = (label: string) => {
+      const probe = omniEvidence.probes.find((p) => p.label === label)!;
+      expect(probe.status, label).toBe(400);
+      return String(probe.response).replace(/\[([^\]]*)\]/g, (_, items) =>
+        String(items).replaceAll("'", "")
+      );
+    };
+    const video = {
+      src_image_urls: undefined,
+      src_video_urls: [MACHGEN_REF_VIDEO],
+    };
+    for (const [label, path, overrides] of [
+      [
+        "O14-13files-d1",
+        "src_image_urls",
+        {
+          src_image_urls: Array(9).fill(image),
+          src_video_urls: Array(3).fill(MACHGEN_REF_VIDEO),
+          src_audio_urls: [audio],
+        },
+      ],
+      [
+        "O15-audio-only-d1",
+        "src_audio_urls",
+        { src_image_urls: undefined, src_audio_urls: [audio] },
+      ],
+      [
+        "O16-offset9-d1",
+        "reference_video_start_secs",
+        { ...video, reference_video_start_secs: [9] },
+      ],
+      [
+        "O17-edit",
+        "reference_video_operation",
+        { ...video, reference_video_operation: "edit" },
+      ],
+      [
+        "O18-extend",
+        "reference_video_operation",
+        { ...video, reference_video_operation: "extend" },
+      ],
+    ] as const)
+      expect(r2v(overrides, 24), label).toEqual([`${path}: ${omni(label)}`]);
+    // Its per-kind caps equal the schema's own array limits, which refuse
+    // a tenth image or a fourth video or audio clip first.
+    expect(MACHGEN_VIDEO_GRIDS["MiniMax-H3-Omni"]?.R2V?.references).toEqual({
+      images: 9,
+      videos: 3,
+      audios: 3,
+      total: 12,
+    });
+    expect(omni("O11-10img-d1")).toBe(
+      "MiniMax-H3-Omni R2V accepts at most 9 reference images; got 10"
+    );
+    expect(omni("O12-4vid-d1")).toBe(
+      "MiniMax-H3-Omni R2V accepts at most 3 reference videos; got 4"
+    );
+    expect(omni("O13-1img-4aud-d1")).toBe(
+      "MiniMax-H3-Omni R2V accepts at most 3 reference audio clips; got 4"
+    );
+    expect(r2v({ src_image_urls: Array(10).fill(image) }, 24)).not.toEqual([]);
     const upscale = (overrides: Record<string, unknown>) => {
       const result = MachGenGenerateRequestSchema.safeParse({
         prompt: "",

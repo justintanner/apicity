@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  MACHGEN_I2I_MAX_IMAGES,
   MACHGEN_IMAGE_MODELS,
   MachGenGenerateRequestSchema,
 } from "@apicity/machgen";
@@ -15,6 +16,14 @@ const payload = {
 };
 const parse = (overrides: Record<string, unknown>) =>
   MachGenGenerateRequestSchema.safeParse({ ...payload, ...overrides });
+const issues = (overrides: Record<string, unknown>) => {
+  const result = parse(overrides);
+  return result.success
+    ? []
+    : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+};
+const sources = (count: number) =>
+  Array.from({ length: count }, (_, i) => `https://example.com/${i}.jpg`);
 const estimate = (overrides: Record<string, unknown> = {}) =>
   computeEstimate({
     provider: "machgen",
@@ -71,6 +80,51 @@ describe("MachGen image tasks", () => {
   });
   it("retains the model alias escape hatch for image tasks", () => {
     expect(parse({ model: "Future-Image-Model" }).success).toBe(true);
+  });
+  it("pins each I2I source cap to MachGen's capability contract", () => {
+    const evidence = JSON.parse(
+      readFileSync(
+        "tests/fixtures/machgen-evidence/machgen-image-caps-2026-11-01.json",
+        "utf8"
+      )
+    ) as { contract: Record<string, { i2i: { maxInputImages: number } }> };
+    expect(MACHGEN_I2I_MAX_IMAGES).toEqual(
+      Object.fromEntries(
+        Object.entries(evidence.contract).map(([model, entry]) => [
+          model,
+          entry.i2i.maxInputImages,
+        ])
+      )
+    );
+    expect(Object.keys(MACHGEN_I2I_MAX_IMAGES)).toEqual([
+      ...MACHGEN_IMAGE_MODELS,
+    ]);
+  });
+  it.each([
+    ["GPT-Image-2", 16],
+    ["GPT-Image-2.5-Sunburst", 16],
+    ["GPT-Image-2.5-Flare", 16],
+    ["Nano-Banana-2", 14],
+    ["Nano-Banana-2.1", 14],
+  ])("caps %s I2I at %i source images", (model, cap) => {
+    expect(
+      issues({ model, task_type: "I2I", src_image_urls: sources(cap) })
+    ).toEqual([]);
+    expect(
+      issues({ model, task_type: "I2I", src_image_urls: sources(cap + 1) })
+    ).toEqual([
+      `src_image_urls: ${model} I2I accepts at most ${cap} source images; got ${cap + 1}`,
+    ]);
+  });
+  it("leaves T2I and image ids outside the table uncapped", () => {
+    expect(issues({ src_image_urls: sources(17) })).toEqual([]);
+    expect(
+      issues({
+        model: "Future-Image-Model",
+        task_type: "I2I",
+        src_image_urls: sources(17),
+      })
+    ).toEqual([]);
   });
   it("matches every captured image pricebook row for both task types", () => {
     const evidence = JSON.parse(

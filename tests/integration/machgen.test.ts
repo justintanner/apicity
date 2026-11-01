@@ -8,6 +8,7 @@ import {
   MACHGEN_VIDEO_SHARPEN,
   MACHGEN_VIDEO_UPSCALE,
   MachGenGenerateRequestSchema,
+  type MachGenGenerateRequest,
 } from "@apicity/machgen";
 import { setupPolly, teardownPolly } from "../harness";
 import {
@@ -372,6 +373,11 @@ describe("MachGen", () => {
     };
     for (const [label, path, overrides] of [
       [
+        "O11-10img-d1",
+        "src_image_urls",
+        { src_image_urls: Array(10).fill(image) },
+      ],
+      [
         "O14-13files-d1",
         "src_image_urls",
         {
@@ -402,24 +408,20 @@ describe("MachGen", () => {
       ],
     ] as const)
       expect(r2v(overrides, 24), label).toEqual([`${path}: ${omni(label)}`]);
-    // Its per-kind caps equal the schema's own array limits, which refuse
-    // a tenth image or a fourth video or audio clip first.
+    // Its video and audio caps equal the schema's own array limits, which
+    // refuse a fourth video or audio clip first.
     expect(MACHGEN_VIDEO_GRIDS["MiniMax-H3-Omni"]?.R2V?.references).toEqual({
       images: 9,
       videos: 3,
       audios: 3,
       total: 12,
     });
-    expect(omni("O11-10img-d1")).toBe(
-      "MiniMax-H3-Omni R2V accepts at most 9 reference images; got 10"
-    );
     expect(omni("O12-4vid-d1")).toBe(
       "MiniMax-H3-Omni R2V accepts at most 3 reference videos; got 4"
     );
     expect(omni("O13-1img-4aud-d1")).toBe(
       "MiniMax-H3-Omni R2V accepts at most 3 reference audio clips; got 4"
     );
-    expect(r2v({ src_image_urls: Array(10).fill(image) }, 24)).not.toEqual([]);
     const upscale = (overrides: Record<string, unknown>) => {
       const result = MachGenGenerateRequestSchema.safeParse({
         prompt: "",
@@ -528,6 +530,69 @@ describe("MachGen", () => {
     expect(quoted("Q18-num-frames")).toBe(
       "MiniMax-H3 SHARPEN does not accept num_frames"
     );
+  });
+  it("keeps MachGen's 9-image ceiling on every video task", () => {
+    const image = machgenPayload(0, "I2V").src_image_urls![0]!;
+    const withImages = (payload: MachGenGenerateRequest, count: number) => {
+      const result = MachGenGenerateRequestSchema.safeParse({
+        ...payload,
+        src_image_urls: Array(count).fill(image),
+      });
+      return result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    };
+    // R2V grids without an image cap fall back to the documented 9.
+    const uncapped = Object.entries(MACHGEN_VIDEO_GRIDS)
+      .filter(
+        ([, grids]) => grids.R2V && grids.R2V.references?.images === undefined
+      )
+      .map(([model]) => model);
+    expect(uncapped).toEqual([
+      "Seedance-2.5",
+      "Vidu-Q4-Preview",
+      "Alibaba-Wan-3.0",
+      "HappyHorse-1.1",
+      "HappyHorse-1.0",
+    ]);
+    const payloads: MachGenGenerateRequest[] = [
+      ...MACHGEN_CASES.flatMap(([, model], i) =>
+        uncapped.includes(model) ? [machgenPayload(i, "R2V")] : []
+      ),
+      // An id outside the matrix, T2V, UPSCALE and SHARPEN keep it too.
+      { ...machgenPayload(0, "R2V"), model: "Vidu-Q9-Max" },
+      machgenPayload(0, "T2V"),
+      {
+        prompt: "",
+        model: "Topaz-Video-Precision",
+        task_type: "UPSCALE",
+        src_task_ids: [MACHGEN_UPSCALE_SOURCE],
+        video_config: { height: 1080, duration_secs: 4 },
+      },
+      {
+        prompt: "",
+        model: "MiniMax-H3",
+        task_type: "SHARPEN",
+        src_task_ids: [MACHGEN_SHARPEN_SOURCE],
+        video_config: { height: 480, duration_secs: 1 },
+      },
+    ];
+    expect(payloads).toHaveLength(9);
+    for (const payload of payloads) {
+      const { model, task_type } = payload;
+      const noun = task_type === "R2V" ? "reference" : "source";
+      expect(withImages(payload, 9), `${model} ${task_type}`).toEqual([]);
+      expect(withImages(payload, 10), `${model} ${task_type}`).toEqual([
+        `src_image_urls: ${task_type} accepts at most 9 ${noun} images; got 10`,
+      ]);
+    }
+    // A lower cap reports alone: I2V's two images, or an R2V grid's own cap.
+    expect(withImages(machgenPayload(0, "I2V"), 10)).toEqual([
+      "src_image_urls: I2V accepts at most 2 source images; got 10",
+    ]);
+    expect(withImages(machgenPayload(9, "R2V"), 10)).toEqual([
+      "src_image_urls: Vidu-Q3-Turbo R2V accepts at most 7 reference images; got 10",
+    ]);
   });
   it("keeps video task types closed and model aliases grammar-bound", () => {
     const payload = machgenPayload(0, "T2V");

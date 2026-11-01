@@ -225,6 +225,9 @@ const lines = [
   "it as a reference; an edit renders at the video's own length, so MachGen",
   "ignores `duration_secs`. MiniMax-H3-Omni is missing from MachGen's models",
   "table, but its model page and pricebook list it, and it takes R2V only.",
+  "Beyond the caps below, every video task takes at most 9 images in",
+  "`src_image_urls`, the limit MachGen documents for references, and at",
+  "most 3 each in `src_video_urls` and `src_audio_urls`.",
   "",
   ...table(
     ["Model", "R2V heights", "R2V seconds", "References", "Reference video"],

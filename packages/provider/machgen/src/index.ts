@@ -27,6 +27,7 @@ export type {
 } from "./zod";
 export {
   MACHGEN_IMAGE_MODELS,
+  MACHGEN_I2I_MAX_IMAGES,
   MachGenImageConfigSchema,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,

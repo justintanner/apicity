@@ -46,6 +46,11 @@ describe("MachGen upscale quote", () => {
     expect(issues({ upscale_config: { engine: "starlight-hq" } })).toEqual([
       "upscale_config.engine: Topaz-Video-Precision does not support UPSCALE engine=starlight-hq; allowed engines: artemis-hq, artemis-lq, artemis-mq, gaia-cg, gaia-hq, proteus",
     ]);
+    expect(
+      issues({ src_image_urls: Array(10).fill("https://example.com/a.jpg") })
+    ).toEqual([
+      "src_image_urls: UPSCALE accepts at most 9 source images; got 10",
+    ]);
     // An id outside the matrix is accepted unchecked, as by generate.
     expect(issues({ model: "Vidu-Upscale-Pro" })).toEqual([]);
   });

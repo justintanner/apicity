@@ -331,3 +331,34 @@ export const WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema = z.object({
       "Generate native audio synchronized with the video. WaveSpeed default: true."
     ),
 });
+
+// google/gemini-omni-1.1-flash/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema =
+  z.object({
+    image: z.string().describe("Public URL of the image to animate."),
+    last_image: z
+      .string()
+      .optional()
+      .describe(
+        "Public URL of an end frame; the video then runs from the first image to it."
+      ),
+    prompt: z
+      .string()
+      .describe("Text prompt describing how the image should be animated."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(10)
+      .optional()
+      .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
+  });

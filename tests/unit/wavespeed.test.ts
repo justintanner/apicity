@@ -7,6 +7,7 @@ import {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
@@ -677,6 +678,53 @@ describe("wavespeed bytedance/seedance-2.5/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.1-flash/image-to-video", () => {
+  // The payload tests/integration/wavespeed-google-gemini-omni-1-1-flash-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    resolution: "360p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p1Flash)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+    ]);
+    expect(wavespeed.api.v3.google.geminiOmni1p1Flash.imageToVideo.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "1:1"],
+      ["duration", 2],
+      ["duration", 11],
+      ["image", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

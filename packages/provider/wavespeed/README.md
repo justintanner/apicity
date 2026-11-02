@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-10 endpoints across 7 groups. Each method mirrors an upstream URL path.
+11 endpoints across 7 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -125,6 +125,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### google
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.google.geminiOmni1p1Flash.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/google/gemini-omni-1.1-flash/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.google.geminiOmni1p1Flash.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.google.geminiOmni1p1Flash.textToVideo</code></b></summary>

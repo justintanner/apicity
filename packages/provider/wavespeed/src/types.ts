@@ -5,6 +5,7 @@ import type {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
@@ -230,8 +231,21 @@ export interface WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema;
 }
+export type WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest = z.input<
+  typeof WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoMethod {
+  (
+    request: WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema;
+}
 export interface WaveSpeedGoogleGeminiOmni1p1FlashNamespace {
   textToVideo: WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoMethod;
+  imageToVideo: WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoMethod;
 }
 export interface WaveSpeedGoogleNamespace {
   geminiOmni1p1Flash: WaveSpeedGoogleGeminiOmni1p1FlashNamespace;

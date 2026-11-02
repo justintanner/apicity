@@ -1,5 +1,5 @@
 import type { ModelPricing } from "./types";
-import { asNumber, asString } from "./helpers";
+import { asNumber, asString, hintInputSeconds } from "./helpers";
 
 // WaveSpeed list prices, keyed by the WaveSpeed model id (the path after
 // /api/v3/ in its submit URL). Each model page embeds its pricing record:
@@ -38,6 +38,9 @@ const clampedSeconds =
     if (duration === undefined) return undefined;
     return Math.min(Math.max(Math.ceil(duration), min), max);
   };
+
+const hasItems = (p: Record<string, unknown>, key: string) =>
+  Array.isArray(p[key]) && (p[key] as unknown[]).length > 0;
 
 export const wavespeed: Record<string, ModelPricing> = {
   // base_price 100000 micros, discount_rate 95 on 2026-11-02. Formula:
@@ -80,5 +83,54 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "768p": 0.1, "2k": 0.14 },
     source: source("minimax/h3/text-to-video"),
+  },
+  // base_price 360000 micros, discount_rate 90 on 2026-11-02. Formula:
+  //   {"total_price": ($scale := (resolution = "4k" ? 10 :
+  //   resolution = "1080p" ? 5 : resolution = "720p" ? 2 : 1);
+  //   $count(reference_videos) > 0 ? ($reference_duration :=
+  //   $min([$ceil(get_duration(reference_videos, min=2, max=30,
+  //   total=30)), 30]); 110000 * $scale * ($max([2, $reference_duration]) +
+  //   (duration ? duration : $max([4, $reference_duration])))) :
+  //   (base_price / 2) * $scale * duration)}
+  // Reference videos bill by their measured length, which only
+  // costHints.inputDurationSeconds can carry.
+  "bytedance/seedance-2.5/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      if (!hasItems(p, "reference_videos")) return requestedSeconds(5)(p);
+      const input = hintInputSeconds(hints);
+      if (input === undefined) return undefined;
+      const reference = Math.min(
+        Math.ceil(Math.min(Math.max(input, 2), 30)),
+        30
+      );
+      const output = requestedSeconds(Math.max(4, reference))(p);
+      return output === undefined ? undefined : Math.max(2, reference) + output;
+    },
+    select: [
+      {
+        name: "videoInput",
+        pick: (p) => (hasItems(p, "reference_videos") ? "video" : "no-video"),
+      },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: {
+      "no-video|480p": 0.18,
+      "no-video|720p": 0.36,
+      "no-video|1080p": 0.9,
+      "no-video|4k": 1.8,
+      "video|480p": 0.11,
+      "video|720p": 0.22,
+      "video|1080p": 0.55,
+      "video|4k": 1.1,
+    },
+    warn: (p, hints) =>
+      hasItems(p, "reference_videos") && hintInputSeconds(hints) === undefined
+        ? [
+            "wavespeed 'bytedance/seedance-2.5/text-to-video': reference_videos bill by their length; pass costHints.inputDurationSeconds",
+          ]
+        : [],
+    source: source("bytedance/seedance-2.5/text-to-video"),
   },
 };

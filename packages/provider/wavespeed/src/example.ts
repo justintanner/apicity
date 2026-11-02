@@ -26,6 +26,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedance2p5.textToVideo": {
+    "source": "wavespeed/bytedance-seedance-2-5-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "480p",
+      "duration": 4,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.heygen.video1p0.textToVideo": {
     "source": "wavespeed/heygen-video-1-0-text-to-video",
     "payload": {

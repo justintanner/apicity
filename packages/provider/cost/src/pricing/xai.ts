@@ -1,5 +1,5 @@
 import type { CostHints } from "../types";
-import type { ModelPricing } from "./types";
+import type { ModelPricing, PerUnitPricing } from "./types";
 import { asNumber, asString, coerceSeconds, hintSeconds } from "./helpers";
 
 const source = { url: "https://docs.x.ai" };
@@ -144,16 +144,14 @@ const imageCount = (p: Record<string, unknown>): number => asNumber(p.n) ?? 1;
 
 const perGenerationImage = (
   perUnit: number,
-  perInputImage?: number
+  perInputImage: number
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
   units: imageCount,
   select: [],
   rates: { "": perUnit },
-  ...(perInputImage === undefined
-    ? {}
-    : { extra: inputImageCharge(perInputImage, "images", "image_file_ids") }),
+  extra: inputImageCharge(perInputImage, "images", "image_file_ids"),
   source: mediaSource,
 });
 
@@ -170,7 +168,19 @@ const isImageEdit = (p: Record<string, unknown>): boolean =>
     (source) => source !== undefined
   );
 
-const grokImagineImage2: ModelPricing = {
+const imageResolution: PerUnitPricing["select"][number] = {
+  name: "resolution",
+  pick: (p) => (p.resolution === undefined ? "1k" : asString(p.resolution)),
+  required: true,
+};
+
+const grokImagineImage2LowRates = {
+  "low|1k": 0.04,
+  "low|1.5k": 0.05,
+  "low|2k": 0.06,
+};
+
+const grokImagineImage2: PerUnitPricing = {
   kind: "perUnit",
   unit: "generations",
   units: imageCount,
@@ -185,16 +195,10 @@ const grokImagineImage2: ModelPricing = {
           : asString(p.quality),
       required: true,
     },
-    {
-      name: "resolution",
-      pick: (p) => (p.resolution === undefined ? "1k" : asString(p.resolution)),
-      required: true,
-    },
+    imageResolution,
   ],
   rates: {
-    "low|1k": 0.04,
-    "low|1.5k": 0.05,
-    "low|2k": 0.06,
+    ...grokImagineImage2LowRates,
     "medium|1k": 0.06,
     "medium|1.5k": 0.07,
     "medium|2k": 0.08,
@@ -203,6 +207,25 @@ const grokImagineImage2: ModelPricing = {
   source: {
     url: "https://docs.x.ai/developers/rest-api-reference/inference/models",
     asOf: "2026-10-31",
+  },
+};
+
+// xAI retired grok-imagine-image-quality on 2026-11-02
+// (docs.x.ai/developers/migration/imagine-image-quality-nov-2). The slug
+// still resolves: grok-imagine-image-2.0 serves it with quality `low`, and
+// it bills at the 2.0 low rate. So it prices as 2.0 pinned to low, at the
+// request's resolution and with the 2.0 input-image charge on an edit. No
+// redirected call is recorded.
+const grokImagineImageQuality: PerUnitPricing = {
+  ...grokImagineImage2,
+  select: [
+    { name: "quality", pick: () => "low", required: true },
+    imageResolution,
+  ],
+  rates: grokImagineImage2LowRates,
+  source: {
+    url: "https://docs.x.ai/developers/migration/imagine-image-quality-nov-2",
+    asOf: "2026-11-02",
   },
 };
 
@@ -251,10 +274,6 @@ export const xai: Record<string, ModelPricing> = {
   // batch request scales linearly. A recorded edit of two inputs billed
   // 0.024: 0.02 for the image and 0.002 for each input.
   "grok-imagine-image": perGenerationImage(0.02, 0.002),
-  // xAI retires this slug on 2026-11-02
-  // (docs.x.ai/developers/migration/imagine-image-quality-nov-2): it keeps
-  // resolving, but grok-imagine-image-2.0 at `low` serves it and bills it at
-  // that rate. 0.05 holds until the switch.
-  "grok-imagine-image-quality": perGenerationImage(0.05),
+  "grok-imagine-image-quality": grokImagineImageQuality,
   "grok-imagine-image-2.0": grokImagineImage2,
 };

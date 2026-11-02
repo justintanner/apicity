@@ -421,11 +421,6 @@ describe("PRICING data", () => {
       unit: "generations",
       rates: { "": 0.02 },
     });
-    expect(PRICING.xai["grok-imagine-image-quality"]).toMatchObject({
-      kind: "perUnit",
-      unit: "generations",
-      rates: { "": 0.05 },
-    });
     expect(PRICING.xai["grok-imagine-image-2.0"]).toMatchObject({
       kind: "perUnit",
       unit: "generations",
@@ -440,20 +435,45 @@ describe("PRICING data", () => {
     });
   });
 
-  // The page's six Imagine rates were re-read on 2026-10-31; the preview id
+  // From 2026-11-02 grok-imagine-image-2.0 serves the retired slug at low, so
+  // the entry carries the 2.0 low row and no medium rate it cannot bill.
+  it("prices retired grok-imagine-image-quality on the 2.0 low row", () => {
+    const entry = PRICING.xai["grok-imagine-image-quality"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    expect(entry.unit).toBe("generations");
+    expect(entry.rates).toEqual({
+      "low|1k": 0.04,
+      "low|1.5k": 0.05,
+      "low|2k": 0.06,
+    });
+  });
+
+  // The page's Imagine rates were re-read on 2026-10-31; the preview id
   // shares the 1.5 rate. The grok-imagine-image-2.0 grid comes from the
   // `pricing` list of GET /v1/image-generation-models, which the models
-  // reference documents.
+  // reference documents. xAI's migration note bills the retired
+  // grok-imagine-image-quality slug at the 2.0 low rate from 2026-11-02.
   it("stamps the xai media rates with the pricing page read", () => {
+    const sources: Record<string, { url: string; asOf: string }> = {
+      "grok-imagine-image-2.0": {
+        url: "https://docs.x.ai/developers/rest-api-reference/inference/models",
+        asOf: "2026-10-31",
+      },
+      "grok-imagine-image-quality": {
+        url: "https://docs.x.ai/developers/migration/imagine-image-quality-nov-2",
+        asOf: "2026-11-02",
+      },
+    };
     for (const [model, entry] of Object.entries(PRICING.xai)) {
       if (entry.kind !== "perUnit") continue;
-      expect(entry.source, model).toEqual({
-        url:
-          model === "grok-imagine-image-2.0"
-            ? "https://docs.x.ai/developers/rest-api-reference/inference/models"
-            : "https://docs.x.ai/developers/pricing",
-        asOf: "2026-10-31",
-      });
+      expect(entry.source, model).toEqual(
+        sources[model] ?? {
+          url: "https://docs.x.ai/developers/pricing",
+          asOf: "2026-10-31",
+        }
+      );
     }
   });
 

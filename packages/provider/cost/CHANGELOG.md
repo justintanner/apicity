@@ -213,6 +213,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- xAI `grok-imagine-image-quality` prices as `grok-imagine-image-2.0` at
+  low quality: 0.04, 0.05 and 0.06 USD per image at 1k, 1.5k and 2k, plus
+  0.01 USD per edit input image, whatever quality the request names. xAI
+  retired the slug on 2026-11-02. Its migration note
+  (docs.x.ai/developers/migration/imagine-image-quality-nov-2) says the slug
+  keeps resolving, that `grok-imagine-image-2.0` serves it with
+  `quality: "low"`, and that it bills at the 2.0 low rate. Before, it priced
+  a flat 0.05 USD per image with no input charge. The entry's `source` is
+  that note, dated 2026-11-02. No redirected call is recorded (ac-2ppeko).
 - MachGen MiniMax H3 Turbo prices at 0.015 USD/s for T2V, I2V and R2V, at
   480p and 768p, with or without an input video. The public pricebook was
   re-read on 2026-11-01 after the 50% promotion (0.01 USD/s) ended at

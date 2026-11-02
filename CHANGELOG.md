@@ -316,6 +316,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   child's inherited environment, and `SubprocessResult` an optional
   `notFound`, set when the binary is missing.
 
+### Deprecated
+
+- `@apicity/xai` `XAI_GROK_IMAGINE_IMAGE_QUALITY` (from `@apicity/xai/zod`). xAI retired the `grok-imagine-image-quality` slug on 2026-11-02 (https://docs.x.ai/developers/migration/imagine-image-quality-nov-2). The slug still resolves: `grok-imagine-image-2.0` serves it with `quality: "low"` and bills it at the 2.0 low rate, so the constant stays exported. Name `grok-imagine-image-2.0` and pass `quality` instead. The xAI README's Imagine Files example now does that (ac-3h5kfe).
+
 ### Removed
 
 - **Breaking:** retired KIE `sora-watermark-remover`, its

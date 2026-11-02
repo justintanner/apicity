@@ -245,14 +245,16 @@ complete before it is referenced by an Imagine endpoint.
 ```typescript
 const gen = await xai.post.v1.images.generations({
   prompt: "A futuristic city skyline at night",
-  model: "grok-imagine-image-quality",
+  model: "grok-imagine-image-2.0",
+  quality: "low",
   storage_options: { filename: "city.jpg" },
 });
 const city = gen.data[0].file_output!.file_id!;
 
 const edit = await xai.post.v1.images.edits({
   prompt: "Add neon signs to the buildings",
-  model: "grok-imagine-image-quality",
+  model: "grok-imagine-image-2.0",
+  quality: "low",
   image_file_id: city,
   storage_options: { filename: "city-neon.jpg" },
 });

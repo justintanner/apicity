@@ -54,6 +54,8 @@ export const WaveSpeedAlibabaWan3p0TextToVideoRequestSchema = z.object({
 export const WaveSpeedHeygenVideo1p0TextToVideoRequestSchema = z.object({
   prompt: z
     .string()
+    .min(1)
+    .max(32000)
     .describe("Describe the scene, action, and camera movement."),
   duration: z
     .number()
@@ -90,6 +92,7 @@ export const WaveSpeedHeygenVideo1p0TextToVideoRequestSchema = z.object({
 export const WaveSpeedMinimaxH3TextToVideoRequestSchema = z.object({
   prompt: z
     .string()
+    .max(7000)
     .describe(
       "Text description of the video scene, action, camera movement, and style."
     ),
@@ -270,3 +273,32 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema =
       .optional()
       .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
   });
+
+// minimax/h3/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedMinimaxH3ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(7000)
+    .describe("Text description of the desired motion and scene."),
+  image: z
+    .string()
+    .describe(
+      "First frame: a public URL or Base64 data, 256-5760 px per side, aspect ratio 0.4-2.5."
+    ),
+  last_image: z
+    .string()
+    .optional()
+    .describe("Last frame: a public URL or Base64 data."),
+  resolution: z
+    .enum(["768p", "2k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
+});

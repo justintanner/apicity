@@ -8,6 +8,7 @@ import {
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "@apicity/wavespeed/zod";
@@ -568,5 +569,72 @@ describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
         `${field} ${value}`
       ).toBe(false);
     }
+  });
+});
+
+describe("wavespeed minimax/h3/image-to-video", () => {
+  // The payload tests/integration/wavespeed-minimax-h3-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    resolution: "768p",
+    duration: 4,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.minimax.h3)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+    ]);
+    expect(wavespeed.api.v3.minimax.h3.imageToVideo.schema).toBe(
+      WaveSpeedMinimaxH3ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedMinimaxH3ImageToVideoRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "1080p"],
+      ["duration", 3],
+      ["duration", 16],
+      ["prompt", "x".repeat(7001)],
+    ] as const) {
+      expect(
+        WaveSpeedMinimaxH3ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+    expect(
+      WaveSpeedMinimaxH3ImageToVideoRequestSchema.safeParse({
+        ...RECORDED,
+        image: undefined,
+      }).success
+    ).toBe(false);
+  });
+
+  it("holds the catalog's prompt limits on the text-to-video siblings", () => {
+    expect(
+      WaveSpeedMinimaxH3TextToVideoRequestSchema.safeParse({
+        prompt: "x".repeat(7001),
+      }).success
+    ).toBe(false);
+    expect(
+      WaveSpeedHeygenVideo1p0TextToVideoRequestSchema.safeParse({ prompt: "" })
+        .success
+    ).toBe(false);
+    expect(
+      WaveSpeedHeygenVideo1p0TextToVideoRequestSchema.safeParse({
+        prompt: "x".repeat(32001),
+      }).success
+    ).toBe(false);
   });
 });

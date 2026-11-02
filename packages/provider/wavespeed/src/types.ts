@@ -6,6 +6,7 @@ import type {
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "./zod";
@@ -129,8 +130,21 @@ export interface WaveSpeedMinimaxH3TextToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedMinimaxH3TextToVideoRequestSchema;
 }
+export type WaveSpeedMinimaxH3ImageToVideoRequest = z.input<
+  typeof WaveSpeedMinimaxH3ImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedMinimaxH3ImageToVideoMethod {
+  (
+    request: WaveSpeedMinimaxH3ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedMinimaxH3ImageToVideoRequestSchema;
+}
 export interface WaveSpeedMinimaxH3Namespace {
   textToVideo: WaveSpeedMinimaxH3TextToVideoMethod;
+  imageToVideo: WaveSpeedMinimaxH3ImageToVideoMethod;
 }
 export interface WaveSpeedMinimaxNamespace {
   h3: WaveSpeedMinimaxH3Namespace;

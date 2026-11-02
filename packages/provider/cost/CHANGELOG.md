@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed MiniMax H3 image-to-video (`minimax/h3/image-to-video`) bills as
+  its text-to-video sibling: 0.10 USD/s at 768p and 0.14 USD/s at 2k (768p
+  and 5 s by default), the duration capped at 15 s; the input image adds
+  nothing (list price, read 2026-11-02). A recorded 4 s 768p render billed
+  0.40 USD. `MODEL_SLUGS.wavespeed` shares the family slug `mmh3` (ac-l31zdp).
 - WaveSpeed Gemini Omni 1.1 Flash text-to-video
   (`google/gemini-omni-1.1-flash/text-to-video`) bills 0.03, 0.10, 0.15 and
   0.30 USD/s at 360p, 720p, 1080p and 4k (720p and 8 s by default), from the

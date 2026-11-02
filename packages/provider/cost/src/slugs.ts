@@ -727,6 +727,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/video-edit": "sd2p5",
     "heygen/video-1.0/reference-to-video": "heygenvideo",
     "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
+    "minimax/h3/reference-to-video": "mmh3",
   },
 } as const;
 
@@ -1451,6 +1452,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/video-edit": "Seedance 2.5 Edit",
     "heygen/video-1.0/reference-to-video": "HeyGen Video",
     "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
+    "minimax/h3/reference-to-video": "MiniMax H3",
   },
 } as const;
 

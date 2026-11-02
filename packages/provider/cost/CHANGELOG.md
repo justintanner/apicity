@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed MiniMax H3 reference-to-video (`minimax/h3/reference-to-video`)
+  bills the output's seconds (5 by default, at most 15) plus the reference
+  videos' total length, clamped to 2-15 s and rounded up, at 0.10 and
+  0.14 USD/s for 768p and 2k (768p by default), plus 0.05 USD for each
+  reference image past the fifth, from the formula on the model page (list
+  price, read 2026-11-02). The videos' length comes from
+  `costHints.inputDurationSeconds`; without it, a request with reference
+  videos fails closed with a warning naming the hint. A recorded 4 s 768p
+  render with one reference image billed 0.40 USD. `MODEL_SLUGS.wavespeed`
+  shares the family slug `mmh3` (ac-ifjwtg).
 - WaveSpeed Gemini Omni 1.1 Flash video edit
   (`google/gemini-omni-1.1-flash/video-edit`) bills 0.02 USD/s to read the
   source, rounded up and capped at 10 s, plus the output, as long as the

@@ -20,6 +20,7 @@ import {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
+  WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -599,10 +600,7 @@ describe("wavespeed minimax/h3/image-to-video", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.minimax.h3)).toEqual([
-      "textToVideo",
-      "imageToVideo",
-    ]);
+    expect(Object.keys(wavespeed.api.v3.minimax.h3)).toContain("imageToVideo");
     expect(wavespeed.api.v3.minimax.h3.imageToVideo.schema).toBe(
       WaveSpeedMinimaxH3ImageToVideoRequestSchema
     );
@@ -1212,6 +1210,60 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed minimax/h3/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-minimax-h3-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "768p",
+    duration: 4,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.minimax.h3)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "referenceToVideo",
+    ]);
+    expect(wavespeed.api.v3.minimax.h3.referenceToVideo.schema).toBe(
+      WaveSpeedMinimaxH3ReferenceToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedMinimaxH3ReferenceToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "1080p"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 3],
+      ["duration", 16],
+      ["prompt", "x".repeat(7001)],
+      ["reference_images", Array(10).fill(url)],
+      ["reference_videos", Array(4).fill(url)],
+      ["reference_audios", Array(4).fill(url)],
+    ] as const) {
+      expect(
+        WaveSpeedMinimaxH3ReferenceToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

@@ -88,3 +88,48 @@ describe("wavespeed minimax/h3/text-to-video", () => {
     ).toBeCloseTo(2.1, 9);
   });
 });
+
+describe("wavespeed bytedance/seedance-2.5/text-to-video", () => {
+  const model = "bytedance/seedance-2.5/text-to-video";
+  const video = "https://example.com/reference.mp4";
+
+  it("prices the recorded payload at the 0.72 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.72, 9);
+  });
+
+  it("bills a reference video's length on top of the output", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: PROMPT,
+        resolution: "720p",
+        duration: 5,
+        reference_videos: [video],
+      },
+      { inputDurationSeconds: 6 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.22 * (6 + 5), 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

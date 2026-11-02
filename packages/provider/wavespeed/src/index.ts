@@ -6,6 +6,10 @@ export type {
   WaveSpeedAlibabaWan3p0TextToVideoMethod,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedApiNamespace,
+  WaveSpeedBytedanceNamespace,
+  WaveSpeedBytedanceSeedance2p5Namespace,
+  WaveSpeedBytedanceSeedance2p5TextToVideoMethod,
+  WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
   WaveSpeedHeygenNamespace,
   WaveSpeedHeygenVideo1p0Namespace,
   WaveSpeedHeygenVideo1p0TextToVideoMethod,
@@ -26,6 +30,7 @@ export type {
 } from "./types";
 export {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,

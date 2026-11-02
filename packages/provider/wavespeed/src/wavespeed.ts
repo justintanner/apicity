@@ -2,6 +2,7 @@ import { attachExamples } from "./example";
 import { WaveSpeedError } from "./types";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
+  WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
   WaveSpeedOptions,
@@ -10,6 +11,7 @@ import type {
 } from "./types";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
 } from "./zod";
@@ -174,6 +176,27 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedMinimaxH3TextToVideoRequestSchema }
+            ),
+          },
+        },
+        bytedance: {
+          seedance2p5: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/text-to-video
+            // Docs: https://wavespeed.ai/models/bytedance/seedance-2.5/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedance-2.5/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema }
             ),
           },
         },

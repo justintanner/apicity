@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Gemini Omni 1.1 Flash image-to-video
+  (`google/gemini-omni-1.1-flash/image-to-video`) bills as its text-to-video
+  sibling: 0.03, 0.10, 0.15 and 0.30 USD/s at 360p, 720p, 1080p and 4k (720p
+  and 8 s by default); the input image adds nothing (list price, read
+  2026-11-02). A recorded 3 s 360p render billed 0.09 USD.
+  `MODEL_SLUGS.wavespeed` shares the family slug `geminiomni1p1f` (ac-11jkwt).
 - WaveSpeed Seedance 2.5 image-to-video (`bytedance/seedance-2.5/image-to-video`)
   bills 0.18, 0.36, 0.90 and 1.80 USD/s at 480p, 720p, 1080p and 4k (720p
   and 5 s by default), from the formula on the model page (list price, read

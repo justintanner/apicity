@@ -9,6 +9,7 @@ wavespeed	api.v3.bytedance.seedance2p0.textToVideo	POST	https://api.wavespeed.ai
 wavespeed	api.v3.google.geminiOmni1p1Flash.textToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/text-to-video	https://wavespeed.ai/models/google/gemini-omni-1.1-flash/text-to-video
 wavespeed	api.v3.minimax.h3.imageToVideo	POST	https://api.wavespeed.ai/api/v3/minimax/h3/image-to-video	https://wavespeed.ai/models/minimax/h3/image-to-video
 wavespeed	api.v3.bytedance.seedance2p5.imageToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/image-to-video	https://wavespeed.ai/models/bytedance/seedance-2.5/image-to-video
+wavespeed	api.v3.google.geminiOmni1p1Flash.imageToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/image-to-video	https://wavespeed.ai/models/google/gemini-omni-1.1-flash/image-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

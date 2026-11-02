@@ -278,3 +278,24 @@ describe("wavespeed bytedance/seedance-2.5/image-to-video", () => {
     ).toBeCloseTo(18, 9);
   });
 });
+
+describe("wavespeed google/gemini-omni-1.1-flash/image-to-video", () => {
+  const model = "google/gemini-omni-1.1-flash/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.09 USD list quote", () => {
+    const result = estimate(model, {
+      image,
+      prompt: PROMPT,
+      resolution: "360p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.09, 9);
+  });
+
+  it("bills 8 s at 720p by default", () => {
+    expect(estimate(model, { image, prompt: PROMPT }).usd).toBeCloseTo(0.8, 9);
+  });
+});

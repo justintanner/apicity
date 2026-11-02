@@ -236,4 +236,19 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.18, "720p": 0.36, "1080p": 0.9, "4k": 1.8 },
     source: source("bytedance/seedance-2.5/image-to-video"),
   },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02. The formula
+  // is the text-to-video one; the input image adds nothing:
+  //   {"total_price": base_price * (duration ? duration : 8) *
+  //   (resolution = "360p" ? 0.3 : resolution = "1080p" ? 1.5 :
+  //   resolution = "4k" ? 3 : 1)}
+  "google/gemini-omni-1.1-flash/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
+    source: source("google/gemini-omni-1.1-flash/image-to-video"),
+  },
 };

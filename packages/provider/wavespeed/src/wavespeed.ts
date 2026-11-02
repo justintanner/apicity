@@ -6,6 +6,7 @@ import type {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
+  WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
@@ -20,6 +21,7 @@ import {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
@@ -302,6 +304,26 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+              }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/image-to-video
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.1-flash/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.1-flash/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
               }
             ),
           },

@@ -828,6 +828,11 @@ export const FRONTIER = {
             dotPath: "v1.videos",
             modelId: "omni-flash",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.geminiOmni1p1Flash.imageToVideo",
+            pricingKey: "google/gemini-omni-1.1-flash/image-to-video",
+          },
         ],
       },
       {

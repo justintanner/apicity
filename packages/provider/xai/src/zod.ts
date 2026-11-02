@@ -5,6 +5,13 @@ export const XAI_GROK_IMAGINE_VIDEO_1_5 = "grok-imagine-video-1.5";
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW = `${XAI_GROK_IMAGINE_VIDEO_1_5}-preview`;
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = XAI_GROK_IMAGINE_VIDEO_1_5;
 export const XAI_GROK_IMAGINE_VIDEO_1_5_LITE = `${XAI_GROK_IMAGINE_VIDEO_1_5}-lite`;
+/**
+ * @deprecated xAI retired `grok-imagine-image-quality` on 2026-11-02. The
+ * slug still resolves: `grok-imagine-image-2.0` serves it with
+ * `quality: "low"` and bills it at the 2.0 low rate. Name
+ * `grok-imagine-image-2.0` and pass `quality` instead
+ * (https://docs.x.ai/developers/migration/imagine-image-quality-nov-2).
+ */
 export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
 
 // grok-imagine-video-1.5-lite and its dated snapshots. The lite model page

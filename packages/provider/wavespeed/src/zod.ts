@@ -302,3 +302,32 @@ export const WaveSpeedMinimaxH3ImageToVideoRequestSchema = z.object({
     .optional()
     .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
 });
+
+// bytedance/seedance-2.5/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Describe the scene, action, camera movement, and mood for the video."
+    ),
+  image: z.string().describe("Public URL of the start frame."),
+  last_image: z.string().optional().describe("Public URL of the last frame."),
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(30)
+    .optional()
+    .describe("Length of the video in seconds, 4-30. WaveSpeed default: 5."),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio synchronized with the video. WaveSpeed default: true."
+    ),
+});

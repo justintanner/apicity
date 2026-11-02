@@ -253,3 +253,28 @@ describe("wavespeed minimax/h3/image-to-video", () => {
     ).toBeCloseTo(2.1, 9);
   });
 });
+
+describe("wavespeed bytedance/seedance-2.5/image-to-video", () => {
+  const model = "bytedance/seedance-2.5/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.72 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.72, 9);
+  });
+
+  it("bills 4k at ten times the 480p rate", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, image, resolution: "4k", duration: 10 })
+        .usd
+    ).toBeCloseTo(18, 9);
+  });
+});

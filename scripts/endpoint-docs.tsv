@@ -16,6 +16,7 @@ wavespeed	api.v3.blackForestLabs.flux3.imageToVideo	POST	https://api.wavespeed.a
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video	https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video
 wavespeed	api.v3.alibaba.happyhorse1p1.imageToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.1/image-to-video	https://wavespeed.ai/models/alibaba/happyhorse-1.1/image-to-video
 wavespeed	api.v3.alibaba.wan3p0.videoEdit	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/video-edit	https://wavespeed.ai/models/alibaba/wan-3.0/video-edit
+wavespeed	api.v3.alibaba.wan3p0.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/reference-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/reference-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

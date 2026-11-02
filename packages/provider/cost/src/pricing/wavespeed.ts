@@ -95,7 +95,9 @@ const flux3Select: PerUnitPricing["select"] = [
   },
 ];
 
-const seedanceWarn =
+// Reference videos bill by their length, which only
+// costHints.inputDurationSeconds can carry.
+const referenceVideosWarn =
   (modelId: string) =>
   (p: Record<string, unknown>, hints?: CostHints): string[] =>
     hasItems(p, "reference_videos") && hintInputSeconds(hints) === undefined
@@ -169,7 +171,7 @@ export const wavespeed: Record<string, ModelPricing> = {
       "video|1080p": 0.55,
       "video|4k": 1.1,
     },
-    warn: seedanceWarn("bytedance/seedance-2.5/text-to-video"),
+    warn: referenceVideosWarn("bytedance/seedance-2.5/text-to-video"),
     source: source("bytedance/seedance-2.5/text-to-video"),
   },
   // base_price 170000 micros, discount_rate 100 on 2026-11-02. Formula:
@@ -207,7 +209,7 @@ export const wavespeed: Record<string, ModelPricing> = {
       "video|1080p": 0.375,
       "video|4k": 0.75,
     },
-    warn: seedanceWarn("bytedance/seedance-2.0/text-to-video"),
+    warn: referenceVideosWarn("bytedance/seedance-2.0/text-to-video"),
     source: source("bytedance/seedance-2.0/text-to-video"),
   },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
@@ -357,5 +359,32 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
     warn: editedVideoWarn("alibaba/wan-3.0/video-edit"),
     source: source("alibaba/wan-3.0/video-edit"),
+  },
+  // base_price 300000 micros, discount_rate 95 on 2026-11-02. Formula:
+  //   {"total_price": (base_price / 3) * (resolution = "1080p" ? 2 :
+  //   (resolution = "480p" ? 0.5 : 1)) * ($min([duration, 30]) +
+  //   $ceil($min([get_duration(reference_videos, min=1, max=15,
+  //   total=15), 15])))}
+  // Reference images and audio add nothing; reference videos add their
+  // length, clamped to 1-15 s and rounded up.
+  "alibaba/wan-3.0/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const output = cappedSeconds(5, 30)(p);
+      if (output === undefined || !hasItems(p, "reference_videos")) {
+        return output;
+      }
+      const input = hintInputSeconds(hints);
+      return input === undefined
+        ? undefined
+        : output + Math.ceil(Math.min(Math.max(input, 1), 15));
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    warn: referenceVideosWarn("alibaba/wan-3.0/reference-to-video"),
+    source: source("alibaba/wan-3.0/reference-to-video"),
   },
 };

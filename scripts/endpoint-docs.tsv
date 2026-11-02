@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+wavespeed	api.v3.predictions.result	GET	https://api.wavespeed.ai/api/v3/predictions/{id}/result	https://wavespeed.ai/docs/get-result
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

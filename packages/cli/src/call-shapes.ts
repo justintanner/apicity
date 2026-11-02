@@ -56,6 +56,15 @@ export function callShapeKey(
 
 /** Only endpoints whose URL carries a placeholder other than {query}. */
 export const CALL_SHAPES: Record<string, CallShape> = {
+  "wavespeed\tGET\tapi.v3.predictions.result": {
+    provider: "wavespeed",
+    method: "GET",
+    dotPath: "api.v3.predictions.result",
+    positional: [{ placeholder: "id", param: "id", optional: false }],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "endless\tGET\tsocial.tiktokTrends.public": {
     provider: "endless",
     method: "GET",

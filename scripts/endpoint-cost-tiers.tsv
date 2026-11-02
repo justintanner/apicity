@@ -1798,6 +1798,7 @@ thesportsdb	v2.search.team	GET	cheap	Free public sports-data API; no per-call US
 thesportsdb	v2.search.venue	GET	cheap	Free public sports-data API; no per-call USD cost
 tiktok-creative-center	ads.creativeOne.report.creativeCenterGetTopContentsList	GET	cheap	Free public Creative Center trend data; no key, no USD cost
 tiktok-creative-center	ads.creativeOne.report.getTopContentsOverview	GET	cheap	Free public Creative Center trend data; no key, no USD cost
+wavespeed	api.v3.predictions.result	GET	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.finalize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost

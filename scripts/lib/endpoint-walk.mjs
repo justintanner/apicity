@@ -255,6 +255,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/omkar/src/omkar.ts"],
     factoryNames: ["createOmkar"],
   },
+  {
+    name: "wavespeed",
+    entryFiles: ["packages/provider/wavespeed/src/wavespeed.ts"],
+    factoryNames: ["createWaveSpeed"],
+  },
 ];
 
 const TSV_ONLY_PROVIDERS = ["b2"];

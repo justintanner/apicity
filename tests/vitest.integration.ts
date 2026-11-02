@@ -136,6 +136,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/omkar/src"
       ),
+      "@apicity/wavespeed/zod": path.resolve(
+        __dirname,
+        "../packages/provider/wavespeed/src/zod"
+      ),
+      "@apicity/wavespeed": path.resolve(
+        __dirname,
+        "../packages/provider/wavespeed/src"
+      ),
       "@apicity/s3/zod": path.resolve(
         __dirname,
         "../packages/provider/s3/src/zod"

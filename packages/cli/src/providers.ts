@@ -285,6 +285,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/omkar",
     factoryName: "createOmkar",
   },
+  wavespeed: {
+    envVar: "WAVESPEED_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/wavespeed",
+    factoryName: "createWaveSpeed",
+  },
   thesportsdb: {
     envVar: "THESPORTSDB_API_KEY",
     optionKey: "apiKey",

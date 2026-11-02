@@ -292,7 +292,7 @@ function emptyVault(): {
 
 describe("the vault convention by provider class", () => {
   it("puts every provider in exactly one class", () => {
-    expect(REQUIRED).toHaveLength(22);
+    expect(REQUIRED).toHaveLength(23);
     expect(Object.keys(PROVIDERS)).toHaveLength(
       REQUIRED.length + OPTIONAL.length + KEYLESS.length
     );

@@ -264,6 +264,14 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       "Third-party proxy for Google Flow (Veo) video generation; per-call " +
       "media-generation cost is high and request-dependent",
   },
+  {
+    match: { provider: "wavespeed" },
+    tier: "prohibitive",
+    rationale:
+      "Per-model media-generation marketplace; per-call cost depends on the " +
+      "model and inputs and routinely exceeds $1. The prediction result " +
+      "read shares the provider policy",
+  },
 
   // ── exact prohibitive overrides inside otherwise-`expensive` providers ──
   // xAI image/video generation: these mirror the paid-endpoint registry and

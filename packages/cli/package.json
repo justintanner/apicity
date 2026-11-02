@@ -81,6 +81,7 @@
     "@apicity/telegram": "workspace:*",
     "@apicity/thesportsdb": "workspace:*",
     "@apicity/tiktok-creative-center": "workspace:*",
+    "@apicity/wavespeed": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",

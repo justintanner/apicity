@@ -68,6 +68,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   endless: ["endless.app"],
   "tiktok-creative-center": ["ads.tiktok.com"],
   omkar: ["www.omkar.cloud"],
+  wavespeed: ["wavespeed.ai"],
 };
 
 const METHOD_LINE_RE =

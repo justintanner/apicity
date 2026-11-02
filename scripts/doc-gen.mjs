@@ -303,6 +303,9 @@ function formatUsageSnippet(
   if (providerName === "omkar" && dotPath === "feed.explore.categories") {
     return `const categories = await ${call}();`;
   }
+  if (providerName === "wavespeed" && dotPath === "api.v3.predictions.result") {
+    return `const prediction = await ${call}("prediction_id");`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,
@@ -676,6 +679,21 @@ const PROVIDER_NOTES = new Map([
       "`code` (`missing_api_key`, `invalid_api_key`, `quota_exceeded`,",
       "`rate_limited`, ...), which rejects with `OmkarError` (`code`).",
       "Media and subtitle links are signed TikTok CDN URLs that expire.",
+    ].join(" "),
+  ],
+  [
+    "wavespeed",
+    [
+      "WaveSpeed runs one endpoint per model id: a model call answers at once",
+      "with a prediction id in `data.id`, and `api.v3.predictions.result`",
+      "reads that prediction until `data.status` is `completed`, when",
+      "`data.outputs` holds the results, or `failed`, `cancelled`, `timeout`",
+      "or `deleted`. Poll at least 2 s apart, and never resubmit a model call",
+      "automatically: a submit whose answer was lost may still have created,",
+      "and billed, a task. The key goes in `Authorization: Bearer`. API",
+      "errors answer `{ code, message }` and reject with `WaveSpeedError`,",
+      "whose `code` is that envelope code (404 for an unknown prediction).",
+      "Output URLs are temporary.",
     ].join(" "),
   ],
   [
@@ -4531,6 +4549,9 @@ const PROVIDER_AUTH = {
   omkar: {
     showMiddleware: false,
   },
+  wavespeed: {
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -4596,6 +4617,7 @@ const PROVIDER_DOCS = {
   "tiktok-creative-center":
     "https://ads.tiktok.com/creative/creativeCenter/trends/video",
   omkar: "https://www.omkar.cloud/tools/tiktok-scraper",
+  wavespeed: "https://wavespeed.ai/docs/rest-api",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -4665,6 +4687,9 @@ const PROVIDER_DEP_NOTES = {
   },
   omkar: {
     zod: "request schemas attached to endpoint methods as `.schema`",
+  },
+  wavespeed: {
+    zod: "request schemas attached to every POST endpoint as `.schema`, and the prediction statuses as `WaveSpeedPredictionStatusSchema`",
   },
   dropbox: {
     zod: "request schemas attached to Dropbox endpoint methods as `.schema`",

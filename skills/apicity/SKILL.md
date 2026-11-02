@@ -2,7 +2,7 @@
 name: apicity
 description: |
   Call any supported provider API (OpenAI, Anthropic, xAI, fal, KIE, ElevenLabs,
-  S3, Telegram, Polymarket and 23 more) through the apicity CLI. Use for ANY
+  S3, Telegram, Polymarket and 24 more) through the apicity CLI. Use for ANY
   task that needs a provider API: generation, upload, lookup, posting, trading
   data, or checking what an endpoint expects.
 triggers:
@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 32 provider APIs
+# apicity — one command line for 33 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -489,6 +489,17 @@ Poll `apicity machgen api.v0.tasks --taskId <id>`, then download with
 `task_type: "UPSCALE"` re-renders a finished task, named in `src_task_ids`,
 at a higher `video_config.height`.
 
+### wavespeed — media generation, polled by prediction id
+
+Every WaveSpeed model call answers at once with a prediction id in `data.id`.
+Poll that id at least 2 s apart until `data.status` is `completed`, when
+`data.outputs` holds the results, or `failed`, `cancelled`, `timeout` or
+`deleted`. Output URLs are temporary, so download what you keep.
+
+```bash
+apicity wavespeed api.v3.predictions.result --id <id> --json
+```
+
 ## Credentials and configuration
 
 Credentials are the operator's, not yours. `apicity` resolves them itself, for
@@ -560,6 +571,7 @@ secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 | `machgen`                | `MACHGEN_API_KEY`                                                                                                                                                                                                                       |
 | `quo`                    | `QUO_API_KEY`                                                                                                                                                                                                                           |
 | `omkar`                  | `OMKAR_API_KEY`                                                                                                                                                                                                                         |
+| `wavespeed`              | `WAVESPEED_API_KEY`                                                                                                                                                                                                                     |
 | `thesportsdb`            | `THESPORTSDB_API_KEY` (optional; the free tier works without it)                                                                                                                                                                        |
 
 ## Paid endpoints

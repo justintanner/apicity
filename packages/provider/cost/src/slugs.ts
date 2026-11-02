@@ -711,6 +711,7 @@ export const MODEL_SLUGS = {
     "heygen/video-1.0/text-to-video": "heygenvideo",
     "minimax/h3/text-to-video": "mmh3",
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
+    "black-forest-labs/flux-3/text-to-video": "flux3",
   },
 } as const;
 
@@ -1419,6 +1420,7 @@ export const MODEL_DISPLAY = {
     "heygen/video-1.0/text-to-video": "HeyGen Video",
     "minimax/h3/text-to-video": "MiniMax H3",
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
+    "black-forest-labs/flux-3/text-to-video": "FLUX 3",
   },
 } as const;
 

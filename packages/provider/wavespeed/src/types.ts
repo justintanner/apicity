@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -152,6 +153,25 @@ export interface WaveSpeedBytedanceNamespace {
   seedance2p5: WaveSpeedBytedanceSeedance2p5Namespace;
 }
 
+export type WaveSpeedBlackForestLabsFlux3TextToVideoRequest = z.input<
+  typeof WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedBlackForestLabsFlux3TextToVideoMethod {
+  (
+    request: WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema;
+}
+export interface WaveSpeedBlackForestLabsFlux3Namespace {
+  textToVideo: WaveSpeedBlackForestLabsFlux3TextToVideoMethod;
+}
+export interface WaveSpeedBlackForestLabsNamespace {
+  flux3: WaveSpeedBlackForestLabsFlux3Namespace;
+}
+
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
   result(
@@ -165,6 +185,7 @@ export interface WaveSpeedV3Namespace {
   heygen: WaveSpeedHeygenNamespace;
   minimax: WaveSpeedMinimaxNamespace;
   bytedance: WaveSpeedBytedanceNamespace;
+  blackForestLabs: WaveSpeedBlackForestLabsNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

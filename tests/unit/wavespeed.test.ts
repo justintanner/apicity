@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -74,6 +75,7 @@ describe("wavespeed provider", () => {
       "heygen",
       "minimax",
       "bytedance",
+      "blackForestLabs",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -434,6 +436,46 @@ describe("wavespeed bytedance/seedance-2.5/text-to-video", () => {
           [field]: value,
         }).success,
         field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed black-forest-labs/flux-3/text-to-video", () => {
+  // The payload tests/integration/wavespeed-black-forest-labs-flux-3-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "720p",
+    duration: 5,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.blackForestLabs.flux3.textToVideo.schema).toBe(
+      WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "5:2"],
+      ["duration", 4],
+      ["duration", 21],
+    ] as const) {
+      expect(
+        WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
       ).toBe(false);
     }
   });

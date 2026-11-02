@@ -133,4 +133,26 @@ export const wavespeed: Record<string, ModelPricing> = {
         : [],
     source: source("bytedance/seedance-2.5/text-to-video"),
   },
+  // base_price 170000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": base_price * $min([$ceil($number(duration)), 20]) *
+  //   ($lowercase($string(resolution)) = "1080p" ? 29 / 17 : 1)}
+  // so 1080p bills 0.29 USD/s.
+  "black-forest-labs/flux-3/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p) => {
+      const duration = requestedSeconds(5)(p);
+      return duration === undefined
+        ? undefined
+        : Math.min(Math.ceil(duration), 20);
+    },
+    select: [
+      {
+        name: "resolution",
+        pick: (p) => asString(p.resolution)?.toLowerCase() ?? "720p",
+      },
+    ],
+    rates: { "720p": 0.17, "1080p": 0.29 },
+    source: source("black-forest-labs/flux-3/text-to-video"),
+  },
 };

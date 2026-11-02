@@ -133,3 +133,25 @@ describe("wavespeed bytedance/seedance-2.5/text-to-video", () => {
     );
   });
 });
+
+describe("wavespeed black-forest-labs/flux-3/text-to-video", () => {
+  const model = "black-forest-labs/flux-3/text-to-video";
+
+  it("prices the recorded payload at the 0.85 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      resolution: "720p",
+      duration: 5,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.85, 9);
+  });
+
+  it("bills 1080p at 29/17 of the 720p rate", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "1080p", duration: 20 }).usd
+    ).toBeCloseTo(5.8, 9);
+  });
+});

@@ -1799,6 +1799,7 @@ thesportsdb	v2.search.venue	GET	cheap	Free public sports-data API; no per-call U
 tiktok-creative-center	ads.creativeOne.report.creativeCenterGetTopContentsList	GET	cheap	Free public Creative Center trend data; no key, no USD cost
 tiktok-creative-center	ads.creativeOne.report.getTopContentsOverview	GET	cheap	Free public Creative Center trend data; no key, no USD cost
 wavespeed	api.v3.alibaba.wan3p0.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
+wavespeed	api.v3.blackForestLabs.flux3.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.bytedance.seedance2p5.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.heygen.video1p0.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.minimax.h3.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy

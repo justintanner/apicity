@@ -657,6 +657,11 @@ export const FRONTIER = {
             dotPath: "blackforestlabs.flux3.textToVideo",
             pricingKey: "blackforestlabs/flux-3/text-to-video",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.blackForestLabs.flux3.textToVideo",
+            pricingKey: "black-forest-labs/flux-3/text-to-video",
+          },
         ],
       },
       {

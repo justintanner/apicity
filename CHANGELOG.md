@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds FLUX 3 text-to-video at `api.v3.blackForestLabs.flux3.textToVideo` (`POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/text-to-video`): 5-20 s at 720p or 1080p, at WaveSpeed's list 0.17 and 0.29 USD/s. `WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 5 s, 720p and no audio, which billed 0.85 USD in 69 s (ac-9wenpk).
+
 - `@apicity/wavespeed` adds Seedance 2.5 text-to-video at `api.v3.bytedance.seedance2p5.textToVideo` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/text-to-video`): 4-30 s at 480p, 720p, 1080p or 4k, with optional reference images, videos and audio. List price is 0.18, 0.36, 0.90 or 1.80 USD/s by resolution. With reference videos the rate drops to 0.11, 0.22, 0.55 or 1.10 USD/s, and their length bills on top of the output. `WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 4 s, 480p and no audio, which billed 0.648 USD (list 0.72, under a 90% promotion) in 157 s (ac-75ufw1).
 
 - `@apicity/wavespeed` adds MiniMax H3 text-to-video at `api.v3.minimax.h3.textToVideo` (`POST https://api.wavespeed.ai/api/v3/minimax/h3/text-to-video`), MiniMax's own H3: 4-15 s at 768p or 2k, at WaveSpeed's list 0.10 and 0.14 USD/s. `WaveSpeedMinimaxH3TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 4 s and 768p, which billed 0.40 USD in 85 s (ac-afqaub).

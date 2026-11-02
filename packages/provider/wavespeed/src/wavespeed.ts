@@ -2,6 +2,7 @@ import { attachExamples } from "./example";
 import { WaveSpeedError } from "./types";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
+  WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
@@ -11,6 +12,7 @@ import type {
 } from "./types";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -197,6 +199,26 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema }
+            ),
+          },
+        },
+        blackForestLabs: {
+          flux3: {
+            // POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/text-to-video
+            // Docs: https://wavespeed.ai/models/black-forest-labs/flux-3/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/black-forest-labs/flux-3/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema }
             ),
           },
         },

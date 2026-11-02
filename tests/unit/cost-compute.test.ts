@@ -1092,7 +1092,7 @@ describe("computeEstimate", () => {
         payload: { model: "grok-imagine-image-quality" },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBeCloseTo(0.05, 10); // 1 generation * 0.05
+      expect(result.usd).toBeCloseTo(0.04, 10); // 1 generation * 0.04 (2.0 low, 1k)
       expect(result.breakdown.units).toBe(1);
     });
 
@@ -1260,6 +1260,82 @@ describe("computeEstimate", () => {
         });
         expect(result.usd).toBe(0);
         expect(result.warnings).toEqual([warning]);
+      });
+    });
+
+    // xAI retired grok-imagine-image-quality on 2026-11-02. The slug still
+    // resolves, and grok-imagine-image-2.0 serves and bills it at low, so a
+    // requested quality changes nothing while the resolution and each edit
+    // input bill as on 2.0.
+    describe("xai grok-imagine-image-quality after its retirement", () => {
+      it.each([
+        ["the default 1k", {}, 0.04],
+        ["1.5k", { resolution: "1.5k" }, 0.05],
+        ["2k", { resolution: "2k" }, 0.06],
+        ["a requested medium quality", { quality: "medium" }, 0.04],
+        ["n 2", { n: 2 }, 2 * 0.04],
+      ])(
+        "prices a generation at %s on the 2.0 low row",
+        (_label, body, usd) => {
+          const result = computeEstimate({
+            provider: "xai" as const,
+            endpoint: "v1.images.generations",
+            payload: {
+              model: "grok-imagine-image-quality",
+              prompt: "x",
+              ...body,
+            },
+          });
+          expect(result.usd).toBeCloseTo(usd, 10);
+          expect(result.warnings).toEqual([]);
+        }
+      );
+
+      // On 2.0 an edit at the default auto serves medium; the redirect
+      // serves low.
+      it.each([
+        [
+          "one input at the default auto",
+          { image: { url: "https://x/c.jpg" } },
+          0.04 + 0.01,
+        ],
+        [
+          "two inputs at 2k with two outputs",
+          {
+            images: [{ url: "https://x/c.jpg" }, { url: "https://x/m.jpg" }],
+            resolution: "2k",
+            n: 2,
+          },
+          2 * 0.06 + 2 * 0.01,
+        ],
+      ])("prices an edit of %s with its input images", (_label, body, usd) => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.edits",
+          payload: {
+            model: "grok-imagine-image-quality",
+            prompt: "x",
+            ...body,
+          },
+        });
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.warnings).toEqual([]);
+      });
+
+      it("fails closed at a resolution the 2.0 grid does not list", () => {
+        const result = computeEstimate({
+          provider: "xai" as const,
+          endpoint: "v1.images.generations",
+          payload: {
+            model: "grok-imagine-image-quality",
+            prompt: "x",
+            resolution: "4k",
+          },
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([
+          "xai 'grok-imagine-image-quality': no rate for variant 'low|4k' (selectors: quality, resolution)",
+        ]);
       });
     });
 

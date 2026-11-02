@@ -5,6 +5,7 @@ import type {
   WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
+  WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
   WaveSpeedOptions,
@@ -16,6 +17,7 @@ import {
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
 } from "./zod";
@@ -240,6 +242,30 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema }
+            ),
+          },
+        },
+        google: {
+          geminiOmni1p1Flash: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/text-to-video
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.1-flash/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.1-flash/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+              }
             ),
           },
         },

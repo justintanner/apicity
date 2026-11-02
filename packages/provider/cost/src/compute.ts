@@ -893,6 +893,13 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+    case "wavespeed":
+      return evaluatePerUnit(
+        "wavespeed",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
     case "free-media-upload":
       return {
         usd: 0,

@@ -1,5 +1,8 @@
 import type { z } from "zod";
-import type { WaveSpeedPredictionStatusSchema } from "./zod";
+import type {
+  WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedPredictionStatusSchema,
+} from "./zod";
 
 /**
  * `status` is the HTTP status, or 408 on timeout, 499 when the caller aborts
@@ -70,6 +73,25 @@ export interface WaveSpeedPredictionResponse {
   [key: string]: unknown;
 }
 
+export type WaveSpeedAlibabaWan3p0TextToVideoRequest = z.input<
+  typeof WaveSpeedAlibabaWan3p0TextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedAlibabaWan3p0TextToVideoMethod {
+  (
+    request: WaveSpeedAlibabaWan3p0TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedAlibabaWan3p0TextToVideoRequestSchema;
+}
+export interface WaveSpeedAlibabaWan3p0Namespace {
+  textToVideo: WaveSpeedAlibabaWan3p0TextToVideoMethod;
+}
+export interface WaveSpeedAlibabaNamespace {
+  wan3p0: WaveSpeedAlibabaWan3p0Namespace;
+}
+
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
   result(
@@ -79,6 +101,7 @@ export interface WaveSpeedPredictionsNamespace {
 }
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
+  alibaba: WaveSpeedAlibabaNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

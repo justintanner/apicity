@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
-import { WaveSpeedPredictionStatusSchema } from "@apicity/wavespeed/zod";
+import {
+  WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedPredictionStatusSchema,
+} from "@apicity/wavespeed/zod";
 
 interface CapturedRequest {
   url: string;
@@ -62,7 +65,7 @@ describe("wavespeed provider", () => {
 
     expect(Object.keys(wavespeed)).toEqual(["api"]);
     expect(Object.keys(wavespeed.api)).toEqual(["v3"]);
-    expect(Object.keys(wavespeed.api.v3)).toEqual(["predictions"]);
+    expect(Object.keys(wavespeed.api.v3)).toEqual(["predictions", "alibaba"]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
   });
@@ -226,5 +229,80 @@ describe("wavespeed provider", () => {
     expect(WaveSpeedPredictionStatusSchema.safeParse("queued").success).toBe(
       false
     );
+  });
+});
+
+describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
+  // The payload tests/integration/wavespeed-alibaba-wan-3-0-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "480p",
+    duration: 2,
+    generate_audio: false,
+  };
+
+  it("posts the request as JSON to the model's URL", async () => {
+    const created = {
+      code: 200,
+      message: "success",
+      data: { id: "abc", model: "alibaba/wan-3.0/text-to-video" },
+    };
+    const { requests, fetch } = capture(() => jsonResponse(created));
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await expect(
+      wavespeed.api.v3.alibaba.wan3p0.textToVideo({
+        prompt: RECORDED.prompt,
+        resolution: "480p",
+        duration: 2,
+        generate_audio: false,
+      })
+    ).resolves.toEqual(created);
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video"
+    );
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].init.headers).toEqual({
+      Authorization: "Bearer ws-key",
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.alibaba.wan3p0.textToVideo.schema).toBe(
+      WaveSpeedAlibabaWan3p0TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaWan3p0TextToVideoRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["aspect_ratio", "21:9"],
+      ["duration", 1],
+      ["duration", 31],
+      ["duration", 2.5],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaWan3p0TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+    expect(
+      WaveSpeedAlibabaWan3p0TextToVideoRequestSchema.safeParse({
+        resolution: "480p",
+      }).success
+    ).toBe(false);
   });
 });

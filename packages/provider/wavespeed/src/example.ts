@@ -14,7 +14,19 @@ export interface EndpointExample {
   runByDefault: boolean;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v3.alibaba.wan3p0.textToVideo": {
+    "source": "wavespeed/alibaba-wan-3-0-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "480p",
+      "duration": 2,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  }
+};
 
 export default EXAMPLES;
 

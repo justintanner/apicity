@@ -705,6 +705,10 @@ export const MODEL_SLUGS = {
     "Veo-3.1-Fast": "veo3p1f",
     "Grok-Imagine-Video": "grokimgv",
   },
+  // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
+  wavespeed: {
+    "alibaba/wan-3.0/text-to-video": "wan3p0",
+  },
 } as const;
 
 export type SlugProviderId = keyof typeof MODEL_SLUGS;
@@ -1406,6 +1410,9 @@ export const MODEL_DISPLAY = {
     "Veo-3.1": "Veo 3.1",
     "Veo-3.1-Fast": "Veo 3.1 Fast",
     "Grok-Imagine-Video": "Grok Imagine Video",
+  },
+  wavespeed: {
+    "alibaba/wan-3.0/text-to-video": "Wan 3.0",
   },
 } as const;
 

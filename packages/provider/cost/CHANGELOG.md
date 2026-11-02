@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed pricing (`PRICING.wavespeed`): estimate with `provider: "wavespeed"`
+  and the WaveSpeed model id as `endpoint`. Wan 3.0 text-to-video
+  (`alibaba/wan-3.0/text-to-video`) bills 0.05, 0.10 and 0.20 USD/s at 480p,
+  720p and 1080p (720p and 5 s by default), the duration rounded up into
+  2-30 s, from the formula on the model page (list price, read 2026-11-02).
+  A recorded 2 s 480p render billed 0.095 USD against the 0.10 list under a
+  95% promotion. `MODEL_SLUGS.wavespeed` shares the family slug `wan3p0`
+  (ac-adiuc8).
 - MachGen pricing for MiniMax H3 Omni (`MiniMax-H3-Omni`): R2V at 768p for
   0.02 USD/s, with or without a reference video, whose seconds bill on top
   of the output. The rates come from the 2026-11-01 public pricebook, held in

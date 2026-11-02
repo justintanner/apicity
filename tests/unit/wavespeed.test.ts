@@ -16,6 +16,7 @@ import {
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
@@ -710,10 +711,9 @@ describe("wavespeed google/gemini-omni-1.1-flash/image-to-video", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p1Flash)).toEqual([
-      "textToVideo",
-      "imageToVideo",
-    ]);
+    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p1Flash)).toContain(
+      "imageToVideo"
+    );
     expect(wavespeed.api.v3.google.geminiOmni1p1Flash.imageToVideo.schema).toBe(
       WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema
     );
@@ -1166,6 +1166,52 @@ describe("wavespeed heygen/video-1.0/reference-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-google-gemini-omni-1-1-flash-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    prompt: "Make the cat's fur bright orange.",
+    resolution: "360p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p1Flash)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.google.geminiOmni1p1Flash.videoEdit.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["video", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

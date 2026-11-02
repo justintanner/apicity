@@ -649,3 +649,58 @@ describe("wavespeed heygen/video-1.0/reference-to-video", () => {
     );
   });
 });
+
+describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
+  const model = "google/gemini-omni-1.1-flash/video-edit";
+  const video = "https://example.com/cat.mp4";
+
+  it("prices the recorded payload at the 0.18 USD list quote", () => {
+    // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s:
+    // 0.02 USD/s to read it, then 3 output seconds at 0.04.
+    const result = estimate(
+      model,
+      {
+        video,
+        prompt: "Make the cat's fur bright orange.",
+        resolution: "360p",
+      },
+      { inputDurationSeconds: 3 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.06 + 3 * 0.04, 9);
+  });
+
+  it("bills the output at the source's length, 720p by default", () => {
+    expect(
+      estimate(model, { video, prompt: PROMPT }, { inputDurationSeconds: 8 })
+        .usd
+    ).toBeCloseTo(0.16 + 8 * 0.12, 9);
+  });
+
+  it("bills at least 3 output seconds and at most a 10 s source", () => {
+    expect(
+      estimate(
+        model,
+        { video, prompt: PROMPT, resolution: "4k" },
+        { inputDurationSeconds: 1.2 }
+      ).usd
+    ).toBeCloseTo(0.04 + 3 * 0.36, 9);
+    expect(
+      estimate(
+        model,
+        { video, prompt: PROMPT, resolution: "1080p" },
+        { inputDurationSeconds: 25 }
+      ).usd
+    ).toBeCloseTo(0.2 + 10 * 0.18, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { video, prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

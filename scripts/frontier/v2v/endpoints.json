@@ -33,6 +33,11 @@
       "provider": "googleflow",
       "dotPath": "v1.videos",
       "modelId": "omni-flash"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.google.geminiOmni1p1Flash.videoEdit",
+      "pricingKey": "google/gemini-omni-1.1-flash/video-edit"
     }
   ],
   "MiniMax H3 (768p)": [],

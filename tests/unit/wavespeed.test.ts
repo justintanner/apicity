@@ -16,6 +16,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "@apicity/wavespeed/zod";
 
 interface CapturedRequest {
@@ -85,6 +86,7 @@ describe("wavespeed provider", () => {
       "bytedance",
       "blackForestLabs",
       "google",
+      "xAi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -869,6 +871,48 @@ describe("wavespeed black-forest-labs/flux-3/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed x-ai/grok-imagine-video-v1.5/image-to-video", () => {
+  // The payload tests/integration/wavespeed-x-ai-grok-imagine-video-v1-5-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    duration: 1,
+    resolution: "480p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.xAi.grokImagineVideoV1p5.imageToVideo.schema).toBe(
+      WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["duration", 0],
+      ["duration", 16],
+      ["image", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

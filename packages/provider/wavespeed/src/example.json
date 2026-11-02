@@ -142,5 +142,16 @@
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo": {
+    "source": "wavespeed/x-ai-grok-imagine-video-v1-5-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns its head toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "duration": 1,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 }

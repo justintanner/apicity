@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-14 endpoints across 7 groups. Each method mirrors an upstream URL path.
+15 endpoints across 8 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -279,6 +279,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const prediction = await wavespeed.api.v3.predictions.result("prediction_id");
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+### xAi
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.xAi.grokImagineVideoV1p5.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.xAi.grokImagineVideoV1p5.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

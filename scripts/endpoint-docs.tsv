@@ -13,6 +13,7 @@ wavespeed	api.v3.google.geminiOmni1p1Flash.imageToVideo	POST	https://api.wavespe
 wavespeed	api.v3.alibaba.wan3p0.imageToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/image-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/image-to-video
 wavespeed	api.v3.bytedance.seedance2p0.imageToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.0/image-to-video	https://wavespeed.ai/models/bytedance/seedance-2.0/image-to-video
 wavespeed	api.v3.blackForestLabs.flux3.imageToVideo	POST	https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/image-to-video	https://wavespeed.ai/models/black-forest-labs/flux-3/image-to-video
+wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video	https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

@@ -14,6 +14,7 @@ import type {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
 
 /**
@@ -293,6 +294,25 @@ export interface WaveSpeedGoogleNamespace {
   geminiOmni1p1Flash: WaveSpeedGoogleGeminiOmni1p1FlashNamespace;
 }
 
+export type WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest = z.input<
+  typeof WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod {
+  (
+    request: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema;
+}
+export interface WaveSpeedXAiGrokImagineVideoV1p5Namespace {
+  imageToVideo: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod;
+}
+export interface WaveSpeedXAiNamespace {
+  grokImagineVideoV1p5: WaveSpeedXAiGrokImagineVideoV1p5Namespace;
+}
+
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
   result(
@@ -308,6 +328,7 @@ export interface WaveSpeedV3Namespace {
   bytedance: WaveSpeedBytedanceNamespace;
   blackForestLabs: WaveSpeedBlackForestLabsNamespace;
   google: WaveSpeedGoogleNamespace;
+  xAi: WaveSpeedXAiNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

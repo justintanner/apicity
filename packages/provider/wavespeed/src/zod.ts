@@ -503,3 +503,29 @@ export const WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema =
       .optional()
       .describe("Resolution of the video. WaveSpeed default: `720p`."),
   });
+
+// alibaba/happyhorse-1.1/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(2500)
+    .describe("Text prompt guiding the animation, up to 2500 characters."),
+  image: z
+    .string()
+    .describe(
+      "Public URL of the first frame: JPEG, PNG, BMP or WebP, at least 300 px, aspect ratio 1:2.5-2.5:1, at most 10 MB."
+    ),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
+  seed: z.number().int().optional().describe("Random seed."),
+});

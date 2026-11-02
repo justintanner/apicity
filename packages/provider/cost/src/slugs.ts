@@ -721,6 +721,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.0/image-to-video": "sd2",
     "black-forest-labs/flux-3/image-to-video": "flux3",
     "x-ai/grok-imagine-video-v1.5/image-to-video": "grokimgv1p5",
+    "alibaba/happyhorse-1.1/image-to-video": "hh11",
   },
 } as const;
 
@@ -1439,6 +1440,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.0/image-to-video": "Seedance 2",
     "black-forest-labs/flux-3/image-to-video": "FLUX 3",
     "x-ai/grok-imagine-video-v1.5/image-to-video": "Grok Imagine Video 1.5",
+    "alibaba/happyhorse-1.1/image-to-video": "Happy Horse 1.1",
   },
 } as const;
 

@@ -725,6 +725,7 @@ export const MODEL_SLUGS = {
     "alibaba/wan-3.0/video-edit": "wan3p0",
     "alibaba/wan-3.0/reference-to-video": "wan3p0",
     "bytedance/seedance-2.5/video-edit": "sd2p5",
+    "heygen/video-1.0/reference-to-video": "heygenvideo",
   },
 } as const;
 
@@ -1447,6 +1448,7 @@ export const MODEL_DISPLAY = {
     "alibaba/wan-3.0/video-edit": "Wan 3.0 Edit",
     "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
     "bytedance/seedance-2.5/video-edit": "Seedance 2.5 Edit",
+    "heygen/video-1.0/reference-to-video": "HeyGen Video",
   },
 } as const;
 

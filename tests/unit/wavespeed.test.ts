@@ -16,6 +16,7 @@ import {
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -1110,6 +1111,61 @@ describe("wavespeed bytedance/seedance-2.5/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed heygen/video-1.0/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-heygen-video-1-0-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    duration: 5,
+    resolution: "480p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.heygen.video1p0)).toEqual([
+      "textToVideo",
+      "referenceToVideo",
+    ]);
+    expect(wavespeed.api.v3.heygen.video1p0.referenceToVideo.schema).toBe(
+      WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "720p"],
+      ["aspect_ratio", "1:1"],
+      ["prompt_enhancement", "fast"],
+      ["duration", 4],
+      ["duration", 16],
+      ["seed", -1],
+      ["prompt", ""],
+      ["reference_images", Array(10).fill(url)],
+      ["reference_videos", Array(4).fill(url)],
+      ["reference_audios", Array(4).fill(url)],
+    ] as const) {
+      expect(
+        WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

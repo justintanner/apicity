@@ -18,6 +18,7 @@ wavespeed	api.v3.alibaba.happyhorse1p1.imageToVideo	POST	https://api.wavespeed.a
 wavespeed	api.v3.alibaba.wan3p0.videoEdit	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/video-edit	https://wavespeed.ai/models/alibaba/wan-3.0/video-edit
 wavespeed	api.v3.alibaba.wan3p0.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/reference-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/reference-to-video
 wavespeed	api.v3.bytedance.seedance2p5.videoEdit	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/video-edit	https://wavespeed.ai/models/bytedance/seedance-2.5/video-edit
+wavespeed	api.v3.heygen.video1p0.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/reference-to-video	https://wavespeed.ai/models/heygen/video-1.0/reference-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

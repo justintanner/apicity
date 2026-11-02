@@ -596,3 +596,56 @@ describe("wavespeed bytedance/seedance-2.5/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed heygen/video-1.0/reference-to-video", () => {
+  const model = "heygen/video-1.0/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+  const video = "https://example.com/ref.mp4";
+
+  it("prices the recorded payload at the 0.425 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      reference_images: [image],
+      duration: 5,
+      resolution: "480p",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.425, 9);
+  });
+
+  it("adds 0.05 USD for each reference image past the second", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: Array(5).fill(image),
+        resolution: "768p",
+        duration: 5,
+      }).usd
+    ).toBeCloseTo(0.6 + 3 * 0.05, 9);
+  });
+
+  it("bills a reference video's full length on top of the output", () => {
+    const result = estimate(
+      model,
+      { prompt: PROMPT, reference_videos: [video], duration: 5 },
+      { inputDurationSeconds: 4 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((5 + 4) * 0.12, 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

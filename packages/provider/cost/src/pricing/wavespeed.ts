@@ -410,4 +410,37 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("bytedance/seedance-2.5/video-edit"),
     source: source("bytedance/seedance-2.5/video-edit"),
   },
+  // base_price 360000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": ($d := $exists(duration) ? duration : 5; $r :=
+  //   $exists(resolution) ? resolution : "768p"; $rate := $r = "480p" ?
+  //   85000 : $r = "768p" ? 120000 : 220000; $v :=
+  //   $min([get_duration(reference_videos), 600]); $images := $max([0,
+  //   $count(reference_images) - 2]); $ceil(($d + $v) * $rate + $images *
+  //   50000))}
+  // Reference videos bill their full length, up to 600 s in all, and each
+  // reference image past the second adds 0.05 USD. The ceil rounds
+  // micro-USD.
+  "heygen/video-1.0/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const output = requestedSeconds(5)(p);
+      if (output === undefined || !hasItems(p, "reference_videos")) {
+        return output;
+      }
+      const input = hintInputSeconds(hints);
+      return input === undefined ? undefined : output + Math.min(input, 600);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "480p": 0.085, "768p": 0.12, "1080p": 0.22, "2k": 0.22 },
+    extra: (p) => {
+      if (p.reference_images === undefined) return 0;
+      if (!Array.isArray(p.reference_images)) return undefined;
+      return Math.max(0, p.reference_images.length - 2) * 0.05;
+    },
+    warn: referenceVideosWarn("heygen/video-1.0/reference-to-video"),
+    source: source("heygen/video-1.0/reference-to-video"),
+  },
 };

@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-19 endpoints across 8 groups. Each method mirrors an upstream URL path.
+20 endpoints across 8 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -280,6 +280,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### heygen
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.heygen.video1p0.referenceToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/heygen/video-1.0/reference-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.heygen.video1p0.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.heygen.video1p0.textToVideo</code></b></summary>

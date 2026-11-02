@@ -15,6 +15,7 @@ import type {
   WaveSpeedBytedanceSeedance2p5VideoEditRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
+  WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
@@ -38,6 +39,7 @@ import {
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -254,6 +256,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedHeygenVideo1p0TextToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/reference-to-video
+            // Docs: https://wavespeed.ai/models/heygen/video-1.0/reference-to-video
+            referenceToVideo: Object.assign(
+              async (
+                body: WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/heygen/video-1.0/reference-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema }
             ),
           },
         },

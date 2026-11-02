@@ -723,6 +723,7 @@ export const MODEL_SLUGS = {
     "x-ai/grok-imagine-video-v1.5/image-to-video": "grokimgv1p5",
     "alibaba/happyhorse-1.1/image-to-video": "hh11",
     "alibaba/wan-3.0/video-edit": "wan3p0",
+    "alibaba/wan-3.0/reference-to-video": "wan3p0",
   },
 } as const;
 
@@ -1443,6 +1444,7 @@ export const MODEL_DISPLAY = {
     "x-ai/grok-imagine-video-v1.5/image-to-video": "Grok Imagine Video 1.5",
     "alibaba/happyhorse-1.1/image-to-video": "Happy Horse 1.1",
     "alibaba/wan-3.0/video-edit": "Wan 3.0 Edit",
+    "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
   },
 } as const;
 

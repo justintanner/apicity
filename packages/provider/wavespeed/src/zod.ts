@@ -584,3 +584,66 @@ export const WaveSpeedAlibabaWan3p0VideoEditRequestSchema = z.object({
     .optional()
     .describe("Random seed; -1 picks a random one."),
 });
+
+// alibaba/wan-3.0/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "The positive prompt for the generation. Refer to the references as Image 1, Video 1, Audio 1, ..., numbered per type in array order."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(10)
+    .optional()
+    .describe(
+      "Public URLs of up to 10 reference images. At least one reference image, video, or audio is required."
+    ),
+  reference_videos: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe(
+      "Public URLs of up to 5 reference videos (MP4 or MOV, 1-15 s each, at most 15 s in all)."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe(
+      "Public URLs of up to 5 reference audio clips, at most 15 s in all."
+    ),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  duration: z
+    .number()
+    .int()
+    .min(2)
+    .max(30)
+    .optional()
+    .describe(
+      "Length of the video in seconds, 2-30; with reference videos, their length plus this must not exceed 30. WaveSpeed default: 5."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .optional()
+    .describe(
+      "Let WaveSpeed's prompt optimizer rewrite the prompt. WaveSpeed default: false."
+    ),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe("Generate an audio track. WaveSpeed default: true."),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed; -1 picks a random one."),
+});

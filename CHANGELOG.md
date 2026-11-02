@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Wan 3.0 reference-to-video at `api.v3.alibaba.wan3p0.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/reference-to-video`): up to 10 reference images, 5 reference videos and 5 reference audio clips guide a 2-30 s video at 480p, 720p or 1080p, at WaveSpeed's list 0.05, 0.10 and 0.20 USD/s, with the reference videos' seconds billed on top. `WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded with the cat photo as the one reference at 2 s, 480p and no audio, which billed 0.095 USD (list 0.10, under a 95% promotion) in 84 s (ac-b7gw8b).
+
 - `@apicity/wavespeed` adds Wan 3.0 video edit at `api.v3.alibaba.wan3p0.videoEdit` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/video-edit`), apicity's first endpoint for the video-to-video board's #1 entry: edits a clip of up to 15 s, with optional reference images and audio, into a 2-15 s video at 480p, 720p or 1080p. WaveSpeed bills the input's seconds and the output's at the list 0.05, 0.10 and 0.20 USD/s. `WaveSpeedAlibabaWan3p0VideoEditRequestSchema` follows WaveSpeed's model catalog. Recorded as a 2 s 480p edit of the 3 s cat clip, which billed 0.25 USD in 91 s (ac-qvgsyd).
 
 - `@apicity/wavespeed` adds HappyHorse 1.1 image-to-video at `api.v3.alibaba.happyhorse1p1.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.1/image-to-video`): 3-15 s at 480p, 720p or 1080p, at WaveSpeed's list 0.07, 0.14 and 0.18 USD/s. `WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 3 s and 480p, which billed 0.21 USD in 79 s (ac-h7lqna).

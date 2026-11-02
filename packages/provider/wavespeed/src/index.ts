@@ -8,6 +8,8 @@ export type {
   WaveSpeedAlibabaWan3p0ImageToVideoMethod,
   WaveSpeedAlibabaWan3p0ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0Namespace,
+  WaveSpeedAlibabaWan3p0ReferenceToVideoMethod,
+  WaveSpeedAlibabaWan3p0ReferenceToVideoRequest,
   WaveSpeedAlibabaWan3p0TextToVideoMethod,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedAlibabaWan3p0VideoEditMethod,
@@ -63,6 +65,7 @@ export type {
 export {
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
+  WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0VideoEditRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,

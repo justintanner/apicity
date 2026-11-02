@@ -474,3 +474,73 @@ describe("wavespeed alibaba/wan-3.0/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed alibaba/wan-3.0/reference-to-video", () => {
+  const model = "alibaba/wan-3.0/reference-to-video";
+  const video = "https://example.com/ref.mp4";
+
+  it("prices the recorded payload at the 0.10 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      reference_images: ["https://example.com/cat.jpg"],
+      resolution: "480p",
+      duration: 2,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.1, 9);
+  });
+
+  it("bills a reference video's length on top of the output", () => {
+    const result = estimate(
+      model,
+      { prompt: PROMPT, reference_videos: [video], duration: 5 },
+      { inputDurationSeconds: 4 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((5 + 4) * 0.1, 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+      duration: 5,
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+
+  it("bills 1080p at twice the 720p rate, up to 30 s", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "1080p", duration: 30 }).usd
+    ).toBeCloseTo(6, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-02 priced these at
+  // 0.50 and 1.20 USD list.
+  it("bills 5 s at the 720p default", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: ["https://example.com/cat.jpg"],
+      }).usd
+    ).toBeCloseTo(0.5, 9);
+  });
+
+  it("bills several reference videos by their total length", () => {
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, reference_videos: [video, video], duration: 5 },
+        { inputDurationSeconds: 7 }
+      ).usd
+    ).toBeCloseTo((5 + 7) * 0.1, 9);
+  });
+});

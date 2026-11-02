@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Wan 3.0 image-to-video at `api.v3.alibaba.wan3p0.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/image-to-video`): a first frame and optional last frame, 2-30 s at 480p, 720p or 1080p, at WaveSpeed's list 0.05, 0.10 and 0.20 USD/s. `WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 2 s, 480p and no audio, which billed 0.095 USD (list 0.10, under a 95% promotion) in 203 s (ac-up83qi).
+
 - `@apicity/wavespeed` adds Gemini Omni 1.1 Flash image-to-video at `api.v3.google.geminiOmni1p1Flash.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/image-to-video`): an image to animate and an optional end frame, 3-10 s at 360p, 720p, 1080p or 4k, at WaveSpeed's list 0.03, 0.10, 0.15 and 0.30 USD/s. `WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 3 s and 360p, which billed 0.09 USD in 23 s (ac-11jkwt).
 
 - `@apicity/wavespeed` adds Seedance 2.5 image-to-video at `api.v3.bytedance.seedance2p5.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/image-to-video`): a start frame and optional last frame, 4-30 s at 480p, 720p, 1080p or 4k, at WaveSpeed's list 0.18, 0.36, 0.90 and 1.80 USD/s. `WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 4 s, 480p and no audio, which billed 0.648 USD (list 0.72, under a 90% promotion) in 142 s (ac-4ku5th).

@@ -251,4 +251,19 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
     source: source("google/gemini-omni-1.1-flash/image-to-video"),
   },
+  // base_price 100000 micros, discount_rate 95 on 2026-11-02. The formula
+  // is the text-to-video one; the input image adds nothing:
+  //   {"total_price": base_price * (resolution = "1080p" ? 2 :
+  //   (resolution = "480p" ? 0.5 : 1)) * $min([$max([$ceil(duration), 2]),
+  //   30])}
+  "alibaba/wan-3.0/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: clampedSeconds(5, 2, 30),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    source: source("alibaba/wan-3.0/image-to-video"),
+  },
 };

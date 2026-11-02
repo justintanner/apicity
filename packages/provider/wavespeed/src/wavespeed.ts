@@ -1,6 +1,7 @@
 import { attachExamples } from "./example";
 import { WaveSpeedError } from "./types";
 import type {
+  WaveSpeedAlibabaWan3p0ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
@@ -16,6 +17,7 @@ import type {
   WaveSpeedProvider,
 } from "./types";
 import {
+  WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
@@ -147,6 +149,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedAlibabaWan3p0TextToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/image-to-video
+            // Docs: https://wavespeed.ai/models/alibaba/wan-3.0/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedAlibabaWan3p0ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/alibaba/wan-3.0/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema }
             ),
           },
         },

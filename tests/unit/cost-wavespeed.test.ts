@@ -299,3 +299,32 @@ describe("wavespeed google/gemini-omni-1.1-flash/image-to-video", () => {
     expect(estimate(model, { image, prompt: PROMPT }).usd).toBeCloseTo(0.8, 9);
   });
 });
+
+describe("wavespeed alibaba/wan-3.0/image-to-video", () => {
+  const model = "alibaba/wan-3.0/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.10 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 2,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.1, 9);
+  });
+
+  it("bills 1080p at twice the 720p rate, up to 30 s", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        image,
+        resolution: "1080p",
+        duration: 30,
+      }).usd
+    ).toBeCloseTo(6, 9);
+  });
+});

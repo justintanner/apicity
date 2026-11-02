@@ -1,6 +1,10 @@
 export { createWaveSpeed } from "./wavespeed";
 export { WaveSpeedError } from "./types";
 export type {
+  WaveSpeedAlibabaNamespace,
+  WaveSpeedAlibabaWan3p0Namespace,
+  WaveSpeedAlibabaWan3p0TextToVideoMethod,
+  WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedApiNamespace,
   WaveSpeedOptions,
   WaveSpeedPrediction,
@@ -12,4 +16,7 @@ export type {
   WaveSpeedProvider,
   WaveSpeedV3Namespace,
 } from "./types";
-export { WaveSpeedPredictionStatusSchema } from "./zod";
+export {
+  WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedPredictionStatusSchema,
+} from "./zod";

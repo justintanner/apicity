@@ -3,8 +3,8 @@
 Cross-provider cost & token estimation for the
 [apicity](https://github.com/justintanner/apicity) monorepo: a USD figure for a
 planned API call to the billed providers (openai, anthropic, xai, kimicoding,
-fireworks, alibaba, kie, elevenlabs, machgen — see [Coverage](#coverage)), computed
-purely locally from bundled rate tables — no keys, no network.
+fireworks, alibaba, kie, elevenlabs, machgen, wavespeed — see [Coverage](#coverage)),
+computed purely locally from bundled rate tables — no keys, no network.
 
 Zero dependencies, and not a wrapper for any single upstream API — a deliberate
 cross-provider helper. Provider packages keep their runtime pay-gate verifier
@@ -162,6 +162,12 @@ treat it as ±20%. Nothing calls upstream.
 MachGen reads `model`, `task_type`, `video_config` and source media, with
 cost-only hints for unknown output, reference-video and upscale-source
 lengths.
+
+WaveSpeed payloads carry no model field: pass the WaveSpeed model id
+(`alibaba/wan-3.0/text-to-video`) as `endpoint`. Rows price WaveSpeed's list
+rate, before any promotion. A model that bills a media input by its length
+reads that length from `costHints.inputDurationSeconds` and fails closed
+without it.
 
 Each provider has a small extractor in `src/extract/` that pulls the fields
 the rate table discriminates on. Unrecognized payloads return `usd: 0` plus a
@@ -674,6 +680,11 @@ upstream never sees or bind the OTP to a hash the real call cannot reproduce.
 MachGen rates are gross USD per second, verified 2026-10-25 against
 https://www.machgen.ai/pricing, before any Generation Credit rebate.
 
+WaveSpeed rates are list USD, read 2026-11-02 from the pricing record each
+model page embeds (`https://wavespeed.ai/models/<model id>`) and checked
+against WaveSpeed's free price quotes. A running promotion bills less; the
+billing record shows both amounts.
+
 Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual
 entries may carry their own as-of date) and shipped in `src/pricing/` as
 per-provider modules covering each provider's most common models. Unknown
@@ -695,6 +706,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `openai` GPT Image models                                          | `per-unit-table`         | `gpt-image-2` and 2.5 per image output token from quality and size, `gpt-image-1.5` per image; `auto` fails closed, and input tokens are excluded (floor warning) |
 | `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`                                                                                          |
 | `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints                                                                                  |
+| `wavespeed`                                                        | `per-unit-table`         | per second of video by resolution at list rates; keyed by the WaveSpeed model id in `endpoint`                                                                    |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno                                                                               |
 | `free`                                                             | `free`                   | always $0                                                                                                                                                         |
 

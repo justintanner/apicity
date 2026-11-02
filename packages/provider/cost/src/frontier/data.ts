@@ -522,6 +522,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "Alibaba-Wan-3.0",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.alibaba.wan3p0.textToVideo",
+            pricingKey: "alibaba/wan-3.0/text-to-video",
+          },
         ],
       },
       {

@@ -31,7 +31,26 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+
+### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.alibaba.wan3p0.textToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/alibaba/wan-3.0/text-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.alibaba.wan3p0.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 ### predictions
 

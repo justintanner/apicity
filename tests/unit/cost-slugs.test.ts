@@ -90,6 +90,15 @@ describe("MODEL_SLUGS", () => {
     );
   });
 
+  it("registers a slug for every wavespeed pricing entry", () => {
+    expect(Object.keys(MODEL_SLUGS.wavespeed).sort()).toEqual(
+      Object.keys(PRICING.wavespeed).sort()
+    );
+    expect(Object.keys(MODEL_DISPLAY.wavespeed).sort()).toEqual(
+      Object.keys(PRICING.wavespeed).sort()
+    );
+  });
+
   it("has kie models", () => {
     expect(MODEL_SLUGS.kie).toMatchObject({
       "bytedance/seedance-2": "sd2",

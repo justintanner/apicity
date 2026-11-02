@@ -218,6 +218,8 @@ export interface CostHints {
 // carry no model field at all, so the endpoint id ("fal-ai/nano-banana") is the
 // only pricing key. Omitting it is not a compile error — it resolves to a zero
 // estimate carrying the warning "fal: endpoint or payload.model is required".
+// `wavespeed` is the same, keyed by the WaveSpeed model id
+// ("alibaba/wan-3.0/text-to-video"), which its payloads never carry either.
 export type EstimateRequest =
   | {
       provider:
@@ -231,7 +233,8 @@ export type EstimateRequest =
         | "elevenlabs"
         | "fal"
         | "googleflow"
-        | "machgen";
+        | "machgen"
+        | "wavespeed";
       payload: Record<string, unknown>;
       endpoint?: string;
       costHints?: CostHints;

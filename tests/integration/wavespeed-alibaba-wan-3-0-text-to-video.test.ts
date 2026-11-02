@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { recordWaveSpeed, wavespeedClient } from "../wavespeed-helpers";
+import {
+  recordWaveSpeed,
+  wavespeedClient,
+  WAVESPEED_TEST_TIMEOUT_MS,
+} from "../wavespeed-helpers";
 
 // The cheapest valid request: 2 s at 480p, no audio (0.10 USD list).
 const PAYLOAD = {
@@ -18,16 +22,20 @@ describe("wavespeed api.v3.alibaba.wan3p0.textToVideo integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("renders a 2 s 480p Wan 3.0 video", async () => {
-    ctx = setupPolly("wavespeed/alibaba-wan-3-0-text-to-video");
-    const textToVideo = wavespeedClient().api.v3.alibaba.wan3p0.textToVideo;
-    expect(textToVideo.schema.safeParse(PAYLOAD).success).toBe(true);
+  it(
+    "renders a 2 s 480p Wan 3.0 video",
+    async () => {
+      ctx = setupPolly("wavespeed/alibaba-wan-3-0-text-to-video");
+      const textToVideo = wavespeedClient().api.v3.alibaba.wan3p0.textToVideo;
+      expect(textToVideo.schema.safeParse(PAYLOAD).success).toBe(true);
 
-    await recordWaveSpeed(
-      textToVideo,
-      PAYLOAD,
-      "wavespeed/alibaba-wan-3-0-text-to-video",
-      "alibaba/wan-3.0/text-to-video"
-    );
-  }, 2_000_000);
+      await recordWaveSpeed(
+        textToVideo,
+        PAYLOAD,
+        "wavespeed/alibaba-wan-3-0-text-to-video",
+        "alibaba/wan-3.0/text-to-video"
+      );
+    },
+    WAVESPEED_TEST_TIMEOUT_MS
+  );
 });

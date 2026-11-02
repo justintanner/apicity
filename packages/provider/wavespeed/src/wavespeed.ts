@@ -2,11 +2,15 @@ import { attachExamples } from "./example";
 import { WaveSpeedError } from "./types";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
+  WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
   WaveSpeedProvider,
 } from "./types";
-import { WaveSpeedAlibabaWan3p0TextToVideoRequestSchema } from "./zod";
+import {
+  WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+} from "./zod";
 
 interface WaveSpeedErrorEnvelope {
   code?: number;
@@ -127,6 +131,27 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedAlibabaWan3p0TextToVideoRequestSchema }
+            ),
+          },
+        },
+        heygen: {
+          video1p0: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/text-to-video
+            // Docs: https://wavespeed.ai/models/heygen/video-1.0/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedHeygenVideo1p0TextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/heygen/video-1.0/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedHeygenVideo1p0TextToVideoRequestSchema }
             ),
           },
         },

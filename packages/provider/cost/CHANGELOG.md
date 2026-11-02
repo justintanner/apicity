@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed HeyGen Video text-to-video (`heygen/video-1.0/text-to-video`) bills
+  0.025 USD/s at 480p and 0.045 USD/s at 768p (768p and 5 s by default), from
+  the formula on the model page (list price, read 2026-11-02). A recorded 5 s
+  480p render billed 0.125 USD. `MODEL_SLUGS.wavespeed` shares the family slug
+  `heygenvideo` (ac-os8g84).
 - WaveSpeed pricing (`PRICING.wavespeed`): estimate with `provider: "wavespeed"`
   and the WaveSpeed model id as `endpoint`. Wan 3.0 text-to-video
   (`alibaba/wan-3.0/text-to-video`) bills 0.05, 0.10 and 0.20 USD/s at 480p,

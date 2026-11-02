@@ -46,3 +46,24 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed heygen/video-1.0/text-to-video", () => {
+  const model = "heygen/video-1.0/text-to-video";
+
+  it("prices the recorded payload at the 0.125 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      duration: 5,
+      resolution: "480p",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.125, 9);
+  });
+
+  it("bills 768p at 0.045 USD/s", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "768p", duration: 15 }).usd
+    ).toBeCloseTo(0.675, 9);
+  });
+});

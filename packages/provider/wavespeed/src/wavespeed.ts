@@ -4,6 +4,7 @@ import type {
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
+  WaveSpeedAlibabaWan3p0VideoEditRequest,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequest,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequest,
@@ -24,6 +25,7 @@ import {
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedAlibabaWan3p0VideoEditRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
@@ -174,6 +176,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/video-edit
+            // Docs: https://wavespeed.ai/models/alibaba/wan-3.0/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedAlibabaWan3p0VideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/alibaba/wan-3.0/video-edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedAlibabaWan3p0VideoEditRequestSchema }
             ),
           },
           happyhorse1p1: {

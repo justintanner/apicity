@@ -40,7 +40,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("10/10");
     expect(table).toContain("2026-10-22");
     expect(table).toContain("derived");
-    expect(table).toContain("5/9");
+    expect(table).toContain("6/9");
     expect(table).toContain("9/9");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
@@ -74,7 +74,7 @@ describe("apicity frontier", () => {
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "9/10", captured: "2026-10-22" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "5/9", captured: "2026-10-22" });
+    expect(v2v).toMatchObject({ models: "6/9", captured: "2026-10-22" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
@@ -235,8 +235,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("wan2.7-videoedit");
     expect(table).toContain("kling-3.0-omni/transformation");
     expect(table).toContain("klingVideo.o3.pro.videoToVideo.reference");
+    expect(table).toContain("api.v3.alibaba.wan3p0.videoEdit");
     expect(table).toContain(
-      "not yet in apicity: Wan 3.0, MiniMax H3 (768p), Dreamina Seedance 2.0, Aleph 2.0"
+      "not yet in apicity: MiniMax H3 (768p), Dreamina Seedance 2.0, Aleph 2.0"
     );
   });
 

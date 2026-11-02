@@ -1022,7 +1022,13 @@ export const FRONTIER = {
         model: "Wan 3.0",
         creator: "Alibaba",
         elo: 1198,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.alibaba.wan3p0.videoEdit",
+            pricingKey: "alibaba/wan-3.0/video-edit",
+          },
+        ],
       },
       {
         rank: 2,

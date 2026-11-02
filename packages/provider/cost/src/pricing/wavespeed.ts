@@ -69,6 +69,18 @@ const seedanceSelect: PerUnitPricing["select"] = [
   { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
 ];
 
+// A video edit bills the input clip's seconds as well as the output's. Only
+// costHints.inputDurationSeconds can carry the input's length, so an edit
+// without it fails closed.
+const editedVideoWarn =
+  (modelId: string) =>
+  (_p: Record<string, unknown>, hints?: CostHints): string[] =>
+    hintInputSeconds(hints) === undefined
+      ? [
+          `wavespeed '${modelId}': the input video bills by its length; pass costHints.inputDurationSeconds`,
+        ]
+      : [];
+
 // FLUX 3 rounds the duration up and caps it at 20 s, and compares the
 // resolution lowercased.
 const flux3Units = (p: Record<string, unknown>): number | undefined => {
@@ -323,5 +335,27 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "480p": 0.07, "720p": 0.14, "1080p": 0.18 },
     source: source("alibaba/happyhorse-1.1/image-to-video"),
+  },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": ($source := $min([$ceil(get_duration(video, min=1,
+  //   max=15, total=15)), 15]); $output := $min([duration ? duration :
+  //   $max([2, $source]), 15]); base_price * (resolution = "1080p" ? 2 :
+  //   (resolution = "480p" ? 0.5 : 1)) * ($source + $output))}
+  "alibaba/wan-3.0/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const input = hintInputSeconds(hints);
+      if (input === undefined) return undefined;
+      const source = Math.min(Math.ceil(Math.min(Math.max(input, 1), 15)), 15);
+      const output = requestedSeconds(Math.max(2, source))(p);
+      return output === undefined ? undefined : source + Math.min(output, 15);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
+    warn: editedVideoWarn("alibaba/wan-3.0/video-edit"),
+    source: source("alibaba/wan-3.0/video-edit"),
   },
 };

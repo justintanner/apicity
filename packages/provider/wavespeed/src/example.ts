@@ -49,6 +49,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.alibaba.wan3p0.videoEdit": {
+    "source": "wavespeed/alibaba-wan-3-0-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "resolution": "480p",
+      "duration": 2,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.blackForestLabs.flux3.imageToVideo": {
     "source": "wavespeed/black-forest-labs-flux-3-image-to-video",
     "payload": {

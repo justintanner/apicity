@@ -266,4 +266,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
     source: source("alibaba/wan-3.0/image-to-video"),
   },
+  // base_price 240000 micros, discount_rate 90 on 2026-11-02. Formula:
+  //   {"total_price": base_price * (resolution = "4k" ? 5 :
+  //   (resolution = "1080p" ? 2.5 : (resolution = "720p" ? 1 : 0.5))) *
+  //   duration}
+  "bytedance/seedance-2.0/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.12, "720p": 0.24, "1080p": 0.6, "4k": 1.2 },
+    source: source("bytedance/seedance-2.0/image-to-video"),
+  },
 };

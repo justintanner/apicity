@@ -328,3 +328,32 @@ describe("wavespeed alibaba/wan-3.0/image-to-video", () => {
     ).toBeCloseTo(6, 9);
   });
 });
+
+describe("wavespeed bytedance/seedance-2.0/image-to-video", () => {
+  const model = "bytedance/seedance-2.0/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.48 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills 1080p at five times the 480p rate", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        image,
+        resolution: "1080p",
+        duration: 15,
+      }).usd
+    ).toBeCloseTo(9, 9);
+  });
+});

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Seedance 2.0 image-to-video (`bytedance/seedance-2.0/image-to-video`)
+  bills 0.12, 0.24, 0.60 and 1.20 USD/s at 480p, 720p, 1080p and 4k (720p
+  and 5 s by default), from the formula on the model page (list price, read
+  2026-11-02). A recorded 4 s 480p render billed 0.432 USD against the
+  0.48 list under a 90% promotion. `MODEL_SLUGS.wavespeed` shares the family
+  slug `sd2` (ac-7t3w7s).
 - WaveSpeed Wan 3.0 image-to-video (`alibaba/wan-3.0/image-to-video`) bills as
   its text-to-video sibling: 0.05, 0.10 and 0.20 USD/s at 480p, 720p and
   1080p (720p and 5 s by default), the duration rounded up into 2-30 s; the

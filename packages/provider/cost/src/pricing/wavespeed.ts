@@ -21,6 +21,14 @@ const requestedSeconds =
   (p: Record<string, unknown>): number | undefined =>
     p.duration === undefined ? fallback : asNumber(p.duration);
 
+// The requested duration, capped where the formula caps it.
+const cappedSeconds =
+  (fallback: number, max: number) =>
+  (p: Record<string, unknown>): number | undefined => {
+    const duration = requestedSeconds(fallback)(p);
+    return duration === undefined ? undefined : Math.min(duration, max);
+  };
+
 // Whole seconds for a formula that rounds the duration up and clamps it to
 // the model's range.
 const clampedSeconds =
@@ -59,5 +67,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "480p": 0.025, "768p": 0.045 },
     source: source("heygen/video-1.0/text-to-video"),
+  },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": base_price * $min([duration, 15]) *
+  //   (resolution = "768p" ? 1 : 1.4)}
+  "minimax/h3/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: cappedSeconds(5, 15),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "768p": 0.1, "2k": 0.14 },
+    source: source("minimax/h3/text-to-video"),
   },
 };

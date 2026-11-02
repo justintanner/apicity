@@ -709,6 +709,7 @@ export const MODEL_SLUGS = {
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
     "heygen/video-1.0/text-to-video": "heygenvideo",
+    "minimax/h3/text-to-video": "mmh3",
   },
 } as const;
 
@@ -1415,6 +1416,7 @@ export const MODEL_DISPLAY = {
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",
     "heygen/video-1.0/text-to-video": "HeyGen Video",
+    "minimax/h3/text-to-video": "MiniMax H3",
   },
 } as const;
 

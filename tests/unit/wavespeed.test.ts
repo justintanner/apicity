@@ -4,6 +4,7 @@ import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "@apicity/wavespeed/zod";
 
@@ -70,6 +71,7 @@ describe("wavespeed provider", () => {
       "predictions",
       "alibaba",
       "heygen",
+      "minimax",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -344,6 +346,45 @@ describe("wavespeed heygen/video-1.0/text-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedHeygenVideo1p0TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed minimax/h3/text-to-video", () => {
+  // The payload tests/integration/wavespeed-minimax-h3-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "768p",
+    duration: 4,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.minimax.h3.textToVideo.schema).toBe(
+      WaveSpeedMinimaxH3TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedMinimaxH3TextToVideoRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "1080p"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 3],
+      ["duration", 16],
+      ["duration", 4.5],
+    ] as const) {
+      expect(
+        WaveSpeedMinimaxH3TextToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

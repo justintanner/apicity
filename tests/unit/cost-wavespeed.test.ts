@@ -67,3 +67,24 @@ describe("wavespeed heygen/video-1.0/text-to-video", () => {
     ).toBeCloseTo(0.675, 9);
   });
 });
+
+describe("wavespeed minimax/h3/text-to-video", () => {
+  const model = "minimax/h3/text-to-video";
+
+  it("prices the recorded payload at the 0.40 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      resolution: "768p",
+      duration: 4,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.4, 9);
+  });
+
+  it("bills 2k at 1.4 times the 768p rate", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "2k", duration: 15 }).usd
+    ).toBeCloseTo(2.1, 9);
+  });
+});

@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds MiniMax H3 text-to-video at `api.v3.minimax.h3.textToVideo` (`POST https://api.wavespeed.ai/api/v3/minimax/h3/text-to-video`), MiniMax's own H3: 4-15 s at 768p or 2k, at WaveSpeed's list 0.10 and 0.14 USD/s. `WaveSpeedMinimaxH3TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 4 s and 768p, which billed 0.40 USD in 85 s (ac-afqaub).
+
 - `@apicity/wavespeed` adds HeyGen Video text-to-video at `api.v3.heygen.video1p0.textToVideo` (`POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/text-to-video`), WaveSpeed's HeyGen video model for the board's HeyGen Video (ultraquality) entry: 5-15 s at 480p or 768p, at WaveSpeed's list 0.025 and 0.045 USD/s. `WaveSpeedHeygenVideo1p0TextToVideoRequestSchema` follows WaveSpeed's model catalog; its `prompt_enhancement` rewrites the prompt and is not a quality switch. Recorded at 5 s and 480p, which billed 0.125 USD in 79 s (ac-os8g84).
 
 - `@apicity/wavespeed` adds Wan 3.0 text-to-video at `api.v3.alibaba.wan3p0.textToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video`): 2-30 s at 480p, 720p or 1080p, at WaveSpeed's list 0.05, 0.10 and 0.20 USD/s. `WaveSpeedAlibabaWan3p0TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 2 s, 480p and no audio, which billed 0.095 USD (list 0.10, under a 95% promotion) after about 16 minutes in WaveSpeed's queue (ac-adiuc8).

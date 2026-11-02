@@ -35,6 +35,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST api.v3.minimax.h3.textToVideo": {
+    "source": "wavespeed/minimax-h3-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "768p",
+      "duration": 4
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

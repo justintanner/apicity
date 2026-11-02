@@ -682,3 +682,62 @@ export const WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema = z.object({
       "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
     ),
 });
+
+// heygen/video-1.0/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("Describe the scene, action, and camera movement."),
+  reference_images: z
+    .array(z.string())
+    .max(9)
+    .optional()
+    .describe(
+      "Public URLs of up to 9 reference images. Provide reference images or videos, at most 12 references in all."
+    ),
+  reference_videos: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference videos. Only each video's first 5 s guide the generation, but WaveSpeed bills their full length, up to 600 s in all."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference audio clips; they need reference images or videos."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 5-15. WaveSpeed default: 5."),
+  resolution: z
+    .enum(["480p", "768p", "1080p", "2k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  prompt_enhancement: z
+    .enum(["disabled", "turbo", "quality"])
+    .optional()
+    .describe(
+      "Rewrite the prompt before generating. WaveSpeed default: `disabled`."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .optional()
+    .describe("Random seed. Omit for a random result."),
+});

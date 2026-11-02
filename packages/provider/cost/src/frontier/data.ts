@@ -1214,6 +1214,11 @@ export const FRONTIER = {
             dotPath: "heygen.heygenVideo.referenceToVideo",
             pricingKey: "heygen/heygen-video/reference-to-video",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.heygen.video1p0.referenceToVideo",
+            pricingKey: "heygen/video-1.0/reference-to-video",
+          },
         ],
       },
       {

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed HeyGen Video reference-to-video
+  (`heygen/video-1.0/reference-to-video`) bills the output's seconds (5 by
+  default) plus the reference videos' full length, up to 600 s in all, at
+  0.085, 0.12 and 0.22 USD/s for 480p, 768p and 1080p or 2k (768p by
+  default), plus 0.05 USD for each reference image past the second, from the
+  formula on the model page (list price, read 2026-11-02). The videos' length
+  comes from `costHints.inputDurationSeconds`; without it, a request with
+  reference videos fails closed with a warning naming the hint. A recorded
+  5 s 480p render with one reference image billed 0.425 USD.
+  `MODEL_SLUGS.wavespeed` shares the family slug `heygenvideo` (ac-5rikyh).
 - WaveSpeed Seedance 2.5 video edit (`bytedance/seedance-2.5/video-edit`) bills
   the source clip's seconds twice, for the source and an equal-length output,
   at 0.11, 0.22, 0.55 and 1.10 USD/s for 480p, 720p, 1080p and 4k (720p by

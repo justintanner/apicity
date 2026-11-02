@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Seedance 2.5 video edit (`bytedance/seedance-2.5/video-edit`) bills
+  the source clip's seconds twice, for the source and an equal-length output,
+  at 0.11, 0.22, 0.55 and 1.10 USD/s for 480p, 720p, 1080p and 4k (720p by
+  default), from the formula on the model page (list price, read
+  2026-11-02). The source's length, padded to 4 s, trimmed to 30 s and rounded
+  up, comes from `costHints.inputDurationSeconds`; without it the estimate
+  fails closed with a warning naming the hint. A recorded 480p edit of a 3 s
+  clip billed 0.792 USD against the 0.88 list under a 90% promotion.
+  `MODEL_SLUGS.wavespeed` shares the family slug `sd2p5`, display
+  "Seedance 2.5 Edit" (ac-r7jkle).
 - WaveSpeed Wan 3.0 reference-to-video (`alibaba/wan-3.0/reference-to-video`)
   bills the output at 0.05, 0.10 and 0.20 USD/s for 480p, 720p and 1080p
   (720p and 5 s by default, at most 30 s), plus the reference videos' total

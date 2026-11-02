@@ -647,3 +647,38 @@ export const WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema = z.object({
     .optional()
     .describe("Random seed; -1 picks a random one."),
 });
+
+// bytedance/seedance-2.5/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("Describe the edit you want applied to the input video."),
+  video: z
+    .string()
+    .describe(
+      "URL of the input video to edit. Videos longer than 30 s are trimmed to 30 s; videos shorter than 4 s are padded to 4 s."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(30)
+    .optional()
+    .describe(
+      "Public URLs of up to 30 images that guide the edit (subject identity, style)."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(10)
+    .optional()
+    .describe("Public URLs of up to 10 audio clips that guide the audio."),
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
+    ),
+});

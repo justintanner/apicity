@@ -128,6 +128,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedance2p5.videoEdit": {
+    "source": "wavespeed/bytedance-seedance-2-5-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "resolution": "480p",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.geminiOmni1p1Flash.imageToVideo": {
     "source": "wavespeed/google-gemini-omni-1-1-flash-image-to-video",
     "payload": {

@@ -387,4 +387,27 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: referenceVideosWarn("alibaba/wan-3.0/reference-to-video"),
     source: source("alibaba/wan-3.0/reference-to-video"),
   },
+  // base_price 220000 micros, discount_rate 90 on 2026-11-02. Formula:
+  //   {"total_price": ($scale := (resolution = "4k" ? 5 : resolution =
+  //   "1080p" ? 2.5 : resolution = "720p" ? 1 : 0.5); $source :=
+  //   $min([$ceil(get_duration(video, min=4, max=30, total=30)), 30]);
+  //   base_price * $scale * ($max([4, $source]) * 2))}
+  // The edit bills the source and an equal-length output, the source padded
+  // to 4 s and trimmed to 30 s.
+  "bytedance/seedance-2.5/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = hintInputSeconds(hints);
+      return input === undefined
+        ? undefined
+        : 2 * Math.ceil(Math.min(Math.max(input, 4), 30));
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.11, "720p": 0.22, "1080p": 0.55, "4k": 1.1 },
+    warn: editedVideoWarn("bytedance/seedance-2.5/video-edit"),
+    source: source("bytedance/seedance-2.5/video-edit"),
+  },
 };

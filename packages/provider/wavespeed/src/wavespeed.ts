@@ -4,6 +4,7 @@ import type {
   WaveSpeedAlibabaWan3p0ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
+  WaveSpeedBytedanceSeedance2p0ImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
@@ -20,6 +21,7 @@ import {
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
@@ -280,6 +282,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.0/image-to-video
+            // Docs: https://wavespeed.ai/models/bytedance/seedance-2.0/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedance2p0ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedance-2.0/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema }
             ),
           },
         },

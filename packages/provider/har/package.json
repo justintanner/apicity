@@ -1,6 +1,6 @@
 {
   "name": "@apicity/har",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "description": "HAR 1.2 serialization, secret scrubbing and Polly recording identity.",
   "license": "MIT",
   "repository": {

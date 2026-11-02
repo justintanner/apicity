@@ -17,6 +17,7 @@ import type {
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
   WaveSpeedProvider,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
 } from "./types";
 import {
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
@@ -32,6 +33,7 @@ import {
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
 
 interface WaveSpeedErrorEnvelope {
@@ -380,6 +382,30 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
+              }
+            ),
+          },
+        },
+        xAi: {
+          grokImagineVideoV1p5: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video
+            // Docs: https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
               }
             ),
           },

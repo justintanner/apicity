@@ -296,4 +296,19 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "720p": 0.17, "1080p": 0.29 },
     source: source("black-forest-labs/flux-3/image-to-video"),
   },
+  // base_price 140000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": (resolution = "480p" ? 80000 : resolution = "720p" ?
+  //   base_price : 250000) * $min([duration, 15]) + 10000}
+  // The 10000 micros are the input image, billed once per request.
+  "x-ai/grok-imagine-video-v1.5/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: cappedSeconds(6, 15),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
+    extra: () => 0.01,
+    source: source("x-ai/grok-imagine-video-v1.5/image-to-video"),
+  },
 };

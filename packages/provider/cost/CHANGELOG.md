@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Grok Imagine Video 1.5 image-to-video
+  (`x-ai/grok-imagine-video-v1.5/image-to-video`) bills 0.08, 0.14 and
+  0.25 USD/s at 480p, 720p and 1080p (720p and 6 s by default), the duration
+  capped at 15 s, plus 0.01 USD for the input image, from the formula on the
+  model page (list price, read 2026-11-02). A recorded 1 s 480p render billed
+  0.09 USD. `MODEL_SLUGS.wavespeed` shares the slug `grokimgv1p5` (ac-rttjg9).
 - WaveSpeed FLUX 3 image-to-video (`black-forest-labs/flux-3/image-to-video`)
   bills as its text-to-video sibling: 0.17 USD/s at 720p and 0.29 USD/s at
   1080p (720p and 5 s by default), the duration rounded up and capped at

@@ -720,6 +720,7 @@ export const MODEL_SLUGS = {
     "alibaba/wan-3.0/image-to-video": "wan3p0",
     "bytedance/seedance-2.0/image-to-video": "sd2",
     "black-forest-labs/flux-3/image-to-video": "flux3",
+    "x-ai/grok-imagine-video-v1.5/image-to-video": "grokimgv1p5",
   },
 } as const;
 
@@ -1437,6 +1438,7 @@ export const MODEL_DISPLAY = {
     "alibaba/wan-3.0/image-to-video": "Wan 3.0",
     "bytedance/seedance-2.0/image-to-video": "Seedance 2",
     "black-forest-labs/flux-3/image-to-video": "FLUX 3",
+    "x-ai/grok-imagine-video-v1.5/image-to-video": "Grok Imagine Video 1.5",
   },
 } as const;
 

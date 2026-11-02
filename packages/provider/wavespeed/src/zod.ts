@@ -480,3 +480,26 @@ export const WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema = z.object({
     .optional()
     .describe("Generate an audio track. WaveSpeed default: true."),
 });
+
+// x-ai/grok-imagine-video-v1.5/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Text description of the desired motion, camera movement, and scene."
+      ),
+    image: z.string().describe("Public URL of the image to animate."),
+    duration: z
+      .number()
+      .int()
+      .min(1)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 1-15. WaveSpeed default: 6."),
+    resolution: z
+      .enum(["480p", "720p", "1080p"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  });

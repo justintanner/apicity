@@ -386,3 +386,24 @@ describe("wavespeed black-forest-labs/flux-3/image-to-video", () => {
     ).toBeCloseTo(5.8, 9);
   });
 });
+
+describe("wavespeed x-ai/grok-imagine-video-v1.5/image-to-video", () => {
+  const model = "x-ai/grok-imagine-video-v1.5/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.09 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      duration: 1,
+      resolution: "480p",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.09, 9);
+  });
+
+  it("bills 6 s at 720p plus the input image by default", () => {
+    expect(estimate(model, { prompt: PROMPT, image }).usd).toBeCloseTo(0.85, 9);
+  });
+});

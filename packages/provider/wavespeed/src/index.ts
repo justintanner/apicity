@@ -50,6 +50,10 @@ export type {
   WaveSpeedPredictionsNamespace,
   WaveSpeedProvider,
   WaveSpeedV3Namespace,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
+  WaveSpeedXAiGrokImagineVideoV1p5Namespace,
+  WaveSpeedXAiNamespace,
 } from "./types";
 export {
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
@@ -66,4 +70,5 @@ export {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";

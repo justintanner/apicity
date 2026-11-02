@@ -188,3 +188,61 @@ export const WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema = z.object({
     .optional()
     .describe("Generate an audio track. WaveSpeed default: true."),
 });
+
+// bytedance/seedance-2.0/text-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Describe the scene, action, camera movement, and mood for the video."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(9)
+    .optional()
+    .describe(
+      "Public URLs of up to 9 images that guide visual style, characters, or scene composition."
+    ),
+  reference_videos: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference videos, at most 15 s in all. They bill by their length."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference audio clips, at most 15 s in all."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
+  enable_web_search: z
+    .boolean()
+    .optional()
+    .describe(
+      "Search the web for real-time information. WaveSpeed default: false."
+    ),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio synchronized with the video. WaveSpeed default: true."
+    ),
+});

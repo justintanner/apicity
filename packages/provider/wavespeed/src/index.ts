@@ -11,6 +11,9 @@ export type {
   WaveSpeedBlackForestLabsFlux3TextToVideoRequest,
   WaveSpeedBlackForestLabsNamespace,
   WaveSpeedBytedanceNamespace,
+  WaveSpeedBytedanceSeedance2p0Namespace,
+  WaveSpeedBytedanceSeedance2p0TextToVideoMethod,
+  WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5Namespace,
   WaveSpeedBytedanceSeedance2p5TextToVideoMethod,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
@@ -35,6 +38,7 @@ export type {
 export {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,

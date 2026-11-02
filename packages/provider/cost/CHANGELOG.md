@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Gemini Omni 1.1 Flash video edit
+  (`google/gemini-omni-1.1-flash/video-edit`) bills 0.02 USD/s to read the
+  source, rounded up and capped at 10 s, plus the output, as long as the
+  source and at least 3 s, at 0.04, 0.12, 0.18 and 0.36 USD/s for 360p, 720p,
+  1080p and 4k (720p by default), from the formula on the model page (list
+  price, read 2026-11-02). The source's length comes from
+  `costHints.inputDurationSeconds`; without it the estimate fails closed with
+  a warning naming the hint. A recorded 360p edit of a 3 s clip billed
+  0.18 USD. `MODEL_SLUGS.wavespeed` shares the family slug `geminiomni1p1f`,
+  display "Gemini Omni 1.1 Flash Edit" (ac-51eoy3).
 - WaveSpeed HeyGen Video reference-to-video
   (`heygen/video-1.0/reference-to-video`) bills the output's seconds (5 by
   default) plus the reference videos' full length, up to 600 s in all, at

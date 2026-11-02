@@ -726,6 +726,7 @@ export const MODEL_SLUGS = {
     "alibaba/wan-3.0/reference-to-video": "wan3p0",
     "bytedance/seedance-2.5/video-edit": "sd2p5",
     "heygen/video-1.0/reference-to-video": "heygenvideo",
+    "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
   },
 } as const;
 
@@ -1449,6 +1450,7 @@ export const MODEL_DISPLAY = {
     "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
     "bytedance/seedance-2.5/video-edit": "Seedance 2.5 Edit",
     "heygen/video-1.0/reference-to-video": "HeyGen Video",
+    "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
   },
 } as const;
 

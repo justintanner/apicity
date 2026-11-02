@@ -81,6 +81,14 @@ const editedVideoWarn =
         ]
       : [];
 
+// The input clip's whole seconds, capped where the formula caps them.
+const sourceSeconds =
+  (max: number) =>
+  (hints?: CostHints): number | undefined => {
+    const input = hintInputSeconds(hints);
+    return input === undefined ? undefined : Math.min(Math.ceil(input), max);
+  };
+
 // FLUX 3 rounds the duration up and caps it at 20 s, and compares the
 // resolution lowercased.
 const flux3Units = (p: Record<string, unknown>): number | undefined => {
@@ -442,5 +450,30 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     warn: referenceVideosWarn("heygen/video-1.0/reference-to-video"),
     source: source("heygen/video-1.0/reference-to-video"),
+  },
+  // base_price 120000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": ($source := $min([$ceil(get_duration(video)), 10]);
+  //   $output := $max([3, $source]); 20000 * $source + $output *
+  //   (base_price * (resolution = "360p" ? 1 / 3 : resolution = "1080p" ?
+  //   1.5 : resolution = "4k" ? 3 : 1)))}
+  // The output, at least 3 s, bills at the resolution's rate; reading the
+  // source, at most 10 s, adds 0.02 USD/s.
+  "google/gemini-omni-1.1-flash/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : Math.max(3, input);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.04, "720p": 0.12, "1080p": 0.18, "4k": 0.36 },
+    extra: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : 0.02 * input;
+    },
+    warn: editedVideoWarn("google/gemini-omni-1.1-flash/video-edit"),
+    source: source("google/gemini-omni-1.1-flash/video-edit"),
   },
 };

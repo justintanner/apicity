@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds HappyHorse 1.1 image-to-video at `api.v3.alibaba.happyhorse1p1.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.1/image-to-video`): 3-15 s at 480p, 720p or 1080p, at WaveSpeed's list 0.07, 0.14 and 0.18 USD/s. `WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 3 s and 480p, which billed 0.21 USD in 79 s (ac-h7lqna).
+
 - `@apicity/wavespeed` adds Grok Imagine Video 1.5 image-to-video at `api.v3.xAi.grokImagineVideoV1p5.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video`): 1-15 s at 480p, 720p or 1080p, at WaveSpeed's list 0.08, 0.14 and 0.25 USD/s plus 0.01 USD for the input image. `WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 1 s and 480p, which billed 0.09 USD in 80 s (ac-rttjg9).
 
 - `@apicity/wavespeed` adds FLUX 3 image-to-video at `api.v3.blackForestLabs.flux3.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/image-to-video`): a start image, 5-20 s at 720p or 1080p, at WaveSpeed's list 0.17 and 0.29 USD/s. `WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 5 s, 720p and no audio, which billed 0.85 USD in 95 s (ac-8x2ghe).

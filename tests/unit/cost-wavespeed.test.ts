@@ -407,3 +407,31 @@ describe("wavespeed x-ai/grok-imagine-video-v1.5/image-to-video", () => {
     expect(estimate(model, { prompt: PROMPT, image }).usd).toBeCloseTo(0.85, 9);
   });
 });
+
+describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
+  const model = "alibaba/happyhorse-1.1/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.21 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.21, 9);
+  });
+
+  it("bills 1080p at 0.18 USD/s", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        image,
+        resolution: "1080p",
+        duration: 15,
+      }).usd
+    ).toBeCloseTo(2.7, 9);
+  });
+});

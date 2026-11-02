@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed HappyHorse 1.1 image-to-video (`alibaba/happyhorse-1.1/image-to-video`)
+  bills 0.07, 0.14 and 0.18 USD/s at 480p, 720p and 1080p (720p and 5 s by
+  default), from the formula on the model page (list price, read 2026-11-02).
+  A recorded 3 s 480p render billed 0.21 USD. `MODEL_SLUGS.wavespeed` uses
+  fal's family slug `hh11` (ac-h7lqna).
 - WaveSpeed Grok Imagine Video 1.5 image-to-video
   (`x-ai/grok-imagine-video-v1.5/image-to-video`) bills 0.08, 0.14 and
   0.25 USD/s at 480p, 720p and 1080p (720p and 6 s by default), the duration

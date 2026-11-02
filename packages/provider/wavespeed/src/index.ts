@@ -1,6 +1,9 @@
 export { createWaveSpeed } from "./wavespeed";
 export { WaveSpeedError } from "./types";
 export type {
+  WaveSpeedAlibabaHappyhorse1p1ImageToVideoMethod,
+  WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequest,
+  WaveSpeedAlibabaHappyhorse1p1Namespace,
   WaveSpeedAlibabaNamespace,
   WaveSpeedAlibabaWan3p0ImageToVideoMethod,
   WaveSpeedAlibabaWan3p0ImageToVideoRequest,
@@ -56,6 +59,7 @@ export type {
   WaveSpeedXAiNamespace,
 } from "./types";
 export {
+  WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,

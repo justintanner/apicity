@@ -311,4 +311,17 @@ export const wavespeed: Record<string, ModelPricing> = {
     extra: () => 0.01,
     source: source("x-ai/grok-imagine-video-v1.5/image-to-video"),
   },
+  // base_price 140000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": (resolution = "1080p" ? 180000 : (resolution = "480p"
+  //   ? 70000 : base_price)) * duration}
+  "alibaba/happyhorse-1.1/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.07, "720p": 0.14, "1080p": 0.18 },
+    source: source("alibaba/happyhorse-1.1/image-to-video"),
+  },
 };

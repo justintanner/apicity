@@ -15,6 +15,17 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v3.alibaba.happyhorse1p1.imageToVideo": {
+    "source": "wavespeed/alibaba-happyhorse-1-1-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns its head toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "resolution": "480p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.alibaba.wan3p0.imageToVideo": {
     "source": "wavespeed/alibaba-wan-3-0-image-to-video",
     "payload": {

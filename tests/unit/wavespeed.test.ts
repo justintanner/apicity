@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
+  WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
@@ -917,6 +918,52 @@ describe("wavespeed x-ai/grok-imagine-video-v1.5/image-to-video", () => {
           [field]: value,
         }).success,
         `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
+  // The payload tests/integration/wavespeed-alibaba-happyhorse-1-1-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    resolution: "480p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.alibaba)).toEqual([
+      "wan3p0",
+      "happyhorse1p1",
+    ]);
+    expect(wavespeed.api.v3.alibaba.happyhorse1p1.imageToVideo.schema).toBe(
+      WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["duration", 2],
+      ["duration", 16],
+      ["prompt", "x".repeat(2501)],
+      ["image", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
       ).toBe(false);
     }
   });

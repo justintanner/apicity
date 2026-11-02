@@ -1,5 +1,11 @@
 {
-  "Wan 3.0": [],
+  "Wan 3.0": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.alibaba.wan3p0.videoEdit",
+      "pricingKey": "alibaba/wan-3.0/video-edit"
+    }
+  ],
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",

@@ -5,6 +5,7 @@ import {
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedAlibabaWan3p0VideoEditRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
@@ -755,10 +756,9 @@ describe("wavespeed alibaba/wan-3.0/image-to-video", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.alibaba.wan3p0)).toEqual([
-      "textToVideo",
-      "imageToVideo",
-    ]);
+    expect(Object.keys(wavespeed.api.v3.alibaba.wan3p0)).toContain(
+      "imageToVideo"
+    );
     expect(wavespeed.api.v3.alibaba.wan3p0.imageToVideo.schema).toBe(
       WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema
     );
@@ -960,6 +960,54 @@ describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed alibaba/wan-3.0/video-edit", () => {
+  // The payload tests/integration/wavespeed-alibaba-wan-3-0-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    resolution: "480p",
+    duration: 2,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.alibaba.wan3p0)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.alibaba.wan3p0.videoEdit.schema).toBe(
+      WaveSpeedAlibabaWan3p0VideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaWan3p0VideoEditRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["duration", 1],
+      ["duration", 16],
+      ["reference_images", Array(11).fill(url)],
+      ["video", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaWan3p0VideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

@@ -435,3 +435,42 @@ describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
     ).toBeCloseTo(2.7, 9);
   });
 });
+
+describe("wavespeed alibaba/wan-3.0/video-edit", () => {
+  const model = "alibaba/wan-3.0/video-edit";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.25 USD list quote", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: "Make the cat's fur bright orange.",
+        video,
+        resolution: "480p",
+        duration: 2,
+        generate_audio: false,
+      },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((3 + 2) * 0.05, 9);
+  });
+
+  it("bills the input's length again as the default output", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, video, resolution: "720p" }, clip).usd
+    ).toBeCloseTo((3 + 3) * 0.1, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Wan 3.0 video edit (`alibaba/wan-3.0/video-edit`) bills the input
+  clip's seconds plus the output's at 0.05, 0.10 and 0.20 USD/s for 480p, 720p
+  and 1080p, from the formula on the model page (list price, read
+  2026-11-02). The input's length, clamped to 1-15 s and rounded up, comes
+  from `costHints.inputDurationSeconds`; the output defaults to that length
+  (at least 2 s, at most 15). Without the hint the estimate fails closed with
+  a warning naming it. A recorded 2 s 480p edit of a 3 s clip billed 0.25 USD.
+  `MODEL_SLUGS.wavespeed` uses the slug `wan3p0`, display "Wan 3.0 Edit"
+  (ac-qvgsyd).
 - WaveSpeed HappyHorse 1.1 image-to-video (`alibaba/happyhorse-1.1/image-to-video`)
   bills 0.07, 0.14 and 0.18 USD/s at 480p, 720p and 1080p (720p and 5 s by
   default), from the formula on the model page (list price, read 2026-11-02).

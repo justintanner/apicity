@@ -722,6 +722,7 @@ export const MODEL_SLUGS = {
     "black-forest-labs/flux-3/image-to-video": "flux3",
     "x-ai/grok-imagine-video-v1.5/image-to-video": "grokimgv1p5",
     "alibaba/happyhorse-1.1/image-to-video": "hh11",
+    "alibaba/wan-3.0/video-edit": "wan3p0",
   },
 } as const;
 
@@ -1441,6 +1442,7 @@ export const MODEL_DISPLAY = {
     "black-forest-labs/flux-3/image-to-video": "FLUX 3",
     "x-ai/grok-imagine-video-v1.5/image-to-video": "Grok Imagine Video 1.5",
     "alibaba/happyhorse-1.1/image-to-video": "Happy Horse 1.1",
+    "alibaba/wan-3.0/video-edit": "Wan 3.0 Edit",
   },
 } as const;
 

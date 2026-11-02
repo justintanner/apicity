@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Wan 3.0 video edit at `api.v3.alibaba.wan3p0.videoEdit` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/video-edit`), apicity's first endpoint for the video-to-video board's #1 entry: edits a clip of up to 15 s, with optional reference images and audio, into a 2-15 s video at 480p, 720p or 1080p. WaveSpeed bills the input's seconds and the output's at the list 0.05, 0.10 and 0.20 USD/s. `WaveSpeedAlibabaWan3p0VideoEditRequestSchema` follows WaveSpeed's model catalog. Recorded as a 2 s 480p edit of the 3 s cat clip, which billed 0.25 USD in 91 s (ac-qvgsyd).
+
 - `@apicity/wavespeed` adds HappyHorse 1.1 image-to-video at `api.v3.alibaba.happyhorse1p1.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.1/image-to-video`): 3-15 s at 480p, 720p or 1080p, at WaveSpeed's list 0.07, 0.14 and 0.18 USD/s. `WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 3 s and 480p, which billed 0.21 USD in 79 s (ac-h7lqna).
 
 - `@apicity/wavespeed` adds Grok Imagine Video 1.5 image-to-video at `api.v3.xAi.grokImagineVideoV1p5.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/image-to-video`): 1-15 s at 480p, 720p or 1080p, at WaveSpeed's list 0.08, 0.14 and 0.25 USD/s plus 0.01 USD for the input image. `WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 1 s and 480p, which billed 0.09 USD in 80 s (ac-rttjg9).

@@ -3,6 +3,7 @@ import type {
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedAlibabaWan3p0VideoEditRequestSchema,
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
@@ -111,9 +112,22 @@ export interface WaveSpeedAlibabaWan3p0ImageToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema;
 }
+export type WaveSpeedAlibabaWan3p0VideoEditRequest = z.input<
+  typeof WaveSpeedAlibabaWan3p0VideoEditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedAlibabaWan3p0VideoEditMethod {
+  (
+    request: WaveSpeedAlibabaWan3p0VideoEditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedAlibabaWan3p0VideoEditRequestSchema;
+}
 export interface WaveSpeedAlibabaWan3p0Namespace {
   textToVideo: WaveSpeedAlibabaWan3p0TextToVideoMethod;
   imageToVideo: WaveSpeedAlibabaWan3p0ImageToVideoMethod;
+  videoEdit: WaveSpeedAlibabaWan3p0VideoEditMethod;
 }
 export type WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequest = z.input<
   typeof WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema

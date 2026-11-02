@@ -529,3 +529,58 @@ export const WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema = z.object({
     .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
   seed: z.number().int().optional().describe("Random seed."),
 });
+
+// alibaba/wan-3.0/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedAlibabaWan3p0VideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("Describe the edit you want applied to the input video."),
+  video: z
+    .string()
+    .describe(
+      "URL of the input video to edit. Videos longer than 15 s are trimmed to 15 s."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(10)
+    .optional()
+    .describe("Public URLs of up to 10 images that guide the edit."),
+  reference_audios: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe(
+      "Public URLs of up to 5 reference audio clips, at most 15 s in all."
+    ),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(2)
+    .max(15)
+    .optional()
+    .describe(
+      "Output length in seconds, 2-15. Omitted, WaveSpeed follows the input's length, rounded up into 2-15."
+    ),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .optional()
+    .describe(
+      "Let WaveSpeed's prompt optimizer rewrite the prompt. WaveSpeed default: false."
+    ),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed; -1 picks a random one."),
+});

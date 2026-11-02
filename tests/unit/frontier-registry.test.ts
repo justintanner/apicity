@@ -16,6 +16,7 @@ import {
   frontierType,
 } from "@apicity/cost";
 import { createFal } from "@apicity/fal";
+import { createWaveSpeed } from "@apicity/wavespeed";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
 import { VeoGenerateRequestSchema } from "@apicity/kie/zod";
 import {
@@ -164,7 +165,6 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 
 const T2V_UNMAPPED = ["Utopai X"];
 const V2V_UNMAPPED = [
-  "Wan 3.0",
   "MiniMax H3 (768p)",
   "Dreamina Seedance 2.0",
   "Aleph 2.0",
@@ -428,6 +428,22 @@ function falLeafEditsVideo(
 }
 
 /**
+ * A WaveSpeed leaf documents video-to-video when its request schema takes a
+ * `video` input that it describes as edited: `.../video-edit` carries no v2v
+ * keyword.
+ */
+function wavespeedLeafEditsVideo(
+  wavespeed: Record<string, unknown>,
+  dotPath: string
+): boolean {
+  const schema = resolveEndpointFn(wavespeed, "POST", dotPath)?.schema;
+  if (schema === undefined) return false;
+  const json = zodToJsonSchema(schema);
+  const inputs = Object.keys((json.properties ?? {}) as JsonSchema);
+  return inputs.includes("video") && /\bedit/i.test(JSON.stringify(json));
+}
+
+/**
  * A fal leaf documents text-to-image when the request schema `apicity
  * describe` prints takes a prompt and an image count or size, and no media
  * input: GPT Image 2's `openai/gpt-image-2` names no type in its path.
@@ -601,13 +617,19 @@ function liveRegistry() {
     }
     return false;
   };
+  const wavespeed = createWaveSpeed({
+    apiKey: "frontier",
+  }) as unknown as Record<string, unknown>;
   const leafDocuments = (
     type: string,
     entry: { provider: string; dotPath: string }
   ) =>
-    entry.provider === "fal" &&
-    ((type === "v2v" && falLeafEditsVideo(fal, entry.dotPath)) ||
-      (type === "t2i" && falLeafMakesImageFromText(fal, entry.dotPath)));
+    (entry.provider === "fal" &&
+      ((type === "v2v" && falLeafEditsVideo(fal, entry.dotPath)) ||
+        (type === "t2i" && falLeafMakesImageFromText(fal, entry.dotPath)))) ||
+    (entry.provider === "wavespeed" &&
+      type === "v2v" &&
+      wavespeedLeafEditsVideo(wavespeed, entry.dotPath));
   return {
     docsRows: loadEndpointDocRows(),
     sourceHasUrl,
@@ -1257,7 +1279,7 @@ describe("frontier video snapshots", () => {
     expect(seedRows(v2v.snapshot)).toEqual(V2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(v2v.snapshot)).toEqual([]);
     expect(unmappedNames(v2v.endpointMap)).toEqual(V2V_UNMAPPED);
-    expect(mappedCount(v2v.endpointMap)).toBe(5);
+    expect(mappedCount(v2v.endpointMap)).toBe(6);
     expect(Object.keys(v2v.endpointMap)).toHaveLength(9);
   });
 
@@ -1446,6 +1468,28 @@ describe("frontier video snapshots", () => {
     expect(resolutionProblems("t2v", t2v.endpointMap, ctx)).toEqual([]);
     expect(resolutionProblems("v2v", v2v.endpointMap, ctx)).toEqual([]);
     expect(resolutionProblems("r2v", r2v.endpointMap, ctx)).toEqual([]);
+  });
+
+  it("takes a WaveSpeed video-edit leaf as v2v from its schema", () => {
+    const ctx = liveRegistry();
+    expect(
+      ctx.leafDocuments("v2v", {
+        provider: "wavespeed",
+        dotPath: "api.v3.alibaba.wan3p0.videoEdit",
+      })
+    ).toBe(true);
+    expect(
+      ctx.leafDocuments("v2v", {
+        provider: "wavespeed",
+        dotPath: "api.v3.alibaba.wan3p0.imageToVideo",
+      })
+    ).toBe(false);
+    expect(
+      ctx.leafDocuments("r2v", {
+        provider: "wavespeed",
+        dotPath: "api.v3.alibaba.wan3p0.videoEdit",
+      })
+    ).toBe(false);
   });
 
   it("takes an unnamed v2v leaf only when its schema documents a video edit", () => {

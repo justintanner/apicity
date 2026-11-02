@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "./zod";
 
@@ -92,6 +93,25 @@ export interface WaveSpeedAlibabaNamespace {
   wan3p0: WaveSpeedAlibabaWan3p0Namespace;
 }
 
+export type WaveSpeedHeygenVideo1p0TextToVideoRequest = z.input<
+  typeof WaveSpeedHeygenVideo1p0TextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedHeygenVideo1p0TextToVideoMethod {
+  (
+    request: WaveSpeedHeygenVideo1p0TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedHeygenVideo1p0TextToVideoRequestSchema;
+}
+export interface WaveSpeedHeygenVideo1p0Namespace {
+  textToVideo: WaveSpeedHeygenVideo1p0TextToVideoMethod;
+}
+export interface WaveSpeedHeygenNamespace {
+  video1p0: WaveSpeedHeygenVideo1p0Namespace;
+}
+
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
   result(
@@ -102,6 +122,7 @@ export interface WaveSpeedPredictionsNamespace {
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
   alibaba: WaveSpeedAlibabaNamespace;
+  heygen: WaveSpeedHeygenNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

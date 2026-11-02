@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "@apicity/wavespeed/zod";
 
@@ -65,7 +66,11 @@ describe("wavespeed provider", () => {
 
     expect(Object.keys(wavespeed)).toEqual(["api"]);
     expect(Object.keys(wavespeed.api)).toEqual(["v3"]);
-    expect(Object.keys(wavespeed.api.v3)).toEqual(["predictions", "alibaba"]);
+    expect(Object.keys(wavespeed.api.v3)).toEqual([
+      "predictions",
+      "alibaba",
+      "heygen",
+    ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
   });
@@ -304,5 +309,46 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
         resolution: "480p",
       }).success
     ).toBe(false);
+  });
+});
+
+describe("wavespeed heygen/video-1.0/text-to-video", () => {
+  // The payload tests/integration/wavespeed-heygen-video-1-0-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    duration: 5,
+    resolution: "480p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.heygen.video1p0.textToVideo.schema).toBe(
+      WaveSpeedHeygenVideo1p0TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedHeygenVideo1p0TextToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "720p"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 4],
+      ["duration", 16],
+      ["prompt_enhancement", "max"],
+      ["seed", -1],
+    ] as const) {
+      expect(
+        WaveSpeedHeygenVideo1p0TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
   });
 });

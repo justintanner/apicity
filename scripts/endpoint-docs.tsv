@@ -1,6 +1,7 @@
 provider	dotPath	method	fullUrl	docsUrl
 wavespeed	api.v3.predictions.result	GET	https://api.wavespeed.ai/api/v3/predictions/{id}/result	https://wavespeed.ai/docs/get-result
 wavespeed	api.v3.alibaba.wan3p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/text-to-video
+wavespeed	api.v3.heygen.video1p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/text-to-video	https://wavespeed.ai/models/heygen/video-1.0/text-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

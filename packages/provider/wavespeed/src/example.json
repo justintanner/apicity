@@ -9,5 +9,15 @@
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST api.v3.heygen.video1p0.textToVideo": {
+    "source": "wavespeed/heygen-video-1-0-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "duration": 5,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 }

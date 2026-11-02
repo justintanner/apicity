@@ -6,6 +6,10 @@ export type {
   WaveSpeedAlibabaWan3p0TextToVideoMethod,
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedApiNamespace,
+  WaveSpeedHeygenNamespace,
+  WaveSpeedHeygenVideo1p0Namespace,
+  WaveSpeedHeygenVideo1p0TextToVideoMethod,
+  WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedOptions,
   WaveSpeedPrediction,
   WaveSpeedPredictionResponse,
@@ -18,5 +22,6 @@ export type {
 } from "./types";
 export {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "./zod";

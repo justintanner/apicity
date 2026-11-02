@@ -14,13 +14,19 @@ const source = (modelId: string) => ({
   asOf: "2026-11-02",
 });
 
-// Whole seconds as WaveSpeed bills them: the requested duration rounded up
-// and clamped to the model's range, or the model's default when the request
-// omits it. A duration that is present but not a number fails closed.
+// The requested duration, or the model's default when the request omits it.
+// A duration that is present but not a number fails closed.
+const requestedSeconds =
+  (fallback: number) =>
+  (p: Record<string, unknown>): number | undefined =>
+    p.duration === undefined ? fallback : asNumber(p.duration);
+
+// Whole seconds for a formula that rounds the duration up and clamps it to
+// the model's range.
 const clampedSeconds =
   (fallback: number, min: number, max: number) =>
   (p: Record<string, unknown>): number | undefined => {
-    const duration = p.duration === undefined ? fallback : asNumber(p.duration);
+    const duration = requestedSeconds(fallback)(p);
     if (duration === undefined) return undefined;
     return Math.min(Math.max(Math.ceil(duration), min), max);
   };
@@ -39,5 +45,19 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "480p": 0.05, "720p": 0.1, "1080p": 0.2 },
     source: source("alibaba/wan-3.0/text-to-video"),
+  },
+  // base_price 45000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": $ceil(duration * (resolution = "480p" ? 25000 :
+  //   base_price))}
+  // The ceil rounds micro-USD, so whole seconds bill exactly.
+  "heygen/video-1.0/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "480p": 0.025, "768p": 0.045 },
+    source: source("heygen/video-1.0/text-to-video"),
   },
 };

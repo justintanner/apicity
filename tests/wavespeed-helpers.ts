@@ -37,6 +37,9 @@ const liveDelayMs = (elapsedMs: number) =>
   elapsedMs < 2 * 60_000 ? 5000 : elapsedMs < 10 * 60_000 ? 15_000 : 30_000;
 const MAX_REPLAY_POLLS = 2000;
 
+/** A recording test's timeout: the live window plus room for the submit. */
+export const WAVESPEED_TEST_TIMEOUT_MS = LIVE_WINDOW_MS + 5 * 60_000;
+
 /** The operator's key while recording; replay never sends a real one. */
 export function wavespeedClient() {
   return createWaveSpeed({

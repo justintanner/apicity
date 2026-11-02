@@ -719,6 +719,7 @@ export const MODEL_SLUGS = {
     "google/gemini-omni-1.1-flash/image-to-video": "geminiomni1p1f",
     "alibaba/wan-3.0/image-to-video": "wan3p0",
     "bytedance/seedance-2.0/image-to-video": "sd2",
+    "black-forest-labs/flux-3/image-to-video": "flux3",
   },
 } as const;
 
@@ -1435,6 +1436,7 @@ export const MODEL_DISPLAY = {
     "google/gemini-omni-1.1-flash/image-to-video": "Gemini Omni 1.1 Flash",
     "alibaba/wan-3.0/image-to-video": "Wan 3.0",
     "bytedance/seedance-2.0/image-to-video": "Seedance 2",
+    "black-forest-labs/flux-3/image-to-video": "FLUX 3",
   },
 } as const;
 

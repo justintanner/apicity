@@ -448,3 +448,35 @@ export const WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema = z.object({
       "Generate native audio synchronized with the video. WaveSpeed default: true."
     ),
 });
+
+// black-forest-labs/flux-3/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("The text prompt describing the video you want to generate."),
+  image: z
+    .string()
+    .describe(
+      "Public URL of the image the video starts from (PNG, JPEG or WebP)."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "2:1", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional()
+    .describe("Aspect ratio of the video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(20)
+    .optional()
+    .describe("Length of the video in seconds, 5-20. WaveSpeed default: 5."),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe("Generate an audio track. WaveSpeed default: true."),
+});

@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds FLUX 3 image-to-video at `api.v3.blackForestLabs.flux3.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/image-to-video`): a start image, 5-20 s at 720p or 1080p, at WaveSpeed's list 0.17 and 0.29 USD/s. `WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 5 s, 720p and no audio, which billed 0.85 USD in 95 s (ac-8x2ghe).
+
 - `@apicity/wavespeed` adds Seedance 2.0 image-to-video at `api.v3.bytedance.seedance2p0.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.0/image-to-video`): a start frame and optional last frame, 4-15 s at 480p, 720p, 1080p or 4k, at WaveSpeed's list 0.12, 0.24, 0.60 and 1.20 USD/s. `WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 4 s, 480p and no audio, which billed 0.432 USD (list 0.48, under a 90% promotion) in 248 s (ac-7t3w7s).
 
 - `@apicity/wavespeed` adds Wan 3.0 image-to-video at `api.v3.alibaba.wan3p0.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/image-to-video`): a first frame and optional last frame, 2-30 s at 480p, 720p or 1080p, at WaveSpeed's list 0.05, 0.10 and 0.20 USD/s. `WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 2 s, 480p and no audio, which billed 0.095 USD (list 0.10, under a 95% promotion) in 203 s (ac-up83qi).

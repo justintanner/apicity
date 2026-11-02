@@ -69,6 +69,20 @@ const seedanceSelect: PerUnitPricing["select"] = [
   { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
 ];
 
+// FLUX 3 rounds the duration up and caps it at 20 s, and compares the
+// resolution lowercased.
+const flux3Units = (p: Record<string, unknown>): number | undefined => {
+  const duration = requestedSeconds(5)(p);
+  return duration === undefined ? undefined : Math.min(Math.ceil(duration), 20);
+};
+
+const flux3Select: PerUnitPricing["select"] = [
+  {
+    name: "resolution",
+    pick: (p) => asString(p.resolution)?.toLowerCase() ?? "720p",
+  },
+];
+
 const seedanceWarn =
   (modelId: string) =>
   (p: Record<string, unknown>, hints?: CostHints): string[] =>
@@ -153,18 +167,8 @@ export const wavespeed: Record<string, ModelPricing> = {
   "black-forest-labs/flux-3/text-to-video": {
     kind: "perUnit",
     unit: "seconds",
-    units: (p) => {
-      const duration = requestedSeconds(5)(p);
-      return duration === undefined
-        ? undefined
-        : Math.min(Math.ceil(duration), 20);
-    },
-    select: [
-      {
-        name: "resolution",
-        pick: (p) => asString(p.resolution)?.toLowerCase() ?? "720p",
-      },
-    ],
+    units: flux3Units,
+    select: flux3Select,
     rates: { "720p": 0.17, "1080p": 0.29 },
     source: source("black-forest-labs/flux-3/text-to-video"),
   },
@@ -279,5 +283,17 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "480p": 0.12, "720p": 0.24, "1080p": 0.6, "4k": 1.2 },
     source: source("bytedance/seedance-2.0/image-to-video"),
+  },
+  // base_price 170000 micros, discount_rate 100 on 2026-11-02. The formula
+  // is the text-to-video one; the input image adds nothing:
+  //   {"total_price": base_price * $min([$ceil($number(duration)), 20]) *
+  //   ($lowercase($string(resolution)) = "1080p" ? 29 / 17 : 1)}
+  "black-forest-labs/flux-3/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: flux3Units,
+    select: flux3Select,
+    rates: { "720p": 0.17, "1080p": 0.29 },
+    source: source("black-forest-labs/flux-3/image-to-video"),
   },
 };

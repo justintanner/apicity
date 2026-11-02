@@ -4,6 +4,7 @@ import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
+  WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
@@ -821,6 +822,53 @@ describe("wavespeed bytedance/seedance-2.0/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed black-forest-labs/flux-3/image-to-video", () => {
+  // The payload tests/integration/wavespeed-black-forest-labs-flux-3-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    resolution: "720p",
+    duration: 5,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.blackForestLabs.flux3)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+    ]);
+    expect(wavespeed.api.v3.blackForestLabs.flux3.imageToVideo.schema).toBe(
+      WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "5:2"],
+      ["duration", 4],
+      ["duration", 21],
+      ["image", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

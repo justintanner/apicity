@@ -476,4 +476,36 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("google/gemini-omni-1.1-flash/video-edit"),
     source: source("google/gemini-omni-1.1-flash/video-edit"),
   },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": base_price * (resolution = "768p" ? 1 : 1.4) *
+  //   ($min([duration, 15]) + $ceil($min([get_duration(reference_videos,
+  //   min=2, max=15, total=15), 15]))) + ($count(reference_images) > 5 ?
+  //   50000 * ($count(reference_images) - 5) : 0)}
+  // Reference videos add their length, clamped to 2-15 s and rounded up;
+  // each reference image past the fifth adds 0.05 USD.
+  "minimax/h3/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const output = cappedSeconds(5, 15)(p);
+      if (output === undefined || !hasItems(p, "reference_videos")) {
+        return output;
+      }
+      const input = hintInputSeconds(hints);
+      return input === undefined
+        ? undefined
+        : output + Math.ceil(Math.min(Math.max(input, 2), 15));
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "768p": 0.1, "2k": 0.14 },
+    extra: (p) => {
+      if (p.reference_images === undefined) return 0;
+      if (!Array.isArray(p.reference_images)) return undefined;
+      return Math.max(0, p.reference_images.length - 5) * 0.05;
+    },
+    warn: referenceVideosWarn("minimax/h3/reference-to-video"),
+    source: source("minimax/h3/reference-to-video"),
+  },
 };

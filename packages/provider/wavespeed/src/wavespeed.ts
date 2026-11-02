@@ -19,6 +19,7 @@ import type {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
+  WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
@@ -44,6 +45,7 @@ import {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
+  WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
@@ -311,6 +313,22 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedMinimaxH3ImageToVideoRequestSchema }
+            ),
+            // POST https://api.wavespeed.ai/api/v3/minimax/h3/reference-to-video
+            // Docs: https://wavespeed.ai/models/minimax/h3/reference-to-video
+            referenceToVideo: Object.assign(
+              async (
+                body: WaveSpeedMinimaxH3ReferenceToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/minimax/h3/reference-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedMinimaxH3ReferenceToVideoRequestSchema }
             ),
           },
         },

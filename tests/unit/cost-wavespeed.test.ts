@@ -704,3 +704,55 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed minimax/h3/reference-to-video", () => {
+  const model = "minimax/h3/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+  const video = "https://example.com/ref.mp4";
+
+  it("prices the recorded payload at the 0.40 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      reference_images: [image],
+      resolution: "768p",
+      duration: 4,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.4, 9);
+  });
+
+  it("adds 0.05 USD for each reference image past the fifth", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: Array(7).fill(image),
+        duration: 4,
+      }).usd
+    ).toBeCloseTo(0.4 + 2 * 0.05, 9);
+  });
+
+  it("bills reference videos' length, at least 2 s, on top of the output", () => {
+    const result = estimate(
+      model,
+      { prompt: PROMPT, reference_videos: [video], resolution: "2k" },
+      { inputDurationSeconds: 1.5 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((5 + 2) * 0.14, 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

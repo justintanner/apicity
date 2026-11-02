@@ -58,6 +58,11 @@
       "provider": "machgen",
       "dotPath": "api.v0.generate",
       "modelId": "MiniMax-H3"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.minimax.h3.referenceToVideo",
+      "pricingKey": "minimax/h3/reference-to-video"
     }
   ],
   "Dreamina Seedance 2.5": [

@@ -756,3 +756,48 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema = z.object(
       .describe("Resolution of the edited video. WaveSpeed default: `720p`."),
   }
 );
+
+// minimax/h3/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedMinimaxH3ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(7000)
+    .describe("Text description of the desired video scene and interactions."),
+  reference_images: z
+    .array(z.string())
+    .max(9)
+    .optional()
+    .describe(
+      "Public URLs of up to 9 reference images. At least one reference image or video is required."
+    ),
+  reference_videos: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference videos. Each clip is normalized to 2-15 s, and their combined length is capped at 15 s."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 reference audio clips; audio cannot be provided alone."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  resolution: z
+    .enum(["768p", "2k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
+});

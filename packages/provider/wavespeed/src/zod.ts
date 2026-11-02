@@ -84,3 +84,28 @@ export const WaveSpeedHeygenVideo1p0TextToVideoRequestSchema = z.object({
     .optional()
     .describe("Random seed. Omit for a random result."),
 });
+
+// minimax/h3/text-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedMinimaxH3TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Text description of the video scene, action, camera movement, and style."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  resolution: z
+    .enum(["768p", "2k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
+});

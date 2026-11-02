@@ -575,6 +575,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "MiniMax-H3",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.minimax.h3.textToVideo",
+            pricingKey: "minimax/h3/text-to-video",
+          },
         ],
       },
       {

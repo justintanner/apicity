@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed MiniMax H3 text-to-video (`minimax/h3/text-to-video`) bills
+  0.10 USD/s at 768p and 0.14 USD/s at 2k (768p and 5 s by default), the
+  duration capped at 15 s, from the formula on the model page (list price,
+  read 2026-11-02). A recorded 4 s 768p render billed 0.40 USD.
+  `MODEL_SLUGS.wavespeed` shares the family slug `mmh3` (ac-afqaub).
 - WaveSpeed HeyGen Video text-to-video (`heygen/video-1.0/text-to-video`) bills
   0.025 USD/s at 480p and 0.045 USD/s at 768p (768p and 5 s by default), from
   the formula on the model page (list price, read 2026-11-02). A recorded 5 s

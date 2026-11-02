@@ -10,6 +10,10 @@ export type {
   WaveSpeedHeygenVideo1p0Namespace,
   WaveSpeedHeygenVideo1p0TextToVideoMethod,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
+  WaveSpeedMinimaxH3Namespace,
+  WaveSpeedMinimaxH3TextToVideoMethod,
+  WaveSpeedMinimaxH3TextToVideoRequest,
+  WaveSpeedMinimaxNamespace,
   WaveSpeedOptions,
   WaveSpeedPrediction,
   WaveSpeedPredictionResponse,
@@ -23,5 +27,6 @@ export type {
 export {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
 } from "./zod";

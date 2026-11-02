@@ -3,6 +3,7 @@ import { WaveSpeedError } from "./types";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
+  WaveSpeedMinimaxH3TextToVideoRequest,
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
   WaveSpeedProvider,
@@ -10,6 +11,7 @@ import type {
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedMinimaxH3TextToVideoRequestSchema,
 } from "./zod";
 
 interface WaveSpeedErrorEnvelope {
@@ -152,6 +154,26 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedHeygenVideo1p0TextToVideoRequestSchema }
+            ),
+          },
+        },
+        minimax: {
+          h3: {
+            // POST https://api.wavespeed.ai/api/v3/minimax/h3/text-to-video
+            // Docs: https://wavespeed.ai/models/minimax/h3/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedMinimaxH3TextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/minimax/h3/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedMinimaxH3TextToVideoRequestSchema }
             ),
           },
         },

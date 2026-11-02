@@ -724,6 +724,7 @@ export const MODEL_SLUGS = {
     "alibaba/happyhorse-1.1/image-to-video": "hh11",
     "alibaba/wan-3.0/video-edit": "wan3p0",
     "alibaba/wan-3.0/reference-to-video": "wan3p0",
+    "bytedance/seedance-2.5/video-edit": "sd2p5",
   },
 } as const;
 
@@ -1445,6 +1446,7 @@ export const MODEL_DISPLAY = {
     "alibaba/happyhorse-1.1/image-to-video": "Happy Horse 1.1",
     "alibaba/wan-3.0/video-edit": "Wan 3.0 Edit",
     "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
+    "bytedance/seedance-2.5/video-edit": "Seedance 2.5 Edit",
   },
 } as const;
 

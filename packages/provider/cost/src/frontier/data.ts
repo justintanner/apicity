@@ -1046,6 +1046,11 @@ export const FRONTIER = {
             dotPath: "bytedance.seedance2p5.us.referenceToVideo",
             pricingKey: "bytedance/seedance-2.5/us/reference-to-video",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedance2p5.videoEdit",
+            pricingKey: "bytedance/seedance-2.5/video-edit",
+          },
         ],
       },
       {

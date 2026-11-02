@@ -13,6 +13,7 @@ import {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -664,10 +665,9 @@ describe("wavespeed bytedance/seedance-2.5/image-to-video", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
-      "textToVideo",
-      "imageToVideo",
-    ]);
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toContain(
+      "imageToVideo"
+    );
     expect(wavespeed.api.v3.bytedance.seedance2p5.imageToVideo.schema).toBe(
       WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema
     );
@@ -1061,6 +1061,55 @@ describe("wavespeed alibaba/wan-3.0/reference-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.5/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-bytedance-seedance-2-5-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    resolution: "480p",
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedance2p5.videoEdit.schema).toBe(
+      WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["reference_images", Array(31).fill(url)],
+      ["reference_audios", Array(11).fill(url)],
+      ["video", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

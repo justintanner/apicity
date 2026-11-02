@@ -12,6 +12,7 @@ import type {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
+  WaveSpeedBytedanceSeedance2p5VideoEditRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
@@ -34,6 +35,7 @@ import {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -326,6 +328,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/video-edit
+            // Docs: https://wavespeed.ai/models/bytedance/seedance-2.5/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedance2p5VideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedance-2.5/video-edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema }
             ),
           },
           seedance2p0: {

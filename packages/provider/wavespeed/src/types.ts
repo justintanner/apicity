@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -149,8 +150,24 @@ export interface WaveSpeedBytedanceSeedance2p5TextToVideoMethod {
 export interface WaveSpeedBytedanceSeedance2p5Namespace {
   textToVideo: WaveSpeedBytedanceSeedance2p5TextToVideoMethod;
 }
+export type WaveSpeedBytedanceSeedance2p0TextToVideoRequest = z.input<
+  typeof WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedBytedanceSeedance2p0TextToVideoMethod {
+  (
+    request: WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema;
+}
+export interface WaveSpeedBytedanceSeedance2p0Namespace {
+  textToVideo: WaveSpeedBytedanceSeedance2p0TextToVideoMethod;
+}
 export interface WaveSpeedBytedanceNamespace {
   seedance2p5: WaveSpeedBytedanceSeedance2p5Namespace;
+  seedance2p0: WaveSpeedBytedanceSeedance2p0Namespace;
 }
 
 export type WaveSpeedBlackForestLabsFlux3TextToVideoRequest = z.input<

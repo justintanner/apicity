@@ -4,6 +4,7 @@ import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -476,6 +477,53 @@ describe("wavespeed black-forest-labs/flux-3/text-to-video", () => {
           [field]: value,
         }).success,
         `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
+  // The payload tests/integration/wavespeed-bytedance-seedance-2-0-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance)).toEqual([
+      "seedance2p5",
+      "seedance2p0",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedance2p0.textToVideo.schema).toBe(
+      WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/clip.mp4";
+    for (const [field, value] of [
+      ["resolution", "2k"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 3],
+      ["duration", 16],
+      ["reference_videos", Array(4).fill(url)],
+      ["reference_images", Array(10).fill(url)],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
       ).toBe(false);
     }
   });

@@ -712,6 +712,7 @@ export const MODEL_SLUGS = {
     "minimax/h3/text-to-video": "mmh3",
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
     "black-forest-labs/flux-3/text-to-video": "flux3",
+    "bytedance/seedance-2.0/text-to-video": "sd2",
   },
 } as const;
 
@@ -1421,6 +1422,7 @@ export const MODEL_DISPLAY = {
     "minimax/h3/text-to-video": "MiniMax H3",
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
     "black-forest-labs/flux-3/text-to-video": "FLUX 3",
+    "bytedance/seedance-2.0/text-to-video": "Seedance 2",
   },
 } as const;
 

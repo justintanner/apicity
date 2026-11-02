@@ -155,3 +155,58 @@ describe("wavespeed black-forest-labs/flux-3/text-to-video", () => {
     ).toBeCloseTo(5.8, 9);
   });
 });
+
+describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
+  const model = "bytedance/seedance-2.0/text-to-video";
+  const video = "https://example.com/reference.mp4";
+
+  it("prices the recorded payload at the 0.48 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills a reference video's length on top of the output", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: PROMPT,
+        resolution: "720p",
+        duration: 5,
+        reference_videos: [video],
+      },
+      { inputDurationSeconds: 6 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.15 * (6 + 5), 9);
+  });
+
+  it("caps the reference length at 15 s", () => {
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, duration: 4, reference_videos: [video] },
+        { inputDurationSeconds: 40 }
+      ).usd
+    ).toBeCloseTo(0.15 * (15 + 4), 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

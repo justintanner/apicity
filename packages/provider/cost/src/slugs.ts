@@ -713,6 +713,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
     "black-forest-labs/flux-3/text-to-video": "flux3",
     "bytedance/seedance-2.0/text-to-video": "sd2",
+    "google/gemini-omni-1.1-flash/text-to-video": "geminiomni1p1f",
   },
 } as const;
 
@@ -1423,6 +1424,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
     "black-forest-labs/flux-3/text-to-video": "FLUX 3",
     "bytedance/seedance-2.0/text-to-video": "Seedance 2",
+    "google/gemini-omni-1.1-flash/text-to-video": "Gemini Omni 1.1 Flash",
   },
 } as const;
 

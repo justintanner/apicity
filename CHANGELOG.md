@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Gemini Omni 1.1 Flash text-to-video at `api.v3.google.geminiOmni1p1Flash.textToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/text-to-video`): 3-10 s at 360p, 720p, 1080p or 4k in 16:9 or 9:16, at WaveSpeed's list 0.03, 0.10, 0.15 and 0.30 USD/s. `WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 3 s and 360p, which billed 0.09 USD in 22 s (ac-hvra26).
+
 - `@apicity/wavespeed` adds Seedance 2.0 text-to-video at `api.v3.bytedance.seedance2p0.textToVideo` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.0/text-to-video`): 4-15 s at 480p, 720p, 1080p or 4k, with optional reference images, videos and audio and web search. List price is 0.12, 0.24, 0.60 or 1.20 USD/s by resolution. With reference videos the rate drops to 0.075, 0.15, 0.375 or 0.75 USD/s, and their length (up to 15 s) bills on top of the output. `WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 4 s, 480p and no audio, which billed 0.432 USD (list 0.48, under a 90% promotion) in 172 s (ac-okm0to).
 
 - `@apicity/wavespeed` adds FLUX 3 text-to-video at `api.v3.blackForestLabs.flux3.textToVideo` (`POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/text-to-video`): 5-20 s at 720p or 1080p, at WaveSpeed's list 0.17 and 0.29 USD/s. `WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 5 s, 720p and no audio, which billed 0.85 USD in 69 s (ac-9wenpk).

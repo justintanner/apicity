@@ -210,3 +210,22 @@ describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
     );
   });
 });
+
+describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
+  const model = "google/gemini-omni-1.1-flash/text-to-video";
+
+  it("prices the recorded payload at the 0.09 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      resolution: "360p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.09, 9);
+  });
+
+  it("bills 8 s at 720p by default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.8, 9);
+  });
+});

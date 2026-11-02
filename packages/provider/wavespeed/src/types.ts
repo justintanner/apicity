@@ -4,6 +4,7 @@ import type {
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
@@ -189,6 +190,25 @@ export interface WaveSpeedBlackForestLabsNamespace {
   flux3: WaveSpeedBlackForestLabsFlux3Namespace;
 }
 
+export type WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest = z.input<
+  typeof WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoMethod {
+  (
+    request: WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema;
+}
+export interface WaveSpeedGoogleGeminiOmni1p1FlashNamespace {
+  textToVideo: WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoMethod;
+}
+export interface WaveSpeedGoogleNamespace {
+  geminiOmni1p1Flash: WaveSpeedGoogleGeminiOmni1p1FlashNamespace;
+}
+
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
   result(
@@ -203,6 +223,7 @@ export interface WaveSpeedV3Namespace {
   minimax: WaveSpeedMinimaxNamespace;
   bytedance: WaveSpeedBytedanceNamespace;
   blackForestLabs: WaveSpeedBlackForestLabsNamespace;
+  google: WaveSpeedGoogleNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

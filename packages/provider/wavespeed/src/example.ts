@@ -59,6 +59,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.geminiOmni1p1Flash.textToVideo": {
+    "source": "wavespeed/google-gemini-omni-1-1-flash-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.heygen.video1p0.textToVideo": {
     "source": "wavespeed/heygen-video-1-0-text-to-video",
     "payload": {

@@ -6,6 +6,7 @@ import {
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
@@ -77,6 +78,7 @@ describe("wavespeed provider", () => {
       "minimax",
       "bytedance",
       "blackForestLabs",
+      "google",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -524,6 +526,46 @@ describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
           [field]: value,
         }).success,
         field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
+  // The payload tests/integration/wavespeed-google-gemini-omni-1-1-flash-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "360p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.google.geminiOmni1p1Flash.textToVideo.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "1:1"],
+      ["duration", 2],
+      ["duration", 11],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
       ).toBe(false);
     }
   });

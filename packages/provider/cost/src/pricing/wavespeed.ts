@@ -194,4 +194,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: seedanceWarn("bytedance/seedance-2.0/text-to-video"),
     source: source("bytedance/seedance-2.0/text-to-video"),
   },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
+  //   {"total_price": base_price * (duration ? duration : 8) *
+  //   (resolution = "360p" ? 0.3 : resolution = "1080p" ? 1.5 :
+  //   resolution = "4k" ? 3 : 1)}
+  "google/gemini-omni-1.1-flash/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
+    source: source("google/gemini-omni-1.1-flash/text-to-video"),
+  },
 };

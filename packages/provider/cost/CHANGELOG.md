@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed FLUX 3 image-to-video (`black-forest-labs/flux-3/image-to-video`)
+  bills as its text-to-video sibling: 0.17 USD/s at 720p and 0.29 USD/s at
+  1080p (720p and 5 s by default), the duration rounded up and capped at
+  20 s; the input image adds nothing (list price, read 2026-11-02). A recorded
+  5 s 720p render billed 0.85 USD. `MODEL_SLUGS.wavespeed` shares the family
+  slug `flux3` (ac-8x2ghe).
 - WaveSpeed Seedance 2.0 image-to-video (`bytedance/seedance-2.0/image-to-video`)
   bills 0.12, 0.24, 0.60 and 1.20 USD/s at 480p, 720p, 1080p and 4k (720p
   and 5 s by default), from the formula on the model page (list price, read

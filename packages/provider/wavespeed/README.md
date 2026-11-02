@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-13 endpoints across 7 groups. Each method mirrors an upstream URL path.
+14 endpoints across 7 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -70,6 +70,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### blackForestLabs
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.blackForestLabs.flux3.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/black-forest-labs/flux-3/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/black-forest-labs/flux-3/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.blackForestLabs.flux3.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.blackForestLabs.flux3.textToVideo</code></b></summary>

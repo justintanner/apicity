@@ -5,6 +5,7 @@ import {
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -636,5 +637,51 @@ describe("wavespeed minimax/h3/image-to-video", () => {
         prompt: "x".repeat(32001),
       }).success
     ).toBe(false);
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.5/image-to-video", () => {
+  // The payload tests/integration/wavespeed-bytedance-seedance-2-5-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedance2p5.imageToVideo.schema).toBe(
+      WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "2k"],
+      ["duration", 3],
+      ["duration", 31],
+      ["image", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
   });
 });

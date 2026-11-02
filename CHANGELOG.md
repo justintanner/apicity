@@ -73,6 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Seedance 2.5 image-to-video at `api.v3.bytedance.seedance2p5.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/image-to-video`): a start frame and optional last frame, 4-30 s at 480p, 720p, 1080p or 4k, at WaveSpeed's list 0.18, 0.36, 0.90 and 1.80 USD/s. `WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded from the cat photo at 4 s, 480p and no audio, which billed 0.648 USD (list 0.72, under a 90% promotion) in 142 s (ac-4ku5th).
+
 - `@apicity/wavespeed` adds MiniMax H3 image-to-video at `api.v3.minimax.h3.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/minimax/h3/image-to-video`): a first frame (`image`) and optional last frame (`last_image`), 4-15 s at 768p or 2k, at WaveSpeed's list 0.10 and 0.14 USD/s. `WaveSpeedMinimaxH3ImageToVideoRequestSchema` follows WaveSpeed's model catalog. The MiniMax H3 and HeyGen Video text-to-video schemas now also carry the catalog's prompt limits (7000 characters; 1-32000). Recorded from the cat photo at 4 s and 768p, which billed 0.40 USD in 95 s (ac-l31zdp).
 
 - `@apicity/wavespeed` adds Gemini Omni 1.1 Flash text-to-video at `api.v3.google.geminiOmni1p1Flash.textToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/text-to-video`): 3-10 s at 360p, 720p, 1080p or 4k in 16:9 or 9:16, at WaveSpeed's list 0.03, 0.10, 0.15 and 0.30 USD/s. `WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema` follows WaveSpeed's model catalog. Recorded at 3 s and 360p, which billed 0.09 USD in 22 s (ac-hvra26).

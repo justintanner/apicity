@@ -222,4 +222,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "768p": 0.1, "2k": 0.14 },
     source: source("minimax/h3/image-to-video"),
   },
+  // base_price 360000 micros, discount_rate 90 on 2026-11-02. Formula:
+  //   {"total_price": base_price * (resolution = "4k" ? 5 :
+  //   (resolution = "1080p" ? 2.5 : (resolution = "720p" ? 1 : 0.5))) *
+  //   duration}
+  "bytedance/seedance-2.5/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.18, "720p": 0.36, "1080p": 0.9, "4k": 1.8 },
+    source: source("bytedance/seedance-2.5/image-to-video"),
+  },
 };

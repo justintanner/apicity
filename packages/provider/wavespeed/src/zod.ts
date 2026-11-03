@@ -801,3 +801,63 @@ export const WaveSpeedMinimaxH3ReferenceToVideoRequestSchema = z.object({
     .optional()
     .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
 });
+
+// wavespeed-ai/minimax-h3/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02). This is WaveSpeed's open-weights
+// MiniMax H3: MiniMax's own minimax/h3 has no video edit on WaveSpeed.
+export const WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Describe the edit you want applied to the input video: lighting, weather, style, environment, or specific elements."
+    ),
+  video: z
+    .string()
+    .describe(
+      "URL of the input video to edit. It drives subject identity, composition, and motion."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(9)
+    .optional()
+    .describe(
+      "Public URLs of up to 9 images that guide the edit; refer to them in the prompt as <Picture 1>..<Picture 9>."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Public URLs of up to 3 audio clips that guide the audio; refer to them in the prompt as <Audio 1>..<Audio 3>."
+    ),
+  resolution: z
+    .enum(["480p", "540p", "768p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21"])
+    .optional()
+    .describe(
+      "Aspect ratio of the video. Omitted, WaveSpeed follows the input video."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .optional()
+    .describe(
+      "Output length in seconds, 3-15. Omitted, WaveSpeed follows the input video."
+    ),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
+    ),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed; a negative value picks a random one."),
+});

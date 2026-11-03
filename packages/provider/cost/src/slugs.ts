@@ -728,6 +728,7 @@ export const MODEL_SLUGS = {
     "heygen/video-1.0/reference-to-video": "heygenvideo",
     "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
     "minimax/h3/reference-to-video": "mmh3",
+    "wavespeed-ai/minimax-h3/video-edit": "mmh3",
   },
 } as const;
 
@@ -1453,6 +1454,7 @@ export const MODEL_DISPLAY = {
     "heygen/video-1.0/reference-to-video": "HeyGen Video",
     "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
     "minimax/h3/reference-to-video": "MiniMax H3",
+    "wavespeed-ai/minimax-h3/video-edit": "MiniMax H3 Edit",
   },
 } as const;
 

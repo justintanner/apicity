@@ -21,6 +21,7 @@ import type {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
 
@@ -413,6 +414,28 @@ export interface WaveSpeedXAiGrokImagineVideoV1p5Namespace {
 export interface WaveSpeedXAiNamespace {
   grokImagineVideoV1p5: WaveSpeedXAiGrokImagineVideoV1p5Namespace;
 }
+export type WaveSpeedWavespeedAiMinimaxH3VideoEditRequest = z.input<
+  typeof WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema
+>;
+
+/**
+ * WaveSpeed's open-weights MiniMax H3 (MiniMax's own minimax/h3 has no video
+ * edit on WaveSpeed). A model submit answers at once; poll
+ * `api.v3.predictions.result`.
+ */
+export interface WaveSpeedWavespeedAiMinimaxH3VideoEditMethod {
+  (
+    request: WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema;
+}
+export interface WaveSpeedWavespeedAiMinimaxH3Namespace {
+  videoEdit: WaveSpeedWavespeedAiMinimaxH3VideoEditMethod;
+}
+export interface WaveSpeedWavespeedAiNamespace {
+  minimaxH3: WaveSpeedWavespeedAiMinimaxH3Namespace;
+}
 
 export interface WaveSpeedPredictionsNamespace {
   /** Poll at least 2 s apart until `data.status` is terminal. */
@@ -430,6 +453,7 @@ export interface WaveSpeedV3Namespace {
   blackForestLabs: WaveSpeedBlackForestLabsNamespace;
   google: WaveSpeedGoogleNamespace;
   xAi: WaveSpeedXAiNamespace;
+  wavespeedAi: WaveSpeedWavespeedAiNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

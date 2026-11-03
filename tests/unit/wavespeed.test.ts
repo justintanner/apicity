@@ -23,6 +23,7 @@ import {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "@apicity/wavespeed/zod";
 
@@ -94,6 +95,7 @@ describe("wavespeed provider", () => {
       "blackForestLabs",
       "google",
       "xAi",
+      "wavespeedAi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -1264,6 +1266,57 @@ describe("wavespeed minimax/h3/reference-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedMinimaxH3ReferenceToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed wavespeed-ai/minimax-h3/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-wavespeed-ai-minimax-h3-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    resolution: "480p",
+    duration: 3,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.wavespeedAi)).toEqual(["minimaxH3"]);
+    expect(Object.keys(wavespeed.api.v3.wavespeedAi.minimaxH3)).toEqual([
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.wavespeedAi.minimaxH3.videoEdit.schema).toBe(
+      WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "720p"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 2],
+      ["duration", 16],
+      ["reference_images", Array(10).fill(url)],
+      ["reference_audios", Array(4).fill(url)],
+      ["video", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

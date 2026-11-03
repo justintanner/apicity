@@ -508,4 +508,36 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: referenceVideosWarn("minimax/h3/reference-to-video"),
     source: source("minimax/h3/reference-to-video"),
   },
+  // WaveSpeed's open-weights MiniMax H3. base_price 100000 micros,
+  // discount_rate 50 on 2026-11-02. Formula:
+  //   {"total_price": ($src := $ceil($min([get_duration(video), 15]));
+  //   base_price * ($min([(duration ? duration : $max([$src, 3])), 15]) +
+  //   $src) * (resolution = "1080p" ? 2 : resolution = "768p" ? 1 :
+  //   resolution = "540p" ? 0.75 : 0.5) + 20000 * $count(reference_images) +
+  //   20000 * $count(reference_audios))}
+  // The edit bills the source, at most 15 s, and the output, which follows
+  // the source (at least 3 s) unless duration is set; each reference image
+  // or audio clip adds 0.02 USD.
+  "wavespeed-ai/minimax-h3/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const input = sourceSeconds(15)(hints);
+      if (input === undefined) return undefined;
+      const output = requestedSeconds(Math.max(input, 3))(p);
+      return output === undefined ? undefined : Math.min(output, 15) + input;
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "480p": 0.05, "540p": 0.075, "768p": 0.1, "1080p": 0.2 },
+    extra: (p) => {
+      const images = p.reference_images ?? [];
+      const audios = p.reference_audios ?? [];
+      if (!Array.isArray(images) || !Array.isArray(audios)) return undefined;
+      return 0.02 * (images.length + audios.length);
+    },
+    warn: editedVideoWarn("wavespeed-ai/minimax-h3/video-edit"),
+    source: source("wavespeed-ai/minimax-h3/video-edit"),
+  },
 };

@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed's open-weights MiniMax H3 video edit
+  (`wavespeed-ai/minimax-h3/video-edit`) bills the source clip's seconds
+  (rounded up, at most 15) plus the output's, which follow the source (at
+  least 3 s) unless `duration` is set (at most 15), at 0.05, 0.075, 0.10 and
+  0.20 USD/s for 480p, 540p, 768p and 1080p (768p by default), plus 0.02 USD
+  per reference image or audio clip, from the formula on the model page
+  (list price, read 2026-11-02). The source's length comes from
+  `costHints.inputDurationSeconds`; without it the estimate fails closed with
+  a warning naming the hint. A recorded 3 s 480p edit of a 3 s clip billed
+  0.15 USD against the 0.30 list under a 50% promotion.
+  `MODEL_SLUGS.wavespeed` shares the family slug `mmh3`, display
+  "MiniMax H3 Edit" (ac-yn8cbg).
 - WaveSpeed MiniMax H3 reference-to-video (`minimax/h3/reference-to-video`)
   bills the output's seconds (5 by default, at most 15) plus the reference
   videos' total length, clamped to 2-15 s and rounded up, at 0.10 and

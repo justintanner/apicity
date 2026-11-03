@@ -40,7 +40,13 @@
       "pricingKey": "google/gemini-omni-1.1-flash/video-edit"
     }
   ],
-  "MiniMax H3 (768p)": [],
+  "MiniMax H3 (768p)": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.wavespeedAi.minimaxH3.videoEdit",
+      "pricingKey": "wavespeed-ai/minimax-h3/video-edit"
+    }
+  ],
   "HappyHorse-1.0": [
     {
       "provider": "fal",

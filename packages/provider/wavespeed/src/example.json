@@ -227,6 +227,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.wavespeedAi.minimaxH3.videoEdit": {
+    "source": "wavespeed/wavespeed-ai-minimax-h3-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "resolution": "480p",
+      "duration": 3,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo": {
     "source": "wavespeed/x-ai-grok-imagine-video-v1-5-image-to-video",
     "payload": {

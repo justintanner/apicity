@@ -65,6 +65,10 @@ export type {
   WaveSpeedPredictionsNamespace,
   WaveSpeedProvider,
   WaveSpeedV3Namespace,
+  WaveSpeedWavespeedAiMinimaxH3Namespace,
+  WaveSpeedWavespeedAiMinimaxH3VideoEditMethod,
+  WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
+  WaveSpeedWavespeedAiNamespace,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
   WaveSpeedXAiGrokImagineVideoV1p5Namespace,
@@ -92,5 +96,6 @@ export {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";

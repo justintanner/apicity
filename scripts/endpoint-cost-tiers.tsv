@@ -1819,6 +1819,7 @@ wavespeed	api.v3.minimax.h3.imageToVideo	POST	prohibitive	Per-model media-genera
 wavespeed	api.v3.minimax.h3.referenceToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.minimax.h3.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.predictions.result	GET	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
+wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost

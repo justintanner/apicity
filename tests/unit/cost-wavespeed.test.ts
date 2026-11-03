@@ -756,3 +756,57 @@ describe("wavespeed minimax/h3/reference-to-video", () => {
     );
   });
 });
+
+describe("wavespeed wavespeed-ai/minimax-h3/video-edit", () => {
+  const model = "wavespeed-ai/minimax-h3/video-edit";
+  const video = "https://example.com/cat.mp4";
+  const image = "https://example.com/ref.jpg";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.30 USD list quote", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: "Make the cat's fur bright orange.",
+        video,
+        resolution: "480p",
+        duration: 3,
+        generate_audio: false,
+      },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((3 + 3) * 0.05, 9);
+  });
+
+  it("adds 0.02 USD per reference and follows the source by default", () => {
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, reference_images: [image, image] },
+        clip
+      ).usd
+    ).toBeCloseTo(0.6 + 2 * 0.02, 9);
+  });
+
+  it("bills at most 15 s of source and of output", () => {
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, resolution: "1080p" },
+        { inputDurationSeconds: 40 }
+      ).usd
+    ).toBeCloseTo((15 + 15) * 0.2, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

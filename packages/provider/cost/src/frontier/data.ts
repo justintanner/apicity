@@ -1081,7 +1081,13 @@ export const FRONTIER = {
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
         elo: 1124,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.wavespeedAi.minimaxH3.videoEdit",
+            pricingKey: "wavespeed-ai/minimax-h3/video-edit",
+          },
+        ],
       },
       {
         rank: 5,

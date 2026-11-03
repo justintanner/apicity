@@ -540,4 +540,31 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("wavespeed-ai/minimax-h3/video-edit"),
     source: source("wavespeed-ai/minimax-h3/video-edit"),
   },
+  // base_price 360000 micros, discount_rate 100 on 2026-11-02. The formula
+  // is the text-to-video one; reference images and audio add nothing:
+  //   {"total_price": ($scale := (resolution = "4k" ? 10 :
+  //   resolution = "1080p" ? 5 : resolution = "720p" ? 2 : 1);
+  //   $count(reference_videos) > 0 ? ($reference_duration :=
+  //   $min([$ceil(get_duration(reference_videos, min=2, max=30,
+  //   total=30)), 30]); 110000 * $scale * ($max([2, $reference_duration]) +
+  //   (duration ? duration : $max([4, $reference_duration])))) :
+  //   (base_price / 2) * $scale * duration)}
+  "bytedance/seedance-2.5/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seedanceUnits(30),
+    select: seedanceSelect,
+    rates: {
+      "no-video|480p": 0.18,
+      "no-video|720p": 0.36,
+      "no-video|1080p": 0.9,
+      "no-video|4k": 1.8,
+      "video|480p": 0.11,
+      "video|720p": 0.22,
+      "video|1080p": 0.55,
+      "video|4k": 1.1,
+    },
+    warn: referenceVideosWarn("bytedance/seedance-2.5/reference-to-video"),
+    source: source("bytedance/seedance-2.5/reference-to-video"),
+  },
 };

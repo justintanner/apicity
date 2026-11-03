@@ -117,6 +117,20 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedance2p5.referenceToVideo": {
+    "source": "wavespeed/bytedance-seedance-2-5-reference-to-video",
+    "payload": {
+      "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+      "reference_images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "resolution": "480p",
+      "duration": 4,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.bytedance.seedance2p5.textToVideo": {
     "source": "wavespeed/bytedance-seedance-2-5-text-to-video",
     "payload": {

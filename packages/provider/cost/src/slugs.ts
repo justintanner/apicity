@@ -729,6 +729,7 @@ export const MODEL_SLUGS = {
     "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
     "minimax/h3/reference-to-video": "mmh3",
     "wavespeed-ai/minimax-h3/video-edit": "mmh3",
+    "bytedance/seedance-2.5/reference-to-video": "sd2p5",
   },
 } as const;
 
@@ -1455,6 +1456,7 @@ export const MODEL_DISPLAY = {
     "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
     "minimax/h3/reference-to-video": "MiniMax H3",
     "wavespeed-ai/minimax-h3/video-edit": "MiniMax H3 Edit",
+    "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
   },
 } as const;
 

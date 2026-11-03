@@ -861,3 +861,56 @@ export const WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema = z.object({
     .optional()
     .describe("Random seed; a negative value picks a random one."),
 });
+
+// bytedance/seedance-2.5/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02).
+export const WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Describe the scene, action, camera movement, and mood for the video. Refer to the references as @Image 1, @Video 1, @Audio 1, in upload order."
+      ),
+    reference_images: z
+      .array(z.string())
+      .max(30)
+      .optional()
+      .describe(
+        "Public URLs of up to 30 images that keep characters, products, or scenes consistent. Provide at least one reference; with none, the request runs as text-to-video."
+      ),
+    reference_videos: z
+      .array(z.string())
+      .max(10)
+      .optional()
+      .describe(
+        "Public URLs of up to 10 reference videos, at most 30 s in all. They bill by their length."
+      ),
+    reference_audios: z
+      .array(z.string())
+      .max(10)
+      .optional()
+      .describe(
+        "Public URLs of up to 10 reference audio clips, at most 30 s in all."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["480p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(4)
+      .max(30)
+      .optional()
+      .describe("Length of the video in seconds, 4-30. WaveSpeed default: 5."),
+    generate_audio: z
+      .boolean()
+      .optional()
+      .describe(
+        "Generate native audio synchronized with the video. WaveSpeed default: true."
+      ),
+  });

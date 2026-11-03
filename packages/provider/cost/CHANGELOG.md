@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Seedance 2.5 reference-to-video
+  (`bytedance/seedance-2.5/reference-to-video`) bills exactly as its
+  text-to-video sibling, from the same formula on the model page (list price,
+  read 2026-11-02): 0.18, 0.36, 0.90 and 1.80 USD/s at 480p, 720p, 1080p and
+  4k, or, with reference videos, 0.11, 0.22, 0.55 and 1.10 USD/s for the
+  output plus their length. Reference images and audio add nothing. Reference
+  videos without `costHints.inputDurationSeconds` fail closed with a warning
+  naming the hint. A recorded 4 s 480p render billed 0.648 USD against the
+  0.72 list under a 90% promotion. `MODEL_SLUGS.wavespeed` shares the family
+  slug `sd2p5` (ac-ubt29p).
 - WaveSpeed's open-weights MiniMax H3 video edit
   (`wavespeed-ai/minimax-h3/video-edit`) bills the source clip's seconds
   (rounded up, at most 15) plus the output's, which follow the source (at

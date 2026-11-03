@@ -12,6 +12,7 @@ import {
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
@@ -1086,11 +1087,9 @@ describe("wavespeed bytedance/seedance-2.5/video-edit", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
-      "textToVideo",
-      "imageToVideo",
-      "videoEdit",
-    ]);
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toContain(
+      "videoEdit"
+    );
     expect(wavespeed.api.v3.bytedance.seedance2p5.videoEdit.schema).toBe(
       WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema
     );
@@ -1317,6 +1316,63 @@ describe("wavespeed wavespeed-ai/minimax-h3/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.5/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-bytedance-seedance-2-5-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "videoEdit",
+      "referenceToVideo",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedance2p5.referenceToVideo.schema).toBe(
+      WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["aspect_ratio", "9:21"],
+      ["duration", 3],
+      ["duration", 31],
+      ["reference_images", Array(31).fill(url)],
+      ["reference_videos", Array(11).fill(url)],
+      ["reference_audios", Array(11).fill(url)],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

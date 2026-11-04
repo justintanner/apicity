@@ -39,6 +39,57 @@ const google = (
   });
 
 describe("deployment-aware pricing", () => {
+  it.each([
+    ["qwen3.8-max", "International"],
+    ["qwen3.8-max-0902", "International"],
+    ["qwen3.7-max", "International"],
+    ["qwen3.7-max-preview", "International"],
+    ["qwen3.8-max", "Global"],
+    ["qwen3.8-max-0902", "Global"],
+    ["qwen3.7-max", "Global"],
+    ["qwen3.7-plus", "International"],
+    ["qwen3.6-plus", "International"],
+    ["qwen3.5-plus", "International"],
+    ["qwen3.7-plus", "Global"],
+    ["qwen3.6-plus", "Global"],
+    ["qwen3.5-plus", "Global"],
+    ["qwen3.8-flash", "International"],
+    ["qwen3.7-flash", "International"],
+    ["qwen3.6-flash", "International"],
+    ["qwen3.5-flash", "International"],
+    ["qwen3.8-flash", "Global"],
+    ["qwen3.7-flash", "Global"],
+    ["qwen3.6-flash", "Global"],
+    ["qwen3.5-flash", "Global"],
+    ["qwen3.5-omni-plus", "International"],
+    ["qwen3.5-omni-flash", "International"],
+    ["qwen3-omni-flash", "International"],
+    ["qwen3-vl-plus", "International"],
+    ["qwen3-vl-plus", "Global"],
+    ["qwen3-coder-flash", "International"],
+    ["qwen3-coder-flash", "Global"],
+    ["qwen3.8-2.4t-a95b", "International"],
+    ["qwen3.8-27b", "International"],
+    ["qwen3.6-35b-a3b", "International"],
+    ["qwen3.6-27b", "International"],
+    ["qwen3.6-35b-a3b", "Global"],
+    ["qwen3.5-397b-a17b", "International"],
+    ["qwen3.5-122b-a10b", "International"],
+    ["qwen3.5-27b", "International"],
+    ["qwen3.5-35b-a3b", "International"],
+    ["qwen3.5-397b-a17b", "Global"],
+    ["qwen3.5-122b-a10b", "Global"],
+    ["qwen3.5-27b", "Global"],
+  ] as const)("covers surveyed %s in %s", (model, scope) => {
+    const result = computeEstimate({
+      provider: "alibaba",
+      payload: { model, enable_thinking: true },
+      costHints: { ...hints, alibabaDeploymentScope: scope },
+    });
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeGreaterThan(0);
+    expect(result.rateAsOf).toBe("2026-11-04");
+  });
   it("uses the factory-default mainland rate and names the assumption", () => {
     expect(alibaba()).toMatchObject({
       usd: (1000 * 1.65 + 100 * 4.951) / 1e6,
@@ -91,6 +142,16 @@ describe("deployment-aware pricing", () => {
     expect(run(256000).breakdown.inputUsdPerMillion).toBe(0.4);
     expect(run(256001).breakdown.inputUsdPerMillion).toBe(1.2);
     expect(run(1000001).warnings.join()).toContain("published tiers");
+  });
+  it("uses the published Global list rate rather than a time-limited discount", () => {
+    const result = alibaba(
+      "https://workspace.us-east-1.maas.aliyuncs.com",
+      { ...hints, alibabaDeploymentScope: "Global" },
+      "qwen3.7-plus"
+    );
+    expect(result.warnings).toEqual([]);
+    expect(result.breakdown.inputUsdPerMillion).toBe(0.276);
+    expect(result.breakdown.outputUsdPerMillion).toBe(1.101);
   });
   it("requires declared counts and refuses unknown models", () => {
     expect(alibaba(undefined, {}).warnings.join()).toContain(

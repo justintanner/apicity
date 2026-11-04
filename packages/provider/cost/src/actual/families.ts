@@ -490,6 +490,26 @@ const fireworks: Extractor = (exchange) => {
 const google: Extractor = (exchange) => {
   const out = blank(exchange);
   readUsageMetadata(exchange.responseBody, out);
+  const details = framesOf(exchange.responseBody).flatMap((frame) => [
+    get(frame, "usageMetadata.promptTokensDetails"),
+    get(frame, "usageMetadata.candidatesTokensDetails"),
+  ]);
+  if (
+    details.some(
+      (value) =>
+        Array.isArray(value) &&
+        value.some(
+          (item) =>
+            typeof item === "object" &&
+            item !== null &&
+            "modality" in item &&
+            item.modality !== "TEXT"
+        )
+    )
+  ) {
+    out.uncoveredCharge =
+      "google: non-text usageMetadata modality rates are not bundled";
+  }
   setNumber(
     out,
     "characters",

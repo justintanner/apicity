@@ -309,7 +309,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "metered",
       unit: "tokens",
-      reason: "Only qwen3.6-plus and qwen3.5-0.8b have rows",
+      reason:
+        "Dated model rates selected by deployment scope and input-token tier",
       source: {
         url: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
         asOf: "2026-11-04",
@@ -2733,9 +2734,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "google",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "tokens",
-      reason: "No EstimateRequest route; usageMetadata reports the counts",
+      reason:
+        "Standard global text rates; usageMetadata reports actual token counts",
       source: {
         url: "https://cloud.google.com/vertex-ai/generative-ai/pricing",
         asOf: "2026-11-04",

@@ -1,3 +1,8 @@
+import {
+  alibabaScope,
+  alibabaTokenEntry,
+  scopedPayloadProblem,
+} from "./deployment";
 import { anthropicCacheTtl } from "./anthropic-cache";
 import {
   FIREWORKS_EMBEDDING_RATES,
@@ -539,7 +544,8 @@ export function evaluateDeclaredUsage(
   provider: PricedProviderId,
   model: string,
   payload: Record<string, unknown>,
-  hints?: CostHints
+  hints?: CostHints,
+  selectedEntry?: TokenPricing
 ): CostEstimate {
   const source: CostSource = "declared-tokens+table";
   const problem =
@@ -552,9 +558,10 @@ export function evaluateDeclaredUsage(
           : undefined;
   if (problem) return failed(source, [problem]);
   const entry =
-    provider === "fireworks"
+    selectedEntry ??
+    (provider === "fireworks"
       ? fireworksEntry(model, payload, hints)
-      : PRICING[provider][model];
+      : PRICING[provider][model]);
   if (!entry) {
     return failed(source, [
       `model '${model}' not found in pricing table for provider '${provider}'`,
@@ -867,7 +874,10 @@ export function evaluateDeclaredUsage(
         ? openaiWarnings(payload)
         : provider === "xai"
           ? xaiWarnings(payload)
-          : (provider === "fireworks" || provider === "anthropic") &&
+          : (provider === "fireworks" ||
+                provider === "anthropic" ||
+                provider === "alibaba" ||
+                provider === "google") &&
               Array.isArray(payload.tools) &&
               payload.tools.length > 0
             ? [
@@ -1049,24 +1059,93 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
     // image or per second. Route on the pricing entry's own `kind` so an
     // unknown model still falls through to the token path and its warning.
     case "alibaba": {
-      const model = asString(req.payload.model);
-      const entry = model ? PRICING.alibaba[model] : undefined;
+      const scope = alibabaScope(req.baseURL, req.costHints);
+      if (!scope.scope)
+        return failed("declared-tokens+table", [
+          scope.warning ?? "alibaba: missing deployment scope",
+        ]);
+      const model = asString(req.payload.model) ?? "";
+      if (!model)
+        return failed("declared-tokens+table", [
+          "alibaba: payload.model is required",
+        ]);
+      const entry = PRICING.alibaba[model];
+      let result: CostEstimate;
       if (entry?.kind === "perUnit") {
-        return evaluatePerUnit(
+        if (scope.scope !== "International")
+          return failed("per-unit-table", [
+            `alibaba '${model}': no bundled media rate for scope '${scope.scope}'`,
+          ]);
+        result = evaluatePerUnit(
           "alibaba",
           req.payload,
           { keyedBy: "model" },
           req.costHints
         );
+      } else {
+        const problem = scopedPayloadProblem(
+          "alibaba",
+          req.payload,
+          req.costHints
+        );
+        if (problem) return failed("declared-tokens+table", [problem]);
+        const selected = alibabaTokenEntry(
+          model,
+          scope.scope,
+          req.payload,
+          req.costHints
+        );
+        if (!selected.entry)
+          return failed("declared-tokens+table", [
+            selected.warning ?? "alibaba: no rate",
+          ]);
+        result = evaluateDeclaredUsage(
+          "alibaba",
+          model,
+          req.payload,
+          req.costHints,
+          selected.entry
+        );
       }
-      const ext = extractChat("alibaba", req.payload);
-      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
-      return applyTokenRate(
-        "alibaba",
-        ext.data.model,
-        heuristicTokens(ext.data.text),
-        ext.data.maxOutputTokens
+      return { ...result, notes: [...(result.notes ?? []), ...scope.notes] };
+    }
+    case "google": {
+      if (req.baseURL !== undefined) {
+        let url: URL;
+        try {
+          url = new URL(req.baseURL);
+        } catch {
+          return failed("declared-tokens+table", ["google: invalid baseURL"]);
+        }
+        const location = url.pathname.match(/\/locations\/([^/]+)/)?.[1];
+        if (
+          url.hostname !== "aiplatform.googleapis.com" ||
+          (location !== undefined && location !== "global")
+        )
+          return failed("declared-tokens+table", [
+            "google: baseURL region is not bundled; only global express mode is priced",
+          ]);
+      }
+      const model = req.endpoint ?? "";
+      const problem = scopedPayloadProblem(
+        "google",
+        req.payload,
+        req.costHints
       );
+      if (problem) return failed("declared-tokens+table", [problem]);
+      const result = evaluateDeclaredUsage(
+        "google",
+        model,
+        req.payload,
+        req.costHints
+      );
+      return {
+        ...result,
+        notes: [
+          ...(result.notes ?? []),
+          "Google Standard global text rates, snapshot 2026-11-04; introductory prices have dated expiry in the bundled table.",
+        ],
+      };
     }
     case "fireworks": {
       const model = asString(req.payload.model);

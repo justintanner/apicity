@@ -17,6 +17,7 @@ export interface EndpointEstimateRequest {
   dotPath: string;
   payload?: Record<string, unknown>;
   endpoint?: string;
+  baseURL?: string;
   costHints?: CostHints;
   mode?: "strict" | "forecast";
 }
@@ -257,6 +258,7 @@ function estimateEndpointInternal(
           provider: req.provider,
           payload: req.payload ?? {},
           costHints: req.costHints,
+          baseURL: req.baseURL,
           endpoint:
             req.endpoint ??
             ENDPOINT_PRICING_KEYS[

@@ -371,7 +371,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
-  it("alibaba heuristic — unknown model emits warning, usd=0", () => {
+  it("alibaba scoped route — unknown model emits warning, usd=0", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "alibaba",
@@ -382,7 +382,7 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.usd).toBe(0);
-    expect(r.source).toBe("tokens-heuristic+table");
+    expect(r.source).toBe("declared-tokens+table");
     expect(r.warnings.some((w) => w.includes("qwen-not-priced-yet"))).toBe(
       true
     );

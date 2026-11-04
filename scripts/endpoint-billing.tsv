@@ -5,7 +5,7 @@ alibaba	compatibleMode.v1.models	GET	free		Model list; no charge	https://www.ali
 alibaba	api.v1.services.aigc.imageGeneration.generation	POST	metered	images		https://www.alibabacloud.com/help/en/model-studio/model-pricing	2026-11-04
 alibaba	api.v1.services.aigc.multimodalGeneration.generation	POST	metered	images		https://www.alibabacloud.com/help/en/model-studio/model-pricing	2026-11-04
 alibaba	api.v1.services.aigc.videoGeneration.videoSynthesis	POST	metered	seconds		https://www.alibabacloud.com/help/en/model-studio/model-pricing	2026-11-04
-alibaba	compatibleMode.v1.chat.completions	POST	metered	tokens	Only qwen3.6-plus and qwen3.5-0.8b have rows	https://www.alibabacloud.com/help/en/model-studio/model-pricing	2026-11-04
+alibaba	compatibleMode.v1.chat.completions	POST	metered	tokens	Dated model rates selected by deployment scope and input-token tier	https://www.alibabacloud.com/help/en/model-studio/model-pricing	2026-11-04
 anthropic	v1.files.del	DELETE	free		Docs: Files API operations are free	https://platform.claude.com/docs/en/build-with-claude/files.md	2026-11-04
 anthropic	v1.messages.batches.del	DELETE	free		Model list or batch list, cancel or delete; the pricing page bills none of these	https://platform.claude.com/docs/en/about-claude/pricing.md	2026-11-04
 anthropic	v1.skills.del	DELETE	free		Skill management has no pricing row; execution bills as code execution and tokens	https://platform.claude.com/docs/en/build-with-claude/skills-guide.md	2026-11-04
@@ -888,7 +888,7 @@ free-media-upload	tflink.upload	POST	free		Free file host; no account, no price	
 free-media-upload	tmpfiles.api.v1.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 free-media-upload	uguu.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 google	v1.publishers.google.models.countTokens	POST	free		Docs: no charge or quota restriction for CountTokens	https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/get-token-count	2026-11-04
-google	v1.publishers.google.models.generateContent	POST	unpriced	tokens	No EstimateRequest route; usageMetadata reports the counts	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-04
+google	v1.publishers.google.models.generateContent	POST	metered	tokens	Standard global text rates; usageMetadata reports actual token counts	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-04
 google	v1internal.retrieveUserQuota	POST	free		Code Assist quota read; no charge	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-04
 google	v1internal.retrieveUserQuotaSummary	POST	free		Code Assist quota read; no charge	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-04
 googleflow	v1.accounts	DELETE	free		Account, asset, character or voice management; no credit cost published; a captcha provider bills its own solves	https://useapi.net/docs/api-google-flow-v1	2026-11-04

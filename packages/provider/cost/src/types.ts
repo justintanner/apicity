@@ -95,6 +95,15 @@ export interface CostEstimate {
 // Additive by design: new hint fields are optional, so adding one is never a
 // breaking change.
 export interface CostHints {
+  // Alibaba service deployment scope, as documented 2026-11-04.
+  alibabaDeploymentScope?:
+    | "International"
+    | "Chinese mainland"
+    | "Global"
+    | "US"
+    | "EU"
+    | "Japan"
+    | "Hong Kong";
   // Returned X resources. Positive safe integer; no default or inferred reads.
   // Cost-only: never part of the upstream payload or signed request bytes.
   resources?: number;
@@ -264,11 +273,13 @@ export type EstimateRequest =
         | "kie"
         | "elevenlabs"
         | "fal"
+        | "google"
         | "googleflow"
         | "machgen"
         | "wavespeed";
       payload: Record<string, unknown>;
       endpoint?: string;
+      baseURL?: string;
       costHints?: CostHints;
     }
   | { provider: "free-media-upload" };

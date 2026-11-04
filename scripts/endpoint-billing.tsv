@@ -867,18 +867,18 @@ fireworks	inference.v1.accounts.supervisedFineTuningJobs.create	POST	accrual	tra
 fireworks	inference.v1.accounts.supervisedFineTuningJobs.resume	POST	accrual	training-tokens	Bills per 1M training tokens as the job runs	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.accounts.users.create	POST	free		Account, model, secret, user or job management; the pricing page bills none of these	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.accounts.users.update	POST	free		Account, model, secret, user or job management; the pricing page bills none of these	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.audio.batch.transcriptions	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.audio.batch.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.audio.transcriptions	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.audio.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.audio.batch.transcriptions	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.audio.batch.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.audio.transcriptions	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.audio.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.chat.completions	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
 fireworks	inference.v1.completions	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
 fireworks	inference.v1.embeddings	POST	metered	tokens	Published legacy embedding size bands and Qwen3 Embedding 8B input-token rates	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
 fireworks	inference.v1.messages	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
 fireworks	inference.v1.rerank	POST	metered	tokens	Qwen3 Reranker 8B: 0.20 USD per million input tokens; Voyage uses dedicated capacity and has no per-call rate	https://docs.fireworks.ai/guides/querying-embeddings-models.md	2026-11-04
 fireworks	inference.v1.workflows.getResult	POST	followup		Result poll; billed on the submit it follows	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.workflows.kontext	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.workflows.textToImage	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.workflows.kontext	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
+fireworks	inference.v1.workflows.textToImage	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw	https://fireworks.ai/pricing	2026-11-04
 free-media-upload	catbox.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 free-media-upload	filebin.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 free-media-upload	gofile.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
@@ -912,10 +912,10 @@ googleflow	v1.characters	POST	free		Account, asset, character or voice managemen
 googleflow	v1.images	POST	free		Image generation draws no credits on any plan (bundled rows are 0, read 2026-10-17 and again today); a configured captcha provider bills its own solves	https://useapi.net/docs/api-google-flow-v1/post-google-flow-images	2026-11-04
 googleflow	v1.images.upscale	POST	free		Docs: both resolutions are free of Google Flow credits	https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale	2026-11-04
 googleflow	v1.videos	POST	metered	credits	Credits times the plan's credit value; Lite low priority is 0 credits on Ultra 199	https://useapi.net/docs/api-google-flow-v1	2026-11-04
-googleflow	v1.videos.concatenate	POST	free		Docs and the plan table publish no credit cost for a concatenation; no recording states one	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate	2026-11-04
-googleflow	v1.videos.extend	POST	metered	credits	Uses the same Veo models and credit table as a generation; the route does not resolve it today	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend	2026-11-04
-googleflow	v1.videos.gif	POST	free		Docs and the plan table publish no credit cost for a GIF render; no recording states one	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif	2026-11-04
-googleflow	v1.videos.upscale	POST	unpriced	credits	720p and 1080p are free; 4K costs 50 credits. No bundled row.	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale	2026-11-04
+googleflow	v1.videos.concatenate	POST	unpriced		No published credit cost for concatenation; follow-up ac-6nez46	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate	2026-11-04
+googleflow	v1.videos.extend	POST	metered	credits	Uses the same Veo models and credit table as a generation; model defaults to veo-3.1-fast	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend	2026-11-04
+googleflow	v1.videos.gif	POST	unpriced		No published credit cost for GIF rendering; follow-up ac-6nez46	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif	2026-11-04
+googleflow	v1.videos.upscale	POST	metered	credits	720p and 1080p are free; 4K costs 50 credits on Ultra plans	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale	2026-11-04
 googleflow	v1.voices	POST	free		Account, asset, character or voice management; no credit cost published; a captcha provider bills its own solves	https://useapi.net/docs/api-google-flow-v1	2026-11-04
 kie	anthropic.v1.models	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.chat.credit	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -973,7 +973,7 @@ kie	api.v1.runway.extend	POST	metered	per-model		https://api.kie.ai/client/v1/mo
 kie	api.v1.runway.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.style.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.suno.cover.generate	POST	metered	per-model	The feed lists 0 credits for this call today.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	api.v1.suno.recovery	POST	unpriced	per-model	The docs and the feed publish no price, so P4 fails it closed unless a price appears	https://docs.kie.ai/suno-api/recovery-audio.md	2026-11-04
+kie	api.v1.suno.recovery	POST	unpriced	per-model	The docs and the feed publish no price, so P4 fails it closed unless a price appears; follow-up ac-rnclk7	https://docs.kie.ai/suno-api/recovery-audio.md	2026-11-04
 kie	api.v1.veo.extend	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.veo.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.veo.get4kVideo	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -985,13 +985,13 @@ kie	api.v1.voice.validate	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS
 kie	api.v1.wav.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	claude.v1.messages	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	codex.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini.v1.models.gemini38Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini25Pro.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini25Pro.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini31Pro.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini36FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini37FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini38FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -1068,7 +1068,7 @@ openai	v1.fineTuning.jobs.pause	POST	free		Metadata, list, delete or cancel call
 openai	v1.fineTuning.jobs.resume	POST	accrual	tokens	Bills trained tokens as the job runs; closed to new users, existing users can still create jobs	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.images.edits	POST	metered	images	gpt-image-1-mini and chatgpt-image-latest have no bundled row	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.images.generations	POST	metered	images	gpt-image-1-mini and chatgpt-image-latest have no bundled row	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.images.variations	POST	unpriced	images	The page no longer lists the DALL-E models this endpoint serves, so P1 fails it closed	https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.images.variations	POST	unpriced	images	The page no longer lists the DALL-E models this endpoint serves, so P1 fails it closed; ruling ac-stu9mv, no follow-up	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.moderations	POST	free		omni-moderation-latest is listed as Free on the pricing page	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.realtime.calls	POST	accrual	tokens	Starts a voice session; tokens or minutes bill on the socket (response.done), so the POST has no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.realtime.calls.hangup	POST	free		Ends a session; no charge of its own	https://developers.openai.com/api/docs/pricing	2026-11-04
@@ -1080,7 +1080,7 @@ openai	v1.responses.inputTokens	POST	free		Token count only; the guide and the p
 openai	v1.uploads	POST	free		The pricing page has no Files row; storage bills only once a file is indexed into a vector store or uploaded to ChatKit	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores.files	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.vectorStores.search	POST	unpriced	requests	No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day	https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.vectorStores.search	POST	unpriced	requests	No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day; ruling ac-4pxiai, no follow-up	https://developers.openai.com/api/docs/pricing	2026-11-04
 openf1	v1.carData	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipDrivers	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipTeams	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
@@ -1231,7 +1231,7 @@ polymarket	clob.prices	POST	free		Public market data or account read or write; n
 polymarket	clob.spreads	POST	free		Public market data or account read or write; no API charge	https://docs.polymarket.com/trading/fees	2026-11-04
 polymarket	clob.v1.heartbeats	POST	free		Public market data or account read or write; no API charge	https://docs.polymarket.com/trading/fees	2026-11-04
 polymarket	clob.balanceAllowance	PUT	free		Public market data or account read or write; no API charge	https://docs.polymarket.com/trading/fees	2026-11-04
-quo	v1.messages	POST	unpriced	segments	0.01 USD per outgoing US or Canada segment; international adds a country rate; 160 GSM-7 or 70 special characters per segment	https://www.quo.com/pricing	2026-11-04
+quo	v1.messages	POST	metered	segments	0.01 USD per outgoing US or Canada segment; international adds a country rate; 160 GSM-7 or 70 special characters per segment	https://www.quo.com/pricing	2026-11-04
 s3	buckets.del	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	buckets.delAnalytics	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	buckets.delCors	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
@@ -1251,7 +1251,7 @@ s3	buckets.delWebsite	DELETE	free		AWS S3 DELETE and CANCEL requests, including 
 s3	objects.abortMultipartUpload	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	objects.del	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	objects.delTagging	DELETE	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	buckets.createSession	GET	unpriced	requests	Express session has no independently pinned per-call rate	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	buckets.createSession	GET	unpriced	requests	Express session has no independently pinned per-call rate; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	buckets.getAbac	GET	metered	requests	S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.getAccelerateConfiguration	GET	metered	requests	S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.getAcl	GET	metered	requests	S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
@@ -1300,14 +1300,14 @@ s3	objects.listParts	GET	metered	requests	S3 Standard us-east-1: 0.005 USD per 1
 s3	objects.listVersions	GET	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.head	HEAD	metered	requests	S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	objects.head	HEAD	metered	requests	S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
-s3	buckets.createMetadataConfiguration	POST	unpriced	requests	S3 Metadata feature charges are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	buckets.createMetadataTableConfiguration	POST	unpriced	requests	S3 Metadata feature charges are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	objectLambda.writeGetObjectResponse	POST	unpriced	requests	Object Lambda returned bytes and Lambda charges are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	buckets.createMetadataConfiguration	POST	unpriced	requests	S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	buckets.createMetadataTableConfiguration	POST	unpriced	requests	S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	objectLambda.writeGetObjectResponse	POST	unpriced	requests	Object Lambda returned bytes and Lambda charges are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	objects.completeMultipartUpload	POST	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	objects.createMultipartUpload	POST	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	objects.delMany	POST	free		AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	objects.restore	POST	unpriced	requests	Archive storage class and retrieval tier are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	objects.selectContent	POST	unpriced	requests	SELECT scanned and returned bytes are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	objects.restore	POST	unpriced	requests	Archive storage class and retrieval tier are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	objects.selectContent	POST	unpriced	requests	SELECT scanned and returned bytes are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	buckets.create	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.putAbac	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.putAccelerateConfiguration	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
@@ -1332,8 +1332,8 @@ s3	buckets.putRequestPayment	PUT	metered	requests	S3 Standard us-east-1: 0.005 U
 s3	buckets.putTagging	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.putVersioning	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	buckets.putWebsite	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
-s3	buckets.updateMetadataInventoryTable	PUT	unpriced	requests	S3 Metadata feature charges are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
-s3	buckets.updateMetadataJournalTable	PUT	unpriced	requests	S3 Metadata feature charges are not modeled	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	buckets.updateMetadataInventoryTable	PUT	unpriced	requests	S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
+s3	buckets.updateMetadataJournalTable	PUT	unpriced	requests	S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up	https://aws.amazon.com/s3/pricing/	2026-11-04
 s3	objects.copy	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	objects.put	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
 s3	objects.putAcl	PUT	metered	requests	S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST	https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json	2026-11-04
@@ -1617,7 +1617,7 @@ telegram	getUserPersonalChatMessages	POST	free		Docs: bots use the Bot API at no
 telegram	getUserProfileAudios	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	getUserProfilePhotos	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	getWebhookInfo	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
-telegram	giftPremiumSubscription	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.	https://core.telegram.org/bots/api	2026-11-04
+telegram	giftPremiumSubscription	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up	https://core.telegram.org/bots/api	2026-11-04
 telegram	hideGeneralForumTopic	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	leaveChat	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	logOut	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
@@ -1648,7 +1648,7 @@ telegram	sendContact	POST	free		Docs: bots message users at no cost. Optional al
 telegram	sendDice	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
 telegram	sendDocument	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
 telegram	sendGame	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
-telegram	sendGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.	https://core.telegram.org/bots/api	2026-11-04
+telegram	sendGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up	https://core.telegram.org/bots/api	2026-11-04
 telegram	sendInvoice	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
 telegram	sendLivePhoto	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
 telegram	sendLocation	POST	free		Docs: bots message users at no cost. Optional allow_paid_broadcast adds 0.1 Stars per message to the bot's balance.	https://core.telegram.org/bots/api	2026-11-04
@@ -1699,8 +1699,8 @@ telegram	setUserEmojiStatus	POST	free		Docs: bots use the Bot API at no cost	htt
 telegram	setWebhook	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	stopMessageLiveLocation	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	stopPoll	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
-telegram	transferBusinessAccountStars	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.	https://core.telegram.org/bots/api	2026-11-04
-telegram	transferGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.	https://core.telegram.org/bots/api	2026-11-04
+telegram	transferBusinessAccountStars	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up	https://core.telegram.org/bots/api	2026-11-04
+telegram	transferGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up	https://core.telegram.org/bots/api	2026-11-04
 telegram	unbanChatMember	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	unbanChatSenderChat	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	unhideGeneralForumTopic	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
@@ -1708,7 +1708,7 @@ telegram	unpinAllChatMessages	POST	free		Docs: bots use the Bot API at no cost	h
 telegram	unpinAllForumTopicMessages	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	unpinAllGeneralForumTopicMessages	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	unpinChatMessage	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
-telegram	upgradeGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.	https://core.telegram.org/bots/api	2026-11-04
+telegram	upgradeGift	POST	unpriced	telegram-stars	Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up	https://core.telegram.org/bots/api	2026-11-04
 telegram	uploadStickerFile	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	verifyChat	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
 telegram	verifyUser	POST	free		Docs: bots use the Bot API at no cost	https://core.telegram.org/bots/faq	2026-11-04
@@ -1822,12 +1822,12 @@ wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://waves
 wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/text-to-video	2026-11-04
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04
-x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 x	v2.tweets	GET	metered	resources	Posts: Read 0.005 USD per returned resource; same resource free again within a UTC day	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 x	v2.users.me	GET	metered	resources	User: Read 0.010 USD per returned resource; /2/users/me is not on the Owned Reads list	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.append	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.finalize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.initialize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.append	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.finalize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.initialize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 x	v2.tweets	POST	metered	requests	Post: Create 0.015 USD; 0.20 with a URL; 0.010 when summoned	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 xai	managementApi.v1.collections	DELETE	free		Management API read or write; storage bills on documents, not on this call	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	managementApi.v1.collections.documents	DELETE	free		Management API read or write; storage bills on documents, not on this call	https://docs.x.ai/developers/pricing.md	2026-11-04

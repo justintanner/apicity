@@ -6,7 +6,7 @@ import { asString, flattenMessages, pickMaxOutputTokens } from "./messages";
 // no upstream count-tokens endpoint, so they always run through the
 // chars/4 heuristic. `provider` is only used for the missing-model warning.
 export function extractChat(
-  provider: "kimicoding" | "fireworks" | "alibaba",
+  provider: "kimicoding" | "zaicoding" | "fireworks" | "alibaba",
   payload: Record<string, unknown>
 ): ExtractResult<TextExtract> {
   const model = asString(payload.model);

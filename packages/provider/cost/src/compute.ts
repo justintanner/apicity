@@ -1260,17 +1260,61 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         );
       return result;
     }
-    case "kimicoding": {
+    case "kimicoding":
+    case "zaicoding": {
       const ext = extractChat(req.provider, req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
-      const inputTokens = heuristicTokens(ext.data.text);
-      return applyTokenRate(
-        req.provider,
-        ext.data.model,
-        inputTokens,
-        ext.data.maxOutputTokens
-      );
+      const model = ext.data.model;
+      const entry = PRICING[req.provider][model];
+      const notes = [
+        `${req.provider}: list-price comparison only; the coding plan bills 0 per call, never use this as an actual charge`,
+      ];
+      if (
+        !entry ||
+        (req.provider === "kimicoding" &&
+          ["kimi-k2", "kimi-k2.5"].includes(model))
+      )
+        return {
+          ...failed("tokens-heuristic+table", [
+            `${req.provider}: no documented current list key for model '${model}'`,
+          ]),
+          notes,
+        };
+      // Kimi's TTL split is not part of the Anthropic-only hint contract.
+      if (
+        req.provider === "kimicoding" &&
+        anthropicCacheTtl(req.payload) !== "5m"
+      )
+        return {
+          ...failed("declared-tokens+table", [
+            "kimicoding: 1h cache TTL comparison is not bundled",
+          ]),
+          notes,
+        };
+      const result =
+        req.costHints ||
+        (entry.kind === "tokens" && entry.rate.cacheWrite !== undefined)
+          ? evaluateDeclaredUsage(
+              req.provider,
+              model,
+              req.payload,
+              req.costHints
+            )
+          : applyTokenRate(
+              req.provider,
+              model,
+              heuristicTokens(ext.data.text),
+              ext.data.maxOutputTokens
+            );
+      return { ...result, notes };
     }
+    case "quo":
+      return evaluatePerUnit(
+        "quo",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint ?? "messages" },
+        req.costHints
+      );
     // KIE is per-unit for every media model. Gemini TTS and the chat models
     // that publish a token rate are billed per token. Route on the pricing
     // entry's own `kind`, the way xai and alibaba already do, so the table
@@ -1427,13 +1471,22 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         { keyedBy: "model" },
         req.costHints
       );
-    case "googleflow":
-      return evaluatePerUnit(
+    case "googleflow": {
+      const result = evaluatePerUnit(
         "googleflow",
         req.payload,
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+      if (
+        req.endpoint === "videos/upscale" &&
+        result.usd === 0 &&
+        result.warnings.length === 0
+      )
+        result.zeroReason =
+          "720p and 1080p upscaling consume no Google Flow credits";
+      return result;
+    }
     case "wavespeed":
       return evaluatePerUnit(
         "wavespeed",

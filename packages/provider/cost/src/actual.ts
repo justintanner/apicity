@@ -230,6 +230,7 @@ function derive(
 ): Derived {
   const { usage, uncoveredCharge } = extracted;
   const { provider } = exchange;
+  if (provider === "kimicoding" || provider === "zaicoding") return NOT_DERIVED;
   // The tables key on what the caller sent; a response may answer with an alias.
   const requested =
     exchange.requestBody?.model ?? exchange.requestBody?.model_id;

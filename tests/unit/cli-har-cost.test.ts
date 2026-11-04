@@ -632,13 +632,39 @@ describe("apicity har cost", () => {
       "machgen_3663587242/seedance-2-0-fast-r2v-video_2859529951",
       "machgen_3663587242/minimax-h3-omni-r2v-video_116263929",
       // Hand-written: example.com results, and a poll in the submit's millisecond.
-      // 18 and 22.5 credits a second are the published rates, not their 10.
+      // 18 and 22.5 credits a second are the published rates.
       "kie_2079838932/kling-v3-turbo-text-to-video_1058703467",
       "kie_2079838932/kling-v3-turbo-text-to-video-1080p_717102705",
     ])("proposes no rate change from %s", async (recording) => {
       const data = await report([`${recordings}/${recording}/recording.har`]);
       expect(data.summary.calls).toBe(1);
       expect(data.corrections).toEqual([]);
+    });
+
+    // They stated 50 and 100 credits that were never billed, which added an
+    // invented 0.75 USD to paid totals over the recordings.
+    it.each([
+      "kie_2079838932/kling-v3-turbo-text-to-video_1058703467",
+      "kie_2079838932/kling-v3-turbo-text-to-video-1080p_717102705",
+    ])("counts no paid charge from the hand-written %s", async (recording) => {
+      const file = `${recordings}/${recording}/recording.har`;
+      const data = await report([file]);
+      expect(data.groups).toHaveLength(1);
+      expect(data.groups[0]!.actual.usd).toBe(0);
+      expect(data.groups[0]!.actual.basis.stated).toBe(0);
+      expect(data.groups[0]!.verdicts["no-actual"]).toBe(1);
+      const har = JSON.parse(readFileSync(file, "utf8"));
+      expect(har.log.comment).toContain("Hand-written");
+      expect(JSON.stringify(har)).not.toContain('\\"creditsConsumed\\"');
+    });
+
+    it("adds nothing to paid totals from the hand-written KIE recordings together", async () => {
+      const data = await report([
+        `${recordings}/kie_2079838932/kling-v3-turbo-text-to-video_1058703467/recording.har`,
+        `${recordings}/kie_2079838932/kling-v3-turbo-text-to-video-1080p_717102705/recording.har`,
+      ]);
+      expect(data.summary.calls).toBe(2);
+      expect(data.groups.reduce((sum, g) => sum + g.actual.usd, 0)).toBe(0);
     });
   });
 

@@ -645,7 +645,7 @@ describe("PRICING data", () => {
     expect(PRICING.fal["fal-ai/nano-banana"]).toMatchObject({
       kind: "perUnit",
       unit: "images",
-      rates: { "": 0.039 },
+      rates: { "": 0.0398 },
     });
   });
 
@@ -6162,7 +6162,7 @@ describe("kie PixVerse V6 pricing", () => {
         },
       },
       seconds: 6,
-      rate: 0.0315,
+      rate: 0.028,
     },
     {
       schema: PixverseV6TransitionRequestSchema,
@@ -6214,14 +6214,14 @@ describe("kie PixVerse V6 pricing", () => {
       },
       "pixverse-v6/reference-to-video": {
         rates: {
-          "360p|no-audio": 0.0225,
-          "360p|audio": 0.0315,
-          "540p|no-audio": 0.0315,
-          "540p|audio": 0.0405,
-          "720p|no-audio": 0.0405,
-          "720p|audio": 0.054,
-          "1080p|no-audio": 0.081,
-          "1080p|audio": 0.1035,
+          "360p|no-audio": 0.02,
+          "360p|audio": 0.028,
+          "540p|no-audio": 0.028,
+          "540p|audio": 0.036,
+          "720p|no-audio": 0.036,
+          "720p|audio": 0.048,
+          "1080p|no-audio": 0.072,
+          "1080p|audio": 0.092,
         },
         display: "PixVerse V6 Reference",
       },
@@ -6270,7 +6270,7 @@ describe("kie PixVerse V6 pricing", () => {
     {
       model: "pixverse-v6/reference-to-video",
       url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
-      asOf: "2026-08-22",
+      asOf: "2026-11-04",
     },
   ])("pins the feed-anchor citation of $model", ({ model, url, asOf }) => {
     expect(PRICING.kie[model].source).toEqual({ url, asOf });

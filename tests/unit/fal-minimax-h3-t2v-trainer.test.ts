@@ -157,16 +157,15 @@ describe("MiniMax H3 text-to-video trainer", () => {
   });
 
   it("prices requested training steps and the documented default", () => {
-    // The recorded steps=1 call billed 100 steps ($0.50). The pricing API
-    // still prices one step at $0.005, so the estimate follows the request.
+    // The recorded steps=1 call billed 100 steps ($0.50), the card's floor.
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,
       payload: recorded,
     });
-    expect(estimate.usd).toBeCloseTo(0.005, 10);
+    expect(estimate.usd).toBeCloseTo(0.5, 10);
     expect(estimate.breakdown).toMatchObject({
-      units: 1,
+      units: 100,
       unit: "generations",
     });
     expect(estimate.warnings).toEqual([]);
@@ -183,7 +182,7 @@ describe("MiniMax H3 text-to-video trainer", () => {
         endpoint,
         payload: { ...recorded, number_of_steps: 2 },
       }).usd
-    ).toBeCloseTo(0.01, 10);
+    ).toBeCloseTo(0.5, 10);
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(MODEL_SLUGS.fal[endpoint]).toBe("h3t2vt");
     expect(MODEL_DISPLAY.fal[endpoint]).toBe("MiniMax H3 T2V Trainer");

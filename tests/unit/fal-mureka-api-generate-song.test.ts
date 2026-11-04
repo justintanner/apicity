@@ -200,19 +200,19 @@ describe("Mureka song generation", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint
     );
-    expect(falPricing[endpoint].source.asOf).toBe("2026-10-15");
+    expect(falPricing[endpoint].source.asOf).toBe("2026-11-04");
     expect(MODEL_SLUGS.fal[endpoint]).toBe("mureka");
     expect(MODEL_DISPLAY.fal[endpoint]).toBe("Mureka Song");
     const estimate = (payload: Record<string, unknown>) =>
       computeEstimate({ provider: "fal", endpoint, payload });
-    expect(estimate(recorded).usd).toBe(0.045);
+    expect(estimate(recorded).usd).toBe(0.03);
     expect(estimate(recorded).warnings).toEqual([]);
     for (const [model, lyricsRate, promptRate] of [
-      ["mureka-7.6", 0.045, 0.45],
-      ["mureka-o2", 0.0675, 0.45],
-      ["mureka-8", 0.0675, 0.45],
-      ["mureka-9", 0.0675, 0.45],
-      ["mureka-9.5", 0.225, 0.75],
+      ["mureka-7.6", 0.03, 0.3],
+      ["mureka-o2", 0.045, 0.3],
+      ["mureka-8", 0.045, 0.3],
+      ["mureka-9", 0.045, 0.3],
+      ["mureka-9.5", 0.15, 0.5],
     ] as const) {
       expect(estimate({ ...recorded, model }).usd).toBe(lyricsRate);
       expect(estimate({ model, prompt: "acoustic pop" }).usd).toBe(promptRate);
@@ -220,8 +220,8 @@ describe("Mureka song generation", () => {
         estimate({ model, prompt: "acoustic pop", lyrics: null }).usd
       ).toBe(promptRate);
     }
-    expect(estimate({ lyrics: "words" }).usd).toBe(0.225);
-    expect(estimate({ prompt: "acoustic pop" }).usd).toBe(0.75);
+    expect(estimate({ lyrics: "words" }).usd).toBe(0.15);
+    expect(estimate({ prompt: "acoustic pop" }).usd).toBe(0.5);
     expect(
       estimate({ ...recorded, model: "mureka-10" }).warnings.length
     ).toBeGreaterThan(0);

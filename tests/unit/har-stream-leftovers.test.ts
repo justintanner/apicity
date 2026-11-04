@@ -144,7 +144,7 @@ it.each([
   expect(entry.response.content.text).not.toContain("LIVE-SECRET");
   expect(entry._apicity).toMatchObject({
     bodyTruncated: true,
-    responseCut: true,
+    streamIncomplete: true,
   });
   expect(extractActual(entryToProviderExchange(entry, meta)).settled).toBe(
     false
@@ -181,7 +181,7 @@ it("summarizes a large Buffer before toJSON can allocate its number array", () =
 
 it("scrubs signed upload URLs while retaining their host, path and non-secret query", async () => {
   const upload =
-    "https://storage.example.com/upload/file?part=1&X-Amz-Signature=LIVE-SECRET&X-Amz-Credential=PRIVATE";
+    "https://storage.example.com/upload/file?part=1&X-Amz-Signature=LIVE-SECRET&X-Amz-Credential=PRIVATE&signature=LIVE-SECRET-FAL";
   const entry = await exchangeToEntry(
     new Request(upload),
     new Response(JSON.stringify({ upload_url: upload }), {
@@ -205,3 +205,182 @@ it("scrubs signed upload URLs while retaining their host, path and non-secret qu
     JSON.stringify(har)
   );
 });
+
+it.each([
+  ["clean final usage", start + final, false],
+  ["missing final usage", start, true],
+  ["unterminated extra line", start + final + "data: unfinished", true],
+  ["unclassifiable frame", start + "data: not-json\n\n" + final, true],
+  ["unclassified JSON", start + 'data: {"unexpected":true}\n\n' + final, true],
+  [
+    "oversize frame",
+    start + 'data: {"text":"' + "x".repeat(1024 * 1024) + '"}\n\n' + final,
+    true,
+  ],
+  ["unknown protocol", 'data: {"text":"hello"}\n\n', false],
+  [
+    "unknown oversize protocol",
+    'data: {"text":"' + "x".repeat(1024 * 1024) + '"}\n\n',
+    false,
+  ],
+])("classifies wire completion: %s", async (_name, wire, incomplete) => {
+  const entry = await exchangeToEntry(
+    new Request("https://api.anthropic.com/v1/messages"),
+    new Response(wire, { headers: { "content-type": "text/event-stream" } }),
+    timing
+  );
+  expect(entry._apicity?.responseCut).toBeUndefined();
+  expect(entry._apicity?.streamIncomplete === true).toBe(incomplete);
+  const exchange = entryToProviderExchange(entry, meta);
+  expect(exchange.streamIncomplete === true).toBe(incomplete);
+  if (wire.startsWith(start)) {
+    expect(extractActual(exchange).settled).toBe(!incomplete);
+  }
+});
+
+it("keeps final usage settled after transport failure and for legacy captures", async () => {
+  const entry = await exchangeToEntry(
+    new Request("https://api.anthropic.com/v1/messages"),
+    new Response(
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(Buffer.from(start + final));
+        },
+        async pull(controller) {
+          await new Promise<void>((resolve) => setImmediate(resolve));
+          controller.error(new Error("dropped"));
+        },
+      }),
+      { headers: { "content-type": "text/event-stream" } }
+    ),
+    timing
+  );
+  expect(entry._apicity?.responseCut).toBe(true);
+  expect(entry._apicity?.streamIncomplete).toBeUndefined();
+  const exchange = entryToProviderExchange(entry, meta);
+  expect(extractActual(exchange).settled).toBe(true);
+  expect(extractActual({ ...exchange, streamIncomplete: true }).settled).toBe(
+    false
+  );
+  delete exchange.streamIncomplete;
+  expect(extractActual(exchange).settled).toBe(true);
+});
+
+it("does not confuse a capture cap with wire incompleteness", async () => {
+  const wire =
+    start +
+    'data: {"type":"content_block_delta","delta":{"text":"' +
+    "x".repeat(1000) +
+    '"}}\n\n' +
+    final;
+  const entry = await exchangeToEntry(
+    new Request("https://api.anthropic.com/v1/messages"),
+    new Response(wire, { headers: { "content-type": "text/event-stream" } }),
+    timing,
+    { maxBodyBytes: 300, sseTailBytes: 100 }
+  );
+  expect(entry._apicity?.bodyTruncated).toBe(true);
+  expect(entry._apicity?.streamIncomplete).toBeUndefined();
+});
+
+it("preserves response metadata, clone and body consumption semantics", async () => {
+  const { url, capture } = await setup((req, res) => {
+    if (req.url === "/") {
+      res.writeHead(302, { location: "/final" });
+      res.end();
+    } else {
+      res.setHeader("content-type", "application/json");
+      res.end('{"ok":true}');
+    }
+  });
+  await capture.call(meta, async () => {
+    const response = await capture.fetch(url);
+    const clone = response.clone();
+    for (const item of [response, clone, clone.clone()]) {
+      expect(item.url).toBe(url + "final");
+      expect(item.redirected).toBe(true);
+      expect(item.type).toBe("basic");
+      expect(item.bodyUsed).toBe(false);
+      expect(await item.json()).toEqual({ ok: true });
+      expect(item.bodyUsed).toBe(true);
+      expect(() => item.clone()).toThrow();
+    }
+  });
+  await capture.flush();
+});
+
+it("cancels the caller promptly while capture finishes its sibling", async () => {
+  let finish!: () => void;
+  const { url, capture } = await setup((_req, res) => {
+    res.writeHead(200, { "content-type": "text/event-stream" });
+    res.write(start);
+    finish = () => res.end(final);
+  });
+  await capture.call(meta, async () => {
+    const response = await capture.fetch(url);
+    const reader = response.body!.getReader();
+    await reader.read();
+    await reader.cancel();
+    finish();
+  });
+  await capture.flush();
+});
+
+it("preserves JSON hooks, shared references, sparse arrays and cyclic rejection", () => {
+  const hook = vi.fn(function (this: { value: number }) {
+    return this;
+  });
+  const value = { value: 7, toJSON: hook };
+  const array: unknown[] = new Array(3);
+  array[0] = undefined;
+  array[2] = value;
+  expect(summarizeInputMedia({ a: value, b: value, array })).toEqual({
+    a: { value: 7 },
+    b: { value: 7 },
+    array: [null, null, { value: 7 }],
+  });
+  expect(hook).toHaveBeenCalledTimes(3);
+  const cycle: Record<string, unknown> = {};
+  cycle.self = cycle;
+  expect(() => summarizeInputMedia(cycle)).toThrow(TypeError);
+});
+
+it.each([
+  [
+    '{"type":"response.output_text.delta","delta":"hi"}',
+    '{"type":"response.completed","response":{"usage":{"input_tokens":10,"output_tokens":2}}}',
+  ],
+  [
+    '{"choices":[{"finish_reason":null}]}',
+    '{"choices":[],"usage":{"prompt_tokens":10,"completion_tokens":2}}',
+  ],
+  [
+    '{"candidates":[{"content":{"parts":[{"text":"hi"}]}}]}',
+    '{"candidates":[{"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":10,"candidatesTokenCount":2}}',
+  ],
+])(
+  "requires final usage across supported protocols: %s",
+  async (first, last) => {
+    for (const [wire, incomplete] of [
+      [`data: ${first}\n\n`, true],
+      [`data: ${first}\n\ndata: ${last}\n\ndata: [DONE]\n\n`, false],
+    ] as const) {
+      const bytes = Buffer.from(wire);
+      let offset = 0;
+      const entry = await exchangeToEntry(
+        new Request("https://example.com"),
+        new Response(
+          new ReadableStream<Uint8Array>({
+            pull(controller) {
+              if (offset === bytes.length) controller.close();
+              else controller.enqueue(bytes.subarray(offset, ++offset));
+            },
+          }),
+          { headers: { "content-type": "text/event-stream" } }
+        ),
+        timing
+      );
+      expect(entry._apicity?.streamIncomplete === true).toBe(incomplete);
+    }
+  }
+);

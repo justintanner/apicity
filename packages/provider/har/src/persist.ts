@@ -624,7 +624,10 @@ export function summarizeInputMedia(input: unknown): unknown {
       : Object.create(null);
     copies.set(value, result);
     for (const name of Object.keys(value)) {
-      (result as Record<string, unknown>)[name] = prepare(object[name], name);
+      const child = object[name];
+      // JSON already invoked this hook once; do not copy an executable hook.
+      if (name === "toJSON" && typeof child === "function") continue;
+      (result as Record<string, unknown>)[name] = prepare(child, name);
     }
     return result;
   }

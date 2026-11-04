@@ -14,6 +14,8 @@ export interface ProviderExchange {
   responseBody: unknown;
   bodyTruncated?: boolean;
   responseCut?: boolean;
+  /** Wire ended mid-line or a recognized stream lacks complete final usage. */
+  streamIncomplete?: boolean;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -117,5 +119,6 @@ export function entryToProviderExchange(
     responseBody: responseBodyOf(entry),
     ...(entry._apicity?.bodyTruncated ? { bodyTruncated: true } : {}),
     ...(entry._apicity?.responseCut ? { responseCut: true } : {}),
+    ...(entry._apicity?.streamIncomplete ? { streamIncomplete: true } : {}),
   };
 }

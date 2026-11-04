@@ -6,7 +6,7 @@
 export function queuedResponse(response: Response): Response {
   if (!response.body) return response;
   const reader = response.body.getReader();
-  let chunks: Uint8Array[] = [];
+  let chunks: (Uint8Array | undefined)[] = [];
   let at = 0;
   let ended = false;
   let cancelled = false;
@@ -17,7 +17,7 @@ export function queuedResponse(response: Response): Response {
     try {
       while (!cancelled) {
         const { value, done } = await reader.read();
-        if (done) break;
+        if (done || cancelled) break;
         chunks.push(value);
         wake?.();
       }
@@ -41,7 +41,9 @@ export function queuedResponse(response: Response): Response {
         }
         if (cancelled) return;
         if (at < chunks.length) {
-          controller.enqueue(chunks[at++]!);
+          const chunk = chunks[at]!;
+          chunks[at++] = undefined;
+          controller.enqueue(chunk);
           if (at === chunks.length || at >= 1024) {
             chunks = chunks.slice(at);
             at = 0;
@@ -60,9 +62,15 @@ export function queuedResponse(response: Response): Response {
     },
     { highWaterMark: 0 }
   );
-  const result = new Response(body, response);
-  for (const key of ["url", "redirected", "type"] as const) {
-    Object.defineProperty(result, key, { value: response[key] });
+  function metadata(result: Response): Response {
+    for (const key of ["url", "redirected", "type"] as const) {
+      Object.defineProperty(result, key, { value: response[key] });
+    }
+    const clone = result.clone.bind(result);
+    Object.defineProperty(result, "clone", {
+      value: () => metadata(clone()),
+    });
+    return result;
   }
-  return result;
+  return metadata(new Response(body, response));
 }

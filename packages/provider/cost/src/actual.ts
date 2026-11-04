@@ -320,12 +320,12 @@ export function extractActual(exchange: ProviderExchange): CostActual {
   // its opening frame, and pricing that alone would state a low figure as final.
   const { responseBody, bodyTruncated } = exchange;
   const cutShort =
-    bodyTruncated === true &&
-    Array.isArray(responseBody) &&
-    (exchange.responseCut === true ||
-      !streamHasFinalUsage(responseBody) ||
-      (extracted.usage.outputTokens !== undefined &&
-        extracted.usage.inputTokens === undefined));
+    exchange.streamIncomplete === true ||
+    (bodyTruncated === true &&
+      Array.isArray(responseBody) &&
+      (!streamHasFinalUsage(responseBody) ||
+        (extracted.usage.outputTokens !== undefined &&
+          extracted.usage.inputTokens === undefined)));
   if (cutShort) {
     settled = false;
     warnings.push(TRUNCATED_STREAM);

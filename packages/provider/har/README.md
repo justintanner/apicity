@@ -45,7 +45,15 @@ entry._id = pollyEntryId(entry);
   them. A body that fails mid-read keeps what arrived: a stream's whole lines, or a
   placeholder for anything that does not parse as a whole JSON document. A network
   error produces status 0; call-level error metadata belongs in
-  `log._apicity`. Bodies must be unused and streams must eventually finish.
+  `log._apicity`. `streamIncomplete` marks a wire ending without a newline or
+  without final usage in a recognized Anthropic, OpenAI or Google stream; it
+  also sets `bodyTruncated` and keeps cost evidence unsettled. Unclassifiable
+  frames or lines over 1 MiB in a recognized protocol are incomplete. This is
+  independent of retention caps and `responseCut` (transport failure): complete
+  final usage followed by a transport failure can still settle. Legacy captures
+  without `streamIncomplete` retain their existing cost semantics. Bodies must
+  be unused and streams must eventually finish; an aborted request cancels its
+  capture copy so it cannot hold up flushing.
 - `scrubEntry(entry)` and `scrubHar(har)` mutate and return their argument.
   Scrubbing covers provider credentials in headers, URLs, JSON and form-encoded
   bodies, cookies,

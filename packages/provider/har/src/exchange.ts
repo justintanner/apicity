@@ -34,6 +34,7 @@ interface SerializedBody {
   sha256: string;
   /** The read failed partway, so this holds what arrived. */
   failed?: boolean;
+  streamIncomplete?: boolean;
 }
 interface BodyLimits {
   max: number;
@@ -194,9 +195,9 @@ async function serializeBody(
       reader.releaseLock();
     }
   }
-  failed ||= completion?.cut() ?? false;
+  const streamIncomplete = completion?.cut() ?? false;
   const sha256 = hash.digest("hex");
-  const truncated = bytes > max || failed;
+  const truncated = bytes > max || failed || streamIncomplete;
   if (multipart && !failed) {
     const text = await multipartSummaryOf(Buffer.concat(chunks), contentType);
     if (text !== undefined) {
@@ -228,6 +229,7 @@ async function serializeBody(
     sha256,
     truncated,
     failed,
+    streamIncomplete,
   });
   if (!textual || (bytes > max && !streamed)) return placeholder();
   const stream = tail && bytes > max ? tail.finish() : undefined;
@@ -247,7 +249,7 @@ async function serializeBody(
     // frames, whatever the content type says, so nothing cut outside a stream is text.
     if (failed && !streamed) return placeholder();
   }
-  return { text, bytes, truncated, sha256, failed };
+  return { text, bytes, truncated, sha256, failed, streamIncomplete };
 }
 
 /** Serializes clones: the caller's request and response bodies remain readable. */
@@ -360,6 +362,7 @@ export async function serializeExchange(
       ...(streamed ? { streamed: true } : {}),
       ...(req.truncated || res.truncated ? { bodyTruncated: true } : {}),
       ...(res.failed ? { responseCut: true } : {}),
+      ...(res.streamIncomplete ? { streamIncomplete: true } : {}),
     },
   };
   scrubEntry(entry);

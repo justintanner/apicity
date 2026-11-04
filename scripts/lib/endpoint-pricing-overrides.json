@@ -25,8 +25,5 @@
     "api.v1.veo.get4kVideo": "veo/get-4k-video",
     "api.v1.vocalRemoval.generate": "suno/vocal-removal-generate",
     "api.v1.wav.generate": "suno/wav-generate"
-  },
-  "openai": {
-    "v1.vectorStores.search": "file-search-tool-call"
   }
 }

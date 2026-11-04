@@ -694,14 +694,6 @@ export const openai: Record<string, ModelPricing> = {
   "gpt-live-1": perAudioMinute(0.05),
   "tts-1": perCharacter(15),
   "tts-1-hd": perCharacter(30),
-  "file-search-tool-call": {
-    kind: "perUnit",
-    unit: "generations",
-    units: () => 1,
-    select: [],
-    rates: { "": 0.0025 },
-    source,
-  },
 
   // GPT Image — USD per image (1.5) or per image output token (2 and 2.5).
   "gpt-image-1.5": gptImage1p5,

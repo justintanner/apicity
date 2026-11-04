@@ -427,22 +427,6 @@ function isTokenCount(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
-// Prices caller-declared token usage, typically a response's reported
-// `usage` (ac-0y875w). `inputTokens` is the TOTAL input and the two cache
-// counts are disjoint subsets of it, so the uncached remainder is
-// inputTokens - cacheReadInputTokens - cacheWriteInputTokens and no token is
-// billed twice. The long-context tier is selected on that total. Every gap --
-// a missing or invalid count, subsets larger than the total, a count with no
-// bundled rate, a tier other than Standard, regional processing -- fails
-// closed with no rate in the breakdown, so classifyEstimate reads it as
-// unknown instead of quoting Standard rates for a bill OpenAI computes
-// differently.
-//
-// computeEstimate reaches this only on the openai route, so the other token
-// providers keep their chars/4 output whatever hints they get. extractActual
-// calls it directly for xai, anthropic, alibaba, fireworks and kimicoding to
-// price a response's reported usage, which is also why it reads either write
-// field: Anthropic's rows publish cacheWrite5m.
 function openaiPricingProblem(
   payload: Record<string, unknown>,
   hints?: CostHints
@@ -479,6 +463,22 @@ function openaiWarnings(payload: Record<string, unknown>): string[] {
     : [];
 }
 
+// Prices caller-declared token usage, typically a response's reported
+// `usage` (ac-0y875w). `inputTokens` is the TOTAL input and the two cache
+// counts are disjoint subsets of it, so the uncached remainder is
+// inputTokens - cacheReadInputTokens - cacheWriteInputTokens and no token is
+// billed twice. The long-context tier is selected on that total. Every gap --
+// a missing or invalid count, subsets larger than the total, a count with no
+// bundled rate, a tier other than Standard, regional processing -- fails
+// closed with no rate in the breakdown, so classifyEstimate reads it as
+// unknown instead of quoting Standard rates for a bill OpenAI computes
+// differently.
+//
+// computeEstimate reaches this only on the openai route, so the other token
+// providers keep their chars/4 output whatever hints they get. extractActual
+// calls it directly for xai, anthropic, alibaba, fireworks and kimicoding to
+// price a response's reported usage, which is also why it reads either write
+// field: Anthropic's rows publish cacheWrite5m.
 export function evaluateDeclaredUsage(
   provider: PricedProviderId,
   model: string,
@@ -787,10 +787,7 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
     case "openai": {
       const problem = openaiPricingProblem(req.payload, req.costHints);
       if (problem) return failed("declared-tokens+table", [problem]);
-      const model =
-        req.endpoint === "file-search-tool-call"
-          ? req.endpoint
-          : asString(req.payload.model);
+      const model = asString(req.payload.model);
       const entry = model ? PRICING.openai[model] : undefined;
       // The GPT Image models price per image or per image output token, keyed
       // by model; route on the entry's own `kind`, as xai and alibaba do.
@@ -798,7 +795,7 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         return evaluatePerUnit(
           "openai",
           req.payload,
-          { keyedBy: "endpoint", endpoint: model },
+          { keyedBy: "model" },
           req.costHints
         );
       }

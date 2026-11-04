@@ -3683,8 +3683,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "openai",
     {
-      kind: "metered",
+      kind: "unpriced",
       unit: "requests",
+      reason:
+        "No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",

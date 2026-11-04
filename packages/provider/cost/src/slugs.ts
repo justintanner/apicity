@@ -432,7 +432,6 @@ export const MODEL_SLUGS = {
     "gpt-live-1": "gptlive1",
     "tts-1": "tts1",
     "tts-1-hd": "tts1hd",
-    "file-search-tool-call": "filesearchtoolcall",
   },
 
   xai: {
@@ -1142,7 +1141,6 @@ export const MODEL_DISPLAY = {
     "gpt-live-1": "GPT-live 1",
     "tts-1": "tts 1",
     "tts-1-hd": "tts 1 hd",
-    "file-search-tool-call": "file search tool call",
   },
 
   xai: {

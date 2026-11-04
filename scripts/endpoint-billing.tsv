@@ -1080,7 +1080,7 @@ openai	v1.responses.inputTokens	POST	free		Token count only; the guide and the p
 openai	v1.uploads	POST	free		The pricing page has no Files row; storage bills only once a file is indexed into a vector store or uploaded to ChatKit	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores.files	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.vectorStores.search	POST	metered	requests		https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.vectorStores.search	POST	unpriced	requests	No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day	https://developers.openai.com/api/docs/pricing	2026-11-04
 openf1	v1.carData	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipDrivers	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipTeams	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04

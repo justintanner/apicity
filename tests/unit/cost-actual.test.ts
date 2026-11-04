@@ -224,7 +224,7 @@ describe("extractActual pins", () => {
     expect(actual.evidence).toEqual(["usage.cost_in_usd_ticks"]);
   });
 
-  // The rates are in the test, not in PRICING: P3 adds them. The stated ticks
+  // Independent published rates pin the bundled derivation. The stated ticks
   // equal tokens times the published rates once the cached rate is included.
   it.each([
     [
@@ -286,13 +286,13 @@ describe("extractActual pins", () => {
     }
   );
 
-  it("xAI usage without its cached rate stays stated, with no derived figure", () => {
+  it("xAI cached usage derives the stated figure", () => {
     const actual = one(
       "xai_3613880225/grok-4-6-responses_2467291669/recording.har",
       "xai"
     );
-    expect(actual.derivedUsd).toBeNull();
-    expect(actual.warnings.join(" ")).toContain("no bundled cached-input rate");
+    expect(actual.derivedUsd).toBe(actual.statedUsd);
+    expect(actual.warnings).toEqual([]);
   });
 
   it("KIE task credits", () => {

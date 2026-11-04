@@ -304,6 +304,33 @@ Duration resolves in a fixed order (kie):
    0.8.0. Still honoured, so existing callers keep their current estimate, but
    new code should use `costHints.durationSeconds`.
 
+xAI text rates refreshed on 2026-11-04 include cached input and the current
+Grok 4.7, 4.6, 4.5, 4.3, 4.20 and Build 0.1 families and their catalog aliases.
+At **200,000 or more total input tokens**, the long-context rate applies to
+all input, cached input and output tokens. Those models require
+`costHints.inputTokens`, `outputTokens` and `cacheReadInputTokens` (zero when
+none); missing counts fail closed in strict and forecast modes. Any token
+hint also selects declared usage for legacy xAI rows. Older rows without
+long-context rates retain the chars/4 estimate when no token hints are passed.
+
+For xAI text, `costHints.serviceTier` overrides `payload.service_tier`:
+`default`/`auto` use Standard and `priority` applies 2x. For actuals, the
+response tier determines what ran. `costHints.regionalProcessing: true`
+means the US endpoint, applying 1.1x only on Grok 4.6 and 4.7; it combines
+with priority and long context. Unsupported tiers/regions, including batch,
+fail closed. Tool-bearing requests retain a token estimate with a warning
+that tool fees are excluded, so they cannot yield a derived actual.
+
+`estimateEndpoint` resolves xAI `v1.tts` (15 USD per million text characters),
+`v1.stt` (0.10 USD/hour on REST, requiring `costHints.durationSeconds`),
+`v1.documents.search` (0.0025 USD/request), and `GET v1.files.content`
+(0.20 USD/GiB). Downloads require `costHints.downloadBytes`, a positive
+finite byte count divided by `2**30` to obtain binary GiB; invalid or
+missing counts fail closed. These hints stay outside the payload and signed
+bytes. Download actual extraction is not implemented. File and collection
+storage and queued batch requests remain accrual rows. Conditional violation
+fees are not predicted. Image/video pricing and gate policy remain unchanged.
+
 On `xai`, top-level `payload.duration` _is_ the real wire field
 (`v1/videos/generations` posts it), so there the order is `payload.duration`
 then `costHints.durationSeconds`; only `v1/videos/edits`, which has no

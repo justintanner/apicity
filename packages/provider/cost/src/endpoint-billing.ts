@@ -5072,7 +5072,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "tokens",
       reason:
-        "grok-4.7, 4.5, 4.3 and the 4.20 line have no row; bundled rows lack the cached rate. Server-side tools bill apart.",
+        "Token rates include cached input and the 200K long-context tier; server-side tools bill separately.",
       source: {
         url: "https://docs.x.ai/developers/pricing.md",
         asOf: "2026-11-04",
@@ -5097,7 +5097,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "xai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "requests",
       reason: "Collections search tool, 2.50 USD per 1k calls",
       source: {
@@ -5124,7 +5124,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "xai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "gib-downloaded",
       reason: "File downloads bill 0.20 USD per GiB transferred",
       source: {
@@ -5164,7 +5164,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "xai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason: "0.10 USD per hour on REST, 0.20 streaming",
       source: {
@@ -5177,7 +5177,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "xai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason: "15 USD per 1M characters",
       source: {

@@ -462,6 +462,20 @@ describe("PRICING data", () => {
   // grok-imagine-image-quality slug at the 2.0 low rate from 2026-11-02.
   it("stamps the xai media rates with the pricing page read", () => {
     const sources: Record<string, { url: string; asOf: string }> = {
+      ...Object.fromEntries(
+        [
+          "text-to-speech",
+          "speech-to-text",
+          "collections-search",
+          "file-download",
+        ].map((key) => [
+          key,
+          {
+            url: "https://docs.x.ai/developers/pricing.md",
+            asOf: "2026-11-04",
+          },
+        ])
+      ),
       "grok-imagine-image-2.0": {
         url: "https://docs.x.ai/developers/rest-api-reference/inference/models",
         asOf: "2026-10-31",
@@ -493,12 +507,14 @@ describe("PRICING data", () => {
   // Review finding R-3: the per-unit route is derived from the table's own
   // `kind`, so the set of per-unit xai models is pinned here rather than in a
   // hand-maintained endpoint allowlist that could drift from it.
-  it("marks exactly the Grok Imagine media models as per-unit", () => {
+  it("marks Grok Imagine and fixed-unit operations as per-unit", () => {
     const perUnit = Object.entries(PRICING.xai)
       .filter(([, entry]) => entry.kind === "perUnit")
       .map(([model]) => model)
       .sort();
     expect(perUnit).toEqual([
+      "collections-search",
+      "file-download",
       "grok-imagine-image",
       "grok-imagine-image-2.0",
       "grok-imagine-image-quality",
@@ -506,6 +522,8 @@ describe("PRICING data", () => {
       "grok-imagine-video-1.5",
       "grok-imagine-video-1.5-lite",
       "grok-imagine-video-1.5-preview",
+      "speech-to-text",
+      "text-to-speech",
     ]);
   });
 

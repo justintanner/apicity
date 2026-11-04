@@ -1849,7 +1849,7 @@ xai	v1.chat.deferredCompletion	GET	followup		Poll or result; billed on the submi
 xai	v1.customVoices	GET	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.customVoices.audio	GET	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.files	GET	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.files.content	GET	unpriced	gib-downloaded	File downloads bill 0.20 USD per GiB transferred	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.files.content	GET	metered	gib-downloaded	File downloads bill 0.20 USD per GiB transferred	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.imageGenerationModels	GET	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.images	GET	followup		Poll or result; billed on the submit it follows	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.languageModels	GET	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
@@ -1865,20 +1865,20 @@ xai	managementApi.v1.collections.documents	POST	accrual	gib-days	Adding a docume
 xai	v1.batches	POST	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.batches.cancel	POST	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.batches.requests	POST	accrual	tokens	Queued requests bill at batch rates as they complete (20% off on the listed models); no per-call amount at enqueue	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.chat.completions	POST	metered	tokens	grok-4.7, 4.5, 4.3 and the 4.20 line have no row; bundled rows lack the cached rate. Server-side tools bill apart.	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.chat.completions	POST	metered	tokens	Token rates include cached input and the 200K long-context tier; server-side tools bill separately.	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.customVoices	POST	free		Docs: up to 30 custom voices for free; a voice bills only as TTS or voice usage	https://docs.x.ai/llms-full.txt	2026-11-04
-xai	v1.documents.search	POST	unpriced	requests	Collections search tool, 2.50 USD per 1k calls	https://docs.x.ai/developers/rest-api-reference/collections/search.md	2026-11-04
+xai	v1.documents.search	POST	metered	requests	Collections search tool, 2.50 USD per 1k calls	https://docs.x.ai/developers/rest-api-reference/collections/search.md	2026-11-04
 xai	v1.files	POST	accrual	gib-days	File storage 0.025 USD per GiB per day; accrues with no per-call amount	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.files.publicUrl	POST	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.files.publicUrl.revoke	POST	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.images.edits	POST	metered	images	Edits also bill the input image; usage.cost_in_usd_ticks states the charge	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.images.generations	POST	metered	images	Edits also bill the input image; usage.cost_in_usd_ticks states the charge	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.realtime.clientSecrets	POST	free		Mints an ephemeral token; the voice session bills 0.08 USD per minute on the socket, outside this call	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.responses	POST	metered	tokens	grok-4.7, 4.5, 4.3 and the 4.20 line have no row; bundled rows lack the cached rate. Server-side tools bill apart.	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.responses.compact	POST	metered	tokens	grok-4.7, 4.5, 4.3 and the 4.20 line have no row; bundled rows lack the cached rate. Server-side tools bill apart.	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.stt	POST	unpriced	seconds	0.10 USD per hour on REST, 0.20 streaming	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.responses	POST	metered	tokens	Token rates include cached input and the 200K long-context tier; server-side tools bill separately.	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.responses.compact	POST	metered	tokens	Token rates include cached input and the 200K long-context tier; server-side tools bill separately.	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.stt	POST	metered	seconds	0.10 USD per hour on REST, 0.20 streaming	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.tokenizeText	POST	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04
-xai	v1.tts	POST	unpriced	characters	15 USD per 1M characters	https://docs.x.ai/developers/pricing.md	2026-11-04
+xai	v1.tts	POST	metered	characters	15 USD per 1M characters	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.videos.edits	POST	metered	seconds		https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.videos.extensions	POST	metered	seconds		https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.videos.generations	POST	metered	seconds		https://docs.x.ai/developers/pricing.md	2026-11-04

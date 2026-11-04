@@ -48,5 +48,11 @@
     "v1.forcedAlignment": "forced-alignment",
     "v1.dubbing.create": "dubbing",
     "v1.textToDialogue": "dialogue"
+  },
+  "xai": {
+    "v1.tts": "text-to-speech",
+    "v1.stt": "speech-to-text",
+    "v1.documents.search": "collections-search",
+    "v1.files.content": "file-download"
   }
 }

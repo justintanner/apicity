@@ -456,6 +456,46 @@ function openaiPricingProblem(
   return undefined;
 }
 
+function xaiPricingProblem(
+  model: string,
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): string | undefined {
+  const tier = hints?.serviceTier ?? payload.service_tier;
+  if (
+    tier !== undefined &&
+    (typeof tier !== "string" ||
+      !["default", "auto", "priority"].includes(tier))
+  ) {
+    return "xai: costHints.serviceTier / service_tier is not bundled (including batch); no estimate is quoted";
+  }
+  const regional = hints?.regionalProcessing;
+  if (
+    regional !== undefined &&
+    regional !== false &&
+    (regional !== true || !["grok-4.6", "grok-4.7"].includes(model))
+  ) {
+    return "xai: costHints.regionalProcessing supports only US processing on grok-4.6 and grok-4.7; no estimate is quoted";
+  }
+  return undefined;
+}
+
+function xaiMultiplier(
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): number {
+  return (
+    ((hints?.serviceTier ?? payload.service_tier) === "priority" ? 2 : 1) *
+    (hints?.regionalProcessing === true ? 1.1 : 1)
+  );
+}
+
+function xaiWarnings(payload: Record<string, unknown>): string[] {
+  return Array.isArray(payload.tools) && payload.tools.length > 0
+    ? ["xai: server-side tool fees are not included in this token estimate"]
+    : [];
+}
+
 function openaiWarnings(payload: Record<string, unknown>): string[] {
   return Array.isArray(payload.tools) && payload.tools.length > 0
     ? [
@@ -475,8 +515,7 @@ function openaiWarnings(payload: Record<string, unknown>): string[] {
 // unknown instead of quoting Standard rates for a bill OpenAI computes
 // differently.
 //
-// computeEstimate reaches this only on the openai route, so the other token
-// providers keep their chars/4 output whatever hints they get. extractActual
+// computeEstimate reaches this on the openai and xai routes. extractActual
 // calls it directly for xai, anthropic, alibaba, fireworks and kimicoding to
 // price a response's reported usage, which is also why it reads either write
 // field: Anthropic's rows publish cacheWrite5m.
@@ -488,7 +527,11 @@ export function evaluateDeclaredUsage(
 ): CostEstimate {
   const source: CostSource = "declared-tokens+table";
   const problem =
-    provider === "openai" ? openaiPricingProblem(payload, hints) : undefined;
+    provider === "openai"
+      ? openaiPricingProblem(payload, hints)
+      : provider === "xai"
+        ? xaiPricingProblem(model, payload, hints)
+        : undefined;
   if (problem) return failed(source, [problem]);
   const entry = PRICING[provider][model];
   if (!entry) {
@@ -599,6 +642,7 @@ export function evaluateDeclaredUsage(
 
   const tier = hints?.serviceTier ?? payload.service_tier;
   if (
+    provider !== "xai" &&
     tier !== undefined &&
     tier !== null &&
     !(typeof tier === "string" && STANDARD_SERVICE_TIERS.has(tier))
@@ -610,6 +654,7 @@ export function evaluateDeclaredUsage(
     );
   }
   if (
+    provider !== "xai" &&
     hints?.regionalProcessing !== undefined &&
     hints.regionalProcessing !== false
   ) {
@@ -623,7 +668,17 @@ export function evaluateDeclaredUsage(
   const long =
     entry.longContext !== undefined &&
     inputTokens > entry.longContext.aboveInputTokens;
-  const rate = long && entry.longContext ? entry.longContext.rate : entry.rate;
+  const baseRate =
+    long && entry.longContext ? entry.longContext.rate : entry.rate;
+  const multiplier = provider === "xai" ? xaiMultiplier(payload, hints) : 1;
+  const rate = {
+    ...baseRate,
+    input: baseRate.input * multiplier,
+    output: baseRate.output * multiplier,
+    ...(baseRate.cacheRead !== undefined
+      ? { cacheRead: baseRate.cacheRead * multiplier }
+      : {}),
+  };
   if (cacheRead > 0 && rate.cacheRead === undefined) {
     return unknown(
       `${provider} '${model}' has no bundled cached-input rate, so ` +
@@ -736,7 +791,12 @@ export function evaluateDeclaredUsage(
         : {}),
     },
     rateAsOf,
-    warnings: provider === "openai" ? openaiWarnings(payload) : [],
+    warnings:
+      provider === "openai"
+        ? openaiWarnings(payload)
+        : provider === "xai"
+          ? xaiWarnings(payload)
+          : [],
   };
 }
 
@@ -761,10 +821,34 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
     // nobody updates it. Unknown models still fall through to the token path
     // and its warning.
     case "xai": {
+      // Only fixed operation keys override the wire model. Media stays model-keyed.
+      const fixedKeys = [
+        "text-to-speech",
+        "speech-to-text",
+        "collections-search",
+        "file-download",
+      ];
+      if (req.endpoint && fixedKeys.includes(req.endpoint)) {
+        const tier = req.costHints?.serviceTier ?? req.payload.service_tier;
+        if (
+          (tier !== undefined && tier !== "default" && tier !== "auto") ||
+          (req.costHints?.regionalProcessing !== undefined &&
+            req.costHints.regionalProcessing !== false)
+        ) {
+          return failed("per-unit-table", [
+            "xai: costHints.serviceTier / service_tier and costHints.regionalProcessing uplifts are documented only for text models",
+          ]);
+        }
+        return evaluatePerUnit(
+          "xai",
+          req.payload,
+          { keyedBy: "endpoint", endpoint: req.endpoint },
+          req.costHints
+        );
+      }
       const model = asString(req.payload.model);
       const entry = model ? PRICING.xai[model] : undefined;
       if (entry?.kind === "perUnit") {
-        // xai per-unit rates are keyed by model, never by endpoint.
         return evaluatePerUnit(
           "xai",
           req.payload,
@@ -772,14 +856,50 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
           req.costHints
         );
       }
+      if (model) {
+        const problem = xaiPricingProblem(model, req.payload, req.costHints);
+        if (problem) return failed("declared-tokens+table", [problem]);
+        if (
+          hasDeclaredUsage(req.costHints) ||
+          (entry?.kind === "tokens" && requiresDeclaredUsage(entry))
+        ) {
+          return evaluateDeclaredUsage(
+            "xai",
+            model,
+            req.payload,
+            req.costHints
+          );
+        }
+      }
       const ext = extractXai(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
-      return applyTokenRate(
+      const estimate = applyTokenRate(
         "xai",
         ext.data.model,
         heuristicTokens(ext.data.text),
         ext.data.maxOutputTokens
       );
+      const multiplier = xaiMultiplier(req.payload, req.costHints);
+      return {
+        ...estimate,
+        usd: estimate.usd * multiplier,
+        breakdown: {
+          ...estimate.breakdown,
+          ...(estimate.breakdown.inputUsdPerMillion !== undefined
+            ? {
+                inputUsdPerMillion:
+                  estimate.breakdown.inputUsdPerMillion * multiplier,
+              }
+            : {}),
+          ...(estimate.breakdown.outputUsdPerMillion !== undefined
+            ? {
+                outputUsdPerMillion:
+                  estimate.breakdown.outputUsdPerMillion * multiplier,
+              }
+            : {}),
+        },
+        warnings: [...estimate.warnings, ...xaiWarnings(req.payload)],
+      };
     }
     // OpenAI also prices declared usage (ac-0y875w): any CostHints token
     // count opts in, and an entry that bills cache writes or a long-context

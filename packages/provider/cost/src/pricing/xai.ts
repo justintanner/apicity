@@ -2,17 +2,42 @@ import type { CostHints } from "../types";
 import type { ModelPricing, PerUnitPricing } from "./types";
 import { asNumber, asString, coerceSeconds, hintSeconds } from "./helpers";
 
-const source = { url: "https://docs.x.ai" };
-const grokBuild01Source = {
-  url: "https://docs.x.ai/developers/models/grok-build-0.1",
-  asOf: "2026-06-07",
+const source = {
+  url: "https://docs.x.ai/developers/pricing.md",
+  asOf: "2026-11-04",
 };
 
-const grokBuild01: ModelPricing = {
+const textModel = (
+  input: number,
+  cacheRead: number,
+  output: number
+): ModelPricing => ({
   kind: "tokens",
-  rate: { input: 1, output: 2, cacheRead: 0.2 },
-  source: grokBuild01Source,
+  rate: { input, cacheRead, output },
+  longContext: {
+    // xAI reprices the whole request at >= 200,000 prompt tokens.
+    aboveInputTokens: 199_999,
+    rate: { input: input * 2, cacheRead: cacheRead * 2, output: output * 2 },
+  },
+  source,
+});
+
+const downloadGiB = (
+  _payload: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const bytes = asNumber(hints?.downloadBytes);
+  return bytes !== undefined && bytes > 0 ? bytes / 2 ** 30 : undefined;
 };
+
+const grok47 = textModel(2.0, 0.5, 6.0);
+const grok46 = textModel(2.0, 0.5, 6.0);
+const grok45 = textModel(2.0, 0.3, 6.0);
+const grok43 = textModel(1.25, 0.2, 2.5);
+const grok420Reasoning = textModel(1.25, 0.2, 2.5);
+const grok420NonReasoning = textModel(1.25, 0.2, 2.5);
+const grokBuild01 = textModel(1.0, 0.2, 2.0);
+const grok420MultiAgent = textModel(1.25, 0.2, 2.5);
 
 // Media rates come from the Imagine Pricing table on
 // docs.x.ai/developers/pricing (docs.x.ai/developers/models repeats it), which
@@ -230,19 +255,105 @@ const grokImagineImageQuality: PerUnitPricing = {
 };
 
 export const xai: Record<string, ModelPricing> = {
+  "grok-4.20-0309-non-reasoning": grok420NonReasoning,
+  "grok-4.20-non-reasoning": grok420NonReasoning,
+  "grok-4.20-non-reasoning-latest": grok420NonReasoning,
+  "grok-4.20-beta-non-reasoning": grok420NonReasoning,
+  "grok-4.20-beta-latest-non-reasoning": grok420NonReasoning,
+  "grok-4.20-experimental-beta-0304-non-reasoning": grok420NonReasoning,
+  "grok-4.20-experimental-beta-non-reasoning-latest": grok420NonReasoning,
+  "grok-4.20-beta-0309-non-reasoning": grok420NonReasoning,
+  "grok-4.20-non-reasoning-gv2": grok420NonReasoning,
+  "grok-4.20-0309-reasoning": grok420Reasoning,
+  "grok-4.20-reasoning-latest": grok420Reasoning,
+  "grok-4.20": grok420Reasoning,
+  "grok-4.20-reasoning": grok420Reasoning,
+  "grok-4.20-0309": grok420Reasoning,
+  "grok-4.20-beta-0309-reasoning": grok420Reasoning,
+  "grok-4.20-beta": grok420Reasoning,
+  "grok-4.20-beta-0309": grok420Reasoning,
+  "grok-4.20-beta-latest": grok420Reasoning,
+  "grok-4.20-beta-latest-reasoning": grok420Reasoning,
+  "grok-4.20-beta-reasoning": grok420Reasoning,
+  "grok-4.20-experimental-beta-0304-reasoning": grok420Reasoning,
+  "grok-4.20-experimental-beta-0304": grok420Reasoning,
+  "grok-4.20-experimental-beta-reasoning-latest": grok420Reasoning,
+  "grok-4.20-experimental-beta-latest": grok420Reasoning,
+  "grok-4.20-reasoning-gv2": grok420Reasoning,
+  "grok-4.20-multi-agent-0309": grok420MultiAgent,
+  "grok-4.20-multi-agent": grok420MultiAgent,
+  "grok-4.20-multi-agent-latest": grok420MultiAgent,
+  "grok-4.20-multi-agent-beta-latest": grok420MultiAgent,
+  "grok-4.20-multi-agent-experimental-beta-0304": grok420MultiAgent,
+  "grok-4.20-multi-agent-experimental-beta-latest": grok420MultiAgent,
+  "grok-4.20-multi-agent-beta-0309": grok420MultiAgent,
+  "grok-4.3": grok43,
+  "grok-4.3-latest": grok43,
+  "grok-4.5": grok45,
+  "grok-4.5-latest": grok45,
+  "grok-build-latest": grok45,
+  "grok-4.6": grok46,
+  "grok-4.7": grok47,
   "grok-build-0.1": grokBuild01,
   "grok-code-fast-1": grokBuild01,
   "grok-code-fast": grokBuild01,
   "grok-code-fast-1-0825": grokBuild01,
-  "grok-4": { kind: "tokens", rate: { input: 3, output: 15 }, source },
-  "grok-3": { kind: "tokens", rate: { input: 3, output: 15 }, source },
-  "grok-4-fast": { kind: "tokens", rate: { input: 0.2, output: 0.5 }, source },
+  "grok-4": {
+    kind: "tokens",
+    rate: { input: 3, output: 15, cacheRead: 0.75 },
+    source,
+  },
+  "grok-3": {
+    kind: "tokens",
+    rate: { input: 3, output: 15 },
+    source: { url: "https://docs.x.ai" },
+  },
+  "grok-4-fast": {
+    kind: "tokens",
+    rate: { input: 0.2, output: 0.5, cacheRead: 0.05 },
+    source,
+  },
   "grok-4-1-fast": {
     kind: "tokens",
     rate: { input: 0.2, output: 0.5 },
+    source: { url: "https://docs.x.ai" },
+  },
+  "text-to-speech": {
+    kind: "perUnit",
+    unit: "characters",
+    units: (p) => asString(p.text)?.length,
+    select: [],
+    rates: { "": 15 / 1_000_000 },
     source,
   },
-  "grok-4.6": { kind: "tokens", rate: { input: 2, output: 6 }, source },
+  "speech-to-text": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => hintSeconds(hints),
+    select: [],
+    rates: { "": 0.1 / 3600 },
+    source,
+  },
+  "collections-search": {
+    kind: "perUnit",
+    unit: "requests",
+    units: () => 1,
+    select: [],
+    rates: { "": 2.5 / 1000 },
+    source,
+  },
+  "file-download": {
+    kind: "perUnit",
+    unit: "gib-downloaded",
+    units: downloadGiB,
+    select: [],
+    rates: { "": 0.2 },
+    source,
+    warn: (p, hints) =>
+      downloadGiB(p, hints) === undefined
+        ? ["xai: pass costHints.downloadBytes as a positive finite byte count"]
+        : [],
+  },
 
   // Grok Imagine video — USD per second of output, by resolution, plus each
   // input image.

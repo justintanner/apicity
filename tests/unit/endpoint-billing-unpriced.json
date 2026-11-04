@@ -133,9 +133,5 @@
   "x POST v2.media.upload.initialize": "P5 ac-25t7ag",
   "x GET v2.tweets": "P5 ac-25t7ag",
   "x POST v2.tweets": "P5 ac-25t7ag",
-  "x GET v2.users.me": "P5 ac-25t7ag",
-  "xai POST v1.documents.search": "P3 ac-rplwok",
-  "xai GET v1.files.content": "P3 ac-rplwok",
-  "xai POST v1.stt": "P3 ac-rplwok",
-  "xai POST v1.tts": "P3 ac-rplwok"
+  "x GET v2.users.me": "P5 ac-25t7ag"
 }

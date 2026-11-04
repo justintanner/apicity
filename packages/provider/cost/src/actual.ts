@@ -104,12 +104,20 @@ function deriveFromTokens(
       ? undefined
       : serviceTier;
   const hints = tokenHints(usage, tier);
+  if (provider === "xai" && new URL(exchange.url).hostname === "us.api.x.ai") {
+    hints.regionalProcessing = true;
+  }
   if (DECLARED_USAGE_PROVIDERS.has(provider)) {
     return fromEstimate(
       evaluateDeclaredUsage(
         provider,
         key,
-        provider === "openai" ? (exchange.requestBody ?? {}) : {},
+        provider === "openai" || provider === "xai"
+          ? {
+              ...exchange.requestBody,
+              ...(provider === "xai" ? { service_tier: tier } : {}),
+            }
+          : {},
         hints
       )
     );

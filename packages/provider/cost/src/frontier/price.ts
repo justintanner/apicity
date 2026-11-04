@@ -41,6 +41,8 @@ const UNIT_LABEL: Record<CostUnit, string> = {
   songs: "song",
   characters: "character",
   tokens: "token",
+  requests: "request",
+  "gib-downloaded": "GiB downloaded",
 };
 
 const tables = PRICING as unknown as Record<

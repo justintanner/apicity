@@ -640,12 +640,12 @@ describe("computeEstimate", () => {
         },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBe(0.00066); // 11 chars * 0.00006
+      expect(result.usd).toBe(0.00044); // 11 chars * 0.00004
       expect(result.source).toBe("per-unit-table");
       expect(result.breakdown).toEqual({
         units: 11,
         unit: "characters",
-        perUnitUsd: 0.00006,
+        perUnitUsd: 0.00004,
       });
       expect(result.warnings).toEqual([]);
     });
@@ -660,7 +660,7 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
-        "elevenlabs 'eleven_flash_v2_5': could not derive units from payload (check duration / text)"
+        "elevenlabs 'eleven_flash_v2_5': could not derive units from payload (check duration / text); provide inline text or costHints.characters"
       );
     });
 
@@ -807,7 +807,7 @@ describe("computeEstimate", () => {
         },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBe(0.00024); // 4 * 0.00006
+      expect(result.usd).toBe(0.00016); // 4 * 0.00004
       expect(result.warnings).toEqual([]);
     });
 

@@ -3,6 +3,7 @@ import {
   FAL_DYNAMIC_PRICING_ENDPOINTS,
   falDynamicBilledUnit,
 } from "./pricing/fal";
+import { ELEVENLABS_LIST_NOTE } from "./pricing/elevenlabs";
 import { asString } from "./pricing/helpers";
 
 import type {
@@ -893,13 +894,61 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         req.costHints
       );
     }
-    case "elevenlabs":
-      return evaluatePerUnit(
+    case "elevenlabs": {
+      const endpoint = req.endpoint;
+      if (endpoint === "auto-convert" && req.payload.auto_convert !== true) {
+        return {
+          usd: 0,
+          currency: "USD",
+          source: "free",
+          breakdown: {},
+          rateAsOf: "2026-11-04",
+          warnings: [],
+          zeroReason:
+            "auto_convert is false or absent: the content is stored, not converted",
+        };
+      }
+      if (
+        endpoint === "music-stem-separation" ||
+        endpoint === "production-order"
+      ) {
+        return failed("per-unit-table", [
+          `ElevenLabs ${endpoint}: no published list rate; an order quote is required`,
+        ]);
+      }
+      const model =
+        asString(req.payload.model_id) ??
+        asString(req.payload.model) ??
+        (endpoint === "project-conversion"
+          ? asString(req.costHints?.model)
+          : undefined);
+      const key =
+        endpoint && Object.hasOwn(PRICING.elevenlabs, endpoint)
+          ? endpoint
+          : model;
+      if (!key)
+        return failed("per-unit-table", [
+          endpoint === "project-conversion"
+            ? "ElevenLabs conversion requires payload.model_id or costHints.model"
+            : "ElevenLabs requires payload.model_id or payload.model",
+        ]);
+      const result = evaluatePerUnit(
         "elevenlabs",
         req.payload,
-        { keyedBy: "endpoint", endpoint: req.endpoint },
+        { keyedBy: "endpoint", endpoint: key },
         req.costHints
       );
+      if (
+        result.warnings.length &&
+        PRICING.elevenlabs[key]?.kind === "perUnit" &&
+        PRICING.elevenlabs[key].unit === "characters"
+      ) {
+        result.warnings = result.warnings.map(
+          (w) => w + "; provide inline text or costHints.characters"
+        );
+      }
+      return result;
+    }
     // A fal endpoint on the dynamic list is unpriced BY DESIGN, not unknown.
     // The generic "not found in pricing table" warning cannot tell those two
     // apart, so a caller had no way to know that a real number is one call
@@ -985,6 +1034,8 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
 
 export function computeEstimate(req: EstimateRequest): CostEstimate {
   const estimate = computeEstimateBase(req);
+  if (req.provider === "elevenlabs" && !estimate.zeroReason)
+    return { ...estimate, notes: [ELEVENLABS_LIST_NOTE] };
   if (req.provider !== "openai") return estimate;
   const warnings = openaiWarnings(req.payload);
   return warnings.length

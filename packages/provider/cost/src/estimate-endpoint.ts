@@ -173,10 +173,11 @@ export function estimateEndpoint(
   return {
     ...estimate,
     billing,
-    status:
-      isCostPolicyKnown(estimate) &&
-      Number.isFinite(estimate.usd) &&
-      estimate.usd >= 0
+    status: estimate.zeroReason
+      ? "zero"
+      : isCostPolicyKnown(estimate) &&
+          Number.isFinite(estimate.usd) &&
+          estimate.usd >= 0
         ? "priced"
         : "unavailable",
   };

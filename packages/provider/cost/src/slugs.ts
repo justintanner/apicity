@@ -485,6 +485,21 @@ export const MODEL_SLUGS = {
   },
 
   elevenlabs: {
+    eleven_v3: "elv3",
+    eleven_v4: "elv4",
+    eleven_v4_turbo: "elv4t",
+    eleven_v3_conversational: "elv3c",
+    eleven_flash_v2: "elf2",
+    eleven_turbo_v2: "elt2",
+    music: "elmusic",
+    "video-to-music": "elvmusic",
+    "sound-generation": "elsfx",
+    "voice-changer": "elvc",
+    "voice-isolator": "elvi",
+    "forced-alignment": "elalign",
+    dubbing: "eldub",
+    dialogue: "eldialog",
+
     eleven_flash_v2_5: "elf2p5",
     eleven_turbo_v2_5: "elt2p5",
     eleven_multilingual_v2: "elml2",
@@ -1186,6 +1201,21 @@ export const MODEL_DISPLAY = {
   },
 
   elevenlabs: {
+    eleven_v3: "Eleven v3",
+    eleven_v4: "Eleven v4",
+    eleven_v4_turbo: "Eleven v4 Turbo",
+    eleven_v3_conversational: "Eleven v3 Conversational",
+    eleven_flash_v2: "Eleven Flash 2",
+    eleven_turbo_v2: "Eleven Turbo 2",
+    music: "Eleven Music",
+    "video-to-music": "Eleven Video to Music",
+    "sound-generation": "Eleven Sound Effects",
+    "voice-changer": "Eleven Voice Changer",
+    "voice-isolator": "Eleven Voice Isolator",
+    "forced-alignment": "Eleven Forced Alignment",
+    dubbing: "Eleven Dubbing",
+    dialogue: "Eleven Dialogue",
+
     eleven_flash_v2_5: "Eleven Flash 2.5",
     eleven_turbo_v2_5: "Eleven Turbo 2.5",
     eleven_multilingual_v2: "Eleven Multilingual 2",

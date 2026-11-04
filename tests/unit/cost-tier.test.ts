@@ -160,12 +160,12 @@ describe("classifyEstimate", () => {
   });
 
   it("classifies a cheap real estimate as cheap", () => {
-    // elevenlabs flash v2.5: 100 chars × $0.00006 = $0.006 → cheap.
+    // elevenlabs flash v2.5: 100 chars × $0.00004 = $0.004 → cheap.
     const est = computeEstimate({
       provider: "elevenlabs",
       payload: { model_id: "eleven_flash_v2_5", text: "x".repeat(100) },
     });
-    expect(est.usd).toBeCloseTo(0.006, 6);
+    expect(est.usd).toBeCloseTo(0.004, 6);
     expect(classifyEstimate(est)).toBe("cheap");
   });
 });

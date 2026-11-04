@@ -527,11 +527,11 @@ describe("PRICING data", () => {
     expect(PRICING.elevenlabs.eleven_flash_v2_5).toMatchObject({
       kind: "perUnit",
       unit: "characters",
-      rates: { "": 0.00006 },
+      rates: { "": 0.00004 },
     });
   });
 
-  // Hourly list prices from https://elevenlabs.io/pricing/api on 2026-10-29,
+  // Hourly list prices from https://elevenlabs.io/pricing/api on 2026-11-04,
   // stored per second. 10 minutes is an exact fraction of the hour.
   it("elevenlabs prices published Scribe models per audio second", () => {
     expect(PRICING.elevenlabs.scribe_v2).toMatchObject({
@@ -540,7 +540,7 @@ describe("PRICING data", () => {
       rates: { "": 0.22 / 3600 },
       source: {
         url: "https://elevenlabs.io/pricing/api",
-        asOf: "2026-10-29",
+        asOf: "2026-11-04",
       },
     });
     expect(PRICING.elevenlabs.scribe_v2_medical).toMatchObject({
@@ -552,7 +552,7 @@ describe("PRICING data", () => {
       kind: "perUnit",
       unit: "seconds",
       rates: { "": 0.39 / 3600 },
-      source: { asOf: "2026-10-29" },
+      source: { asOf: "2026-11-04" },
     });
   });
 

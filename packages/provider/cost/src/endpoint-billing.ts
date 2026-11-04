@@ -1196,7 +1196,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason: "0.12 USD per minute",
       source: { url: "https://elevenlabs.io/pricing/api", asOf: "2026-11-04" },
@@ -1211,10 +1211,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason:
-        "Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge. Fail-closed until P2 adds that switch.",
+        "Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge.",
       source: {
         url: "https://elevenlabs.io/docs/api-reference/studio-api-information.md",
         asOf: "2026-11-04",
@@ -1501,7 +1501,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason:
         "Per source minute: v1 0.33 USD with watermark, 0.50 without; v2 2.20",
@@ -1512,7 +1512,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason: "Docs: same rate as speech to text, read from the audio length",
       source: {
@@ -1525,7 +1525,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason: "0.15 USD per minute",
       source: { url: "https://elevenlabs.io/pricing/api", asOf: "2026-11-04" },
@@ -1553,7 +1553,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason:
         "Runs a paid model but no price is published, so P2 fails it closed",
@@ -1567,7 +1567,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason:
         "Docs: priced as song generation; half the cost is still charged if copyright is detected",
@@ -1604,7 +1604,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "minutes",
       reason:
         "Human-edited order: USD per source minute by asset, language and options, quoted per order with no list rate",
@@ -1618,7 +1618,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
       reason:
         "0.12 USD per minute; duration comes from the payload or the output",
@@ -1656,7 +1656,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason:
         "Docs: audio generation is charged, LLM cost is covered for now; auto-converts on create",
@@ -1670,7 +1670,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason:
         "Converting bills the generated audio at the project's TTS model; up to two regenerations of unchanged text are free",
@@ -1718,7 +1718,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason: "Eleven v3 rate per 1K characters",
       source: { url: "https://elevenlabs.io/pricing/api", asOf: "2026-11-04" },
@@ -1730,8 +1730,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "metered",
       unit: "characters",
-      reason:
-        "v4, v4 Turbo and v3 Conversational have no row; bundled Flash and Multilingual rows are stale (gaps-by-child.md section P2)",
+      reason: "API list price by TTS model; plan credits may cost less",
       source: { url: "https://elevenlabs.io/pricing/api", asOf: "2026-11-04" },
     },
     [
@@ -1754,7 +1753,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason: "Bills the preview text's characters",
       source: { url: "https://elevenlabs.io/pricing/api", asOf: "2026-11-04" },
@@ -1764,7 +1763,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "elevenlabs",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
       reason: "Docs: priced by the length of the test script",
       source: {

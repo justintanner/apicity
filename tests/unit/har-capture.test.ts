@@ -20,7 +20,9 @@ import {
   type Har,
   type HarCapture,
 } from "@apicity/har";
+import { createDropbox } from "@apicity/dropbox";
 import { createKie, KieError } from "@apicity/kie";
+import { createXOAuth } from "@apicity/x";
 import { runHarCommand } from "../../packages/cli/src/har";
 
 const dirs: string[] = [];
@@ -1420,5 +1422,123 @@ describe("media in a call's input", () => {
     );
     await capture.flush();
     expect(onError).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("an OAuth token call", () => {
+  it.each([
+    [
+      "dropbox",
+      async (fetch: typeof globalThis.fetch) =>
+        createDropbox({
+          clientId: "id",
+          clientSecret: "LIVE-CLIENT-SECRET",
+          fetch,
+        } as Parameters<typeof createDropbox>[0]).oauth2.token({
+          grant_type: "refresh_token",
+          refresh_token: "LIVE-REFRESH-TOKEN",
+        }),
+      "client_id=id&grant_type=refresh_token&refresh_token=***&client_secret=***",
+    ],
+    [
+      "x",
+      async (fetch: typeof globalThis.fetch) =>
+        createXOAuth({
+          clientId: "id",
+          clientSecret: "LIVE-CLIENT-SECRET",
+          fetch,
+        }).post.v2.oauth2.token({
+          grant_type: "refresh_token",
+          refresh_token: "LIVE-REFRESH-TOKEN",
+        }),
+      undefined,
+    ],
+  ])(
+    "through %s keeps no credential on disk, and sends it all",
+    async (_, call, expected) => {
+      let sent = "";
+      vi.stubGlobal("fetch", async (input: Request) => {
+        sent = await input.text();
+        return json({
+          access_token: "LIVE-ACCESS-TOKEN",
+          token_type: "bearer",
+          expires_in: 1,
+        });
+      });
+      const onError = vi.fn();
+      const { dir, capture } = await setup({ onError });
+      await capture.call(
+        {
+          provider: "dropbox",
+          endpoint: "oauth2.token",
+          input: { grant_type: "refresh_token" },
+        },
+        () => call(capture.fetch)
+      );
+      await capture.flush();
+      expect(onError).not.toHaveBeenCalled();
+      expect(sent).toContain("LIVE-REFRESH-TOKEN");
+      const { lines, hars } = await read(dir);
+      const file = join(dir, lines[0].file);
+      const onDisk = await readFile(file, "utf8");
+      expect(onDisk).not.toContain("LIVE-");
+      const { request } = hars[0]!.log.entries[0]!;
+      expect(request.bodySize).toBe(Buffer.byteLength(sent));
+      if (expected) expect(request.postData!.text).toBe(expected);
+      const silent = { out: () => {}, err: () => {} };
+      expect(await runHarCommand(["scrub", "--check", file], silent)).toBe(0);
+    }
+  );
+
+  it("fails har scrub --check on an old capture that holds one, until it is scrubbed", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "apicity-capture-form-"));
+    dirs.push(dir);
+    const file = join(dir, "old.har");
+    const har: Har = {
+      log: {
+        version: "1.2",
+        creator: { name: "apicity", version: "0" },
+        entries: [
+          {
+            startedDateTime: "2026-11-04T00:00:00.000Z",
+            time: 1,
+            request: {
+              method: "POST",
+              url: "https://api.dropboxapi.com/oauth2/token",
+              httpVersion: "HTTP/1.1",
+              cookies: [],
+              headers: [],
+              queryString: [],
+              headersSize: -1,
+              bodySize: 40,
+              postData: {
+                mimeType: "application/x-www-form-urlencoded",
+                text: "client_id=id&client_secret=LIVE-CLIENT-SECRET",
+              },
+            },
+            response: {
+              status: 200,
+              statusText: "OK",
+              httpVersion: "HTTP/1.1",
+              cookies: [],
+              headers: [],
+              content: { size: 2, mimeType: "application/json", text: "{}" },
+              redirectURL: "",
+              headersSize: -1,
+              bodySize: 2,
+            },
+            cache: {},
+            timings: { send: 0, wait: 1, receive: 0 },
+          },
+        ],
+      },
+    };
+    await writeFile(file, JSON.stringify(har, null, 2));
+    const silent = { out: () => {}, err: () => {} };
+    expect(await runHarCommand(["scrub", "--check", file], silent)).toBe(1);
+    expect(await readFile(file, "utf8")).toContain("LIVE-CLIENT-SECRET");
+    expect(await runHarCommand(["scrub", file], silent)).toBe(0);
+    expect(await readFile(file, "utf8")).not.toContain("LIVE-CLIENT-SECRET");
+    expect(await runHarCommand(["scrub", "--check", file], silent)).toBe(0);
   });
 });

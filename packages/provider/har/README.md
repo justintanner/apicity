@@ -47,7 +47,8 @@ entry._id = pollyEntryId(entry);
   error produces status 0; call-level error metadata belongs in
   `log._apicity`. Bodies must be unused and streams must eventually finish.
 - `scrubEntry(entry)` and `scrubHar(har)` mutate and return their argument.
-  Scrubbing covers provider credentials in headers, URLs and JSON, cookies,
+  Scrubbing covers provider credentials in headers, URLs, JSON and form-encoded
+  bodies, cookies,
   response account metadata and `_apicity` input/estimate/context/error fields. It preserves prompts and
   ordinary payloads. It is not a general personal-data anonymizer.
 - `pollyEntryId(entry, options?)` hashes the identifying fields using the

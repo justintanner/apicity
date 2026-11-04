@@ -32,7 +32,8 @@ try {
 
 Capture keeps prompts, media URLs, model parameters, provider responses and
 error text, HTTP status, and timings. It scrubs authentication headers, signed
-URL credentials, known secret body fields and cookies before writing. Non-text
+URL credentials, known secret fields in JSON and form-encoded bodies, and cookies
+before writing. Non-text
 bodies and bodies larger than `maxBodyBytes` (default 256 KiB) become placeholders
 with SHA-256, byte count and content type. Multipart uploads retain field and
 file summaries, not file bytes. Large base64 and data URL media are summarized, in

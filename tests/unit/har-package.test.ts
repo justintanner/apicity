@@ -687,6 +687,167 @@ describe("generic credential body keys", () => {
       expect(entry.response.content.text).toBe(text);
     }, 30_000);
   });
+  describe("in a form-encoded body", () => {
+    const FORM = "application/x-www-form-urlencoded";
+    const scrubbed = (text: string, mimeType?: string) => {
+      const entry = { request: { postData: { text, mimeType } } };
+      scrubEntry(entry);
+      return entry.request.postData.text;
+    };
+
+    it.each([
+      "client_secret",
+      "refresh_token",
+      "password",
+      "api_key",
+      "access_token",
+      "API-KEY",
+      "clientSecret",
+      "client%5Fsecret",
+      "user[password]",
+      "user%5Bpassword%5D",
+      "password[]",
+      "credentials[client_secret][0]",
+    ])("scrubs %s, and only its value", (name) => {
+      const text = `client_id=id&${name}=LIVE-private&grant_type=refresh_token`;
+      const clean = `client_id=id&${name}=***&grant_type=refresh_token`;
+      expect(scrubbed(text, FORM)).toBe(clean);
+      expect(scrubbed(text, `${FORM};charset=UTF-8`)).toBe(clean);
+      expect(scrubbed(text, "APPLICATION/X-WWW-FORM-URLENCODED")).toBe(clean);
+      expect(scrubbed(clean, FORM)).toBe(clean);
+    });
+
+    it("scrubs every value of a repeated name, and one holding an equals sign", () => {
+      expect(
+        scrubbed("password=LIVE-a&x=1&password=LIVE-b=c&password=", FORM)
+      ).toBe("password=***&x=1&password=***&password=***");
+    });
+
+    it("reads a form under another content type by its shape", () => {
+      const text = "client_id=id&client_secret=LIVE-private";
+      const clean = "client_id=id&client_secret=***";
+      expect(scrubbed(text)).toBe(clean);
+      expect(scrubbed(text, "text/plain;charset=UTF-8")).toBe(clean);
+    });
+
+    it("scrubs a hand-built form with white space, by its content type", () => {
+      const clean = "a=b c&password=***";
+      expect(scrubbed("a=b c&password=LIVE private", FORM)).toBe(clean);
+      expect(scrubbed("a=b c&password=LIVE private", FORM.toUpperCase())).toBe(
+        clean
+      );
+    });
+
+    it("reads a name with a malformed escape as written", () => {
+      const text = "a%ZZ=1&password=LIVE-private";
+      expect(scrubbed(text, FORM)).toBe("a%ZZ=1&password=***");
+    });
+
+    it.each([
+      "a=b%20c&d=e+f&g&h=&%C3%A9=%F0%9F%90%88&grant_type=refresh_token",
+      "client_id=id&code=abc&redirect_uri=https%3A%2F%2Fx.example%2F",
+      "user[name]=a&password_hint=b&items[0]=c",
+      "passwordx&a=1",
+      "",
+      "=&&=",
+    ])("leaves a form with no such name byte for byte: %s", (text) => {
+      expect(scrubbed(text, FORM)).toBe(text);
+    });
+
+    it.each([
+      ["JSON", '{ "a" : "password=LIVE-kept&b=1 and more" }'],
+      ["prose", "the password=LIVE-kept is wrong"],
+      ["SSE", 'data: {"a":"password=LIVE-kept"}\n\n'],
+      ["a URL", "https://x.example/a?b=1&password=LIVE-kept"],
+    ])("does not read %s as a form", (_, text) => {
+      expect(scrubbed(text, "text/plain")).toBe(text);
+    });
+
+    it("scrubs a HAR's params array", () => {
+      const params = [
+        { name: "client_id", value: "id" },
+        { name: "client_secret", value: "LIVE-private" },
+        { name: "refresh_token", value: "LIVE-private" },
+        { name: "file", fileName: "a.png" },
+        { name: "password" },
+        { name: 5, value: "kept" },
+        null,
+      ];
+      const entry = {
+        request: { postData: { mimeType: FORM, params } },
+      };
+      scrubEntry(entry);
+      expect(JSON.stringify(entry)).not.toContain("LIVE-private");
+      expect(params[0]).toEqual({ name: "client_id", value: "id" });
+      expect(params[1]).toEqual({ name: "client_secret", value: "***" });
+      expect(params[3]).toEqual({ name: "file", fileName: "a.png" });
+      expect(params[4]).toEqual({ name: "password" });
+      expect(params[5]).toEqual({ name: 5, value: "kept" });
+    });
+
+    it("scrubs a form-encoded response", () => {
+      const entry = {
+        response: {
+          content: {
+            text: "access_token=LIVE-private&expires=3600",
+            mimeType: FORM,
+          },
+        },
+      };
+      scrubEntry(entry);
+      expect(entry.response.content.text).toBe("access_token=***&expires=3600");
+    });
+
+    it("scrubs a form held as a string in a JSON body, and nowhere else in it", () => {
+      const text = JSON.stringify({
+        body: "client_id=id&client_secret=LIVE-private",
+        prompt: "password=LIVE-kept and more",
+      });
+      expect(JSON.parse(scrubbed(text, "application/json"))).toEqual({
+        body: "client_id=id&client_secret=***",
+        prompt: "password=LIVE-kept and more",
+      });
+    });
+
+    it.each([
+      ["a string", "client_id=id&client_secret=LIVE-private"],
+      ["an object", { client_secret: "LIVE-private", client_id: "id" }],
+      ["a nested string", { body: "refresh_token=LIVE-private&a=1" }],
+      ["an array", ["password=LIVE-private"]],
+    ])("scrubs call input and context holding %s", (_, value) => {
+      const har: Har = {
+        log: {
+          version: "1.2",
+          creator: { name: "test", version: "1" },
+          entries: [],
+          _apicity: {
+            callId: "test",
+            provider: "dropbox",
+            endpoint: "oauth2.token",
+            input: value,
+            context: { value },
+            outcome: "local_error",
+            apicityVersion: "test",
+            runtime: "test",
+            startedAt: "2026-11-04T00:00:00.000Z",
+            durationMs: 0,
+          },
+        },
+      };
+      scrubHar(har);
+      expect(JSON.stringify(har)).not.toContain("LIVE-private");
+      const once = JSON.stringify(har);
+      scrubHar(har);
+      expect(JSON.stringify(har)).toBe(once);
+    });
+
+    it("stays linear on a form with millions of fields", () => {
+      const text = "a=1&".repeat(4_000_000);
+      const started = performance.now();
+      expect(scrubbed(text, FORM)).toBe(text);
+      expect(performance.now() - started).toBeLessThan(20_000);
+    }, 30_000);
+  });
   it("redacts input/context for local failures with no exchange", () => {
     const har: Har = {
       log: {

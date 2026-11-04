@@ -4328,7 +4328,7 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   });
 
   // Separate from the WAN_MODELS block above on purpose: the wan 2.6 table was
-  // confirmed by mayor ruling R2 on 2026-08-07, a day after the shared
+  // last re-read on 2026-11-04, when its 1080p cells moved, not at the shared
   // 2026-08-06 pull those entries are stamped with.
   const WAN_26_PRICED = [
     "wan/2-6-text-to-video",
@@ -4336,13 +4336,13 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     "wan/2-6-video-to-video",
   ];
 
-  it.each(WAN_26_PRICED)("stamps %s with the R2 confirmation date", (m) => {
+  it.each(WAN_26_PRICED)("stamps %s with the date it was re-read", (m) => {
     const entry = PRICING.kie[m];
     expect(entry, m).toBeDefined();
     expect(entry.source.url, `${m} url`).toContain(
       "https://kie.ai/wan-2-6?model=wan%2F2-6-"
     );
-    expect(entry.source.asOf, `${m} asOf`).toBe("2026-08-07");
+    expect(entry.source.asOf, `${m} asOf`).toBe("2026-11-04");
   });
 
   it("prices the wan 2.6 text/image pair across all six published cells", () => {
@@ -4352,9 +4352,9 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
         unit: "generations",
         rates: {
           "5|720p": 0.35,
-          "5|1080p": 0.5225,
+          "5|1080p": 0.525,
           "10|720p": 0.7,
-          "10|1080p": 1.0475,
+          "10|1080p": 1.05,
           "15|720p": 1.05,
           "15|1080p": 1.575,
         },
@@ -4374,9 +4374,9 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(entry.unit).toBe("generations");
     expect(entry.rates).toEqual({
       "5|720p": 0.35,
-      "5|1080p": 0.5225,
+      "5|1080p": 0.525,
       "10|720p": 0.7,
-      "10|1080p": 1.0475,
+      "10|1080p": 1.05,
     });
   });
 
@@ -4426,17 +4426,17 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     {
       model: "wan/2-6-text-to-video",
       url: "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
     {
       model: "wan/2-6-image-to-video",
       url: "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
     {
       model: "wan/2-6-video-to-video",
       url: "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
     {
       model: "wan/2-7-text-to-video",
@@ -5749,9 +5749,9 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   // which is why every cell is listed rather than derived from a tier.
   it.each([
     { duration: "5", resolution: "720p", usd: 0.35 },
-    { duration: "5", resolution: "1080p", usd: 0.5225 },
+    { duration: "5", resolution: "1080p", usd: 0.525 },
     { duration: "10", resolution: "720p", usd: 0.7 },
-    { duration: "10", resolution: "1080p", usd: 1.0475 },
+    { duration: "10", resolution: "1080p", usd: 1.05 },
     { duration: "15", resolution: "720p", usd: 1.05 },
     { duration: "15", resolution: "1080p", usd: 1.575 },
   ])(
@@ -5822,8 +5822,8 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
       viaSchema ? parsed.data : { model: "wan/2-6-text-to-video", input }
     );
 
-    expect(result.usd).toBeCloseTo(0.5225, 10);
-    expect(result.breakdown.perUnitUsd).toBe(0.5225);
+    expect(result.usd).toBeCloseTo(0.525, 10);
+    expect(result.breakdown.perUnitUsd).toBe(0.525);
     expect(result.warnings).toEqual([]);
   });
 

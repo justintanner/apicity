@@ -189,7 +189,7 @@ hosts.
 | `ac-cukhhs` | fal     | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
 | `ac-eue5ej` | fal     | Timed: FLUX 3 Max's promotion ends 11-07                             |
 | `vb-olmxr`  | fal     | `sora-2` is retired, and videobook's catalog still names it          |
-| `ac-p3e0c6` | kie     | Rows that moved since the frozen pull, and a check for live drift    |
+| `ac-x0qlnu` | kie     | `bytedance/seedance-1.5-pro` has left the feed                       |
 | `ac-nr7mpd` | alibaba | `wan2.7-videoedit` assumes 5 s                                       |
 | `ac-xk7p41` | cost    | 46 rows have no `source.asOf`, which weakens the capture-date gate   |
 
@@ -229,6 +229,23 @@ Those April calls now read `no-estimate`, so `grok-4` left the guard's list belo
   either rate. So `ac-cgqsxq`'s usage read decides, and until then the estimate runs 20%
   over if the cut is real, which is the safe direction.
 
+`ac-p3e0c6` closed the two KIE items this pass could not, also with no paid call:
+
+- **The MiniMax H3 rows never moved.** The frozen 2026-09-11 pull and the 2026-11-04 feed
+  both print 4 credits per image, and the table already charges that past the fifth image.
+  The first tool read the row's 8 credits from the pull's metadata, where it sits among the
+  rows removed since August. The second read the per-image row against the 0.04 per-second
+  cell.
+- **Wan 2.6 had moved, and is corrected.** 5 s and 10 s at 1080p went from 104.5 and 209.5
+  credits to 105 and 210, on the feed and the page, so `wan/2-6-*` now read 0.525 and 1.05
+  USD. They were 0.5% and 0.2% low. Pins: `tests/unit/kie-feed-drift.test.ts`.
+- **`pnpm run check:kie-feed-drift` now does this comparison.** It pulls the free public
+  feed and runs each row through the reconciliation's own mapping, so a multi-axis row
+  reaches its own cell. Its first run, after the Wan 2.6 correction, compared 603 cells and
+  all agree. It lists 14 rows with no comparable cell, each with its reason, and 16 table
+  keys with no feed row. One of those keys is `bytedance/seedance-1.5-pro`, which has left
+  the feed: `ac-x0qlnu`.
+
 ## What keeps this honest
 
 `tests/unit/cost-recording-accuracy.test.ts` holds every committed call with a stated
@@ -250,4 +267,8 @@ Repeat the pass when any of these holds:
 - 30 days have passed since the last pass.
 
 Between passes a rate can drift with no recording to show it, as
-`pixverse-v6/reference-to-video` did. `ac-p3e0c6` is about closing that gap.
+`pixverse-v6/reference-to-video` did. For KIE, run `pnpm run check:kie-feed-drift` at
+every pass and before a release. It is free and needs no key, but it reads the live feed,
+so CI cannot run it. It exits 1 and names the cell when one differs. If the row's words
+are what it cannot read, add a rule to `SELECTOR_RULES` or `PAYLOAD_RULES`; if the price
+moved, correct the cell as Wan 2.6 was.

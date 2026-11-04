@@ -741,6 +741,9 @@ actual.settled; // false until a terminal read arrives
 compareCost(quoted, actual).verdict; // "match", "over", "under", ...
 ```
 
+`compareCost` takes any `QuotedEstimate`, so an estimate read back from a capture's
+`log._apicity.estimate` works too.
+
 `basis` says how far to trust the figure:
 
 | `basis`      | Means                                                                 |

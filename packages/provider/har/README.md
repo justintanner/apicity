@@ -19,24 +19,30 @@ entry._id = pollyEntryId(entry);
 ```
 
 - `createHarCapture({ dir, mode: "all" | "failures", providers?, maxBodyBytes?,
-  context?, onError?, clock?, idFactory? })` returns `{ fetch, call, install,
-  flush, close }`. Wrap provider work in
-  `call({ provider, endpoint, input, context? }, fn)` and await `close()` before
-  exit; a call's `context` is merged shallowly over the capture's `context` for
-  that call only. Capture is disabled after a write error without changing the
+  maxSummarizeBytes?, sseTailBytes?, context?, onError?, clock?, idFactory? })`
+  returns `{ fetch, call, install, flush, close }`. Wrap provider work in
+  `call({ provider, endpoint, input, context?, estimate? }, fn)` and await
+  `close()` before exit; a call's `context` is merged shallowly over the capture's
+  `context` for that call only. `estimate` (`usd`, `source`, `rateAsOf`, `warnings`,
+  `breakdown`, `status`) is written to `log._apicity.estimate` and as `estimateUsd`
+  in `index.jsonl`. Capture is disabled after a write error without changing the
   provider result.
 - `exchangeToEntry(request: Request, responseOrError: Response | Error, timing,
   options?)` reads clones and returns a scrubbed entry. Timing has `startedAt`,
   `durationMs` and optional HAR `timings`. Options are `maxBodyBytes` (262144 by
-  default), `streamed` and `role`. Binary and oversized bodies become SHA-256,
-  byte-count and MIME-type placeholders. Multipart files become name/type/size
-  summaries. Inline data URLs and long base64 are summarized. Text streams are
-  concatenated up to the cap; `_apicity.streamed` and `bodyTruncated` describe
+  default), `maxSummarizeBytes` (16 MiB), `sseTailBytes` (64 KiB), `streamed` and
+  `role`. Binary and oversized bodies become SHA-256, byte-count and MIME-type
+  placeholders, except a JSON request up to `maxSummarizeBytes` whose text fits the
+  cap once its media is summarized. Multipart files become name/type/size
+  summaries. Inline data URLs and long base64 are summarized. A text stream over
+  the cap keeps its first `maxBodyBytes` and last `sseTailBytes`, in whole lines
+  joined by an `: apicity-gap <n> bytes dropped` comment;
+  `_apicity.streamed` and `bodyTruncated` describe
   them. A network error produces status 0; call-level error metadata belongs in
   `log._apicity`. Bodies must be unused and streams must eventually finish.
 - `scrubEntry(entry)` and `scrubHar(har)` mutate and return their argument.
   Scrubbing covers provider credentials in headers, URLs and JSON, cookies,
-  response account metadata and `_apicity` input/context/error fields. It preserves prompts and
+  response account metadata and `_apicity` input/estimate/context/error fields. It preserves prompts and
   ordinary payloads. It is not a general personal-data anonymizer.
 - `pollyEntryId(entry, options?)` hashes the identifying fields using the
   repository's default harness matching rules. Custom matching requires

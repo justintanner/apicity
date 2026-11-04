@@ -214,7 +214,7 @@ describe("HAR capture runtime", () => {
           { headers: { "content-type": "text/event-stream" } }
         )
     );
-    const { dir, capture } = await setup({ maxBodyBytes: 12 });
+    const { dir, capture } = await setup({ maxBodyBytes: 12, sseTailBytes: 0 });
     const response = await capture.call(meta, () =>
       capture.fetch("https://api.kie.ai/stream")
     );

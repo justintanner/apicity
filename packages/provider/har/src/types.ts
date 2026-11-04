@@ -68,11 +68,21 @@ export interface ApicityEntryMetadata {
   streamed?: boolean;
   bodyTruncated?: boolean;
 }
+/** What a cost estimator quoted before the call. */
+export interface HarCallEstimate {
+  usd: number;
+  source?: string;
+  rateAsOf?: string | null;
+  warnings?: string[];
+  breakdown?: object;
+  status?: string;
+}
 export interface ApicityCallMetadata {
   callId: string;
   provider: string;
   endpoint: string;
   input: unknown;
+  estimate?: HarCallEstimate;
   outcome: "ok" | "provider_error" | "local_error" | "network_error";
   status?: number;
   error?: {

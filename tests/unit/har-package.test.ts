@@ -105,7 +105,7 @@ describe("exchange serializer", () => {
         headers: { "content-type": "text/event-stream" },
       }),
       timing,
-      { maxBodyBytes: 12 }
+      { maxBodyBytes: 12, sseTailBytes: 0 }
     );
     expect(entry.response.content.text).toBe("data: one\nda");
     expect(entry._apicity).toMatchObject({

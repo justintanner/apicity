@@ -675,6 +675,70 @@ describe("extractActual pins", () => {
     expect(actual.warnings.join(" ")).toContain("stops before");
   });
 
+  // A capture keeps a stream's two ends, so any frame can be missing from between.
+  describe("a stream's two ends", () => {
+    const anthropic = (responseBody: unknown[]) =>
+      extractActual(
+        inlineExchange({
+          provider: "anthropic",
+          url: "https://api.anthropic.com/v1/messages",
+          requestBody: { model: "claude-sonnet-4-5" },
+          responseBody,
+          bodyTruncated: true,
+        })
+      );
+    const start = {
+      type: "message_start",
+      message: { usage: { input_tokens: 100_000, output_tokens: 1 } },
+    };
+    const delta = {
+      type: "message_delta",
+      usage: { output_tokens: 50_000 },
+    };
+    const stop = { type: "message_stop" };
+
+    it("settles once message_start and message_delta both survive", () => {
+      const actual = anthropic([start, delta, stop]);
+      expect(actual.settled).toBe(true);
+      expect(actual.usd).toBeCloseTo(1.05, 6);
+    });
+
+    it.each([
+      ["message_stop without message_delta", [start, stop]],
+      ["message_delta without message_start", [delta, stop]],
+    ])("states no figure from %s", (_, frames) => {
+      const actual = anthropic(frames);
+      expect(actual.settled).toBe(false);
+      expect(actual.usd).toBeNull();
+      expect(actual.warnings.join(" ")).toContain("stops before");
+    });
+
+    const chat = (responseBody: unknown[]) =>
+      extractActual(
+        inlineExchange({
+          provider: "openai",
+          url: "https://api.openai.com/v1/chat/completions",
+          responseBody,
+          bodyTruncated: true,
+        })
+      );
+    const usage = { prompt_tokens: 1000, completion_tokens: 50 };
+
+    it.each([
+      ["a finish reason", [{ choices: [{ finish_reason: "stop" }], usage }]],
+      ["no choices left", [{ choices: [], usage }]],
+      ["no choices field", [{ usage }]],
+    ])("takes a usage chunk with %s as final", (_, frames) => {
+      expect(chat(frames).settled).toBe(true);
+    });
+
+    it("does not take a running count on an unfinished choice as final", () => {
+      const actual = chat([{ choices: [{ finish_reason: null }], usage }]);
+      expect(actual.settled).toBe(false);
+      expect(actual.usd).toBeNull();
+    });
+  });
+
   describe("a stream cut short", () => {
     const anthropicStart = {
       type: "message_start",
@@ -1282,6 +1346,17 @@ describe("compareCost", () => {
     rateAsOf: null,
     warnings: [],
     ...over,
+  });
+
+  it("reads an estimate whose optional fields are absent", () => {
+    const paid = actual({ usd: 0.5 });
+    expect(compareCost({ usd: 0.5 }, paid).verdict).toBe("match");
+    expect(
+      compareCost({ usd: 0, source: "per-unit-table" }, paid).verdict
+    ).toBe("under");
+    expect(compareCost({ usd: 0, status: "zero" }, actual({})).verdict).toBe(
+      "free"
+    );
   });
 
   it("match, within the 2% default tolerance", () => {

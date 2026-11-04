@@ -45,6 +45,9 @@ export function scrubHar<T extends Har>(har: T): T {
       return JSON.parse(entry.response.content!.text!);
     }
     meta.input = scrubValue(meta.input);
+    if (meta.estimate) {
+      meta.estimate = scrubValue(meta.estimate) as typeof meta.estimate;
+    }
     if (meta.context)
       meta.context = scrubValue(meta.context) as typeof meta.context;
     if (meta.error) meta.error = scrubValue(meta.error) as typeof meta.error;

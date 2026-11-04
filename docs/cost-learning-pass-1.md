@@ -5,7 +5,7 @@ separate loop that this one does not touch.
 
 The pass compares what `@apicity/cost` estimates with what calls actually cost. It
 applied six rate corrections and removed an invented 0.75 USD from the recordings.
-Of the 16 groups beyond tolerance, 14 remain, and none of them is a wrong rate. No
+Of the 16 groups beyond tolerance, 13 remain, and none of them is a wrong rate. No
 paid call was made and no recording was re-recorded.
 
 ## Reproduce and evidence
@@ -25,7 +25,7 @@ Evidence and tools: `/gc/apicity/plans/ac-0lt830/evidence/L1/`.
 
 | Corpus               | Files | Calls | Settled | Groups | Beyond tolerance |
 | -------------------- | ----: | ----: | ------: | -----: | ---------------: |
-| `tests/recordings`   | 1,057 | 1,440 |   1,396 |  1,035 |               14 |
+| `tests/recordings`   | 1,057 | 1,440 |   1,396 |  1,035 |               13 |
 | Captures (videobook) |   459 |   459 |     205 |     21 |                0 |
 
 The captures are videobook's own, from its host. All 459 pass
@@ -49,28 +49,29 @@ real: two recordings here were hand-written.
 
 ## Verdicts
 
-These are the 16 groups in the first report, with 25 calls over and 7 under. After the
-corrections, 14 groups remain, with 22 calls over and 7 under, which is the saved
-report's summary. The two that left are the first two rows.
+These are the 16 groups in the first report, with 25 calls over and 7 under. In the
+saved report 13 groups remain, with 21 calls over and 7 under. The first two rows left
+because of this pass. Anthropic's left because the estimator now refuses a chars/4
+figure on that model.
 
-| Provider  | Model                            | Over | Under | Ratio | Verdict    | Why                                                                                        |
-| --------- | -------------------------------- | ---: | ----: | ----: | ---------- | ------------------------------------------------------------------------------------------ |
-| kie       | `pixverse-v6/reference-to-video` |    1 |     0 | 1.125 | CORRECTION | Recording billed 4 credits/s, and today's feed agrees. Applied below                       |
-| kie       | `kling/v3-turbo-text-to-video`   |    2 |     0 |   1.8 | NO-ACTION  | Hand-written cassettes. The feed confirms the table, and their charge is gone (see below)  |
-| kie       | `bytedance/seedance-2-mini`      |    0 |     1 |   0.4 | NO-ACTION  | Old capture (06-24). Feed today is 3.8 credits/s, the table's rate                         |
-| kie       | `grok-imagine-video-1-5-preview` |    0 |     1 |  0.16 | NO-ACTION  | Old capture (06-05). The three October recordings match exactly                            |
-| kie       | `happyhorse-1-1/text-to-video`   |    0 |     1 |  0.68 | NO-ACTION  | Old capture (06-24). The page today is 22.5 credits/s, the table's rate                    |
-| machgen   | `MiniMax-H3-Turbo`               |    4 |     0 |   1.5 | NO-ACTION  | Promotion: 0.01/s when recorded. The pricebook today is 0.015/s to 2027-01-01, the table's |
-| machgen   | `Seedance-2.5`                   |    3 |     0 | 1.028 | NO-ACTION  | Old capture (10-22). The pricebook today is 0.1028/s, the table's rate                     |
-| xai       | `grok-4` (`v1.responses`)        |    0 |     1 |  0.28 | NO-ACTION  | Tokens x rates equal the stated bill exactly. The estimate cannot see a vision input       |
-| alibaba   | `wan2.7-videoedit`               |    0 |     1 |  0.50 | NO-ACTION  | No stated charge. The estimate assumes 5 s, and an edit follows its source. `ac-nr7mpd`    |
-| anthropic | `claude-sonnet-4-6`              |    1 |     0 |  3.40 | NO-ACTION  | Usage only: the ratio measures the before-call chars/4 and output limit, not a rate        |
-| fireworks | `llama-v3p3-70b-instruct` (chat) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                       |
-| fireworks | `llama-v3p3-70b-instruct` (text) |    0 |     1 |  0.97 | NO-ACTION  | Usage only, as above                                                                       |
-| fireworks | `llama-v3p3-70b-instruct` (msgs) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                       |
-| fireworks | `nomic-embed-text-v1.5`          |    1 |     0 |   1.5 | NO-ACTION  | Usage only, 2 tokens, as above                                                             |
-| openai    | `gpt-4o-mini`                    |    8 |     1 |  5.55 | NO-ACTION  | Usage only, as above                                                                       |
-| openai    | `o4-mini`                        |    1 |     0 |  3.93 | NO-ACTION  | Usage only, as above                                                                       |
+| Provider  | Model                            | Over | Under | Ratio | Verdict    | Why                                                                                                         |
+| --------- | -------------------------------- | ---: | ----: | ----: | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| kie       | `pixverse-v6/reference-to-video` |    1 |     0 | 1.125 | CORRECTION | Recording billed 4 credits/s, and today's feed agrees. Applied below                                        |
+| kie       | `kling/v3-turbo-text-to-video`   |    2 |     0 |   1.8 | NO-ACTION  | Hand-written cassettes. The feed confirms the table, and their charge is gone (see below)                   |
+| kie       | `bytedance/seedance-2-mini`      |    0 |     1 |   0.4 | NO-ACTION  | Old capture (06-24). Feed today is 3.8 credits/s, the table's rate                                          |
+| kie       | `grok-imagine-video-1-5-preview` |    0 |     1 |  0.16 | NO-ACTION  | Old capture (06-05). The three October recordings match exactly                                             |
+| kie       | `happyhorse-1-1/text-to-video`   |    0 |     1 |  0.68 | NO-ACTION  | Old capture (06-24). The page today is 22.5 credits/s, the table's rate                                     |
+| machgen   | `MiniMax-H3-Turbo`               |    4 |     0 |   1.5 | NO-ACTION  | Promotion: 0.01/s when recorded. The pricebook today is 0.015/s to 2027-01-01, the table's                  |
+| machgen   | `Seedance-2.5`                   |    3 |     0 | 1.028 | NO-ACTION  | Old capture (10-22). The pricebook today is 0.1028/s, the table's rate                                      |
+| xai       | `grok-4` (`v1.responses`)        |    0 |     1 |  0.28 | NO-ACTION  | Tokens x rates equal the stated bill exactly. The estimate cannot see a vision input                        |
+| alibaba   | `wan2.7-videoedit`               |    0 |     1 |  0.50 | NO-ACTION  | No stated charge. The estimate assumes 5 s, and an edit follows its source. `ac-nr7mpd`                     |
+| anthropic | `claude-sonnet-4-6`              |    1 |     0 |  3.40 | NO-ACTION  | Usage only: the ratio measured the before-call chars/4, not a rate. The estimator now quotes no figure here |
+| fireworks | `llama-v3p3-70b-instruct` (chat) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                                        |
+| fireworks | `llama-v3p3-70b-instruct` (text) |    0 |     1 |  0.97 | NO-ACTION  | Usage only, as above                                                                                        |
+| fireworks | `llama-v3p3-70b-instruct` (msgs) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                                        |
+| fireworks | `nomic-embed-text-v1.5`          |    1 |     0 |   1.5 | NO-ACTION  | Usage only, 2 tokens, as above                                                                              |
+| openai    | `gpt-4o-mini`                    |    8 |     1 |  5.55 | NO-ACTION  | Usage only, as above                                                                                        |
+| openai    | `o4-mini`                        |    1 |     0 |  3.93 | NO-ACTION  | Usage only, as above                                                                                        |
 
 There is no CAPTURE-GAP verdict: nothing beyond tolerance turned on a missing field.
 Reconciling usage-only families against provider cost APIs is RC1 (`ac-q1v7y1`).

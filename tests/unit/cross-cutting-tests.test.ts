@@ -73,6 +73,11 @@ const EXAMPLE_PROVENANCE_TESTS = [
 
 const HAR_REPORT_TESTS = ["tests/unit/har-report-golden.test.ts"] as const;
 
+// Recording-accuracy guard (a recorded bill against today's tables).
+const RECORDING_ACCURACY_TESTS = [
+  "tests/unit/cost-recording-accuracy.test.ts",
+] as const;
+
 // Captured-failure suites (a provider rejection is caught locally or listed).
 const CAPTURED_FAILURE_TESTS = [
   "tests/integration/captured-failures.test.ts",
@@ -143,6 +148,11 @@ const CATEGORY_DOC_KEYWORDS = [
     name: "RECORDING_SECRET_TESTS",
     tests: RECORDING_SECRET_TESTS,
     keyword: "recorded request secrets",
+  },
+  {
+    name: "RECORDING_ACCURACY_TESTS",
+    tests: RECORDING_ACCURACY_TESTS,
+    keyword: "recording accuracy",
   },
 ] as const;
 
@@ -376,6 +386,15 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(source).toContain("runHarCommand");
       expect(source).toContain(".golden");
       expect(source).toContain("toBe(actual)");
+    }
+  });
+
+  it("recording-accuracy guards hold recorded bills to the tables", () => {
+    for (const relativePath of RECORDING_ACCURACY_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("harCostCalls");
+      expect(source, relativePath).toContain("ALLOWED");
+      expect(source, relativePath).toContain("docs/cost-learning-pass-1.md");
     }
   });
 

@@ -499,6 +499,81 @@ interface ErrorGroup {
 }
 ```
 
+## Cost report
+
+```sh
+apicity har cost ./captures --provider fal,kie > cost.md
+apicity har cost tests/recordings --model grok-4.6 --json > cost.json
+apicity har cost ./captures --since 2026-11-01 --tolerance 0.05
+```
+
+The command answers what calls actually cost and how many tokens they used, per
+provider, endpoint and model, without provider calls. It reads paths as
+`har report` does, with the same exits: at least one readable HAR gives exit 0,
+missing paths or no readable HAR give not_found (exit 2), and bad flags, providers,
+dates or tolerances give usage (exit 1). Output is Markdown even when redirected;
+`--json` emits `{ok: true, data: ...}` with `schemaVersion: 1`. Equal inputs give
+equal bytes: the output holds no timestamps or versions.
+
+**What counts as one call.** A file with `log._apicity` is one call, and all its
+exchanges read together; the request is the exchange that matches its endpoint, not
+an upload beside it. In a recording, a poll or result joins its call in the same
+file, because the request is on the submit and the bill is on the last read.
+`@apicity/cost`'s `endpointBilling` says which rows those are. The join follows the
+id the poll names, so interleaved tasks stay apart, and repeated polls of a task
+with no submit are one call. Captures in separate files are not joined, so a poll
+captured on its own is its own call, with its stated charge and no estimate.
+
+**Each group of (provider, endpoint, model) reports:**
+
+- `calls` and `settledCalls`. An unsettled figure can still move, so actual USD and
+  usage totals read settled calls only.
+- `quoted`: the sum of `log._apicity.estimate` where one held. A quote that failed
+  closed adds nothing.
+- `recomputed`: `estimateEndpoint` on today's tables, when the request body exists.
+  A request stored as a placeholder has none, and neither does a figure the
+  estimator warns is partial, such as one with no output cost. A free row needs no
+  body.
+- `actual`: USD paid, the list price where a provider states one apart (`listUsd`),
+  and how many calls rest on each basis (`stated`, `derived`, `usage-only`, `none`).
+- `ratio` (p50 and p95) and `verdicts`, from `compareCost` with `--tolerance`. They
+  compare each call's quote, or the recomputed figure when no quote was stored, with
+  its actual at list price. A ratio above 1 means the estimate ran high. A recomputed
+  token figure counts input at chars/4, so its ratio measures that heuristic, not a
+  rate.
+- `usage`: totals for tokens, characters, seconds, credits and billable units.
+- `capturedBeforeRate`: calls captured before the rate's `asOf`. Their difference
+  is a price change, not an error. A call with no time counts here too. A table row
+  with no `asOf` of its own uses `PRICING_AS_OF`, so this gate is weaker for it.
+
+**Corrections.** A proposal needs a stated charge and exactly one unknown rate, and
+solves `(stated - known parts) / count`, using the list price where there is one.
+A token row's unknown is a `cacheRead` or `cacheWrite` the table lacks, with tokens
+to count. A per-unit row has one rate per variant, so that rate is the unknown; the
+table counts its units and any extra charge, and the proposal shows the rate beside
+the implied value when they differ by over 1%.
+
+It proposes only when every call that solved for that rate agrees within 1%, across
+endpoints, so filters narrow that evidence too. Filling an empty rate can rest on one
+call, but changing a published one needs at least two, since one call can be a
+promotion. It stays quiet when:
+
+- a capture in the group is older than the rate;
+- a token call on that row, on any endpoint, misses its stated charge with every rate
+  known, or solves to a negative rate or one above what input costs, since then a
+  known rate or a fee is off;
+- the charge is zero, which can be a failed task or a promotion;
+- the call reports a fee no rate prices, or a non-standard service tier;
+- the row can bill several rates at once (long-context tiers, audio or image tokens)
+  or warns that its figure is a floor, or it cannot count the request's units, as a
+  reference video with no known length;
+- a KIE token charge is too small for its 0.01 credit rounding to stay under 1%;
+- the model has no table row.
+
+A proposal is a lead to check, not a fact. Before changing a rate, read the files it
+names: `tests/recordings` holds some hand-written cassettes whose stated charges were
+never billed.
+
 ## From capture to test
 
 Promote a captured successful call to an existing endpoint without a provider

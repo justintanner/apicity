@@ -4,7 +4,7 @@ const cell = (v: unknown) =>
   String(v ?? "n/a")
     .replace(/\|/g, "\\|")
     .replace(/\n/g, " ");
-function table(headers: string[], rows: unknown[][]): string {
+export function table(headers: string[], rows: unknown[][]): string {
   return [headers, headers.map(() => "---"), ...rows]
     .map((r) => `| ${r.map(cell).join(" | ")} |`)
     .join("\n");

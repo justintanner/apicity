@@ -329,6 +329,11 @@ export interface CostActual {
   settled: boolean;
   rateAsOf: string | null;
   warnings: string[];
+  // A charge on top of the usage that no bundled rate prices, in words. A rate
+  // solved from such a call would absorb the fee.
+  uncoveredCharge?: string;
+  // The service tier the response names; a non-standard one bills other rates.
+  serviceTier?: string;
   // The per-unit rate this exchange's request selected, kept so mergeActuals
   // can price the units a later poll reports: the request is on the submit and
   // the usage on the poll.

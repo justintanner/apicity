@@ -1,0 +1,542 @@
+{
+  "ok": true,
+  "data": {
+    "schemaVersion": 1,
+    "filters": {
+      "providers": null,
+      "endpoint": null,
+      "model": null,
+      "since": null,
+      "tolerance": 0.02
+    },
+    "inputs": {
+      "paths": [
+        "tests/fixtures/har-cost/corpus"
+      ],
+      "files": 16,
+      "annotatedFiles": 4,
+      "legacyFiles": 12,
+      "duplicateFiles": 0,
+      "unreadable": [],
+      "entries": 24,
+      "skipped": {
+        "malformedEntries": 0,
+        "localEntries": 0,
+        "beforeSince": 0,
+        "noTimestamp": 0
+      }
+    },
+    "summary": {
+      "groups": 10,
+      "calls": 16,
+      "settledCalls": 14,
+      "skippedCalls": 0,
+      "corrections": 4,
+      "unmatchedExchanges": 0,
+      "unresolvedCalls": 0
+    },
+    "groups": [
+      {
+        "provider": "kie",
+        "method": "GET",
+        "endpoint": "api.v1.chat.credit",
+        "model": null,
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 1,
+          "usd": 0
+        },
+        "actual": {
+          "calls": 0,
+          "usd": 0,
+          "listUsd": 0,
+          "basis": {
+            "stated": 0,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 1
+          }
+        },
+        "ratio": {
+          "samples": 0,
+          "p50": null,
+          "p95": null
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 0,
+          "no-actual": 0,
+          "free": 1
+        },
+        "usage": {},
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "kie",
+        "method": "POST",
+        "endpoint": "api.v1.jobs.createTask",
+        "model": "fixture/agrees",
+        "calls": 2,
+        "settledCalls": 2,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 2,
+          "usd": 1.35
+        },
+        "actual": {
+          "calls": 2,
+          "usd": 0.75,
+          "listUsd": 0.75,
+          "basis": {
+            "stated": 2,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 2,
+          "p50": 1.8,
+          "p95": 1.8
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 2,
+          "under": 0,
+          "no-estimate": 0,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "credits": 150
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "kie",
+        "method": "POST",
+        "endpoint": "api.v1.jobs.createTask",
+        "model": "fixture/before-rate",
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 1,
+          "usd": 0.45
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.25,
+          "listUsd": 0.25,
+          "basis": {
+            "stated": 1,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 1,
+          "p50": 1.8,
+          "p95": 1.8
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 1,
+          "under": 0,
+          "no-estimate": 0,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "credits": 50
+        },
+        "capturedBeforeRate": 1
+      },
+      {
+        "provider": "kie",
+        "method": "POST",
+        "endpoint": "api.v1.jobs.createTask",
+        "model": "fixture/disagrees",
+        "calls": 2,
+        "settledCalls": 2,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 2,
+          "usd": 0.9
+        },
+        "actual": {
+          "calls": 2,
+          "usd": 0.6,
+          "listUsd": 0.6,
+          "basis": {
+            "stated": 2,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 2,
+          "p50": 1.28571,
+          "p95": 1.8
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 2,
+          "under": 0,
+          "no-estimate": 0,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "credits": 120
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "kie",
+        "method": "POST",
+        "endpoint": "api.v1.jobs.createTask",
+        "model": "fixture/matches",
+        "calls": 2,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 2,
+          "usd": 0.9
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.45,
+          "listUsd": 0.45,
+          "basis": {
+            "stated": 2,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 1,
+          "p50": 1,
+          "p95": 1
+        },
+        "verdicts": {
+          "match": 1,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 0,
+          "no-actual": 1,
+          "free": 0
+        },
+        "usage": {
+          "credits": 90
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "kie",
+        "method": "GET",
+        "endpoint": "api.v1.jobs.recordInfo",
+        "model": "fixture/matches",
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 0,
+          "usd": 0
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.45,
+          "listUsd": 0.45,
+          "basis": {
+            "stated": 1,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 0,
+          "p50": null,
+          "p95": null
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 1,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "credits": 90
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "openai",
+        "method": "POST",
+        "endpoint": "v1.responses",
+        "model": "fixture-token",
+        "calls": 4,
+        "settledCalls": 3,
+        "quoted": {
+          "calls": 1,
+          "usd": 0.003
+        },
+        "recomputed": {
+          "calls": 3,
+          "usd": 0.012012
+        },
+        "actual": {
+          "calls": 3,
+          "usd": 0.0171,
+          "listUsd": 0.0171,
+          "basis": {
+            "stated": 0,
+            "derived": 3,
+            "usage-only": 0,
+            "none": 1
+          }
+        },
+        "ratio": {
+          "samples": 1,
+          "p50": 0.526316,
+          "p95": 0.526316
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 1,
+          "no-estimate": 2,
+          "no-actual": 1,
+          "free": 0
+        },
+        "usage": {
+          "cacheReadInputTokens": 600,
+          "inputTokens": 3000,
+          "outputTokens": 1500,
+          "reasoningTokens": 300
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "xai",
+        "method": "POST",
+        "endpoint": "v1.responses",
+        "model": "grok-4",
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 0,
+          "usd": 0
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.01744425,
+          "listUsd": 0.01744425,
+          "basis": {
+            "stated": 1,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 0,
+          "p50": null,
+          "p95": null
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 1,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "cacheReadInputTokens": 679,
+          "inputTokens": 2684,
+          "outputTokens": 728,
+          "reasoningTokens": 623
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "xai",
+        "method": "POST",
+        "endpoint": "v1.responses",
+        "model": "grok-4-fast",
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 0,
+          "usd": 0
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.00006005,
+          "listUsd": 0.00006005,
+          "basis": {
+            "stated": 1,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 0,
+          "p50": null,
+          "p95": null
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 1,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "cacheReadInputTokens": 153,
+          "inputTokens": 170,
+          "outputTokens": 98,
+          "reasoningTokens": 97
+        },
+        "capturedBeforeRate": 0
+      },
+      {
+        "provider": "xai",
+        "method": "POST",
+        "endpoint": "v1.responses",
+        "model": "grok-4.6",
+        "calls": 1,
+        "settledCalls": 1,
+        "quoted": {
+          "calls": 0,
+          "usd": 0
+        },
+        "recomputed": {
+          "calls": 0,
+          "usd": 0
+        },
+        "actual": {
+          "calls": 1,
+          "usd": 0.001018,
+          "listUsd": 0.001018,
+          "basis": {
+            "stated": 1,
+            "derived": 0,
+            "usage-only": 0,
+            "none": 0
+          }
+        },
+        "ratio": {
+          "samples": 0,
+          "p50": null,
+          "p95": null
+        },
+        "verdicts": {
+          "match": 0,
+          "over": 0,
+          "under": 0,
+          "no-estimate": 1,
+          "no-actual": 0,
+          "free": 0
+        },
+        "usage": {
+          "cacheReadInputTokens": 128,
+          "inputTokens": 221,
+          "outputTokens": 128,
+          "reasoningTokens": 127
+        },
+        "capturedBeforeRate": 0
+      }
+    ],
+    "corrections": [
+      {
+        "provider": "kie",
+        "pricingKey": "fixture/agrees",
+        "field": "rates[\"720p\"]",
+        "unit": "USD per second",
+        "current": 0.09,
+        "implied": 0.05,
+        "calls": 2,
+        "files": [
+          "tests/fixtures/har-cost/corpus/kie-agrees-a.har",
+          "tests/fixtures/har-cost/corpus/kie-agrees-b.har"
+        ]
+      },
+      {
+        "provider": "xai",
+        "pricingKey": "grok-4",
+        "field": "cacheRead",
+        "unit": "USD per 1M tokens",
+        "current": null,
+        "implied": 0.75,
+        "calls": 1,
+        "files": [
+          "tests/fixtures/har-cost/corpus/xai-grok-4.har"
+        ]
+      },
+      {
+        "provider": "xai",
+        "pricingKey": "grok-4-fast",
+        "field": "cacheRead",
+        "unit": "USD per 1M tokens",
+        "current": null,
+        "implied": 0.05,
+        "calls": 1,
+        "files": [
+          "tests/fixtures/har-cost/corpus/xai-grok-4-fast.har"
+        ]
+      },
+      {
+        "provider": "xai",
+        "pricingKey": "grok-4.6",
+        "field": "cacheRead",
+        "unit": "USD per 1M tokens",
+        "current": null,
+        "implied": 0.5,
+        "calls": 1,
+        "files": [
+          "tests/fixtures/har-cost/corpus/xai-grok-4-6.har"
+        ]
+      }
+    ]
+  }
+}

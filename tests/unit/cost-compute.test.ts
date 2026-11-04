@@ -676,15 +676,15 @@ describe("computeEstimate", () => {
         endpoint: "fal-ai/nano-banana",
         payload: { prompt: "a cat" },
       });
-      expect(result.usd).toBe(0.039);
+      expect(result.usd).toBe(0.0398);
       expect(result.currency).toBe("USD");
       expect(result.source).toBe("per-unit-table");
       expect(result.breakdown).toEqual({
         units: 1,
         unit: "images",
-        perUnitUsd: 0.039,
+        perUnitUsd: 0.0398,
       });
-      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.rateAsOf).toBe("2026-11-04");
       expect(result.warnings).toEqual([]);
     });
 
@@ -694,7 +694,7 @@ describe("computeEstimate", () => {
         endpoint: "fal-ai/nano-banana",
         payload: { prompt: "a cat", num_images: 4 },
       });
-      expect(result.usd).toBeCloseTo(0.156, 10); // 4 * 0.039
+      expect(result.usd).toBeCloseTo(0.1592, 10); // 4 * 0.0398
       expect(result.breakdown.units).toBe(4);
     });
 

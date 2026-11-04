@@ -219,6 +219,8 @@ price through the free quote, 4 ElevenLabs entries, and the KIE entry above. Bef
 call, `gpt-5.6-sol`, `gpt-6-astra`, `gpt-transcribe` and `gpt-4o-mini-transcribe` have
 no figure, and X has no route. The price children fix those.
 
+`docs/cost-learning-pass-1.md` compares these estimates with what calls actually cost.
+
 ## Re-run
 
 All from the rig root. Tools take their inputs as arguments, and anything reading a

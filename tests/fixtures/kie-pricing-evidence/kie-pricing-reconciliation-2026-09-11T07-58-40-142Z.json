@@ -1823,7 +1823,7 @@
       "packages/provider/kie/src/zod.ts": "sha256:111ff369cd5b976e18025bd133b60ad553f870e3b2c3f05a4cdc253c3b235326",
       "packages/provider/kie/src/model-schemas.ts": "sha256:04c34dcb2a8ae3afc7eade88456ccb107df6db8e7aebeeb6c0cc7595b4c9c5b9",
       "packages/provider/kie/src/kie.ts": "sha256:6f38173005b380518864c6add45a0c06279378a4e02fb4aaef673ef5cd5c217f",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:019f4684e036c4c83bc8e9da6de73cf9e8d616e9d4ed3d094f2f721917011895",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:ea45bf597b6eca9bf4f94753fcfa04dd00482b0066a18f7995b23df4613d0c22",
       "packages/provider/cost/src/slugs.ts": "sha256:0c8f0ec09b7d6911e09a9693d332bb7beab2fef4326bbc439b0883f4357c1a35",
       "scripts/endpoint-docs.tsv": "sha256:2c614f60010b1474c67ffe899e7833f140e21ead8d62e7b7e0f3dc2e7cb85dea"
     }
@@ -4253,47 +4253,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "20.7",
-        "creditUnit": "per second",
-        "usdPrice": "0.1035",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "1080p",
-        "generate_audio_switch": true
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "1080p",
-          "generate_audio_switch": true,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:0484959ea6b888a0f4454edf3c1b09781778745312029289009623d742ca3dc2#1",
@@ -4311,47 +4278,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "16.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.081",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "1080p",
-        "generate_audio_switch": false
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "1080p",
-          "generate_audio_switch": false,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:3cd8d00d7ec18116bba8a56f636e7b778030a8dd66d8543da4f98029d5e0c675#1",
@@ -4369,47 +4303,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "10.8",
-        "creditUnit": "per second",
-        "usdPrice": "0.054",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "720p",
-        "generate_audio_switch": true
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "720p",
-          "generate_audio_switch": true,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:ed80f5b06fa0d6ccb8dc0fc101e130f1b3709245ac259043727a182f765a439f#1",
@@ -4427,47 +4328,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "8.1",
-        "creditUnit": "per second",
-        "usdPrice": "0.0405",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "720p",
-        "generate_audio_switch": false
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "720p",
-          "generate_audio_switch": false,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:0ca718474e46bc4871f40384b82293f577c373318edfae26c14a075ff90d7430#1",
@@ -4485,47 +4353,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "8.1",
-        "creditUnit": "per second",
-        "usdPrice": "0.0405",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "540p",
-        "generate_audio_switch": true
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "540p",
-          "generate_audio_switch": true,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:59446771f9d37e511516c5dc94d26eed2afc1784e6264b207170c84442f4052e#1",
@@ -4543,47 +4378,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "6.3",
-        "creditUnit": "per second",
-        "usdPrice": "0.0315",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "540p",
-        "generate_audio_switch": false
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "540p",
-          "generate_audio_switch": false,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:af6fa2a0dd296eb57f314d55ee73f29e54e5cb0b6e7e1d8eefdcce96bd348054#1",
@@ -4601,47 +4403,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "6.3",
-        "creditUnit": "per second",
-        "usdPrice": "0.0315",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "360p",
-        "generate_audio_switch": true
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "360p",
-          "generate_audio_switch": true,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:98ac465d0b327780e7c67b60aaa837d1b55a7d45548762a0ec6ab6d46f8a038d#1",
@@ -4659,47 +4428,14 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "4.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.0225",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "quality": "360p",
-        "generate_audio_switch": false
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/reference-to-video",
-        "input": {
-          "quality": "360p",
-          "generate_audio_switch": false,
-          "duration": 5,
-          "image_references": [
-            {
-              "image_url": "https://example.com/a.png",
-              "ref_name": "subject"
-            }
-          ],
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:9366cb2ceaffeb18b8b91841df4a252904e406c0c540238caa001f08ac75c81a#1",
@@ -24266,18 +24002,9 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "pixverse-v6/reference-to-video",
-        "linkedRows": [
-          "sha256:27cafee4dce388bf1ce4ce8767709d71034f60d1796ec0b855935cba69500f59#1",
-          "sha256:0484959ea6b888a0f4454edf3c1b09781778745312029289009623d742ca3dc2#1",
-          "sha256:3cd8d00d7ec18116bba8a56f636e7b778030a8dd66d8543da4f98029d5e0c675#1",
-          "sha256:ed80f5b06fa0d6ccb8dc0fc101e130f1b3709245ac259043727a182f765a439f#1",
-          "sha256:0ca718474e46bc4871f40384b82293f577c373318edfae26c14a075ff90d7430#1",
-          "sha256:59446771f9d37e511516c5dc94d26eed2afc1784e6264b207170c84442f4052e#1",
-          "sha256:af6fa2a0dd296eb57f314d55ee73f29e54e5cb0b6e7e1d8eefdcce96bd348054#1",
-          "sha256:98ac465d0b327780e7c67b60aaa837d1b55a7d45548762a0ec6ab6d46f8a038d#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "pixverse-v6-max/text-to-video",
@@ -25947,18 +25674,9 @@
       },
       {
         "key": "pixverse-v6/reference-to-video",
-        "linkedRows": [
-          "sha256:27cafee4dce388bf1ce4ce8767709d71034f60d1796ec0b855935cba69500f59#1",
-          "sha256:0484959ea6b888a0f4454edf3c1b09781778745312029289009623d742ca3dc2#1",
-          "sha256:3cd8d00d7ec18116bba8a56f636e7b778030a8dd66d8543da4f98029d5e0c675#1",
-          "sha256:ed80f5b06fa0d6ccb8dc0fc101e130f1b3709245ac259043727a182f765a439f#1",
-          "sha256:0ca718474e46bc4871f40384b82293f577c373318edfae26c14a075ff90d7430#1",
-          "sha256:59446771f9d37e511516c5dc94d26eed2afc1784e6264b207170c84442f4052e#1",
-          "sha256:af6fa2a0dd296eb57f314d55ee73f29e54e5cb0b6e7e1d8eefdcce96bd348054#1",
-          "sha256:98ac465d0b327780e7c67b60aaa837d1b55a7d45548762a0ec6ab6d46f8a038d#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "pixverse-v6/transition",
@@ -30006,13 +29724,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 247,
+        "implemented": 239,
         "canonical-alias": 122,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 28
+        "upstream-unmappable": 36
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -30037,11 +29755,11 @@
         "guards": 163,
         "withoutPricing": 4,
         "dispositionCounts": {
-          "supported": 116,
+          "supported": 115,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 47
+          "upstream-unmappable": 48
         },
         "unclassified": 0
       },
@@ -30061,11 +29779,11 @@
       "pricingKeys": {
         "count": 228,
         "dispositionCounts": {
-          "supported": 167,
+          "supported": 166,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 61
+          "upstream-unmappable": 62
         },
         "unclassified": 0
       },
@@ -30122,6 +29840,62 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "360p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "360p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "540p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "540p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+        "rationale": "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1)."
+      },
       {
         "key": "wan/2-6-flash-image-to-video",
         "variant": "5|720p|no-audio",

@@ -48,6 +48,8 @@ const audioAsOf = "2026-08-22";
 // Frontier video cards re-read on this date (fal.ai pricingInfoOverride,
 // corroborated by GET /v1/models/pricing). Promos below name their end date.
 const videoCardAsOf = "2026-10-29";
+// Cost learning pass 1 re-read these cards and the pricing API on this date.
+const learningPass1AsOf = "2026-11-04";
 
 // The five per-megapixel entries were re-read on this date: each model's
 // fal.ai page and GET /v1/models/pricing, with the megapixel definition and
@@ -1775,30 +1777,30 @@ export const fal: Record<string, ModelPricing> = {
     klingV4Seconds,
     "2026-10-23"
   ),
-  // HeyGen Video, all three operations, one card (read 2026-10-29): a 50%
-  // promo through 2026-10-31 bills $0.01/s at 480p and 768p and $0.03/s at
-  // 1080p and 2K. List rates after that date are $0.02 and $0.06. The 5 s
-  // 480p recording billed exactly 5 units. No reference surcharge.
+  // HeyGen Video, all three operations, one card (read 2026-11-04): the 50% promo
+  // ended 2026-10-31, and list is $0.02/s at 480p and 768p and $0.06/s at 1080p and
+  // 2K, which the pricing API confirms. The 5 s 480p recording billed exactly 5
+  // units, then at the promo's $0.01. No reference surcharge.
   "heygen/heygen-video/reference-to-video": perSecondTiered(
     "heygen/heygen-video/reference-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
+    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
   "heygen/heygen-video/image-to-video": perSecondTiered(
     "heygen/heygen-video/image-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
+    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
   "heygen/heygen-video/text-to-video": perSecondTiered(
     "heygen/heygen-video/text-to-video",
     [resolutionTier("768p")],
-    { "480p": 0.01, "768p": 0.01, "1080p": 0.03, "2k": 0.03 },
+    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
   // Ideogram Vector text-to-vector bills each generated SVG by quality: low
   // $0.13, medium $0.16, high $0.20, and high with reference images $0.32
@@ -2113,10 +2115,9 @@ export const fal: Record<string, ModelPricing> = {
     numericSeconds(5),
     "2026-10-15"
   ),
-  // No card: publicEndpointBilling, pricing API and usage agree on
-  // $0.0135 per request; the recorded call billed one unit.
-  // Lyrics-mode mureka-7.6 recorded 6 units at $0.0075 ($0.045),
-  // confirmed by the usage API; rates follow the model page's card.
+  // Lyrics-mode mureka-7.6 recorded 6 units; rates follow the model page's card,
+  // read 2026-11-04 with the pricing API at $0.005 a unit ($0.03). They were $0.0075
+  // a unit ($0.045) on 2026-10-15, confirmed then by the usage API.
   "mureka/api/generate/song": {
     kind: "perUnit",
     unit: "generations",
@@ -2126,26 +2127,28 @@ export const fal: Record<string, ModelPricing> = {
       { name: "mode", pick: (p) => (p.lyrics != null ? "lyrics" : "prompt") },
     ],
     rates: {
-      "mureka-7.6|lyrics": 0.045,
-      "mureka-o2|lyrics": 0.0675,
-      "mureka-8|lyrics": 0.0675,
-      "mureka-9|lyrics": 0.0675,
-      "mureka-9.5|lyrics": 0.225,
-      "mureka-7.6|prompt": 0.45,
-      "mureka-o2|prompt": 0.45,
-      "mureka-8|prompt": 0.45,
-      "mureka-9|prompt": 0.45,
-      "mureka-9.5|prompt": 0.75,
+      "mureka-7.6|lyrics": 0.03,
+      "mureka-o2|lyrics": 0.045,
+      "mureka-8|lyrics": 0.045,
+      "mureka-9|lyrics": 0.045,
+      "mureka-9.5|lyrics": 0.15,
+      "mureka-7.6|prompt": 0.3,
+      "mureka-o2|prompt": 0.3,
+      "mureka-8|prompt": 0.3,
+      "mureka-9|prompt": 0.3,
+      "mureka-9.5|prompt": 0.5,
     },
-    source: source("mureka/api/generate/song", "2026-10-15"),
+    source: source("mureka/api/generate/song", learningPass1AsOf),
   },
+  // Card and pricing API, 2026-11-04: $0.009 per request ($0.0135 on 2026-10-15).
+  // The recorded call billed one unit.
   "mureka/api/generate/lyrics": {
     kind: "perUnit",
     unit: "generations",
     units: () => 1,
     select: [],
-    rates: { "": 0.0135 },
-    source: source("mureka/api/generate/lyrics", "2026-10-15"),
+    rates: { "": 0.009 },
+    source: source("mureka/api/generate/lyrics", learningPass1AsOf),
   },
   // Card, pricing API and usage read: $0.03 per image, whatever the output
   // size; recorded billable units: 1.
@@ -2594,54 +2597,56 @@ export const fal: Record<string, ModelPricing> = {
     ),
   },
 
-  // Promo through 2026-10-31 (card read 2026-10-29): $0.01625/$0.026/$0.052
-  // at 480P/768P/1080P. List after that date is $0.025/$0.04/$0.08. The
-  // recorded 0.92 s 480P call billed 0.92 units. Default resolution is 768P
-  // and default duration is 5. Turbo siblings whose cards were not this
-  // promo (extend-video's 2K tier) stay on their own rates.
+  // Promo through 2026-11-15 (card and pricing API read 2026-11-04, the October
+  // one has ended): $0.0175/$0.028/$0.056 at 480P/768P/1080P. List from
+  // 2026-11-16 is $0.025/$0.04/$0.08. The recorded 0.92 s 480P call billed 0.92
+  // units. Default resolution is 768P and default duration is 5. Turbo siblings
+  // whose cards were not this promo (extend-video's 2K tier) stay on their own
+  // rates.
   "minimax/h3-max-turbo/text-to-video": perSecondTiered(
     "minimax/h3-max-turbo/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.01625, "768P": 0.026, "1080P": 0.052 },
+    { "480P": 0.0175, "768P": 0.028, "1080P": 0.056 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
   "minimax/h3-max-turbo/image-to-video": perSecondTiered(
     "minimax/h3-max-turbo/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.01625, "768P": 0.026, "1080P": 0.052 },
+    { "480P": 0.0175, "768P": 0.028, "1080P": 0.056 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
 
   // Bills the requested seconds (default 5) at the resolution tier (default
-  // 480P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
-  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  // 480P): the recorded 0.92 s 480P call billed 0.92 units. Promo through
+  // 2026-11-15, as text-to-video below; list from 2026-11-16 is $0.05/$0.08/$0.16.
   "minimax/h3-max/camera-controls": perSecondTiered(
     "minimax/h3-max/camera-controls",
     [resolutionTier("480P")],
-    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
     numericSeconds(5),
-    "2026-10-07"
+    learningPass1AsOf
   ),
 
-  // Promo through 2026-10-31 (card read 2026-10-29): $0.0325/$0.052/$0.104
-  // at 480P/768P/1080P. List after that date is $0.05/$0.08/$0.16. The
-  // recorded 0.92 s 480P call billed 0.92 units. Default resolution is 768P
-  // and default duration is 5. Other H3 Max leaves are outside this sweep.
+  // Promo through 2026-11-15 (card and pricing API read 2026-11-04, the October
+  // one has ended): $0.035/$0.056/$0.112 at 480P/768P/1080P. List from 2026-11-16
+  // is $0.05/$0.08/$0.16. The recorded 0.92 s 480P call billed 0.92 units. Default
+  // resolution is 768P and default duration is 5. Other H3 Max leaves are outside
+  // this sweep.
   "minimax/h3-max/text-to-video": perSecondTiered(
     "minimax/h3-max/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.0325, "768P": 0.052, "1080P": 0.104 },
+    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
   "minimax/h3-max/image-to-video": perSecondTiered(
     "minimax/h3-max/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.0325, "768P": 0.052, "1080P": 0.104 },
+    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
     numericSeconds(5),
-    videoCardAsOf
+    learningPass1AsOf
   ),
 
   // Card read 2026-10-29: $0.05/$0.06/$0.13/$0.16 per second at
@@ -2702,18 +2707,17 @@ export const fal: Record<string, ModelPricing> = {
     },
     source: source("minimax/h3/reference-to-video", videoCardAsOf),
   },
-  // Card and pricing API, 2026-10-29: $0.005 per step. number_of_steps
-  // is 1–15000 and defaults to 2000 ($10). CostUnit has no steps member,
-  // so each requested step counts as one generation. The steps=1
-  // recording billed 100 steps ($0.50 on the usage API). The pricing API
-  // still prices one unit at $0.005, so the estimate follows the request.
+  // Card, 2026-11-04: max(100, number_of_steps) step units at $0.005 per step,
+  // and requests under 100 steps are floored to $0.50. number_of_steps defaults
+  // to 2000 ($10). The steps=1 recording billed 100 steps ($0.50 on the usage
+  // API). CostUnit has no steps member; each billed step is a generation.
   "minimax/h3/t2v/trainer": {
     kind: "perUnit",
     unit: "generations",
-    units: (p) => Math.max(1, asNumber(p.number_of_steps) ?? 2000),
+    units: (p) => Math.max(100, asNumber(p.number_of_steps) ?? 2000),
     select: [],
     rates: { "": 0.005 },
-    source: source("minimax/h3/t2v/trainer", videoCardAsOf),
+    source: source("minimax/h3/t2v/trainer", learningPass1AsOf),
   },
   // Card and pricing API, 2026-10-29: $0.01 per step. number_of_steps
   // is 1–15000 and defaults to 2000 ($20). The steps=1 recording billed
@@ -2918,8 +2922,17 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Image — Nano Banana (flat per image; edit is priced as generation)
-  "fal-ai/nano-banana": perImage("fal-ai/nano-banana", 0.039),
-  "fal-ai/nano-banana/edit": perImage("fal-ai/nano-banana/edit", 0.039),
+  // Card and pricing API, 2026-11-04: $0.0398 per image, 1 unit on the recordings.
+  "fal-ai/nano-banana": perImage(
+    "fal-ai/nano-banana",
+    0.0398,
+    learningPass1AsOf
+  ),
+  "fal-ai/nano-banana/edit": perImage(
+    "fal-ai/nano-banana/edit",
+    0.0398,
+    learningPass1AsOf
+  ),
 
   // Image — Nano Banana 2: 1K base, 0.5K ×0.75, 2K ×1.5, 4K ×2
   "fal-ai/nano-banana-2": perImageByResolution(
@@ -3265,7 +3278,10 @@ export const fal: Record<string, ModelPricing> = {
     taskField: true,
   }),
   // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p, the card's
-  // figure. No US 1080p call is recorded; if it carries the same 1.094 factor
+  // figure on 2026-10-31, and the recorded call billed $0.02568. The card and the
+  // pricing API read $0.0214 on 2026-11-04, but the pricing API already prices 2.0
+  // US below its card and its bill, so this waits for a bill (cost learning pass 1).
+  // No US 1080p call is recorded; if it carries the same 1.094 factor
   // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
   // draft flag also renders a 480p preview (queue OpenAPI read 2026-10-31).
   "bytedance/seedance-2.5/us/text-to-video": seedance({

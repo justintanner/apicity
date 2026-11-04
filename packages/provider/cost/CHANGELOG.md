@@ -537,6 +537,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   you relied on paid endpoints failing closed when no config was passed, pass
   `{ secret }`.
 
+### Removed
+
+- **Breaking:** the `fal-ai/sora-2/text-to-video` and
+  `fal-ai/sora-2/image-to-video` rows, with their `MODEL_SLUGS.fal` and
+  `MODEL_DISPLAY.fal` keys, because fal has retired them (see `@apicity/fal`).
+  `modelSlug("fal", id)` and `modelDisplay("fal", id)` are now type errors for
+  these ids and throw on an untyped one, and an estimate fails closed as a model
+  not found. It used to quote 0.10 USD/s (ac-jgqanj).
+
 ### Fixed
 
 - The xAI video entries price every resolution and the input images from recorded 1 s bills (`tests/integration/xai-imagine-billing.test.ts`, V2 to V9, 0.762 USD):

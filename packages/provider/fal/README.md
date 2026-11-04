@@ -26,7 +26,7 @@ import { createFal } from "@apicity/fal";
 const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 ```
 
-## Real-world example: upload a portrait, render a Sora 2 video
+## Real-world example: upload a portrait, render a Grok Imagine video
 
 fal's signature flow is upload-once, reuse-everywhere — drop bytes onto
 fal's CDN via a presigned PUT, then thread the resulting
@@ -34,7 +34,7 @@ fal's CDN via a presigned PUT, then thread the resulting
 snippet below combines
 [`tests/integration/fal-storage-upload-initiate.test.ts`](../../../tests/integration/fal-storage-upload-initiate.test.ts)
 (POST initiate → PUT bytes) with
-[`tests/integration/fal-sora-2-image-to-video.test.ts`](../../../tests/integration/fal-sora-2-image-to-video.test.ts)
+[`tests/integration/fal-xai-grok-imagine-video.test.ts`](../../../tests/integration/fal-xai-grok-imagine-video.test.ts)
 (image-to-video generation), so every URL, byte count, and asset id
 below comes from real recorded HARs.
 
@@ -70,33 +70,26 @@ const put = await fetch(slot.upload_url, {
 });
 if (!put.ok) throw new Error(`upload failed: ${put.status}`);
 
-// 3. Hand the now-permanent `file_url` to OpenAI's Sora 2 image-to-
-//    video model. fal returns a typed bundle: the MP4, a webp
-//    thumbnail, and a horizontal spritesheet — all hosted on the
-//    same fal CDN. `duration` accepts 4 | 8 | 12 | 16 | 20 (seconds);
-//    `aspect_ratio` is "auto" | "9:16" | "16:9".
-const result = await fal.run.sora2.imageToVideo({
+// 3. Hand the now-permanent `file_url` to xAI's Grok Imagine image-to-
+//    video model. fal returns the MP4 on the same fal CDN. `duration`
+//    runs from 1 to 15 seconds, and `resolution` is "480p" or "720p".
+const result = await fal.run.xai.grokImagineVideo.imageToVideo({
   prompt: "the man waves at the camera as the wind blows his hair",
   image_url: slot.file_url,
   aspect_ratio: "16:9",
-  duration: 4,
+  resolution: "720p",
+  duration: 6,
 });
 
 console.log(result.video.url);
-// → "https://v3b.fal.media/files/b/0a96bf3c/8U5wwkg9EC_eK0Jr3XyiR_Vgq1ZZPm.mp4"
+// → "https://v3b.fal.media/files/b/0a96be18/bMSvmG4X4YNIsdUfc_MgD_6Ypo1qmx.mp4"
 console.log(result.video.file_size);
-// → 2009236   // ~2 MB MP4 for a 4-second 720p clip
-console.log(result.video_id);
-// → "video_69e37804033c8191959194ea8aa8fc6e08bf9f3eb453b1b1"
-console.log(result.thumbnail?.url);
-// → "https://v3b.fal.media/files/b/0a96bf3c/bsgsaBd5IqdwOuufu_qSx_2yOP4u34.webp"
-console.log(result.spritesheet?.url);
-// → "https://v3b.fal.media/files/b/0a96bf3c/_9tqG1dEuRCEeegOulGrk_pWsHbiNB.bin"
+// → 3110943   // ~3 MB MP4 for a 6-second 720p clip
 ```
 
 **Notes**
 
-- The recorded sora-2 HAR inlines the image as a
+- The recorded Grok Imagine HAR inlines the image as a
   `data:image/jpeg;base64,…` URL — fal accepts both inline data URLs
   and any `https://` URL it can reach. Uploading via fal storage
   first keeps request bodies tiny (350 KB → <1 KB) and lets you reuse
@@ -106,22 +99,22 @@ console.log(result.spritesheet?.url);
   dance and returns the `file_url` directly — use it when you don't
   need granular control over the lifecycle or signed URL.
 - Every POST endpoint exposes a Zod schema: call
-  `fal.run.sora2.imageToVideo.schema.safeParse(input)` to validate a
-  payload before paying for inference.
+  `fal.run.xai.grokImagineVideo.imageToVideo.schema.safeParse(input)` to
+  validate a payload before paying for inference.
 - WAN 2.7 reference-to-video validates generated duration as 2–10
   seconds. `duration: 0` remains limited to source-clip edit-video
   flows where it means keeping the original clip length.
 - Long-running calls accept an `AbortSignal` second argument and
   compose with the package's middleware, e.g.
-  `withRetry(fal.run.sora2.imageToVideo, { retries: 3 })` from
-  `@apicity/fal` to ride out transient queue / 429s.
+  `withRetry(fal.run.xai.grokImagineVideo.imageToVideo, { retries: 3 })`
+  from `@apicity/fal` to ride out transient queue / 429s.
 - Errors throw `FalError` with `status`, `type`, `request_id`, and the
   parsed `body` attached:
   `try { ... } catch (e) { if (e instanceof FalError) console.error(e.status, e.body); }`.
 
 ## API Reference
 
-285 endpoints across 56 groups. Each method mirrors an upstream URL path.
+283 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -4385,42 +4378,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.serverless.metrics();
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-### sora2
-
-<details>
-<summary><code>POST</code> <b><code>fal.sora2.imageToVideo</code></b></summary>
-
-<code>POST https://fal.run/fal-ai/sora-2/image-to-video</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.run.sora2.imageToVideo({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.sora2.textToVideo</code></b></summary>
-
-<code>POST https://fal.run/fal-ai/sora-2/text-to-video</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.run.sora2.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

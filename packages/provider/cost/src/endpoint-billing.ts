@@ -2338,20 +2338,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "fal",
     {
-      kind: "metered",
-      unit: "seconds",
-      reason:
-        "fal's price list answers 404 for this id today; bundled row kept until a child retires it",
-      source: {
-        url: "https://api.fal.ai/v1/models/pricing",
-        asOf: "2026-11-04",
-      },
-    },
-    ["POST sora2.imageToVideo", "POST sora2.textToVideo"]
-  ),
-  ...rows(
-    "fal",
-    {
       kind: "free",
       reason:
         "Storage upload slot; fal's price list has no storage row, and the docs name no per-call charge",

@@ -910,8 +910,6 @@ fal	nanoBananaPro.edit	POST	https://fal.run/fal-ai/nano-banana-pro/edit	https://
 fal	nanoBananaPro.textToImage	POST	https://fal.run/fal-ai/nano-banana-pro	https://docs.fal.ai
 fal	qwenImage	POST	https://fal.run/fal-ai/qwen-image	https://fal.ai/models/fal-ai/qwen-image/api
 fal	qwenImage.edit	POST	https://fal.run/fal-ai/qwen-image-edit	https://docs.fal.ai
-fal	sora2.imageToVideo	POST	https://fal.run/fal-ai/sora-2/image-to-video	https://docs.fal.ai
-fal	sora2.textToVideo	POST	https://fal.run/fal-ai/sora-2/text-to-video	https://docs.fal.ai
 fal	storage.upload.completeMultipart	POST	https://rest.fal.ai/storage/upload/complete-multipart	https://docs.fal.ai
 fal	storage.upload.initiate	POST	https://rest.fal.ai/storage/upload/initiate	https://docs.fal.ai
 fal	storage.upload.initiateMultipart	POST	https://rest.fal.ai/storage/upload/initiate-multipart	https://docs.fal.ai

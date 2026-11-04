@@ -439,7 +439,7 @@ const VEO_SECONDS: Record<string, number> = { "4s": 4, "6s": 6, "8s": 8 };
 const veoSeconds = (p: Record<string, unknown>): number | undefined =>
   p.duration === undefined ? 8 : VEO_SECONDS[asString(p.duration) ?? ""];
 
-// Numeric duration (wan, sora 2, grok imagine) with the endpoint's
+// Numeric duration (wan, grok imagine) with the endpoint's
 // documented schema default when omitted.
 const numericSeconds =
   (defaultSeconds: number) =>
@@ -3501,18 +3501,6 @@ export const fal: Record<string, ModelPricing> = {
     [resolutionTier("720p"), generateAudio],
     VEO_3P1_RATES,
     veoSeconds
-  ),
-
-  // Video — Sora 2 (flat per second; duration enum 4|8|12|16|20, default 4)
-  "fal-ai/sora-2/text-to-video": perSecond(
-    "fal-ai/sora-2/text-to-video",
-    0.1,
-    numericSeconds(4)
-  ),
-  "fal-ai/sora-2/image-to-video": perSecond(
-    "fal-ai/sora-2/image-to-video",
-    0.1,
-    numericSeconds(4)
   ),
 
   // Video — Grok Imagine, resolution-tiered on output seconds. The flat

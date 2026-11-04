@@ -365,8 +365,6 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST qwenImage": "fal-ai/qwen-image",
   "fal POST qwenImage.edit": "fal-ai/qwen-image-edit",
   "fal POST recraft.v4p1.flash.textToImage": "recraft/v4.1/flash/text-to-image",
-  "fal POST sora2.imageToVideo": "fal-ai/sora-2/image-to-video",
-  "fal POST sora2.textToVideo": "fal-ai/sora-2/text-to-video",
   "fal POST topaz.upscale.image.precision": "topaz/upscale/image/precision",
   "fal POST topaz.upscale.video.precision": "topaz/upscale/video/precision",
   "fal POST tripo3d.p2.imageTo3d": "tripo3d/p2/image-to-3d",

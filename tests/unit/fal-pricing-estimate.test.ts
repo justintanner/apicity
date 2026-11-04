@@ -133,8 +133,6 @@ describe("fal video pricing estimates", () => {
     "fal-ai/kling-video/o3/4k/reference-to-video",
     "fal-ai/veo3.1",
     "fal-ai/veo3.1/image-to-video",
-    "fal-ai/sora-2/text-to-video",
-    "fal-ai/sora-2/image-to-video",
     "lightricks/ltx-2.5/image-to-video/pro",
     "lightricks/ltx-2.5/image-to-video/fast",
     "xai/grok-imagine-video/image-to-video",
@@ -160,7 +158,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(51);
+    expect(REQ_001_ENDPOINTS).toHaveLength(49);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -228,24 +226,7 @@ describe("fal video pricing estimates", () => {
     expect(result.warnings[0]).toContain("costHints.durationSeconds");
   });
 
-  it("prices flat per-second families (sora 2, kling o3 4k, wan r2v)", () => {
-    const sora = est("fal-ai/sora-2/text-to-video", {
-      prompt: "p",
-      duration: 8,
-    });
-    expect(sora.usd).toBeCloseTo(0.8, 10);
-    expect(sora.warnings).toEqual([]);
-    expect(sora.breakdown).toMatchObject({
-      units: 8,
-      unit: "seconds",
-      perUnitUsd: 0.1,
-    });
-
-    // Omitted duration falls back to the schema default (4).
-    expect(
-      est("fal-ai/sora-2/image-to-video", { prompt: "p", image_url: "u" }).usd
-    ).toBeCloseTo(0.4, 10);
-
+  it("prices flat per-second families (kling o3 4k, wan r2v)", () => {
     const kling = est("fal-ai/kling-video/o3/4k/text-to-video", {
       prompt: "p",
       duration: "10",

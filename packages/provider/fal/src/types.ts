@@ -590,8 +590,6 @@ export type {
   FalKlingVideoO3p4kImageToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoParams,
   FalKlingVideoO3p4kTextToVideoParams,
-  FalSora2TextToVideoParams,
-  FalSora2ImageToVideoParams,
   FalHunyuanImageV3InstructEditParams,
   FalSeedance2p0ImageToVideoRequest,
   FalSeedance2p0ImageToVideoRequestInput,
@@ -814,12 +812,6 @@ export type {
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditRequestInput,
   FalXaiGrokImagineImageEditParsedRequest,
-  FalSora2TextToVideoRequest,
-  FalSora2TextToVideoRequestInput,
-  FalSora2TextToVideoParsedRequest,
-  FalSora2ImageToVideoRequest,
-  FalSora2ImageToVideoRequestInput,
-  FalSora2ImageToVideoParsedRequest,
   FalHunyuanImageV3InstructEditRequest,
   FalHunyuanImageV3InstructEditRequestInput,
   FalHunyuanImageV3InstructEditParsedRequest,
@@ -1134,8 +1126,6 @@ import type {
   FalFlux3MaxKeyframesToVideoRequest,
   FalFluxVideoUpscaleRequest,
   FalXaiGrokImagineImageEditRequest,
-  FalSora2TextToVideoRequest,
-  FalSora2ImageToVideoRequest,
   FalHunyuanImageV3InstructEditRequest,
   FalKlingVideoV3ProImageToVideoRequest,
   FalKlingVideoV3ProTextToVideoRequest,
@@ -2372,36 +2362,6 @@ export interface FalKlingVideoO3p4kTextToVideoResponse {
   video: FalFile;
 }
 
-// OpenAI Sora 2 (text-to-video and image-to-video)
-export type FalSora2Model =
-  | "sora-2"
-  | "sora-2-2025-12-08"
-  | "sora-2-2025-10-06";
-
-export type FalSora2AspectRatio = "9:16" | "16:9";
-
-export type FalSora2ImageToVideoAspectRatio = "auto" | FalSora2AspectRatio;
-
-export type FalSora2Resolution = "720p";
-
-export type FalSora2ImageToVideoResolution = "auto" | "720p";
-
-export type FalSora2Duration = 4 | 8 | 12 | 16 | 20;
-
-export interface FalSora2TextToVideoResponse {
-  video: FalFile;
-  video_id: string;
-  thumbnail: FalFile | null;
-  spritesheet: FalFile | null;
-}
-
-export interface FalSora2ImageToVideoResponse {
-  video: FalFile;
-  video_id: string;
-  thumbnail: FalFile | null;
-  spritesheet: FalFile | null;
-}
-
 // ==================== Serverless Logs ====================
 
 // Label filter for log queries
@@ -3550,25 +3510,6 @@ export interface FalRunMinimaxNamespace {
   h3: FalRunMinimaxH3Namespace;
 }
 
-type FalSora2TextToVideoFn = ((
-  params: FalSora2TextToVideoRequest,
-  signal?: AbortSignal
-) => Promise<FalSora2TextToVideoResponse>) & {
-  schema: ApicitySchema<FalSora2TextToVideoRequest>;
-};
-
-type FalSora2ImageToVideoFn = ((
-  params: FalSora2ImageToVideoRequest,
-  signal?: AbortSignal
-) => Promise<FalSora2ImageToVideoResponse>) & {
-  schema: ApicitySchema<FalSora2ImageToVideoRequest>;
-};
-
-export interface FalRunSora2Namespace {
-  textToVideo: FalSora2TextToVideoFn;
-  imageToVideo: FalSora2ImageToVideoFn;
-}
-
 type FalHunyuanImageV3InstructEditFn = ((
   params: FalHunyuanImageV3InstructEditRequest,
   signal?: AbortSignal
@@ -3832,7 +3773,6 @@ export interface FalRunNamespace {
   geminiOmniFlash: FalGeminiOmniFlashFn;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
-  sora2: FalRunSora2Namespace;
   veo3p1: FalRunVeo3p1Namespace;
   falAi: FalRunFalAiNamespace;
   wan: FalRunWanNamespace;

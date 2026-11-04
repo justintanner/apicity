@@ -737,8 +737,6 @@ fal	pixverse.musicVideo.vibemv	POST	metered	seconds		https://api.fal.ai/v1/model
 fal	qwenImage	POST	metered	megapixels		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	qwenImage.edit	POST	metered	megapixels		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	recraft.v4p1.flash.textToImage	POST	metered	images		https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	sora2.imageToVideo	POST	metered	seconds	fal's price list answers 404 for this id today; bundled row kept until a child retires it	https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	sora2.textToVideo	POST	metered	seconds	fal's price list answers 404 for this id today; bundled row kept until a child retires it	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	storage.upload.completeMultipart	POST	free		Storage upload slot; fal's price list has no storage row, and the docs name no per-call charge	https://fal.ai/docs/api-reference/client-libraries/javascript/storage.md	2026-11-04
 fal	storage.upload.initiate	POST	free		Storage upload slot; fal's price list has no storage row, and the docs name no per-call charge	https://fal.ai/docs/api-reference/client-libraries/javascript/storage.md	2026-11-04
 fal	storage.upload.initiateMultipart	POST	free		Storage upload slot; fal's price list has no storage row, and the docs name no per-call charge	https://fal.ai/docs/api-reference/client-libraries/javascript/storage.md	2026-11-04

@@ -136,8 +136,9 @@ price is the witness, and the survey found it sound on 133 of 155 rows.
 
 The usage API would settle the Seedance rows, but the configured key answers 403 on it.
 
-`fal-ai/sora-2/text-to-video` and `image-to-video` answer 404 on the price list while
-videobook's catalog still names them: `ac-jgqanj`.
+`fal-ai/sora-2/text-to-video` and `image-to-video` answered 404 on the price list. OpenAI
+removed Sora 2 from its API on 2026-09-24, and fal's gateway now says the application is
+not found, so `ac-jgqanj` removed both here. `vb-olmxr` takes them out of videobook's catalog.
 
 ## MachGen models outside the table
 
@@ -187,7 +188,7 @@ hosts.
 | `ac-cgqsxq` | fal     | Read the usage API once its scope returns. Settles Seedance US       |
 | `ac-cukhhs` | fal     | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
 | `ac-eue5ej` | fal     | Timed: FLUX 3 Max's promotion ends 11-07                             |
-| `ac-jgqanj` | fal     | `sora-2` answers 404 while videobook names it                        |
+| `vb-olmxr`  | fal     | `sora-2` is retired, and videobook's catalog still names it          |
 | `ac-p3e0c6` | kie     | Rows that moved since the frozen pull, and a check for live drift    |
 | `ac-nr7mpd` | alibaba | `wan2.7-videoedit` assumes 5 s                                       |
 | `ac-xk7p41` | cost    | 46 rows have no `source.asOf`, which weakens the capture-date gate   |

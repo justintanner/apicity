@@ -533,10 +533,6 @@ import {
   FalKlingVideoO3p4kReferenceToVideoResponse,
   FalKlingVideoO3p4kTextToVideoRequest,
   FalKlingVideoO3p4kTextToVideoResponse,
-  FalSora2TextToVideoRequest,
-  FalSora2TextToVideoResponse,
-  FalSora2ImageToVideoRequest,
-  FalSora2ImageToVideoResponse,
   FalHunyuanImageV3InstructEditRequest,
   FalHunyuanImageV3InstructEditResponse,
   FalRunNamespace,
@@ -802,8 +798,6 @@ import {
   FalKlingVideoO3p4kImageToVideoRequestSchema,
   FalKlingVideoO3p4kReferenceToVideoRequestSchema,
   FalKlingVideoO3p4kTextToVideoRequestSchema,
-  FalSora2TextToVideoRequestSchema,
-  FalSora2ImageToVideoRequestSchema,
   FalHunyuanImageV3InstructEditRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
@@ -2481,29 +2475,6 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/xai/grok-imagine-image/v2.0/edit",
     FalXaiGrokImagineImageV2p0EditRequestSchema,
-    { base: runBaseURL }
-  );
-
-  // sig-ok: stylistic dotPath divergence from URL
-  // POST https://fal.run/fal-ai/sora-2/text-to-video
-  // Docs: https://docs.fal.ai
-  const sora2TextToVideo = jsonBody<
-    FalSora2TextToVideoRequest,
-    FalSora2TextToVideoResponse
-  >("POST", "/fal-ai/sora-2/text-to-video", FalSora2TextToVideoRequestSchema, {
-    base: runBaseURL,
-  });
-
-  // sig-ok: stylistic dotPath divergence from URL
-  // POST https://fal.run/fal-ai/sora-2/image-to-video
-  // Docs: https://docs.fal.ai
-  const sora2ImageToVideo = jsonBody<
-    FalSora2ImageToVideoRequest,
-    FalSora2ImageToVideoResponse
-  >(
-    "POST",
-    "/fal-ai/sora-2/image-to-video",
-    FalSora2ImageToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -5408,10 +5379,6 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     gptImage1p5,
-    sora2: {
-      textToVideo: sora2TextToVideo,
-      imageToVideo: sora2ImageToVideo,
-    },
     hunyuan: {
       v3: {
         instructEdit: hunyuanImageV3InstructEdit,

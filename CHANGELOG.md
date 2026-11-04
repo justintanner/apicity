@@ -382,6 +382,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** retired fal Sora 2: `@apicity/fal` `run.sora2.textToVideo` and
+  `run.sora2.imageToVideo` with their `FalSora2*` exports, and the matching
+  `@apicity/cost` pricing, slug and display entries. OpenAI removed Sora 2 from
+  its API on 2026-09-24, and fal's gateway now answers 404 for the application.
+
 - **Breaking:** retired KIE `sora-watermark-remover`, its
   `SoraWatermarkRequestSchema`, and the `SoraWatermarkRequest`,
   `SoraWatermarkRequestInput`, and `SoraWatermarkParsedRequest` exports.

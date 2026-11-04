@@ -977,10 +977,6 @@ export const MODEL_SLUGS = {
     "fal-ai/veo3.1": "veo3p1",
     "fal-ai/veo3.1/image-to-video": "veo3p1",
 
-    // Video — Sora 2
-    "fal-ai/sora-2/text-to-video": "sora2",
-    "fal-ai/sora-2/image-to-video": "sora2",
-
     // Video — Grok Imagine
     "xai/grok-imagine-video/image-to-video": "grok",
     "xai/grok-imagine-video/reference-to-video": "grok",
@@ -1959,9 +1955,6 @@ export const MODEL_DISPLAY = {
 
     "fal-ai/veo3.1": "Veo 3.1",
     "fal-ai/veo3.1/image-to-video": "Veo 3.1",
-
-    "fal-ai/sora-2/text-to-video": "Sora 2",
-    "fal-ai/sora-2/image-to-video": "Sora 2",
 
     "xai/grok-imagine-video/image-to-video": "Grok Imagine",
     "xai/grok-imagine-video/reference-to-video": "Grok Imagine",

@@ -416,6 +416,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 2.5 reference-to-video drops its audio rule, which its live Input does
     not document.
 
+### Removed
+
+- **Breaking:** `run.sora2.textToVideo` and `run.sora2.imageToVideo`, with their
+  `post.run` twins, `FAL_ENDPOINT_REQUEST_SCHEMAS` entries, the `FalSora2*`
+  schemas and types, and `FalRunSora2Namespace`. Sora 2 is retired, so a call
+  could only fail. OpenAI removed it from its API on 2026-09-24 and names no
+  replacement. On 2026-11-04 `fal.run/fal-ai/sora-2/*` answered 404 `Application
+"sora-2" not found` to a request with no key, as a made-up app does, where a
+  live app answers 401. fal's model pages, queue OpenAPI and price list answer
+  404 too (ac-jgqanj).
+
 ### Fixed
 
 - `xai.grokImagineImage` and `qwenImage` name the URLs they post to. Their

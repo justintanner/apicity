@@ -2651,57 +2651,6 @@ export const FalXaiGrokImagineImageEditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// Sora 2 text-to-video
-// ---------------------------------------------------------------------------
-
-export const FalSora2TextToVideoRequestSchema = z.object({
-  prompt: z.string().max(5000),
-  model: z
-    .enum(["sora-2", "sora-2-2025-12-08", "sora-2-2025-10-06"])
-    .optional(),
-  resolution: z.enum(["720p"]).optional(),
-  aspect_ratio: z.enum(["9:16", "16:9"]).optional(),
-  duration: z
-    .union([
-      z.literal(4),
-      z.literal(8),
-      z.literal(12),
-      z.literal(16),
-      z.literal(20),
-    ])
-    .optional(),
-  delete_video: z.boolean().optional(),
-  character_ids: z.array(z.string()).max(2).optional(),
-  detect_and_block_ip: z.boolean().optional(),
-});
-
-// ---------------------------------------------------------------------------
-// Sora 2 image-to-video
-// ---------------------------------------------------------------------------
-
-export const FalSora2ImageToVideoRequestSchema = z.object({
-  prompt: z.string().max(5000),
-  image_url: z.string(),
-  model: z
-    .enum(["sora-2", "sora-2-2025-12-08", "sora-2-2025-10-06"])
-    .optional(),
-  resolution: z.enum(["auto", "720p"]).optional(),
-  aspect_ratio: z.enum(["auto", "9:16", "16:9"]).optional(),
-  duration: z
-    .union([
-      z.literal(4),
-      z.literal(8),
-      z.literal(12),
-      z.literal(16),
-      z.literal(20),
-    ])
-    .optional(),
-  delete_video: z.boolean().optional(),
-  character_ids: z.array(z.string()).max(2).optional(),
-  detect_and_block_ip: z.boolean().optional(),
-});
-
-// ---------------------------------------------------------------------------
 // Kling Video v3 Pro image-to-video
 // ---------------------------------------------------------------------------
 
@@ -3781,26 +3730,6 @@ export type FalKlingVideoV3StandardTextToVideoRequestInput =
   FalKlingVideoV3StandardTextToVideoRequest;
 export type FalKlingVideoV3StandardTextToVideoParsedRequest = z.output<
   typeof FalKlingVideoV3StandardTextToVideoRequestSchema
->;
-export type FalSora2TextToVideoParams = z.infer<
-  typeof FalSora2TextToVideoRequestSchema
->;
-export type FalSora2TextToVideoRequest = z.input<
-  typeof FalSora2TextToVideoRequestSchema
->;
-export type FalSora2TextToVideoRequestInput = FalSora2TextToVideoRequest;
-export type FalSora2TextToVideoParsedRequest = z.output<
-  typeof FalSora2TextToVideoRequestSchema
->;
-export type FalSora2ImageToVideoParams = z.infer<
-  typeof FalSora2ImageToVideoRequestSchema
->;
-export type FalSora2ImageToVideoRequest = z.input<
-  typeof FalSora2ImageToVideoRequestSchema
->;
-export type FalSora2ImageToVideoRequestInput = FalSora2ImageToVideoRequest;
-export type FalSora2ImageToVideoParsedRequest = z.output<
-  typeof FalSora2ImageToVideoRequestSchema
 >;
 export type FalHunyuanImageV3InstructEditParams = z.infer<
   typeof FalHunyuanImageV3InstructEditRequestSchema
@@ -18240,8 +18169,6 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/wan/v2.7/reference-to-video": FalWanV2p7ReferenceToVideoRequestSchema,
   "fal-ai/wan/v2.7/edit-video": FalWanV2p7EditVideoRequestSchema,
   "xai/grok-imagine-image/edit": FalXaiGrokImagineImageEditRequestSchema,
-  "fal-ai/sora-2/text-to-video": FalSora2TextToVideoRequestSchema,
-  "fal-ai/sora-2/image-to-video": FalSora2ImageToVideoRequestSchema,
   "fal-ai/hunyuan-image/v3/instruct/edit":
     FalHunyuanImageV3InstructEditRequestSchema,
   "fal-ai/kling-video/v3/pro/image-to-video":

@@ -2692,27 +2692,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST sora2.imageToVideo": {
-    "source": "fal/sora-2-image-to-video",
-    "payload": {
-      "prompt": "the man waves at the camera as the wind blows his hair",
-      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
-      "aspect_ratio": "16:9",
-      "duration": 4
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST sora2.textToVideo": {
-    "source": "fal/sora-2",
-    "payload": {
-      "prompt": "A black lab swimming in an inground suburban swimming pool at sunset.",
-      "aspect_ratio": "16:9",
-      "duration": 4
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST storage.upload.initiate": {
     "source": "fal/storage-upload-initiate",
     "payload": {

@@ -121,7 +121,10 @@ describe("deployment-aware pricing", () => {
       provider: "google",
       method: "POST",
       url: "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent",
-      requestBody: { contents: [{ parts: [{ text: "Hello" }] }] },
+      requestBody: {
+        model: "gemini-2.5-pro",
+        contents: [{ parts: [{ text: "Hello" }] }],
+      },
       status: 200,
       responseHeaders: {},
       responseBody: {

@@ -294,6 +294,7 @@ function costOf(
   const payload = call.request ? requestBody(call.request) : null;
   // The tables key on what the caller sent; a response may answer with an alias.
   const model =
+    (row.provider === "google" ? actual.model : null) ??
     stringAt(payload, "model") ??
     stringAt(payload, "model_id") ??
     actual.model ??

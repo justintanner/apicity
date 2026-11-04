@@ -233,7 +233,12 @@ function derive(
   // The tables key on what the caller sent; a response may answer with an alias.
   const requested =
     exchange.requestBody?.model ?? exchange.requestBody?.model_id;
-  const key = typeof requested === "string" ? requested : model;
+  const key =
+    provider === "google"
+      ? model
+      : typeof requested === "string"
+        ? requested
+        : model;
   if (!key || !isPriced(provider)) return NOT_DERIVED;
   const entry = PRICING[provider][key];
   const hasTokens =

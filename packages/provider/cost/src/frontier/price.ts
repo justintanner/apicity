@@ -42,6 +42,7 @@ const UNIT_LABEL: Record<CostUnit, string> = {
   characters: "character",
   tokens: "token",
   requests: "request",
+  resources: "resource",
   "gib-downloaded": "GiB downloaded",
 };
 

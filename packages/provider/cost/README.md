@@ -3,7 +3,7 @@
 Cross-provider cost & token estimation for the
 [apicity](https://github.com/justintanner/apicity) monorepo: a USD figure for a
 planned API call to the billed providers (openai, anthropic, xai, kimicoding,
-fireworks, alibaba, kie, elevenlabs, machgen, wavespeed — see [Coverage](#coverage)),
+fireworks, alibaba, kie, elevenlabs, machgen, wavespeed, x — see [Coverage](#coverage)),
 computed purely locally from bundled rate tables — no keys, no network.
 
 Zero dependencies, and not a wrapper for any single upstream API — a deliberate
@@ -52,6 +52,18 @@ the coverage guard. Unpriced exceptions in
 Regenerate the inventory with
 `UPDATE_ENDPOINT_BILLING=1 pnpm run test:run tests/unit/endpoint-billing.test.ts`
 and the pricing-key module with `pnpm run gen:endpoint-pricing-keys`.
+
+X uses separate pricing keys for `POST v2.tweets` (`post`), `GET v2.tweets`
+(`posts-read`), and `GET v2.users.me` (`users-read`); `estimateEndpoint`
+resolves them by method. Posts cost 0.015 USD, or 0.20 USD when text contains
+a URL. Detection conservatively covers scheme, www, and bare-domain URLs;
+the summoned-post discount cannot be inferred from a request. Reads require
+`costHints.resources`, a positive safe integer count of returned resources,
+at 0.005 USD per post or 0.010 USD per user. Missing, zero, and invalid counts
+fail closed. These routes do not qualify for the Owned Reads discount.
+Read estimates carry an informational upper-bound note because X deduplicates
+resources within a UTC day. The four media-upload routes remain unpriced:
+a console rate is needed, and Media Metadata pricing does not apply to uploads.
 
 ## Frontier models
 
@@ -244,6 +256,7 @@ infers it; the caller usually knows it; the payload has nowhere to put it.
 
 ```ts
 interface CostHints {
+  resources?: number;
   durationSeconds?: number;
   inputDurationSeconds?: number;
   aspectRatio?:
@@ -853,6 +866,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `openai` GPT Image models                                          | `per-unit-table`         | `gpt-image-2` and 2.5 per image output token from quality and size, `gpt-image-1.5` per image; `auto` fails closed, and input tokens are excluded (floor warning) |
 | `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`                                                                                          |
 | `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints                                                                                  |
+| `x`                                                                | `per-unit-table`         | posts per request with a URL-sensitive rate; reads per declared resource; media upload unpriced                                                                   |
 | `wavespeed`                                                        | `per-unit-table`         | per second of video by resolution at list rates; keyed by the WaveSpeed model id in `endpoint`                                                                    |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno                                                                               |
 | `free`                                                             | `free`                   | always $0                                                                                                                                                         |

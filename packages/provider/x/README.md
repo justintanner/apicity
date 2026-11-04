@@ -269,7 +269,7 @@ console.log(tweet.data.text);
 
 <code>GET https://api.x.com/2/media/upload{query}</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/get-media-upload-status)
 
@@ -286,7 +286,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/media/upload/{id}/append</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/append-media-upload)
 
@@ -303,7 +303,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/media/upload/{id}/finalize</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/finalize-media-upload)
 
@@ -320,7 +320,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/media/upload/initialize</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/media-upload-initialize)
 
@@ -339,7 +339,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>GET https://api.x.com/2/tweets/{id}{query}</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/posts/get-post-by-id)
 
@@ -356,7 +356,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/tweets</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/posts/create-post)
 
@@ -375,7 +375,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>GET https://api.x.com/2/users/me{query}</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/users/get-my-user)
 

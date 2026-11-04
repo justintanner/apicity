@@ -21,8 +21,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "media_id": "2050120900222296064",
       "command": "STATUS"
     },
-    "tier": "cheap",
-    "runByDefault": true
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v2.media.upload.initialize": {
     "source": "x/media-upload-initialize",
@@ -31,16 +31,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "total_bytes": 64,
       "media_category": "tweet_video"
     },
-    "tier": "cheap",
-    "runByDefault": true
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v2.tweets": {
     "source": "x/tweets-create",
     "payload": {
       "text": "hello from @apicity/x"
     },
-    "tier": "cheap",
-    "runByDefault": true
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

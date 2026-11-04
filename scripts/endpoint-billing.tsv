@@ -1822,13 +1822,13 @@ wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://waves
 wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/text-to-video	2026-11-04
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04
-x	v2.media.upload	GET	unpriced	requests	The page publishes no class for media upload rows (Media Metadata is a different endpoint), so P5 fails them closed	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.tweets	GET	unpriced	resources	Posts: Read 0.005 USD per returned resource; same resource free again within a UTC day	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.users.me	GET	unpriced	resources	User: Read 0.010 USD per returned resource; /2/users/me is not on the Owned Reads list	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.append	POST	unpriced	requests	The page publishes no class for media upload rows (Media Metadata is a different endpoint), so P5 fails them closed	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.finalize	POST	unpriced	requests	The page publishes no class for media upload rows (Media Metadata is a different endpoint), so P5 fails them closed	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.media.upload.initialize	POST	unpriced	requests	The page publishes no class for media upload rows (Media Metadata is a different endpoint), so P5 fails them closed	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
-x	v2.tweets	POST	unpriced	requests	Post: Create 0.015 USD; 0.20 with a URL; 0.010 when summoned	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.tweets	GET	metered	resources	Posts: Read 0.005 USD per returned resource; same resource free again within a UTC day	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.users.me	GET	metered	resources	User: Read 0.010 USD per returned resource; /2/users/me is not on the Owned Reads list	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.append	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.finalize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.media.upload.initialize	POST	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
+x	v2.tweets	POST	metered	requests	Post: Create 0.015 USD; 0.20 with a URL; 0.010 when summoned	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 xai	managementApi.v1.collections	DELETE	free		Management API read or write; storage bills on documents, not on this call	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	managementApi.v1.collections.documents	DELETE	free		Management API read or write; storage bills on documents, not on this call	https://docs.x.ai/developers/pricing.md	2026-11-04
 xai	v1.customVoices	DELETE	free		Metadata, tokenizer or management call; the pricing page bills none of these	https://docs.x.ai/developers/pricing.md	2026-11-04

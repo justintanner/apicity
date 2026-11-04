@@ -164,11 +164,6 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       "Instagram Graph posting API; free, no per-call USD compute cost",
   },
   {
-    match: { provider: "x" },
-    tier: "cheap",
-    rationale: "X (Twitter) posting API; no per-call USD compute cost",
-  },
-  {
     match: { provider: "youtube" },
     tier: "cheap",
     rationale:
@@ -176,6 +171,12 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   },
 
   // ── expensive: metered token/unit cost, bounded per typical call ────────
+  {
+    match: { provider: "x" },
+    tier: "expensive",
+    rationale:
+      "X bills writes per request and reads per returned resource; counts and URL-bearing posts can exceed the cheap threshold",
+  },
   {
     match: { provider: "openai" },
     tier: "expensive",
@@ -274,6 +275,38 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   },
 
   // ── exact prohibitive overrides inside otherwise-`expensive` providers ──
+  {
+    match: { provider: "x", method: "GET", dotPath: "v2.media.upload" },
+    tier: "prohibitive",
+    rationale:
+      "X media upload needs a console rate; no public price class is published",
+  },
+  {
+    match: {
+      provider: "x",
+      method: "POST",
+      dotPath: "v2.media.upload.initialize",
+    },
+    tier: "prohibitive",
+    rationale:
+      "X media upload needs a console rate; no public price class is published",
+  },
+  {
+    match: { provider: "x", method: "POST", dotPath: "v2.media.upload.append" },
+    tier: "prohibitive",
+    rationale:
+      "X media upload needs a console rate; no public price class is published",
+  },
+  {
+    match: {
+      provider: "x",
+      method: "POST",
+      dotPath: "v2.media.upload.finalize",
+    },
+    tier: "prohibitive",
+    rationale:
+      "X media upload needs a console rate; no public price class is published",
+  },
   // xAI image/video generation: these mirror the paid-endpoint registry and
   // incur direct media-generation cost, unlike xAI's metered text endpoints.
   {

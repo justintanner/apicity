@@ -1166,6 +1166,29 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+    case "x": {
+      if (req.endpoint === "media-upload") {
+        return failed("per-unit-table", [
+          "x: console rate needed for media upload; no public price class is published",
+        ]);
+      }
+      const estimate = evaluatePerUnit(
+        "x",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
+      if (req.endpoint === "posts-read" || req.endpoint === "users-read") {
+        estimate.notes = [
+          "X read estimate is an upper bound before same-resource UTC-day deduplication (a soft guarantee); these routes do not qualify for Owned Reads.",
+        ];
+      } else if (req.endpoint === "post") {
+        estimate.notes = [
+          "URL detection is conservative; the summoned-post discount cannot be determined from the request and is not applied.",
+        ];
+      }
+      return estimate;
+    }
     case "free-media-upload":
       return {
         usd: 0,

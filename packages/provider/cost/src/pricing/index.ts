@@ -23,6 +23,7 @@ import { kimicoding } from "./kimicoding";
 import { machgen } from "./machgen";
 import { openai } from "./openai";
 import { wavespeed } from "./wavespeed";
+import { x } from "./x";
 import { xai } from "./xai";
 
 export const PRICING_AS_OF = "2026-04-30";
@@ -39,6 +40,7 @@ export const PRICING = {
   machgen,
   openai,
   wavespeed,
+  x,
   xai,
 } as const;
 

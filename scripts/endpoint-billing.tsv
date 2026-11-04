@@ -369,11 +369,11 @@ elevenlabs	v1.serviceAccounts.apiKeys.update	PATCH	free		Voice, workspace, usage
 elevenlabs	v1.speechEngine.update	PATCH	free		Speech Engine management; sessions bill per minute on the socket	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.workspace.authConnections.update	PATCH	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.workspace.webhooks.update	PATCH	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.audioIsolation	POST	unpriced	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.audioIsolation.stream	POST	unpriced	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.audioNative	POST	unpriced	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge. Fail-closed until P2 adds that switch.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.audioIsolation	POST	metered	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.audioIsolation.stream	POST	metered	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.audioNative	POST	metered	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.audioNative.content.fromUrl	POST	free		Audio Native settings or content source; conversion is what bills	https://elevenlabs.io/docs/eleven-creative/audio-tools/audio-native.md	2026-11-04
-elevenlabs	v1.audioNative.content.update	POST	unpriced	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge. Fail-closed until P2 adds that switch.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.audioNative.content.update	POST	metered	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.convai.agent.llmUsage.calculate	POST	free		LLM cost calculator; no charge	https://elevenlabs.io/pricing/agents	2026-11-04
 elevenlabs	v1.convai.agentTesting.bulkMove	POST	free		Agent, knowledge-base, telephony or workspace management; agents bill by call minute and LLM, not per management call	https://elevenlabs.io/pricing/agents	2026-11-04
 elevenlabs	v1.convai.agentTesting.create	POST	free		Agent, knowledge-base, telephony or workspace management; agents bill by call minute and LLM, not per management call	https://elevenlabs.io/pricing/agents	2026-11-04
@@ -423,19 +423,19 @@ elevenlabs	v1.convai.twilio.outboundCall	POST	accrual	minutes	Starts agent calls
 elevenlabs	v1.convai.twilio.registerCall	POST	accrual	minutes	Starts agent calls: 0.08 USD per call minute plus LLM at cost, as the call runs; no per-call amount. metadata.charging reports it after.	https://elevenlabs.io/pricing/agents	2026-11-04
 elevenlabs	v1.convai.whatsapp.outboundCall	POST	accrual	minutes	Starts agent calls: 0.08 USD per call minute plus LLM at cost, as the call runs; no per-call amount. metadata.charging reports it after.	https://elevenlabs.io/pricing/agents	2026-11-04
 elevenlabs	v1.convai.whatsapp.outboundMessage	POST	accrual	tokens	Opens a WhatsApp agent conversation whose LLM usage accrues; Meta bills template messages directly	https://elevenlabs.io/docs/eleven-agents/whatsapp/outbound.md	2026-11-04
-elevenlabs	v1.dubbing.create	POST	unpriced	seconds	Per source minute: v1 0.33 USD with watermark, 0.50 without; v2 2.20	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.forcedAlignment	POST	unpriced	seconds	Docs: same rate as speech to text, read from the audio length	https://elevenlabs.io/docs/overview/capabilities/forced-alignment.md	2026-11-04
-elevenlabs	v1.music	POST	unpriced	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.music.detailed	POST	unpriced	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.dubbing.create	POST	metered	seconds	Per source minute: v1 0.33 USD with watermark, 0.50 without; v2 2.20	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.forcedAlignment	POST	metered	seconds	Docs: same rate as speech to text, read from the audio length	https://elevenlabs.io/docs/overview/capabilities/forced-alignment.md	2026-11-04
+elevenlabs	v1.music	POST	metered	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.music.detailed	POST	metered	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.music.plan	POST	free		Docs: this endpoint does not cost any credits; rate limited by tier	https://elevenlabs.io/docs/api-reference/music/create-composition-plan.md	2026-11-04
-elevenlabs	v1.music.stemSeparation	POST	unpriced	seconds	Runs a paid model but no price is published, so P2 fails it closed	https://elevenlabs.io/docs/api-reference/music/separate-stems.md	2026-11-04
-elevenlabs	v1.music.stream	POST	unpriced	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.music.upload	POST	unpriced	seconds	Docs: priced as song generation; half the cost is still charged if copyright is detected	https://elevenlabs.io/docs/api-reference/music/upload.md	2026-11-04
-elevenlabs	v1.music.videoToMusic	POST	unpriced	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.music.stemSeparation	POST	metered	seconds	Runs a paid model but no price is published, so P2 fails it closed	https://elevenlabs.io/docs/api-reference/music/separate-stems.md	2026-11-04
+elevenlabs	v1.music.stream	POST	metered	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.music.upload	POST	metered	seconds	Docs: priced as song generation; half the cost is still charged if copyright is detected	https://elevenlabs.io/docs/api-reference/music/upload.md	2026-11-04
+elevenlabs	v1.music.videoToMusic	POST	metered	seconds	0.15 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.productions.orders.create	POST	free		Order setup or read; only submit charges	https://elevenlabs.io/docs/eleven-creative/services/productions/overview.md	2026-11-04
 elevenlabs	v1.productions.orders.items.upsert	POST	free		Order setup or read; only submit charges	https://elevenlabs.io/docs/eleven-creative/services/productions/overview.md	2026-11-04
 elevenlabs	v1.productions.orders.media.register	POST	free		Order setup or read; only submit charges	https://elevenlabs.io/docs/eleven-creative/services/productions/overview.md	2026-11-04
-elevenlabs	v1.productions.orders.submit	POST	unpriced	minutes	Human-edited order: USD per source minute by asset, language and options, quoted per order with no list rate	https://elevenlabs.io/docs/eleven-creative/services/productions/overview.md	2026-11-04
+elevenlabs	v1.productions.orders.submit	POST	metered	minutes	Human-edited order: USD per source minute by asset, language and options, quoted per order with no list rate	https://elevenlabs.io/docs/eleven-creative/services/productions/overview.md	2026-11-04
 elevenlabs	v1.pronunciationDictionaries.addFromFile	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.pronunciationDictionaries.addFromRules	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.pronunciationDictionaries.addRules	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
@@ -444,31 +444,31 @@ elevenlabs	v1.pronunciationDictionaries.setRules	POST	free		Voice, workspace, us
 elevenlabs	v1.serviceAccounts.apiKeys.create	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.similarVoices	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.singleUseToken	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.soundGeneration	POST	unpriced	seconds	0.12 USD per minute; duration comes from the payload or the output	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.soundGeneration	POST	metered	seconds	0.12 USD per minute; duration comes from the payload or the output	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.speechEngine.create	POST	free		Speech Engine management; sessions bill per minute on the socket	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.speechToSpeech	POST	unpriced	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.speechToSpeech.stream	POST	unpriced	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.speechToSpeech	POST	metered	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.speechToSpeech.stream	POST	metered	seconds	0.12 USD per minute	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.speechToText	POST	metered	seconds	Scribe v2 rows exist; character-cost and fiat-cost-before-overages come back in headers	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.studio.podcasts.create	POST	unpriced	characters	Docs: audio generation is charged, LLM cost is covered for now; auto-converts on create	https://elevenlabs.io/docs/api-reference/studio/create-podcast.md	2026-11-04
-elevenlabs	v1.studio.projects.chapters.convert	POST	unpriced	characters	Converting bills the generated audio at the project's TTS model; up to two regenerations of unchanged text are free	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.studio.podcasts.create	POST	metered	characters	Docs: audio generation is charged, LLM cost is covered for now; auto-converts on create	https://elevenlabs.io/docs/api-reference/studio/create-podcast.md	2026-11-04
+elevenlabs	v1.studio.projects.chapters.convert	POST	metered	characters	Converting bills the generated audio at the project's TTS model; up to two regenerations of unchanged text are free	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.chapters.create	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.chapters.snapshots.stream	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.chapters.update	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
-elevenlabs	v1.studio.projects.content.update	POST	unpriced	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge. Fail-closed until P2 adds that switch.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
-elevenlabs	v1.studio.projects.convert	POST	unpriced	characters	Converting bills the generated audio at the project's TTS model; up to two regenerations of unchanged text are free	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
-elevenlabs	v1.studio.projects.create	POST	unpriced	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge. Fail-closed until P2 adds that switch.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.studio.projects.content.update	POST	metered	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.studio.projects.convert	POST	metered	characters	Converting bills the generated audio at the project's TTS model; up to two regenerations of unchanged text are free	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
+elevenlabs	v1.studio.projects.create	POST	metered	characters	Conditional: bills only when payload.auto_convert is true, as a conversion would; otherwise no charge.	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.pronunciationDictionaries.create	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.snapshots.archive	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.snapshots.stream	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
 elevenlabs	v1.studio.projects.update	POST	free		Studio project management or read; conversion is what bills	https://elevenlabs.io/docs/api-reference/studio-api-information.md	2026-11-04
-elevenlabs	v1.textToDialogue	POST	unpriced	characters	Eleven v3 rate per 1K characters	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToSpeech	POST	metered	characters	v4, v4 Turbo and v3 Conversational have no row; bundled Flash and Multilingual rows are stale (gaps-by-child.md section P2)	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToSpeech.stream	POST	metered	characters	v4, v4 Turbo and v3 Conversational have no row; bundled Flash and Multilingual rows are stale (gaps-by-child.md section P2)	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToSpeech.stream.withTimestamps	POST	metered	characters	v4, v4 Turbo and v3 Conversational have no row; bundled Flash and Multilingual rows are stale (gaps-by-child.md section P2)	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToSpeech.withTimestamps	POST	metered	characters	v4, v4 Turbo and v3 Conversational have no row; bundled Flash and Multilingual rows are stale (gaps-by-child.md section P2)	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToDialogue	POST	metered	characters	Eleven v3 rate per 1K characters	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToSpeech	POST	metered	characters	API list price by TTS model; plan credits may cost less	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToSpeech.stream	POST	metered	characters	API list price by TTS model; plan credits may cost less	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToSpeech.stream.withTimestamps	POST	metered	characters	API list price by TTS model; plan credits may cost less	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToSpeech.withTimestamps	POST	metered	characters	API list price by TTS model; plan credits may cost less	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.textToVoice	POST	free		Saves a designed preview as a voice; the design call already billed	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToVoice.design	POST	unpriced	characters	Bills the preview text's characters	https://elevenlabs.io/pricing/api	2026-11-04
-elevenlabs	v1.textToVoice.remix	POST	unpriced	characters	Docs: priced by the length of the test script	https://elevenlabs.io/docs/overview/capabilities/voice-remixing.md	2026-11-04
+elevenlabs	v1.textToVoice.design	POST	metered	characters	Bills the preview text's characters	https://elevenlabs.io/pricing/api	2026-11-04
+elevenlabs	v1.textToVoice.remix	POST	metered	characters	Docs: priced by the length of the test script	https://elevenlabs.io/docs/overview/capabilities/voice-remixing.md	2026-11-04
 elevenlabs	v1.voices.add	POST	free		Voice creation is gated by plan (Creator and up for PVC), with no per-call charge; committed recordings show no cost header	https://elevenlabs.io/docs/eleven-api/guides/how-to/voices/professional-voice-cloning.md	2026-11-04
 elevenlabs	v1.voices.add.share	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04
 elevenlabs	v1.voices.edit	POST	free		Voice, workspace, usage or account call; the price card bills none of these	https://elevenlabs.io/pricing/api	2026-11-04

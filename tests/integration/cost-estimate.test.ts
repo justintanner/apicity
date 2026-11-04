@@ -11,7 +11,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.rateAsOf).toBe(PRICING_AS_OF);
   });
 
-  it("elevenlabs flash v2.5 → 1000 chars × $0.00006", () => {
+  it("elevenlabs flash v2.5 → 1000 chars × $0.00004", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "elevenlabs",
@@ -21,14 +21,14 @@ describe("cost.estimate — pure-table (no network)", () => {
         voice_settings: { stability: 0.5 },
       },
     });
-    expect(r.usd).toBeCloseTo(0.06, 6);
+    expect(r.usd).toBeCloseTo(0.04, 6);
     expect(r.source).toBe("per-unit-table");
     expect(r.breakdown.unit).toBe("characters");
     expect(r.breakdown.units).toBe(1000);
     expect(r.warnings).toEqual([]);
   });
 
-  // Hourly card prices on https://elevenlabs.io/pricing/api (2026-10-29).
+  // Hourly card prices on https://elevenlabs.io/pricing/api (2026-11-04).
   // 600 s is 10 minutes, one sixth of that hour.
   it.each([
     ["scribe_v2", 0.22],
@@ -47,7 +47,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.unit).toBe("seconds");
     expect(r.breakdown.units).toBe(600);
     expect(r.breakdown.perUnitUsd).toBeCloseTo(perHour / 3600, 12);
-    expect(r.rateAsOf).toBe("2026-10-29");
+    expect(r.rateAsOf).toBe("2026-11-04");
     expect(r.warnings).toEqual([]);
   });
 

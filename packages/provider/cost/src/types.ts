@@ -66,6 +66,9 @@ export interface CostBreakdown {
 }
 
 export interface CostEstimate {
+  // Informational only; warnings still signal incomplete estimates.
+  notes?: string[];
+  zeroReason?: string;
   usd: number;
   currency: "USD";
   source: CostSource;
@@ -86,6 +89,10 @@ export interface CostEstimate {
 // Additive by design: new hint fields are optional, so adding one is never a
 // breaking change.
 export interface CostHints {
+  // Billable text absent from ElevenLabs conversion payloads. Positive finite.
+  characters?: number;
+  // Only ElevenLabs project/chapter conversion routes read this hint.
+  model?: string;
   // Billable output images for requests whose result count cannot be known
   // from the input, such as KIE Seedream 5 Flash layer decomposition.
   // Cost-only: never merged into the generation request.
@@ -293,6 +300,7 @@ export interface ActualUsage {
 export type ActualBasis = "stated" | "derived" | "usage-only" | "none";
 
 export interface CostActual {
+  notes?: string[];
   provider: string;
   dotPath: string | null;
   model: string | null;

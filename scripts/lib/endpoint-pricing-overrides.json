@@ -25,5 +25,28 @@
     "api.v1.veo.get4kVideo": "veo/get-4k-video",
     "api.v1.vocalRemoval.generate": "suno/vocal-removal-generate",
     "api.v1.wav.generate": "suno/wav-generate"
+  },
+  "elevenlabs": {
+    "v1.music": "music",
+    "v1.music.detailed": "music",
+    "v1.music.stream": "music",
+    "v1.music.upload": "music",
+    "v1.audioNative": "auto-convert",
+    "v1.audioNative.content.update": "auto-convert",
+    "v1.studio.projects.create": "auto-convert",
+    "v1.studio.projects.content.update": "auto-convert",
+    "v1.studio.projects.convert": "project-conversion",
+    "v1.studio.projects.chapters.convert": "project-conversion",
+    "v1.music.videoToMusic": "video-to-music",
+    "v1.music.stemSeparation": "music-stem-separation",
+    "v1.productions.orders.submit": "production-order",
+    "v1.soundGeneration": "sound-generation",
+    "v1.speechToSpeech": "voice-changer",
+    "v1.speechToSpeech.stream": "voice-changer",
+    "v1.audioIsolation": "voice-isolator",
+    "v1.audioIsolation.stream": "voice-isolator",
+    "v1.forcedAlignment": "forced-alignment",
+    "v1.dubbing.create": "dubbing",
+    "v1.textToDialogue": "dialogue"
   }
 }

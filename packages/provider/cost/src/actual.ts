@@ -66,6 +66,7 @@ function isPriced(provider: string): provider is PricedProviderId {
 }
 
 interface Derived {
+  notes?: string[];
   usd: number | null;
   rateAsOf: string | null;
   warnings: string[];
@@ -79,8 +80,13 @@ const NOT_DERIVED: Derived = { usd: null, rateAsOf: null, warnings: [] };
 // into the actual instead of reading as zero.
 function fromEstimate(estimate: CostEstimate): Derived {
   return estimate.warnings.length > 0
-    ? { ...NOT_DERIVED, warnings: estimate.warnings }
-    : { usd: estimate.usd, rateAsOf: estimate.rateAsOf, warnings: [] };
+    ? { ...NOT_DERIVED, warnings: estimate.warnings, notes: estimate.notes }
+    : {
+        usd: estimate.usd,
+        rateAsOf: estimate.rateAsOf,
+        warnings: [],
+        notes: estimate.notes,
+      };
 }
 
 function deriveFromTokens(
@@ -156,20 +162,22 @@ function deriveFromUnits(
   const extra = estimate.breakdown.extraUsd;
   if (estimate.warnings.length > 0 || perUnit === undefined) {
     return units === undefined
-      ? NOT_DERIVED
-      : { ...NOT_DERIVED, warnings: estimate.warnings };
+      ? { ...NOT_DERIVED, notes: estimate.notes }
+      : { ...NOT_DERIVED, warnings: estimate.warnings, notes: estimate.notes };
   }
   if (units === undefined) {
     return extra
-      ? NOT_DERIVED
+      ? { ...NOT_DERIVED, notes: estimate.notes }
       : {
           ...NOT_DERIVED,
+          notes: estimate.notes,
           unitRate: { usd: perUnit, asOf: estimate.rateAsOf },
         };
   }
   return {
     usd: extra ? estimate.usd : perUnit * units,
     rateAsOf: estimate.rateAsOf,
+    notes: estimate.notes,
     warnings: [],
   };
 }
@@ -303,6 +311,7 @@ export function extractActual(exchange: ProviderExchange): CostActual {
     settled,
     rateAsOf: derived.rateAsOf,
     warnings,
+    ...(derived.notes ? { notes: derived.notes } : {}),
     ...(derived.unitRate ? { unitRate: derived.unitRate } : {}),
   };
 }
@@ -407,6 +416,9 @@ export function mergeActuals(parts: readonly CostActual[]): CostActual {
     settled,
     rateAsOf,
     warnings,
+    ...(parts.some((p) => p.notes?.length)
+      ? { notes: [...new Set(parts.flatMap((p) => p.notes ?? []))] }
+      : {}),
     ...(unitRate ? { unitRate } : {}),
   };
 }

@@ -306,15 +306,84 @@ describe("fal video pricing estimates", () => {
         reference_image_urls: ["u"],
       }).usd
     ).toBeCloseTo(0.4, 10);
+  });
 
-    // extend-video bills the extension seconds.
-    expect(
-      est("xai/grok-imagine-video/extend-video", {
-        prompt: "p",
-        video_url: "u",
-        duration: 4,
-      }).usd
-    ).toBeCloseTo(0.2, 10);
+  describe("Grok video extend", () => {
+    const endpoint = "xai/grok-imagine-video/extend-video";
+    const payload = { prompt: "p", video_url: "u", duration: 4 };
+    const estimate = (
+      costHints?: CostHints,
+      body: Record<string, unknown> = payload
+    ) =>
+      computeEstimate({
+        provider: "fal",
+        endpoint,
+        payload: body,
+        ...(costHints ? { costHints } : {}),
+      });
+
+    // The card's own example: a 6 s 480p video from a 6 s input costs $0.36.
+    it.each([
+      { inputResolution: "480p", usd: 0.28, rate: 0.05 },
+      { inputResolution: "720p", usd: 0.36, rate: 0.07 },
+    ])(
+      "prices the $inputResolution output seconds plus the source's",
+      ({ inputResolution, usd, rate }) => {
+        const result = estimate({ inputDurationSeconds: 8, inputResolution });
+
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.breakdown).toEqual({
+          units: 4,
+          unit: "seconds",
+          perUnitUsd: rate,
+          extraUsd: 0.08,
+        });
+        expect(result.rateAsOf).toBe("2026-11-04");
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    it("takes the schema's 6 s default when duration is omitted", () => {
+      expect(
+        estimate(
+          { inputDurationSeconds: 6, inputResolution: "480p" },
+          { prompt: "p", video_url: "u" }
+        ).usd
+      ).toBeCloseTo(0.36, 10);
+    });
+
+    it.each([
+      ["no hints", undefined],
+      ["no source length", { inputResolution: "480p" }],
+      ["no source resolution", { inputDurationSeconds: 8 }],
+      ["a zero length", { inputDurationSeconds: 0, inputResolution: "480p" }],
+      [
+        "a negative length",
+        { inputDurationSeconds: -8, inputResolution: "480p" },
+      ],
+      [
+        "a resolution with no rate",
+        { inputDurationSeconds: 8, inputResolution: "1080p" },
+      ],
+      [
+        "a resolution inherited from Object.prototype",
+        { inputDurationSeconds: 8, inputResolution: "constructor" },
+      ],
+    ])("fails closed on %s, naming both hints", (_name, costHints) => {
+      const result = estimate(costHints);
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("costHints.inputDurationSeconds");
+      expect(result.warnings[0]).toContain("costHints.inputResolution");
+    });
+
+    it("keeps the hints out of the payload it was given", () => {
+      const body = { ...payload };
+      estimate({ inputDurationSeconds: 8, inputResolution: "480p" }, body);
+      expect(body).toEqual(payload);
+    });
   });
 
   it.each([
@@ -1463,6 +1532,17 @@ describe("fal edit/image pricing estimates", () => {
         image_size: "1024x1024",
       }).usd
     ).toBe(0.009);
+  });
+
+  it.each([
+    ["fal-ai/gpt-image-1.5", { quality: "low", image_size: "1024x1024" }],
+    ["fal-ai/gpt-image-1.5/edit", { quality: "low", image_size: "1024x1024" }],
+  ])("warns that %s's per-image estimate is a floor", (endpoint, payload) => {
+    const result = estimate(endpoint, payload);
+    expect(result.usd).toBe(0.009);
+    expect(result.warnings).toEqual([
+      `fal '${endpoint}': prices the image output only; text tokens, and an edit's input image tokens, bill on top, so this estimate is a floor`,
+    ]);
   });
 
   it("warns on gpt-image-1.5/edit when image_size is omitted or auto", () => {

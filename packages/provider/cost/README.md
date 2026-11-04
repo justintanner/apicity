@@ -279,6 +279,7 @@ interface CostHints {
   resources?: number;
   durationSeconds?: number;
   inputDurationSeconds?: number;
+  inputResolution?: "480p" | "720p" | (string & {});
   aspectRatio?:
     | "21:9"
     | "16:9"
@@ -404,10 +405,10 @@ duration and aspect ratio, and its request carries neither: pass both
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.
 
-### Input video duration (kie, fal Seedance)
+### Input video duration (kie, fal)
 
-Eight kie entries and three fal Seedance entries bill on **both** sides of
-the request. For kie: their product pages
+Eight kie entries, three fal Seedance entries and fal's Grok extend bill on
+**both** sides of the request. For kie: their product pages
 print the rule "(input video duration + output video duration) × unit price"
 (Wan 3.0 confirmed 2026-09-16; the Seedance 2 family, Seedance 2.5, HappyHorse
 video-edit and MiniMax H3 re-read 2026-09-17), and the input side is a clip
@@ -465,6 +466,14 @@ guarantee](#hash-and-otp-guarantee) below.
 | `fal`    | `bytedance/seedance-2.0/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
 | `fal`    | `bytedance/seedance-2.5/reference-to-video`    | `video_urls` clip length, at least 4 s                                                        |
 | `fal`    | `bytedance/seedance-2.5/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
+| `fal`    | `xai/grok-imagine-video/extend-video`          | source `video_url` length, with `inputResolution`                                             |
+
+`xai/grok-imagine-video/extend-video` bills the new `duration` seconds at 0.05
+USD/s (480p) or 0.07 USD/s (720p), plus 0.01 USD per source second. The output
+keeps the source's resolution, at most 720p, and the request has no resolution
+field, so an estimate needs both `inputDurationSeconds` and `inputResolution`
+(`"480p"` or `"720p"`; a larger source declares `"720p"`), and fails closed
+without them.
 
 The fal Seedance entries bill the clips' frames (24 per declared second) at
 the output's size, then multiply the whole count by 0.6. A clip length under

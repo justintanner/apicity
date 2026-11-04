@@ -118,8 +118,5 @@
   "x GET v2.media.upload": "P5 ac-25t7ag",
   "x POST v2.media.upload.append": "P5 ac-25t7ag",
   "x POST v2.media.upload.finalize": "P5 ac-25t7ag",
-  "x POST v2.media.upload.initialize": "P5 ac-25t7ag",
-  "x GET v2.tweets": "P5 ac-25t7ag",
-  "x POST v2.tweets": "P5 ac-25t7ag",
-  "x GET v2.users.me": "P5 ac-25t7ag"
+  "x POST v2.media.upload.initialize": "P5 ac-25t7ag"
 }

@@ -470,6 +470,11 @@ export const MODEL_SLUGS = {
     "tts-1-hd": "tts1hd",
   },
 
+  x: {
+    post: "xpost",
+    "posts-read": "xpostsread",
+    "users-read": "xusersread",
+  },
   xai: {
     "grok-4.20-0309-non-reasoning": "grok4p200309nonreasoning",
     "grok-4.20-non-reasoning": "grok4p200309nonreasoning",
@@ -1277,6 +1282,11 @@ export const MODEL_DISPLAY = {
     "tts-1-hd": "tts 1 hd",
   },
 
+  x: {
+    post: "X Post",
+    "posts-read": "X Posts Read",
+    "users-read": "X Users Read",
+  },
   xai: {
     "grok-4.20-0309-non-reasoning": "Grok 4.20 0309 non reasoning",
     "grok-4.20-non-reasoning": "Grok 4.20 0309 non reasoning",

@@ -17,6 +17,7 @@ export type CostUnit =
   | "generations"
   | "megapixels"
   | "requests"
+  | "resources"
   | "gib-downloaded";
 
 export interface RateSource {

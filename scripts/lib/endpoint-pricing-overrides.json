@@ -64,5 +64,14 @@
     "v1.stt": "speech-to-text",
     "v1.documents.search": "collections-search",
     "v1.files.content": "file-download"
+  },
+  "x": {
+    "POST v2.tweets": "post",
+    "GET v2.tweets": "posts-read",
+    "v2.users.me": "users-read",
+    "v2.media.upload": "media-upload",
+    "v2.media.upload.initialize": "media-upload",
+    "v2.media.upload.append": "media-upload",
+    "v2.media.upload.finalize": "media-upload"
   }
 }

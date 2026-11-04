@@ -4921,7 +4921,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "requests",
       reason:
-        "The page publishes no class for media upload rows (Media Metadata is a different endpoint), so P5 fails them closed",
+        "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint",
       source: {
         url: "https://docs.x.com/x-api/getting-started/pricing.md",
         asOf: "2026-11-04",
@@ -4937,7 +4937,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "x",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "resources",
       reason:
         "Posts: Read 0.005 USD per returned resource; same resource free again within a UTC day",
@@ -4951,7 +4951,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "x",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "requests",
       reason: "Post: Create 0.015 USD; 0.20 with a URL; 0.010 when summoned",
       source: {
@@ -4964,7 +4964,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "x",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "resources",
       reason:
         "User: Read 0.010 USD per returned resource; /2/users/me is not on the Owned Reads list",

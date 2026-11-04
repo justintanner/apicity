@@ -22,8 +22,15 @@ for (const row of readFileSync(
   .split("\n")
   .slice(1)) {
   const [provider, dotPath, method, url] = row.split("\t");
-  let key = overrides[provider]?.[dotPath];
-  if (key) used.add(`${provider} ${dotPath}`);
+  // Method-qualified overrides distinguish callable GET/POST siblings.
+  const overridePath = Object.hasOwn(
+    overrides[provider] ?? {},
+    `${method} ${dotPath}`
+  )
+    ? `${method} ${dotPath}`
+    : dotPath;
+  let key = overrides[provider]?.[overridePath];
+  if (key) used.add(`${provider} ${overridePath}`);
   if (
     (provider === "fal" || provider === "wavespeed") &&
     method === "POST" &&

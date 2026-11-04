@@ -24,6 +24,7 @@ export type CostUnit =
   | "generations"
   | "megapixels"
   | "requests"
+  | "resources"
   | "gib-downloaded";
 
 // One token modality's share of a declared usage estimate (text, audio or
@@ -91,6 +92,9 @@ export interface CostEstimate {
 // Additive by design: new hint fields are optional, so adding one is never a
 // breaking change.
 export interface CostHints {
+  // Returned X resources. Positive safe integer; no default or inferred reads.
+  // Cost-only: never part of the upstream payload or signed request bytes.
+  resources?: number;
   // Download byte count; per-GiB routes divide by 2**30 (binary GiB).
   // Positive finite only; invalid counts as absent. Never inferred by network reads.
   downloadBytes?: number;
@@ -244,6 +248,7 @@ export type EstimateRequest =
       provider:
         | "openai"
         | "anthropic"
+        | "x"
         | "xai"
         | "kimicoding"
         | "fireworks"

@@ -1822,13 +1822,13 @@ wavespeed	api.v3.minimax.h3.textToVideo	POST	prohibitive	Per-model media-generat
 wavespeed	api.v3.predictions.result	GET	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
-x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.media.upload.finalize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.media.upload.initialize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.tweets	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.tweets	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
-x	v2.users.me	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.media.upload	GET	prohibitive	X media upload needs a console rate; no public price class is published
+x	v2.media.upload.append	POST	prohibitive	X media upload needs a console rate; no public price class is published
+x	v2.media.upload.finalize	POST	prohibitive	X media upload needs a console rate; no public price class is published
+x	v2.media.upload.initialize	POST	prohibitive	X media upload needs a console rate; no public price class is published
+x	v2.tweets	GET	expensive	X bills writes per request and reads per returned resource; counts and URL-bearing posts can exceed the cheap threshold
+x	v2.tweets	POST	expensive	X bills writes per request and reads per returned resource; counts and URL-bearing posts can exceed the cheap threshold
+x	v2.users.me	GET	expensive	X bills writes per request and reads per returned resource; counts and URL-bearing posts can exceed the cheap threshold
 xai	managementApi.auth.teams.apiKeys	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 xai	managementApi.v1.billing.teams.postpaid.invoice.preview	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 xai	managementApi.v1.billing.teams.postpaid.spendingLimits	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money

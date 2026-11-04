@@ -188,7 +188,7 @@ describe("endpoint-aware estimates", () => {
   it("providers without a route never throw", () => {
     expect(
       estimateEndpoint({
-        provider: "s3",
+        provider: "unknown-provider",
         method: "PUT",
         dotPath: "objects.put",
       }).status

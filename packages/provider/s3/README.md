@@ -60,7 +60,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataConfiguration.html)
 
@@ -77,7 +77,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html)
 
@@ -94,7 +94,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3express-{param}.{param}.amazonaws.com/{bucket}?session</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html)
 
@@ -1352,7 +1352,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html)
 
@@ -1369,7 +1369,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataJournalTable</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataJournalTableConfiguration.html)
 
@@ -1388,7 +1388,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://{param}.s3-object-lambda.{param}.amazonaws.com/WriteGetObjectResponse</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_WriteGetObjectResponse.html)
 
@@ -1866,7 +1866,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html)
 
@@ -1883,7 +1883,7 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?select&select-type=2</code>
 
-Cost tier: <code>cheap</code>
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_SelectObjectContent.html)
 

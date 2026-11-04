@@ -3915,7 +3915,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "s3",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "requests",
       reason: "S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST",
       source: {
@@ -3967,8 +3967,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "PUT objects.putLegalHold",
       "PUT objects.putRetention",
       "PUT objects.putTagging",
-      "PUT objects.rename",
-      "POST objects.restore",
       "PUT objects.updateEncryption",
       "PUT objects.uploadPart",
       "PUT objects.uploadPartCopy",
@@ -3977,37 +3975,15 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "s3",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "requests",
-      reason:
-        "S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST; this feature has its own charges, not modeled",
+      reason: "S3 Standard us-east-1: 0.0004 USD per 1k GET and other requests",
       source: {
         url: "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json",
         asOf: "2026-11-04",
       },
     },
     [
-      "POST buckets.createMetadataConfiguration",
-      "POST buckets.createMetadataTableConfiguration",
-      "PUT buckets.updateMetadataInventoryTable",
-      "PUT buckets.updateMetadataJournalTable",
-      "POST objectLambda.writeGetObjectResponse",
-    ]
-  ),
-  ...rows(
-    "s3",
-    {
-      kind: "unpriced",
-      unit: "requests",
-      reason:
-        "S3 Standard us-east-1: 0.0004 USD per 1k GET and all other requests",
-      source: {
-        url: "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json",
-        asOf: "2026-11-04",
-      },
-    },
-    [
-      "GET buckets.createSession",
       "GET buckets.getAbac",
       "GET buckets.getAccelerateConfiguration",
       "GET buckets.getAcl",
@@ -4050,8 +4026,23 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "s3",
     {
+      kind: "metered",
+      unit: "requests",
+      reason:
+        "S3 Express One Zone us-east-1: 0.00113 USD per 1k rename requests",
+      source: {
+        url: "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json",
+        asOf: "2026-11-04",
+      },
+    },
+    ["PUT objects.rename"]
+  ),
+  ...rows(
+    "s3",
+    {
       kind: "free",
-      reason: "aws.amazon.com/s3/pricing: DELETE and CANCEL requests are free",
+      reason:
+        "AWS S3 DELETE and CANCEL requests, including multi-object delete, are free; storage charges excluded",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     [
@@ -4074,6 +4065,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "DELETE objects.abortMultipartUpload",
       "DELETE objects.del",
       "DELETE objects.delTagging",
+      "POST objects.delMany",
     ]
   ),
   ...rows(
@@ -4081,28 +4073,80 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason:
-        "S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST; a multi-object delete is a POST, so it stays here until a bill says otherwise",
-      source: {
-        url: "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json",
-        asOf: "2026-11-04",
-      },
+      reason: "Archive storage class and retrieval tier are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
-    ["POST objects.delMany"]
+    ["POST objects.restore"]
   ),
   ...rows(
     "s3",
     {
       kind: "unpriced",
       unit: "requests",
-      reason:
-        "S3 Standard us-east-1: 0.005 USD per 1k PUT, COPY, POST or LIST; SELECT also bills bytes scanned and returned",
-      source: {
-        url: "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json",
-        asOf: "2026-11-04",
-      },
+      reason: "SELECT scanned and returned bytes are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST objects.selectContent"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "Object Lambda returned bytes and Lambda charges are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["POST objectLambda.writeGetObjectResponse"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "Express session has no independently pinned per-call rate",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["GET buckets.createSession"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "S3 Metadata feature charges are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["POST buckets.createMetadataConfiguration"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "S3 Metadata feature charges are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["POST buckets.createMetadataTableConfiguration"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "S3 Metadata feature charges are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["PUT buckets.updateMetadataInventoryTable"]
+  ),
+  ...rows(
+    "s3",
+    {
+      kind: "unpriced",
+      unit: "requests",
+      reason: "S3 Metadata feature charges are not modeled",
+      source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
+    },
+    ["PUT buckets.updateMetadataJournalTable"]
   ),
   ...rows(
     "simplefunctions",

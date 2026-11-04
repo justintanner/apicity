@@ -1,3 +1,4 @@
+import { S3_EXCLUSIONS } from "./pricing/s3";
 import { computeEstimate, evaluateDeclaredUsage } from "./compute";
 import { isCostPolicyKnown } from "./cost-tier";
 import { endpointBilling } from "./endpoint-billing";
@@ -124,7 +125,7 @@ function forecast(req: EndpointEstimateRequest): EndpointEstimate | undefined {
 }
 
 /** Endpoint-aware estimation; computeEstimate and the paygate stay unchanged. */
-export function estimateEndpoint(
+function estimateEndpointInternal(
   req: EndpointEstimateRequest
 ): EndpointEstimate {
   const billing = endpointBilling(req.provider, req.method, req.dotPath);
@@ -181,4 +182,15 @@ export function estimateEndpoint(
         ? "priced"
         : "unavailable",
   };
+}
+
+/** Every S3 result, including free and unavailable routes, names exclusions. */
+export function estimateEndpoint(
+  req: EndpointEstimateRequest
+): EndpointEstimate {
+  const result = estimateEndpointInternal(req);
+  if (req.provider === "s3" && !result.warnings.includes(S3_EXCLUSIONS)) {
+    result.warnings.push(S3_EXCLUSIONS);
+  }
+  return result;
 }

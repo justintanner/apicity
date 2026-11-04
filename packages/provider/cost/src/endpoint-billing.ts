@@ -365,7 +365,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "tokens",
       reason:
-        "Bundled rows stop at claude-opus-4-7. Server tools bill apart: web search 10 USD per 1k.",
+        "Dated model rates include both cache-write TTLs. Server tools bill apart: web search 10 USD per 1k.",
       source: {
         url: "https://platform.claude.com/docs/en/about-claude/pricing.md",
         asOf: "2026-11-04",
@@ -376,10 +376,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "anthropic",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "tokens",
       reason:
-        "Each request carries model, max_tokens and messages, so it can be priced at 50 percent; errored, canceled and expired requests are not billed",
+        "Forecast per item at 50 percent of model and cache rates; strict requires per-item usage. Errored, canceled and expired requests are not billed",
       source: {
         url: "https://platform.claude.com/docs/en/build-with-claude/batch-processing.md",
         asOf: "2026-11-04",

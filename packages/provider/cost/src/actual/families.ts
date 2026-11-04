@@ -118,7 +118,7 @@ function serviceTierOf(exchange: ProviderExchange): string | undefined {
 const tokenFamily: Extractor = (exchange) => {
   const out = blank(exchange);
   const found = findUsage(exchange.responseBody);
-  if (found) readTokenUsage(found, out);
+  if (found) readTokenUsage(found, out, exchange.provider === "anthropic");
   out.serviceTier = serviceTierOf(exchange);
   out.uncoveredCharge ??= uncoveredChargeOf(exchange, found?.usage);
   settleBackgroundResponse(exchange, out);

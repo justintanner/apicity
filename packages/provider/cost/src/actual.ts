@@ -45,6 +45,9 @@ function tokenHints(usage: ActualUsage, serviceTier?: string): CostHints {
     outputTokens: usage.outputTokens ?? 0,
     cacheReadInputTokens: usage.cacheReadInputTokens ?? 0,
     cacheWriteInputTokens: usage.cacheWriteInputTokens ?? 0,
+    ...(usage.cacheWrite1hInputTokens !== undefined
+      ? { cacheWrite1hInputTokens: usage.cacheWrite1hInputTokens }
+      : {}),
     ...(usage.audioInputTokens !== undefined
       ? { audioInputTokens: usage.audioInputTokens }
       : {}),
@@ -121,7 +124,10 @@ function deriveFromTokens(
       evaluateDeclaredUsage(
         provider,
         key,
-        provider === "openai" || provider === "xai" || provider === "fireworks"
+        provider === "openai" ||
+          provider === "xai" ||
+          provider === "fireworks" ||
+          provider === "anthropic"
           ? {
               ...exchange.requestBody,
               ...(provider === "xai" ? { service_tier: tier } : {}),

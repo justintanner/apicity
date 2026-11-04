@@ -55,8 +55,11 @@ export interface CostBreakdown {
   // publishes a long-context tier.
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  // Anthropic: one-hour writes, a subset of the total cacheWriteInputTokens.
+  cacheWrite1hInputTokens?: number;
   cacheReadUsdPerMillion?: number;
   cacheWriteUsdPerMillion?: number;
+  cacheWrite1h?: { inputTokens: number; usdPerMillion: number };
   contextTier?: "short" | "long";
   // Declared openai usage on a row with per-modality rates (gpt-realtime-2.1):
   // each modality's counts and rates. The top-level rate fields then carry
@@ -193,6 +196,8 @@ export interface CostHints {
   // The write count names no retention window. Cost-only.
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  // Anthropic: one-hour writes, a subset of the total cacheWriteInputTokens.
+  cacheWrite1hInputTokens?: number;
   // Per-modality subsets for a model that prices audio and image tokens apart
   // from text (gpt-realtime-2.1), from a Realtime `response.done` usage:
   // `input_token_details.audio_tokens` / `.image_tokens` (cached included),
@@ -299,6 +304,8 @@ export interface ActualUsage {
   outputTokens?: number;
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  // Anthropic: one-hour writes, a subset of the total cacheWriteInputTokens.
+  cacheWrite1hInputTokens?: number;
   reasoningTokens?: number;
   audioInputTokens?: number;
   imageInputTokens?: number;

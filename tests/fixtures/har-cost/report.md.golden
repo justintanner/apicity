@@ -23,17 +23,17 @@ Ratio and verdicts compare each call's quote, or the recomputed figure when no q
 
 ## Usage
 
-| Endpoint | Model | Input tokens | Output tokens | Cache read | Cache write | Reasoning | Characters | Seconds | Credits | Billable units |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| kie POST api.v1.jobs.createTask | fixture/agrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 150 | n/a |
-| kie POST api.v1.jobs.createTask | fixture/before-rate | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 50 | n/a |
-| kie POST api.v1.jobs.createTask | fixture/disagrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 120 | n/a |
-| kie POST api.v1.jobs.createTask | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
-| kie GET api.v1.jobs.recordInfo | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
-| openai POST v1.responses | fixture-token | 3000 | 1500 | 600 | n/a | 300 | n/a | n/a | n/a | n/a |
-| xai POST v1.responses | grok-4 | 2684 | 728 | 679 | n/a | 623 | n/a | n/a | n/a | n/a |
-| xai POST v1.responses | grok-4-fast | 170 | 98 | 153 | n/a | 97 | n/a | n/a | n/a | n/a |
-| xai POST v1.responses | grok-4.6 | 221 | 128 | 128 | n/a | 127 | n/a | n/a | n/a | n/a |
+| Endpoint | Model | Input tokens | Output tokens | Cache read | Cache write | Cache write 1h | Reasoning | Characters | Seconds | Credits | Billable units |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| kie POST api.v1.jobs.createTask | fixture/agrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 150 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/before-rate | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 50 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/disagrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 120 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
+| kie GET api.v1.jobs.recordInfo | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
+| openai POST v1.responses | fixture-token | 3000 | 1500 | 600 | n/a | n/a | 300 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4 | 2684 | 728 | 679 | n/a | n/a | 623 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4-fast | 170 | 98 | 153 | n/a | n/a | 97 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4.6 | 221 | 128 | 128 | n/a | n/a | 127 | n/a | n/a | n/a | n/a |
 
 ## Corrections
 

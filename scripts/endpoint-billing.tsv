@@ -23,8 +23,8 @@ anthropic	v1.skills.list	GET	free		Skill management has no pricing row; executio
 anthropic	v1.skills.retrieve	GET	free		Skill management has no pricing row; execution bills as code execution and tokens	https://platform.claude.com/docs/en/build-with-claude/skills-guide.md	2026-11-04
 anthropic	v1.skills.versions.list	GET	free		Skill management has no pricing row; execution bills as code execution and tokens	https://platform.claude.com/docs/en/build-with-claude/skills-guide.md	2026-11-04
 anthropic	v1.files	POST	free		Docs: Files API operations are free	https://platform.claude.com/docs/en/build-with-claude/files.md	2026-11-04
-anthropic	v1.messages	POST	metered	tokens	Bundled rows stop at claude-opus-4-7. Server tools bill apart: web search 10 USD per 1k.	https://platform.claude.com/docs/en/about-claude/pricing.md	2026-11-04
-anthropic	v1.messages.batches	POST	unpriced	tokens	Each request carries model, max_tokens and messages, so it can be priced at 50 percent; errored, canceled and expired requests are not billed	https://platform.claude.com/docs/en/build-with-claude/batch-processing.md	2026-11-04
+anthropic	v1.messages	POST	metered	tokens	Dated model rates include both cache-write TTLs. Server tools bill apart: web search 10 USD per 1k.	https://platform.claude.com/docs/en/about-claude/pricing.md	2026-11-04
+anthropic	v1.messages.batches	POST	metered	tokens	Forecast per item at 50 percent of model and cache rates; strict requires per-item usage. Errored, canceled and expired requests are not billed	https://platform.claude.com/docs/en/build-with-claude/batch-processing.md	2026-11-04
 anthropic	v1.messages.batches.cancel	POST	free		Model list or batch list, cancel or delete; the pricing page bills none of these	https://platform.claude.com/docs/en/about-claude/pricing.md	2026-11-04
 anthropic	v1.messages.countTokens	POST	free		Docs: token counting is free to use	https://platform.claude.com/docs/en/build-with-claude/token-counting.md	2026-11-04
 anthropic	v1.skills.create	POST	free		Skill management has no pricing row; execution bills as code execution and tokens	https://platform.claude.com/docs/en/build-with-claude/skills-guide.md	2026-11-04

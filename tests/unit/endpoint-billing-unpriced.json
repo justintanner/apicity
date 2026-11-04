@@ -1,5 +1,4 @@
 {
-  "anthropic POST v1.messages.batches": "P8 ac-wdbo57",
   "fireworks POST inference.v1.audio.batch.transcriptions": "P7 ac-kxko3y",
   "fireworks POST inference.v1.audio.batch.translations": "P7 ac-kxko3y",
   "fireworks POST inference.v1.audio.transcriptions": "P7 ac-kxko3y",

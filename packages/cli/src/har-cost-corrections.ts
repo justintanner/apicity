@@ -49,6 +49,7 @@ const MOST_OF_INPUT_RATE: Record<string, number> = {
   cacheRead: 1,
   cacheWrite: 2,
   cacheWrite5m: 2,
+  cacheWrite1h: 2,
 };
 const STANDARD_TIERS: ReadonlySet<string> = new Set([
   "default",
@@ -96,7 +97,8 @@ export function tokenVote(
   const cached = usage.cacheReadInputTokens ?? 0;
   const written = usage.cacheWriteInputTokens ?? 0;
   // Input counts its cached and written subsets, so less than those is unreadable.
-  if (input < cached + written) return {};
+  const oneHour = usage.cacheWrite1hInputTokens ?? 0;
+  if (input < cached + written || oneHour < 0 || oneHour > written) return {};
   const { rate } = entry;
   const parts: { field: string; count: number; rate: number | undefined }[] = [
     { field: "input", count: input - cached - written, rate: rate.input },
@@ -104,10 +106,15 @@ export function tokenVote(
     { field: "cacheRead", count: cached, rate: rate.cacheRead },
     {
       field: rate.cacheWrite5m === undefined ? "cacheWrite" : "cacheWrite5m",
-      count: written,
+      count: written - oneHour,
       rate: rate.cacheWrite ?? rate.cacheWrite5m,
     },
   ];
+  parts.push({
+    field: "cacheWrite1h",
+    count: oneHour,
+    rate: rate.cacheWrite1h,
+  });
   const counted = parts.filter((part) => part.count > 0);
   const unknown = counted.filter((part) => part.rate === undefined);
   const known = counted.reduce(

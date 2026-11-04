@@ -40,6 +40,8 @@ export interface TokenRate {
   output: number;
   cacheRead?: number;
   cacheWrite5m?: number;
+  // Anthropic one-hour retention; separate from the five-minute write rate.
+  cacheWrite1h?: number;
   cacheWrite?: number;
 }
 

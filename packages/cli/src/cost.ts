@@ -61,6 +61,7 @@ export interface CostHelperUsage {
   outputTokens?: number;
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  cacheWrite1hInputTokens?: number;
   reasoningTokens?: number;
   audioInputTokens?: number;
   imageInputTokens?: number;
@@ -115,6 +116,7 @@ export interface CostHelperTokenPricing {
     output: number;
     cacheRead?: number;
     cacheWrite5m?: number;
+    cacheWrite1h?: number;
     cacheWrite?: number;
   };
   longContext?: unknown;

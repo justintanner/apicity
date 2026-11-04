@@ -358,8 +358,8 @@ describe("openai declared usage on models without cache rates", () => {
   });
 });
 
-describe("declared usage stays an openai route", () => {
-  it("leaves anthropic on the heuristic when cache counts are passed", () => {
+describe("declared usage routing", () => {
+  it("prices Anthropic hints while preserving its no-hint heuristic", () => {
     const payload = {
       model: "claude-haiku-4-5",
       messages: [{ role: "user", content: "x".repeat(400) }],
@@ -371,8 +371,9 @@ describe("declared usage stays an openai route", () => {
       payload,
       costHints: usage(5_000, 1_000, 1_000, 10),
     });
-    expect(hinted).toEqual(plain);
-    expect(hinted.source).toBe("tokens-heuristic+table");
+    expect(plain.source).toBe("tokens-heuristic+table");
+    expect(hinted.source).toBe("declared-tokens+table");
+    expect(hinted.usd).toBeCloseTo(0.0044, 12);
   });
 
   it("leaves the KIE declared-token models unchanged by cache counts", () => {

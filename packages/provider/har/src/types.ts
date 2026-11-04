@@ -67,6 +67,8 @@ export interface ApicityEntryMetadata {
   pollRepeat?: number;
   streamed?: boolean;
   bodyTruncated?: boolean;
+  /** The response's body failed mid-read, so this holds what arrived. */
+  responseCut?: boolean;
 }
 /** What a cost estimator quoted before the call. */
 export interface HarCallEstimate {

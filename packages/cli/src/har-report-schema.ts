@@ -231,7 +231,8 @@ export function unknownKeys(body: unknown, node: JsonSchema): string[] {
     path: (string | number)[]
   ) {
     const c = children(nodes);
-    if (c.open) return;
+    // A placeholder stands in for a media value, whose keys the schema never named.
+    if (c.open || placeholder(value)) return;
     if (isObject(value))
       for (const [k, v] of Object.entries(value)) {
         if (!c.keys.has(k)) found.add(pathName([...path, k]));

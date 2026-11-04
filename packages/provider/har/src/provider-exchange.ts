@@ -13,6 +13,7 @@ export interface ProviderExchange {
   responseHeaders: Record<string, string>;
   responseBody: unknown;
   bodyTruncated?: boolean;
+  responseCut?: boolean;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -56,8 +57,13 @@ function sseFrames(text: string): unknown[] {
 
 function responseBodyOf(entry: HarEntry): unknown {
   const text = responseText(entry);
-  if (text === undefined) return null;
   const mime = (entry.response.content?.mimeType ?? "").toLowerCase();
+  if (text === undefined) {
+    // A stream cut before its first byte is still a stream that stopped short.
+    return mime.includes("event-stream") && entry._apicity?.bodyTruncated
+      ? []
+      : null;
+  }
   const leading = text.trimStart();
   if (
     mime.includes("event-stream") ||
@@ -110,5 +116,6 @@ export function entryToProviderExchange(
     responseHeaders,
     responseBody: responseBodyOf(entry),
     ...(entry._apicity?.bodyTruncated ? { bodyTruncated: true } : {}),
+    ...(entry._apicity?.responseCut ? { responseCut: true } : {}),
   };
 }

@@ -868,6 +868,76 @@ describe("extractActual pins", () => {
       expect(actual.warnings.join(" ")).not.toContain("stops before");
     });
 
+    describe("a response cut mid-read", () => {
+      const poll = "https://api.kie.ai/api/v1/jobs/recordInfo?taskId=t";
+      const cut = {
+        provider: "kie",
+        url: poll,
+        responseBody: null,
+        bodyTruncated: true,
+        responseCut: true,
+      };
+
+      it("is unsettled, so a poll cut that way does not end its call", () => {
+        const actual = extractActual(inlineExchange(cut));
+        expect(actual.settled).toBe(false);
+        expect(actual.usd).toBeNull();
+        expect(actual.warnings.join(" ")).toContain("not captured");
+      });
+
+      it("keeps a figure its headers stated", () => {
+        const actual = extractActual(
+          inlineExchange({
+            ...cut,
+            provider: "elevenlabs",
+            url: "https://api.elevenlabs.io/v1/text-to-speech/v",
+            responseHeaders: { "character-cost": "120" },
+          })
+        );
+        expect(actual.usage.credits).toBe(120);
+        expect(actual.settled).toBe(true);
+      });
+
+      it("keeps a charge its headers stated", () => {
+        const actual = extractActual(
+          inlineExchange({
+            ...cut,
+            provider: "elevenlabs",
+            url: "https://api.elevenlabs.io/v1/speech-to-text",
+            responseHeaders: { "fiat-cost-before-overages": "0.02" },
+          })
+        );
+        expect(actual.statedUsd).toBe(0.02);
+        expect(actual.settled).toBe(true);
+      });
+
+      it("stays settled on a 4xx, which has already ended the call", () => {
+        expect(
+          extractActual(inlineExchange({ ...cut, status: 400 })).settled
+        ).toBe(true);
+      });
+
+      it("stays unsettled on a 5xx, which may yet pass", () => {
+        expect(
+          extractActual(inlineExchange({ ...cut, status: 502 })).settled
+        ).toBe(false);
+      });
+
+      it("reads a whole body as the family does, whatever became of the connection", () => {
+        const actual = extractActual(
+          inlineExchange({
+            provider: "xai",
+            url: "https://api.x.ai/v1/images/edits",
+            responseBody: { usage: { cost_in_usd_ticks: 200000000 } },
+            bodyTruncated: true,
+            responseCut: true,
+          })
+        );
+        expect(actual.settled).toBe(true);
+        expect(actual.statedUsd).toBe(0.02);
+      });
+    });
+
     it("a binary placeholder is settled and says its body is gone", () => {
       const actual = extractActual(
         inlineExchange({

@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { exchangeToEntry, serializeExchange } from "./exchange.js";
+import { summarizeInputMedia } from "./persist.js";
 import { scrubHar } from "./scrub.js";
 import { providerHosts } from "./provider-hosts.js";
 import type {
@@ -52,6 +53,7 @@ interface CallScope {
   exchanges: Promise<HarEntry | undefined>[];
   networkError: boolean;
   finished: boolean;
+  requests: unknown[];
 }
 
 function version(): string {
@@ -153,6 +155,8 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     const entries = (await Promise.all(scope.exchanges)).filter(
       (entry): entry is HarEntry => entry !== undefined
     );
+    // Only here: a body can fail after the callback has returned.
+    if (scope.networkError) scope.metadata.outcome = "network_error";
     if (
       disabled ||
       (options.mode === "failures" && scope.metadata.outcome === "ok")
@@ -181,7 +185,10 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
       log: {
         version: "1.2",
         creator: { name: "apicity", version: apicityVersion },
-        _apicity: scope.metadata,
+        _apicity: {
+          ...scope.metadata,
+          input: summarizeInputMedia(scope.metadata.input),
+        },
         entries: collapsed,
       },
     });
@@ -248,6 +255,7 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
         exchanges: [],
         networkError: false,
         finished: false,
+        requests: [],
       };
     } catch (error) {
       fail(error);
@@ -298,7 +306,6 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
         scope.finished = true;
         try {
           scope.metadata.durationMs = Math.max(0, clock() - started);
-          if (scope.networkError) scope.metadata.outcome = "network_error";
         } catch (error) {
           fail(error);
         }
@@ -319,11 +326,15 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     try {
       started = clock();
       // Clone a Request before constructing: never lock the application's body.
-      request = new Request(
-        input instanceof Request ? input.clone() : input,
-        init
-      );
+      // A clone's signal can stop following its original, so follow the original's.
+      request =
+        input instanceof Request
+          ? new Request(input.clone(), { signal: input.signal, ...init })
+          : new Request(input, init);
       snapshot = request.clone();
+      // Each Request follows its signal through a weak reference, and base makes its
+      // own copy. Once collected, these no longer pass the caller's abort to the body.
+      scope.requests.push(input, request);
     } catch (error) {
       fail(error);
       return await base(input, init);
@@ -351,7 +362,8 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
             sseTailBytes: options.sseTailBytes,
           }
         ).then(
-          ({ entry, responseBodySha256 }) => {
+          ({ entry, responseBodySha256, bodyFailed }) => {
+            if (bodyFailed) scope.networkError = true;
             fingerprints.set(
               entry,
               JSON.stringify([

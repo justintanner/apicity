@@ -25,6 +25,10 @@ import { repoRoot } from "./provider-scope.mjs";
  * either, so without this list a bead that adds an endpoint can ship without its
  * cost-tier row and only go red in full CI on main (ac-t2gfln).
  *
+ * The endpoint-billing guard requires reviewed exact-row billing records,
+ * owned unpriced exceptions and agreement with the paid-endpoint registry.
+ * It also pins the generated billing TSV (ac-qky8c5).
+ *
  * Source-pin guards hash cross-provider files into a frozen manifest.
  * `tests/unit/kie-pricing-reconciliation.test.ts` pins
  * `packages/provider/cost/src/slugs.ts` and `scripts/endpoint-docs.tsv` among
@@ -254,6 +258,12 @@ import { repoRoot } from "./provider-scope.mjs";
  * (median 20.395s). CPU, threads and kernel match; Node is still v22.23.4,
  * not v22.23.2, so 14.9 stays by the same rule.
  *
+ * Re-measured for ac-qky8c5 at base 3b523dbe with endpoint billing:
+ * sixteen entries, 1,097 tests in 16 files. Warm-up 28.507s (load 31.92);
+ * timed runs 31.730s, 32.981s, 30.280s at loads 32.50, 35.91, 36.82
+ * (median 31.730s). CPU, threads and kernel match the reference; Node
+ * v22.23.4 differs from v22.23.2. Retain 14.9 by the protocol below.
+ *
  * Re-measure when the membership changes, and record the result here. The
  * protocol is the one this figure was taken by (ac-iag7fk): on this host -
  * `/proc/cpuinfo` model name, `nproc`, `uname -r` and `node -v` must match the
@@ -286,6 +296,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/integration/upload-recordings.test.ts",
   "tests/integration/multipart-recordings.test.ts",
   "tests/unit/endpoint-cost-tiers.test.ts",
+  "tests/unit/endpoint-billing.test.ts",
   "tests/unit/kie-pricing-reconciliation.test.ts",
   "tests/unit/cost-slugs.test.ts",
   "tests/unit/cost-pricing.test.ts",

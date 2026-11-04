@@ -18,6 +18,7 @@ const RECORDING_ENUMERATION_TESTS = [
 // Surface-inventory suite (compares committed TSVs to the live endpoint map).
 const SURFACE_INVENTORY_TESTS = [
   "tests/unit/endpoint-cost-tiers.test.ts",
+  "tests/unit/endpoint-billing.test.ts",
 ] as const;
 
 // Source-pin suite (re-hashes cross-provider files against a frozen manifest).
@@ -269,11 +270,13 @@ describe("cross-cutting repo-wide guard tests", () => {
   });
 
   it("surface-inventory tests pin a committed endpoint-surface artifact", () => {
-    // Inventory tests must reference the cost-tiers TSV so a missing row after
+    // Inventory tests must reference their TSV so a missing row after
     // an endpoint landing fails the fast gate (ac-t2gfln).
     for (const relativePath of SURFACE_INVENTORY_TESTS) {
       const source = readRepoFile(relativePath);
-      expect(source, relativePath).toContain("endpoint-cost-tiers.tsv");
+      expect(source, relativePath).toContain(
+        path.basename(relativePath).replace(".test.ts", ".tsv")
+      );
     }
   });
 

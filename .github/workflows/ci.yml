@@ -86,6 +86,9 @@ jobs:
       - name: Verify generated frontier registry is current
         run: pnpm run gen:frontier:check
 
+      - name: Verify endpoint pricing keys are current
+        run: pnpm run gen:endpoint-pricing-keys:check
+
       # Must run BEFORE the build: `pnpm run build` ends in `doc-gen`, which
       # rewrites the very files this step inspects, so a check placed after it
       # would compare regenerated output against itself and pass on a stale

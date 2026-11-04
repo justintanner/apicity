@@ -127,6 +127,54 @@ function isCredentialKey(key: string): boolean {
   return GENERIC_CREDENTIAL_KEYS.has(key.replace(/[_-]/g, "").toLowerCase());
 }
 
+function isFormEncoded(mimeType: string | undefined): boolean {
+  return /^application\/x-www-form-urlencoded\b/i.test(mimeType ?? "");
+}
+
+// Text a form could have written, whatever its content type says: a field name first,
+// and no white space, which a form encodes. JSON, SSE, URLs and prose all fail this.
+function looksLikeForm(text: string): boolean {
+  return /^[\w.%+-]+=/.test(text) && !/\s/.test(text);
+}
+
+// Only a value under a credential name changes, so a clean form stays byte for byte.
+function redactFormCredentials(text: string): string {
+  return text
+    .split("&")
+    .map((field) => {
+      const equals = field.indexOf("=");
+      if (equals < 0) return field;
+      const name = field.slice(0, equals);
+      let decoded = name;
+      try {
+        decoded = decodeURIComponent(name);
+      } catch {
+        // A malformed escape: read the name as written.
+      }
+      // A nested form spells a key `user[password]`.
+      return decoded.split(/[[\]]/).some(isCredentialKey)
+        ? `${name}=***`
+        : field;
+    })
+    .join("&");
+}
+
+function redactFormParams(params: unknown[] | undefined): void {
+  for (const param of params ?? []) {
+    const { name, value } = (param ?? {}) as {
+      name?: unknown;
+      value?: unknown;
+    };
+    if (
+      typeof name === "string" &&
+      value !== undefined &&
+      isCredentialKey(name)
+    ) {
+      (param as { value: unknown }).value = "***";
+    }
+  }
+}
+
 // The index of the quote closing the string opened at `open`. A quote with an odd run
 // of backslashes before it is escaped.
 function closingQuote(text: string, open: number): number {
@@ -237,7 +285,11 @@ function redactStreamFrames(text: string): string {
 
 function redactResponseTextSecrets(text: string): string {
   const redacted = redactUrlSecrets(
-    redactGenericCredentialText(redactStreamFrames(text))
+    redactGenericCredentialText(
+      redactStreamFrames(
+        looksLikeForm(text) ? redactFormCredentials(text) : text
+      )
+    )
   );
   if (
     !/"upload_host"\s*:/.test(redacted) ||
@@ -261,7 +313,9 @@ function redactRequestPostDataValueSecrets(
   }
 
   if (typeof value === "string") {
-    const result = redactUrlSecrets(value);
+    const result = redactUrlSecrets(
+      looksLikeForm(value) ? redactFormCredentials(value) : value
+    );
     return { value: result, redacted: result !== value };
   }
   if (Array.isArray(value)) {
@@ -302,9 +356,14 @@ function redactRequestPostDataTextSecrets(
   recording: PersistedHarRecording
 ): void {
   const postData = recording.request?.postData;
+  redactFormParams(postData?.params);
   const raw = postData?.text;
   if (!postData || typeof raw !== "string") return;
-  const text = redactGenericCredentialText(raw);
+  const text = redactGenericCredentialText(
+    isFormEncoded(postData.mimeType) || looksLikeForm(raw)
+      ? redactFormCredentials(raw)
+      : raw
+  );
   postData.text = text;
   const secretKeys = new Set(REQUEST_POST_DATA_SECRET_KEYS);
 

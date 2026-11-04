@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { estimateEndpoint, PRICING } from "@apicity/cost";
+import { classifyEstimate, estimateEndpoint, PRICING } from "@apicity/cost";
 
 // Each correction docs/cost-learning-pass-1.md applied, pinned to what its
 // committed recording billed at the price read on 2026-11-04. Each row's source
@@ -9,7 +9,10 @@ interface Recording {
   log: {
     entries: Array<{
       request: { url: string; postData?: { text?: string } };
-      response: { headers: Array<{ name: string; value: string }> };
+      response: {
+        headers: Array<{ name: string; value: string }>;
+        content?: { text?: string };
+      };
     }>;
   };
 }
@@ -165,6 +168,107 @@ describe("fal corrections, at header units x the price on 2026-11-04", () => {
       },
     });
   });
+});
+
+// The three rows the pass left open, as ac-1m1poe settled them. fal states no
+// USD on a call, so header units x a rate is the bill.
+describe("fal rows the pass left open", () => {
+  const responseOf = (har: Recording) =>
+    JSON.parse(har.log.entries[0]!.response.content!.text!) as {
+      video: { height: number; duration: number; num_frames: number };
+    };
+
+  it("prices Grok video extend at the bill its source explains", () => {
+    const har = read(`${FAL}/xai-grok-imagine-video-extend-video_332223061`);
+    const payload = payloadOf(har, /fal\.run/);
+    const dotPath = "xai.grokImagineVideo.extendVideo";
+
+    // tests/fixtures/jump.mp4 is 193 frames at 480p, and 4 new seconds at 24 fps
+    // make the 289 frames the call returned, so the source ran 8 s.
+    expect(payload.duration).toBe(4);
+    const { video } = responseOf(har);
+    expect(video.height).toBe(480);
+    expect(video.num_frames).toBe(193 + 4 * 24);
+
+    const hinted = estimateEndpoint({
+      provider: "fal",
+      method: "POST",
+      dotPath,
+      payload,
+      costHints: { inputDurationSeconds: 8, inputResolution: "480p" },
+    });
+    expect(hinted.status).toBe("priced");
+    expect(hinted.usd).toBeCloseTo(billableUnits(har) * 0.05, 6);
+    expect(hinted.warnings).toEqual([]);
+    expect(
+      PRICING.fal["xai/grok-imagine-video/extend-video"]!.source?.asOf
+    ).toBe("2026-11-04");
+
+    // Without its source there is no figure, where this row used to quote 0.20.
+    const bare = estimateEndpoint({
+      provider: "fal",
+      method: "POST",
+      dotPath,
+      payload,
+    });
+    expect(bare.usd).toBe(0);
+    expect(bare.status).toBe("unavailable");
+    expect(classifyEstimate(bare)).toBe("prohibitive");
+    expect(bare.warnings[0]).toContain("costHints.inputDurationSeconds");
+  });
+
+  it("calls GPT Image 1.5's per-image price a floor under its bill", () => {
+    const har = read(`${FAL}/gpt-image-1-5_4206709809`);
+    const estimate = estimateEndpoint({
+      provider: "fal",
+      method: "POST",
+      dotPath: "gptImage1p5",
+      payload: payloadOf(har, /fal\.run/),
+    });
+    expect(estimate.usd).toBe(0.009);
+    // Billed at $1 per unit: more than the image, by tokens the call never states.
+    expect(billableUnits(har)).toBe(0.02);
+    expect(estimate.usd).toBeLessThan(billableUnits(har));
+    expect(estimate.warnings[0]).toContain("this estimate is a floor");
+  });
+
+  // Not a claim that 0.02568 is today's price: the row holds the last rate a bill
+  // confirmed, on the recordings' date, until the usage API reads a later one.
+  // Moving it means replacing these two figures with that bill.
+  it.each([
+    [
+      "bytedance/seedance-2.5/us/text-to-video",
+      "bytedance.seedance2p5.us.textToVideo",
+      `${FAL}/bytedance-seedance2p5-us-text-to-video_2222117863`,
+      undefined,
+      0.996384,
+    ],
+    [
+      "bytedance/seedance-2.5/us/reference-to-video",
+      "bytedance.seedance2p5.us.referenceToVideo",
+      `${FAL}/bytedance-seedance2p5-us-reference-to-video_2741595005`,
+      { inputDurationSeconds: 4 },
+      1.1894976,
+    ],
+  ])(
+    "holds %s at its last bill",
+    (key, dotPath, recording, costHints, billedUsd) => {
+      const har = read(recording);
+      const estimate = estimateEndpoint({
+        provider: "fal",
+        method: "POST",
+        dotPath,
+        payload: payloadOf(har, /fal\.run/),
+        ...(costHints ? { costHints } : {}),
+      });
+      expect(estimate.status).toBe("priced");
+      expect(estimate.usd).toBeCloseTo(billedUsd, 6);
+      expect(billableUnits(har) * 0.02568).toBeCloseTo(billedUsd, 6);
+      expect(PRICING.fal[key]).toMatchObject({
+        rates: { "480p": 0.02568 / 1000 },
+      });
+    }
+  );
 });
 
 describe("KIE corrections", () => {

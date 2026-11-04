@@ -388,6 +388,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** fal `xai/grok-imagine-video/extend-video` prices what its card
+  bills: the new seconds at 0.05 USD/s (480p) or 0.07 USD/s (720p), plus 0.01
+  USD per source second. The request carries neither the source's length nor
+  its resolution, so they come from `costHints.inputDurationSeconds` and the new
+  `costHints.inputResolution`. Without both, an estimate is `unavailable` and
+  classifies as `prohibitive`, where it used to quote a flat 0.05 USD/s. A
+  recorded 4 s extension of an 8 s 480p clip billed 0.28 USD against the old
+  0.20 (ac-1m1poe).
+- fal `fal-ai/gpt-image-1.5` and `fal-ai/gpt-image-1.5/edit` estimates now warn
+  that they are a floor: text tokens, and an edit's input image tokens, bill on
+  top of the per-image rate, and no response states them. A recorded low
+  1024x1024 generation billed 0.02 USD against the 0.009 USD image rate
+  (ac-1m1poe).
 - **Breaking:** xAI `grok-4`, `grok-3`, `grok-4-fast` and `grok-4-1-fast` price
   as `grok-4.3` (1.25 input, 0.20 cached and 2.50 output USD per 1M), which is
   what xAI has billed them as since its 2026-05-15 retirement. The old rows read

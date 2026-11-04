@@ -877,9 +877,9 @@ function auditedUnitInfo(official, key) {
   return undefined;
 }
 
-function knownFalseMapping(official, key) {
+function knownFalseMapping(official, key, live) {
   const description = String(official.modelDescription ?? "");
-  return registryKnownFalseMapping({ description, key, official });
+  return registryKnownFalseMapping({ description, key, official, live });
 }
 
 function runtimeRateConflict(official, key) {
@@ -966,7 +966,7 @@ function pricingCellBlocker(issues) {
   return `The official pricing cell cannot be reconciled until upstream fixes or documents: ${issues.join(", ")}.`;
 }
 
-function classifyRawRow(raw, inventories) {
+function classifyRawRow(raw, inventories, live = false) {
   const official = raw.raw ?? raw;
   const queryConflict = queryDescriptionConflict(official, inventories);
   const mappedKeys = queryConflict
@@ -978,7 +978,7 @@ function classifyRawRow(raw, inventories) {
   const mappedKey = mappedKeys[0];
   const auditedUnit = auditedUnitInfo(official, mappedKey);
   const issues = cellIssues(official, mappedKey);
-  const falseMapping = knownFalseMapping(official, mappedKey);
+  const falseMapping = knownFalseMapping(official, mappedKey, live);
   const rateConflict = runtimeRateConflict(official, mappedKey);
   const isFree =
     explicitZero(official.creditPrice) && explicitZero(official.usdPrice);
@@ -1490,6 +1490,7 @@ export async function buildReconciliationManifest({
   snapshotPath,
   metadataPath,
   generatedAt = new Date().toISOString(),
+  live = false,
 }) {
   if (!snapshotPath || !metadataPath) {
     fail(
@@ -1514,7 +1515,7 @@ export async function buildReconciliationManifest({
     semanticKey: record.semanticKey,
     raw: record.raw,
   }));
-  const rows = rowInputs.map((row) => classifyRawRow(row, inventories));
+  const rows = rowInputs.map((row) => classifyRawRow(row, inventories, live));
   const apiCity = inventoryEntries(inventories, rows);
   const inventory = {
     baseline: INVENTORY_BASELINE,

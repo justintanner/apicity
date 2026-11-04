@@ -1823,7 +1823,7 @@
       "packages/provider/kie/src/zod.ts": "sha256:111ff369cd5b976e18025bd133b60ad553f870e3b2c3f05a4cdc253c3b235326",
       "packages/provider/kie/src/model-schemas.ts": "sha256:04c34dcb2a8ae3afc7eade88456ccb107df6db8e7aebeeb6c0cc7595b4c9c5b9",
       "packages/provider/kie/src/kie.ts": "sha256:6f38173005b380518864c6add45a0c06279378a4e02fb4aaef673ef5cd5c217f",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:ea45bf597b6eca9bf4f94753fcfa04dd00482b0066a18f7995b23df4613d0c22",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:8cd3a1fc193cdd8bc1d4cc4d7b1a76ca8e818c1ef7e2972fbe2591aa0feaced0",
       "packages/provider/cost/src/slugs.ts": "sha256:38151ad56379381a11c6807615dd043197a5569c31d493e9f30d3f5ece3883c2",
       "scripts/endpoint-docs.tsv": "sha256:41eef9bce242d6a6fee5453013271c957f0754546c0a7d81fd154344ecf5711b"
     }
@@ -13761,40 +13761,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-video-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "104.5",
-        "creditUnit": "per video",
-        "usdPrice": "0.5225",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "5"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-video-to-video",
-        "duration": "modelInputSchemas:wan/2-6-video-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-video-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "5",
-          "prompt": "audit",
-          "video_urls": ["https://example.com/a.png"]
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:9fb6b93836c4247ad526715344322ce1d8b76e5268f847b8ee90b309fd2258c9#1",
@@ -13812,40 +13786,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-video-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "209.5",
-        "creditUnit": "per video",
-        "usdPrice": "1.0475",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "10"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-video-to-video",
-        "duration": "modelInputSchemas:wan/2-6-video-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-video-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "10",
-          "prompt": "audit",
-          "video_urls": ["https://example.com/a.png"]
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:d38f8e61dae51d7d1f47cac1cf60ef756eac9bf67ac97083ca3572d952de7cc2#1",
@@ -13914,40 +13862,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "209.5",
-        "creditUnit": "per video",
-        "usdPrice": "1.0475",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "10"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-image-to-video",
-        "duration": "modelInputSchemas:wan/2-6-image-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-image-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "10",
-          "prompt": "audit",
-          "image_urls": ["https://example.com/a.png"]
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:3d65e554fee42b56185d25979275a6e88bdfd5fba4ad515c0f53e05e423d612f#1",
@@ -14067,40 +13989,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "104.5",
-        "creditUnit": "per video",
-        "usdPrice": "0.5225",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "5"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-image-to-video",
-        "duration": "modelInputSchemas:wan/2-6-image-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-image-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "5",
-          "prompt": "audit",
-          "image_urls": ["https://example.com/a.png"]
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:5da32c80be06eb6ea7231e670d1713c8c6ad225beca27208d9c807a2be0936ac#1",
@@ -14271,39 +14167,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "104.5",
-        "creditUnit": "per video",
-        "usdPrice": "0.5225",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "5"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-text-to-video",
-        "duration": "modelInputSchemas:wan/2-6-text-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-text-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "5",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:e18de7b218857f288859453da73f979bf8ce2054dfb22ad4d5f8cbd48bac4a14#1",
@@ -14321,39 +14192,14 @@
         "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["wan/2-6-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "209.5",
-        "creditUnit": "per video",
-        "usdPrice": "1.0475",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "duration": "10"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:wan/2-6-text-to-video",
-        "duration": "modelInputSchemas:wan/2-6-text-to-video"
-      },
-      "representativePayload": {
-        "model": "wan/2-6-text-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "10",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
+      "technicalBlocker": "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json."
     },
     {
       "occurrenceId": "sha256:83c3f3c36be791e0a1ba42696dd7de79880d3480520d9e592d404b96ebd59291#1",
@@ -23673,9 +23519,7 @@
         "guard": true,
         "pricingKey": "wan/2-6-image-to-video",
         "linkedRows": [
-          "sha256:cd7f53efcbdac5853cb81d4abe77c4ef36e208f249a842399cc9b40fcafc9fce#1",
           "sha256:3d65e554fee42b56185d25979275a6e88bdfd5fba4ad515c0f53e05e423d612f#1",
-          "sha256:e1878babe7bd035dce76f7fe3eddb4a6fd9aaeccf6050d5356c6532498f6db84#1",
           "sha256:5da32c80be06eb6ea7231e670d1713c8c6ad225beca27208d9c807a2be0936ac#1",
           "sha256:eba792fea1fdc6c384c84aa80064dea80b2d040f5147fe7d42ec8879db890222#1",
           "sha256:d5ab0aeb4e55d821bb11d68fe0f9043afd3b169d5eafe03bd926445fed50d1b2#1"
@@ -23689,8 +23533,6 @@
         "guard": true,
         "pricingKey": "wan/2-6-text-to-video",
         "linkedRows": [
-          "sha256:633c1c1dbf4a16521870ff8da5119f9657d345689d37795a9e6215b0a8bf1617#1",
-          "sha256:e18de7b218857f288859453da73f979bf8ce2054dfb22ad4d5f8cbd48bac4a14#1",
           "sha256:83c3f3c36be791e0a1ba42696dd7de79880d3480520d9e592d404b96ebd59291#1",
           "sha256:fd26299ae8dcfdc61efa68d08526d01121298249431040097275a47d21cb6195#1",
           "sha256:2cefacd1cc22e63a622761d4aaab050f4325111e52ae1d830a3ea1fc8183416a#1",
@@ -23705,8 +23547,6 @@
         "guard": true,
         "pricingKey": "wan/2-6-video-to-video",
         "linkedRows": [
-          "sha256:c7e6ab1aa3e3bbcea2a376e4329c7187af894dce4ed23d680bcab3b2ab0543bd#1",
-          "sha256:9fb6b93836c4247ad526715344322ce1d8b76e5268f847b8ee90b309fd2258c9#1",
           "sha256:d38f8e61dae51d7d1f47cac1cf60ef756eac9bf67ac97083ca3572d952de7cc2#1",
           "sha256:bc680b2489cbead012c74f6ef88db40d81fb8f72129d0fff65a6bc7be32ae367#1"
         ],
@@ -25548,8 +25388,6 @@
       {
         "key": "wan/2-6-text-to-video",
         "linkedRows": [
-          "sha256:633c1c1dbf4a16521870ff8da5119f9657d345689d37795a9e6215b0a8bf1617#1",
-          "sha256:e18de7b218857f288859453da73f979bf8ce2054dfb22ad4d5f8cbd48bac4a14#1",
           "sha256:83c3f3c36be791e0a1ba42696dd7de79880d3480520d9e592d404b96ebd59291#1",
           "sha256:fd26299ae8dcfdc61efa68d08526d01121298249431040097275a47d21cb6195#1",
           "sha256:2cefacd1cc22e63a622761d4aaab050f4325111e52ae1d830a3ea1fc8183416a#1",
@@ -25561,9 +25399,7 @@
       {
         "key": "wan/2-6-image-to-video",
         "linkedRows": [
-          "sha256:cd7f53efcbdac5853cb81d4abe77c4ef36e208f249a842399cc9b40fcafc9fce#1",
           "sha256:3d65e554fee42b56185d25979275a6e88bdfd5fba4ad515c0f53e05e423d612f#1",
-          "sha256:e1878babe7bd035dce76f7fe3eddb4a6fd9aaeccf6050d5356c6532498f6db84#1",
           "sha256:5da32c80be06eb6ea7231e670d1713c8c6ad225beca27208d9c807a2be0936ac#1",
           "sha256:eba792fea1fdc6c384c84aa80064dea80b2d040f5147fe7d42ec8879db890222#1",
           "sha256:d5ab0aeb4e55d821bb11d68fe0f9043afd3b169d5eafe03bd926445fed50d1b2#1"
@@ -25574,8 +25410,6 @@
       {
         "key": "wan/2-6-video-to-video",
         "linkedRows": [
-          "sha256:c7e6ab1aa3e3bbcea2a376e4329c7187af894dce4ed23d680bcab3b2ab0543bd#1",
-          "sha256:9fb6b93836c4247ad526715344322ce1d8b76e5268f847b8ee90b309fd2258c9#1",
           "sha256:d38f8e61dae51d7d1f47cac1cf60ef756eac9bf67ac97083ca3572d952de7cc2#1",
           "sha256:bc680b2489cbead012c74f6ef88db40d81fb8f72129d0fff65a6bc7be32ae367#1"
         ],
@@ -29724,13 +29558,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 239,
+        "implemented": 233,
         "canonical-alias": 122,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 36
+        "upstream-unmappable": 42
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -29840,6 +29674,48 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "wan/2-6-text-to-video",
+        "variant": "5|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
+      {
+        "key": "wan/2-6-text-to-video",
+        "variant": "10|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
+      {
+        "key": "wan/2-6-image-to-video",
+        "variant": "5|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
+      {
+        "key": "wan/2-6-image-to-video",
+        "variant": "10|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
+      {
+        "key": "wan/2-6-video-to-video",
+        "variant": "5|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
+      {
+        "key": "wan/2-6-video-to-video",
+        "variant": "10|1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+        "rationale": "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses."
+      },
       {
         "key": "pixverse-v6/reference-to-video",
         "variant": "360p|no-audio",

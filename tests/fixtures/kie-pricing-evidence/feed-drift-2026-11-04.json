@@ -1,0 +1,1673 @@
+{
+  "capturedAt": "2026-11-04",
+  "source": "POST https://api.kie.ai/client/v1/model-pricing/page (public, no key), pulled 2026-11-04T22:56:19Z with scripts/kie-pricing-audit.mjs",
+  "basis": "The feed rows of the families whose words need a selector, payload or unit rule to reach their table cell, as one pull printed them. https://kie.ai/wan-2-6's pricingDesc, read the same day, also prints 105 / 210 / 315 credits at 5 / 10 / 15 s 1080p. tests/unit/kie-feed-drift.test.ts holds the table to these rows.",
+  "records": [
+    {
+      "occurrenceId": "sha256:ac5c837c321045907e91eb8fa482a4314a375ff64a8b8e8c7e46394888b768fb#1",
+      "rowHash": "sha256:ac5c837c321045907e91eb8fa482a4314a375ff64a8b8e8c7e46394888b768fb",
+      "semanticKey": "sha256:b6d7992bfcc879b3665e99041ed268a2b15bfedd742889a8ad637321568bd509",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 360p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.024",
+        "falPrice": "0.0267",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:94f7ff50848a4d371641a1c9e70793815c32a50faf9275950004d1d8bb14cebf#1",
+      "rowHash": "sha256:94f7ff50848a4d371641a1c9e70793815c32a50faf9275950004d1d8bb14cebf",
+      "semanticKey": "sha256:1af29579fc119646d226bbe61d2eb1260af42c5a5a04c423ed08cf1b5ec803de",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 360p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.0400",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:466dbb857e0f1823877e62cb4a921c6dce421fa59fd0271bc41de238ecbb3387#1",
+      "rowHash": "sha256:466dbb857e0f1823877e62cb4a921c6dce421fa59fd0271bc41de238ecbb3387",
+      "semanticKey": "sha256:3e554d8028dd12e68b279931b56c0932a1d51bfc711e0835098ebfd1809ac205",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 540p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.0400",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:53629df828e0a6d1f17e2e56de37cdeede90d5b1f43b44180d2b23bbc66fe377#1",
+      "rowHash": "sha256:53629df828e0a6d1f17e2e56de37cdeede90d5b1f43b44180d2b23bbc66fe377",
+      "semanticKey": "sha256:e87da5ec7c7275abe8df37891dd519efc87493e3695f7db59cdca4a33cd9040f",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 540p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.044",
+        "falPrice": "0.0489",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:be8a7a5de00c43bf3e6113ac8f43ea6202c46ad64888a4a462ecd732331a697f#1",
+      "rowHash": "sha256:be8a7a5de00c43bf3e6113ac8f43ea6202c46ad64888a4a462ecd732331a697f",
+      "semanticKey": "sha256:6039b4401cee84635ca197e3282848748ee4a3b34c8ca0db21512e568896b697",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 720p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.044",
+        "falPrice": "0.0489",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:81a1a04df0666348387ad37559e9938fff147b592eeda9f003a7e68e2a4b24a6#1",
+      "rowHash": "sha256:81a1a04df0666348387ad37559e9938fff147b592eeda9f003a7e68e2a4b24a6",
+      "semanticKey": "sha256:74e2e3108a0dab2311c7143639d80e4c8a2e0ef8d957f2d59f566c4995244281",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 720p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "12",
+        "creditUnit": "per second",
+        "usdPrice": "0.060",
+        "falPrice": "0.0667",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:310445555b5563ee9bb0367ea2609f1627402096949f516924b7faf1b1c97229#1",
+      "rowHash": "sha256:310445555b5563ee9bb0367ea2609f1627402096949f516924b7faf1b1c97229",
+      "semanticKey": "sha256:7b7c9b6fe35b9ab39746d9270105a920cc61ac5166f08863f45d6c0d901b84f3",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 1080p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "17.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.088",
+        "falPrice": "0.0978",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:1264169e2c06dedbd431a14275e7709213637002d80fd485cd71bdd2f98cd769#1",
+      "rowHash": "sha256:1264169e2c06dedbd431a14275e7709213637002d80fd485cd71bdd2f98cd769",
+      "semanticKey": "sha256:d92dfc518307d0d8a28acf7dc918eae571e67a43232a58efc890dc39d9229d9e",
+      "raw": {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 1080p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "22.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.112",
+        "falPrice": "0.1244",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:033f65f5c7d0ef792593583f49d218f243c6f568c04ae999690bcfc09a822d9b#1",
+      "rowHash": "sha256:033f65f5c7d0ef792593583f49d218f243c6f568c04ae999690bcfc09a822d9b",
+      "semanticKey": "sha256:ef64cc52cdf7f94bef92c18fa62f73613cbb621e7965ad3f068742417352461e",
+      "raw": {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "25.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1275",
+        "falPrice": "0.141",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:0a0d747187aee6d32664d4335e802eefcb9639ba0e92ddeb1f81bb71cc4fdd78#1",
+      "rowHash": "sha256:0a0d747187aee6d32664d4335e802eefcb9639ba0e92ddeb1f81bb71cc4fdd78",
+      "semanticKey": "sha256:395018a63346173cb67db80a344752ba4985d4ddc227647f7a904f45b2c718b8",
+      "raw": {
+        "modelDescription": "kling 4.0, reference-to-video, 720P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:acb33fe8f9158d0614d20a88a17e071adf6ea799d14da65bbccfa3c5291a2004#1",
+      "rowHash": "sha256:acb33fe8f9158d0614d20a88a17e071adf6ea799d14da65bbccfa3c5291a2004",
+      "semanticKey": "sha256:564990e1fc7722de1ed5db54af588dd1be9ef2ac4368360d6494e745fe0c5396",
+      "raw": {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:e42bbe4ba5d62979f8f5e7fc0a4332f661091cff343b6c0a55af76a13f89f37a#1",
+      "rowHash": "sha256:e42bbe4ba5d62979f8f5e7fc0a4332f661091cff343b6c0a55af76a13f89f37a",
+      "semanticKey": "sha256:ee9b1d96dea4e9315f21bd909fe5354d0f16c767989e5b2ddf17c6d0430bb609",
+      "raw": {
+        "modelDescription": "kling 4.0, reference-to-video, 720P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "28.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1425",
+        "falPrice": "0.157",
+        "discountRate": 9.24,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:6b34575de42c081c4497741b6ba5ccfb729a7f93102bb034ef5b676b14569469#1",
+      "rowHash": "sha256:6b34575de42c081c4497741b6ba5ccfb729a7f93102bb034ef5b676b14569469",
+      "semanticKey": "sha256:adb1facbc55f3e6886cd992f1eeb3cac794637e0d321965970e8ce19b75fce0e",
+      "raw": {
+        "modelDescription": "Vidu Q4, reference-to-video, 4k",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "62.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.312",
+        "falPrice": "0.39",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:2ddc6299211840590e5a244b29cb88a7d835b45bf6291284eefe5365b2f54bea#1",
+      "rowHash": "sha256:2ddc6299211840590e5a244b29cb88a7d835b45bf6291284eefe5365b2f54bea",
+      "semanticKey": "sha256:06f92969428c43e47bbe6f374d4f2bf2506264c8c4a871217e9a19e2885c6e59",
+      "raw": {
+        "modelDescription": "Vidu Q4, reference-to-video, 2k",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "30.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.152",
+        "falPrice": "0.19",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:42a2db053ae6ead79499d15ec630869fcc7e74580c1f59a8554f88e6314a5f53#1",
+      "rowHash": "sha256:42a2db053ae6ead79499d15ec630869fcc7e74580c1f59a8554f88e6314a5f53",
+      "semanticKey": "sha256:5056799c9ab9242d563856130ec875a0231584c1bd1619cb71d364d32d2dc658",
+      "raw": {
+        "modelDescription": "Vidu Q4, reference-to-video, 1080p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "19.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.096",
+        "falPrice": "0.12",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ac9896047f30e945000e7933b8114df832703be8e964695a4c83e1bf8fd6c26f#1",
+      "rowHash": "sha256:ac9896047f30e945000e7933b8114df832703be8e964695a4c83e1bf8fd6c26f",
+      "semanticKey": "sha256:2a471e06dd98bf076c7207c6ad41462f82dfb2b6a652ac68ce17db158d139c8e",
+      "raw": {
+        "modelDescription": "Vidu Q4, reference-to-video, 720p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "15.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.076",
+        "falPrice": "0.095",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:2ff964f51d247103bcae7441ae81a5d21957ee057b5a89157c6c267373fab847#1",
+      "rowHash": "sha256:2ff964f51d247103bcae7441ae81a5d21957ee057b5a89157c6c267373fab847",
+      "semanticKey": "sha256:d3786beeacf9950095564a14271f1a8736f6f70d47cecaa37310c86738bb324c",
+      "raw": {
+        "modelDescription": "Vidu Q4, reference-to-video, 540p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:0c1093634bd3646f66a1774a31ca039e94aca40629b8440970ab7e945d3e65eb#1",
+      "rowHash": "sha256:0c1093634bd3646f66a1774a31ca039e94aca40629b8440970ab7e945d3e65eb",
+      "semanticKey": "sha256:142228d2e768cd32d4b46736564707311020808969097b13ac01c2cca6fa49a9",
+      "raw": {
+        "modelDescription": "Vidu Q4, image-to-video, 4k",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "62.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.312",
+        "falPrice": "0.39",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:d82eae76aacdb09207267b3df88e335977abfc618465a8d819edf47daca55e02#1",
+      "rowHash": "sha256:d82eae76aacdb09207267b3df88e335977abfc618465a8d819edf47daca55e02",
+      "semanticKey": "sha256:28be4270613a22bac2ae59896739bc2b854400472863845dc13f236fe714e55b",
+      "raw": {
+        "modelDescription": "Vidu Q4, image-to-video, 2k",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "30.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.152",
+        "falPrice": "0.19",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:16336f8d0a16b9fe9dd331ff86cf03dcaa02cb650960858bde27912eefd95fac#1",
+      "rowHash": "sha256:16336f8d0a16b9fe9dd331ff86cf03dcaa02cb650960858bde27912eefd95fac",
+      "semanticKey": "sha256:33c5e9f4bb849c5b8615e8ddedf6abf123a35a8925d31ce2a75f02a08c50c671",
+      "raw": {
+        "modelDescription": "Vidu Q4, image-to-video, 1080p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "19.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.096",
+        "falPrice": "0.12",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:e4a30ffd68c9e664d0b5f091199bdbf3b6e11fdf0ac9617f51defeb41a0bf244#1",
+      "rowHash": "sha256:e4a30ffd68c9e664d0b5f091199bdbf3b6e11fdf0ac9617f51defeb41a0bf244",
+      "semanticKey": "sha256:3f41d6ad29dedc10d9e753b2a75b41c4e2bd36a7f872a051c523897828ebb109",
+      "raw": {
+        "modelDescription": "Vidu Q4, image-to-video, 720p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "15.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.076",
+        "falPrice": "0.095",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:941b1962680ddfa029ed5e8860dd586d244adc7f5cd904982ee1e788f5e80d4e#1",
+      "rowHash": "sha256:941b1962680ddfa029ed5e8860dd586d244adc7f5cd904982ee1e788f5e80d4e",
+      "semanticKey": "sha256:53cbcbaae5bdd3ffb6e417cf8c084e1085ecaaef5b0d91faa9321dc4b39aeca1",
+      "raw": {
+        "modelDescription": "Vidu Q4, image-to-video, 540p",
+        "interfaceType": "video",
+        "provider": "",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:fd82f7bb8283090c3fa26102c6bf57d95a817ad253544312f38403ded78c15b5#1",
+      "rowHash": "sha256:fd82f7bb8283090c3fa26102c6bf57d95a817ad253544312f38403ded78c15b5",
+      "semanticKey": "sha256:1aaed0e7f64dba053381bc01859dbd95b679122ecebf5966cea5dc6a9e7e5a41",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 4k with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:5c3966d1a7435313e0be853b90562cc764209f8bf2ec32743c2333205f1d3e4d#1",
+      "rowHash": "sha256:5c3966d1a7435313e0be853b90562cc764209f8bf2ec32743c2333205f1d3e4d",
+      "semanticKey": "sha256:ab331021d723e2bd772f4ba108065aea8c50a9e11fa44bef5d56ce3402ae598f",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 4k with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:09d482af84362f83a337c5fa7ed068dc5b9d742625e0b74019bacd65e18a1eee#1",
+      "rowHash": "sha256:09d482af84362f83a337c5fa7ed068dc5b9d742625e0b74019bacd65e18a1eee",
+      "semanticKey": "sha256:0673a56e1cebceb09fd8c384558459045a74aaf32e14e7780b762cfcb8483176",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 4k no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:5b5ceb1a1bf3154229ea2a973a9e0c606598190f0e2b7f27e8b58a39e79c0d96#1",
+      "rowHash": "sha256:5b5ceb1a1bf3154229ea2a973a9e0c606598190f0e2b7f27e8b58a39e79c0d96",
+      "semanticKey": "sha256:44b5cb40a1a6e7f33312e4bf70863cdd2debd20e4bc20da8bfc781b6c053e69f",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 1080p with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "27",
+        "creditUnit": "per second",
+        "usdPrice": "0.135",
+        "falPrice": "0.168",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:8986c101bf632f4813d13c915c1cb1a3876f6f9e21cc84b25c912a33a02c7e23#1",
+      "rowHash": "sha256:8986c101bf632f4813d13c915c1cb1a3876f6f9e21cc84b25c912a33a02c7e23",
+      "semanticKey": "sha256:9fbc47b5f27bdb0c8645e96b4dff30ab97ddd488e72b08bb0db1351c852f176d",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 1080p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "23",
+        "creditUnit": "per second",
+        "usdPrice": "0.115",
+        "falPrice": "0.14",
+        "discountRate": 17.86,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:4d22b6a6d75d4f36e285d452deefdc2e40285afc70dac76c5a957310b5a068ae#1",
+      "rowHash": "sha256:4d22b6a6d75d4f36e285d452deefdc2e40285afc70dac76c5a957310b5a068ae",
+      "semanticKey": "sha256:31a67686fff351cd2a7e17c07b82c857e7b289a9cfe2a12bdd9dabcc67522c5d",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 1080p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:6065937e2d09f25340e9bdcbaef37d7dc712f6c14321a5a281c63b3c9f1c2436#1",
+      "rowHash": "sha256:6065937e2d09f25340e9bdcbaef37d7dc712f6c14321a5a281c63b3c9f1c2436",
+      "semanticKey": "sha256:ace1ec7785cb6cf8ce311facb394daa941145320548c5b250ae17608fb1e2e00",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 720p with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "20",
+        "creditUnit": "per second",
+        "usdPrice": "0.1",
+        "falPrice": "0.126",
+        "discountRate": 20.63,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:6a0e636e2642bd15511e1e430939fab6f7f79486ededb4c69de4e88a95440972#1",
+      "rowHash": "sha256:6a0e636e2642bd15511e1e430939fab6f7f79486ededb4c69de4e88a95440972",
+      "semanticKey": "sha256:30568da348396862883b6b94c9477beb45eb1bcd5a560c6d166ecdf62d322701",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 720p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:caa1fc0c49689f7bb5396d2d7da9a65684b67f3bf99c8e1fb424031eebe0d305#1",
+      "rowHash": "sha256:caa1fc0c49689f7bb5396d2d7da9a65684b67f3bf99c8e1fb424031eebe0d305",
+      "semanticKey": "sha256:2afc918e40f998288fa6f85ad8ca52e9ceaf41178fc91895f1fb352772c7d6ed",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, reference-to-video, 720p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "14",
+        "creditUnit": "per second",
+        "usdPrice": "0.07",
+        "falPrice": "0.084",
+        "discountRate": 16.67,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:799cca8596a6199026d9152d21e7c3426deb768e3c2bf731b4df6cf417cb5199#1",
+      "rowHash": "sha256:799cca8596a6199026d9152d21e7c3426deb768e3c2bf731b4df6cf417cb5199",
+      "semanticKey": "sha256:ad2cce98155ba5a944c9083515ad7a890e6e10cf568c464228ef22c6e0cf8f23",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, transformation, 4k",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:dd230b419e54ebb6aebaa0925774cf554d6385d989813a74e24e636b1f55f3ac#1",
+      "rowHash": "sha256:dd230b419e54ebb6aebaa0925774cf554d6385d989813a74e24e636b1f55f3ac",
+      "semanticKey": "sha256:04a933cc2bc3ce76cef4c9435c9c16c682077b1aff63e099fcbe8f6a5a63f4a6",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, transformation, 1080p",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "27",
+        "creditUnit": "per second",
+        "usdPrice": "0.135",
+        "falPrice": "0.168",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:20e63558dc90108c4311d1fc76396ab3402a1844f9a6a7b5ea3d55984efebc06#1",
+      "rowHash": "sha256:20e63558dc90108c4311d1fc76396ab3402a1844f9a6a7b5ea3d55984efebc06",
+      "semanticKey": "sha256:6a906a481fe7c5c03097b0067c1abac77769e1f7e832751935d3dc7fbf8b8434",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, transformation, 720p",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "20",
+        "creditUnit": "per second",
+        "usdPrice": "0.1",
+        "falPrice": "0.126",
+        "discountRate": 20.63,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:7d589576f593b398b19735da290cfeda7b4eae8bcdcff2de4ef55daa03e5037f#1",
+      "rowHash": "sha256:7d589576f593b398b19735da290cfeda7b4eae8bcdcff2de4ef55daa03e5037f",
+      "semanticKey": "sha256:bd4a57116976a93fa03bbb8c7fab6091cfff2ce0a3f9777b332b8b2dfc8cadf1",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 4k with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:a4d881ee7e33c40e5db2c07ec4ad2b35e1530cde4ff4d02401b771a65a2bc1d0#1",
+      "rowHash": "sha256:a4d881ee7e33c40e5db2c07ec4ad2b35e1530cde4ff4d02401b771a65a2bc1d0",
+      "semanticKey": "sha256:25468ee8dde2d063f52d23b81989c58d81fbd22fc557b9cf4aa9fea19f6222a5",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 4k no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:dc57851d3516f398648175f1fb54820c11f6a3d20a6718c3f5694261a44f9157#1",
+      "rowHash": "sha256:dc57851d3516f398648175f1fb54820c11f6a3d20a6718c3f5694261a44f9157",
+      "semanticKey": "sha256:9bd317aecf95973a13eb521432266128498c88d2bee19eff7d7fc04be2a1a56e",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 1080p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "23",
+        "creditUnit": "per second",
+        "usdPrice": "0.115",
+        "falPrice": "0.14",
+        "discountRate": 17.86,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:78cb579b4177b222ebd26771a0449a642d1182c2aec03a5ebe927338cc4b5a0f#1",
+      "rowHash": "sha256:78cb579b4177b222ebd26771a0449a642d1182c2aec03a5ebe927338cc4b5a0f",
+      "semanticKey": "sha256:86844bd1d6807373878458090615ec54a384feea4b2bee1efd6986b1716f7333",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 1080p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ceb6fd604743f56344dd7e975cbfee2b9c5c6eaa78b81d18f825dcab3687b9b8#1",
+      "rowHash": "sha256:ceb6fd604743f56344dd7e975cbfee2b9c5c6eaa78b81d18f825dcab3687b9b8",
+      "semanticKey": "sha256:342a590702d23b6cbdaa07fd8a63e25b6aa9845485a50f578b8eb954c11ed32c",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 720p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ef75e8ff512d3467710cbb35d441cae297ad99a56e464cec01c08040c1b51e44#1",
+      "rowHash": "sha256:ef75e8ff512d3467710cbb35d441cae297ad99a56e464cec01c08040c1b51e44",
+      "semanticKey": "sha256:369f67f053d8fbf2e11afb3cf1404bc279d28bed5d0c78d95746956a1b3da1ba",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, image-to-video, 720p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "14",
+        "creditUnit": "per second",
+        "usdPrice": "0.07",
+        "falPrice": "0.084",
+        "discountRate": 16.67,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:8a9b1eb45f59596fd97cc8826db48892a4259c0334ad567b8363c450aeb18e1c#1",
+      "rowHash": "sha256:8a9b1eb45f59596fd97cc8826db48892a4259c0334ad567b8363c450aeb18e1c",
+      "semanticKey": "sha256:a60b27fc2c66d7e9e078acf979a8c75ae5fa50e1aae867503f6751c9f23578a3",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 4k with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:c468a5d3860999af08657715fd67cdcaea927193eba1d522285b491e7f1d48c7#1",
+      "rowHash": "sha256:c468a5d3860999af08657715fd67cdcaea927193eba1d522285b491e7f1d48c7",
+      "semanticKey": "sha256:ebdf21b426a5eb6171fbeb1ea292e7d9bf297004dfc6fefa1f6fd9b7e239b7ab",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 4k no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "67",
+        "creditUnit": "per second",
+        "usdPrice": "0.335",
+        "falPrice": "0.42",
+        "discountRate": 20.24,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:45fb77a736439715280942a179c0239536a61040a1bfe01695d81dafa4d2bd88#1",
+      "rowHash": "sha256:45fb77a736439715280942a179c0239536a61040a1bfe01695d81dafa4d2bd88",
+      "semanticKey": "sha256:3b651a4689e899988dfaba81351cb9f21a5d950887bbd235399988aba2811c60",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 1080p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "23",
+        "creditUnit": "per second",
+        "usdPrice": "0.115",
+        "falPrice": "0.14",
+        "discountRate": 17.86,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:03bd532bcc610481568b37d31565a9c96041d67e18dc74a9e9b4d9d72d8facef#1",
+      "rowHash": "sha256:03bd532bcc610481568b37d31565a9c96041d67e18dc74a9e9b4d9d72d8facef",
+      "semanticKey": "sha256:a13455d2e5025d113778e2426ce80f74f67b40ed7ce808cb0142c29c999720ad",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 1080p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:978a6bd1dc31d52f4385371862c4b678eb1e5340f34520bead4ed4f2145e07ef#1",
+      "rowHash": "sha256:978a6bd1dc31d52f4385371862c4b678eb1e5340f34520bead4ed4f2145e07ef",
+      "semanticKey": "sha256:063b2028eab53f0862b351818b31232861a31a20eddf2a34e7f1aae78e516b81",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 720p with native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:9999689484d6c60b7636ace0cc0a4b569b423e7f1f102b471ccc17cee17e3944#1",
+      "rowHash": "sha256:9999689484d6c60b7636ace0cc0a4b569b423e7f1f102b471ccc17cee17e3944",
+      "semanticKey": "sha256:827282fe55d6cb095943eea651e791dde005f7348c0f35f8accdd278a0b184a8",
+      "raw": {
+        "modelDescription": "kling 3.0 omni, text-to-video, 720p no native audio",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "14",
+        "creditUnit": "per second",
+        "usdPrice": "0.07",
+        "falPrice": "0.084",
+        "discountRate": 16.67,
+        "anchor": "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:49656b19951fc0c715da7d074281e1014fac3931b589c797241179be9cbfea44#1",
+      "rowHash": "sha256:49656b19951fc0c715da7d074281e1014fac3931b589c797241179be9cbfea44",
+      "semanticKey": "sha256:8afca3dfb15dddddab5c1a1e10613d8c4eb23be8e48292825a1fba4877eafb84",
+      "raw": {
+        "modelDescription": "Gemini 3.8 Flash-Lite TTS, Text to speech, Input",
+        "interfaceType": "music",
+        "provider": "Google",
+        "creditPrice": "70",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.35",
+        "falPrice": "0.50",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/gemini-3.8-flash-lite-tts",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:70caf76d5238053e9161aee1715f875df510f34d7bc4c02ce8acdf988bfefacd#1",
+      "rowHash": "sha256:70caf76d5238053e9161aee1715f875df510f34d7bc4c02ce8acdf988bfefacd",
+      "semanticKey": "sha256:dd8113f53ecd9c6ec5c10581bd0c548badb22a4074a974dd3dcf1c8e8c1fbbf4",
+      "raw": {
+        "modelDescription": "Gemini 3.8 Flash-Lite TTS, Text to Speech, Audio Output",
+        "interfaceType": "music",
+        "provider": "Google",
+        "creditPrice": "840",
+        "creditUnit": "per million tokens",
+        "usdPrice": "4.20",
+        "falPrice": "6.00",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/gemini-3.8-flash-lite-tts",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:577d2880a24fea1dd34c123a2332d7b67f2aea3e4cf5d37a69292f9b9da2e4a3#1",
+      "rowHash": "sha256:577d2880a24fea1dd34c123a2332d7b67f2aea3e4cf5d37a69292f9b9da2e4a3",
+      "semanticKey": "sha256:0ce716296d3c6f20ed1e8bdec4aa2428c0b816341afdb32358faa75de08a7672",
+      "raw": {
+        "modelDescription": "Gemini 3.8 Flash TTS, Text to Speech, Input",
+        "interfaceType": "music",
+        "provider": "Google",
+        "creditPrice": "70",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.35",
+        "falPrice": "0.50",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/gemini-3.8-flash-tts",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:d7e56aa10c770a2ee3aaf95b354827aaff87f4c083dbc9a7fbfacd20f7eac28c#1",
+      "rowHash": "sha256:d7e56aa10c770a2ee3aaf95b354827aaff87f4c083dbc9a7fbfacd20f7eac28c",
+      "semanticKey": "sha256:bd444b49fdd254bf6f6e9e8ceb719023196688a8440928b52b6c819d77d5c7ff",
+      "raw": {
+        "modelDescription": "Gemini 3.8 Flash TTS, Text to Speech, Audio Output",
+        "interfaceType": "music",
+        "provider": "Google",
+        "creditPrice": "1260",
+        "creditUnit": "per million tokens",
+        "usdPrice": "6.30",
+        "falPrice": "9.00",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/gemini-3.8-flash-tts",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:1b3074d4e9214e2424bd6972162669eb14b752210c0cf6a3175c696b500de5af#1",
+      "rowHash": "sha256:1b3074d4e9214e2424bd6972162669eb14b752210c0cf6a3175c696b500de5af",
+      "semanticKey": "sha256:700c91460dfe9411afd4de15face93662cc7fa36c42a29ada613e5d071e9ebd4",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 1080p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "18.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.092",
+        "falPrice": "0.115",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:482588e323e1d3f69a4bccd2161e97b2735b1e01adf844bedc1be874e5f8abce#1",
+      "rowHash": "sha256:482588e323e1d3f69a4bccd2161e97b2735b1e01adf844bedc1be874e5f8abce",
+      "semanticKey": "sha256:d988b3ff2fa7c4bc983d02cd49e776395ac1f5433187fbd6493022638bd117f4",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 1080p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "falPrice": "0.090",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:00f2d7218e87afcc4f39c3211153501d693936f48231707d3b8aebf53fa51a76#1",
+      "rowHash": "sha256:00f2d7218e87afcc4f39c3211153501d693936f48231707d3b8aebf53fa51a76",
+      "semanticKey": "sha256:1352295de0c6f76bbb2b8766d7b35fc3cf942435fe9bf83e4e9021a099754bee",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 720p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "9.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.048",
+        "falPrice": "0.060",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:0f6b2f13338b89c4794f82d5afd245677a923a718f28d96ccb522a31ff4781fd#1",
+      "rowHash": "sha256:0f6b2f13338b89c4794f82d5afd245677a923a718f28d96ccb522a31ff4781fd",
+      "semanticKey": "sha256:4345aecca9790c3840fd1a56c27e6a4f372dc10cfff0856bc7d946ddfd632a72",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 720p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:51bb3dc311c38ca528e0487ae2d2f13199a98f24bc8f1890150fe8935fce83b0#1",
+      "rowHash": "sha256:51bb3dc311c38ca528e0487ae2d2f13199a98f24bc8f1890150fe8935fce83b0",
+      "semanticKey": "sha256:c0d0478b06a0a75b4af581e4e028e2c18c461018000ae8c5c05c557499f3e8f2",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 540p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:be9f44b98d448d2ae9f8a8e5e0b97fcaab53335a4b23bac3c194e9d18d49aa41#1",
+      "rowHash": "sha256:be9f44b98d448d2ae9f8a8e5e0b97fcaab53335a4b23bac3c194e9d18d49aa41",
+      "semanticKey": "sha256:804dc7c10ede897f9b2630e9ed8ae30c7a97c1ecffdfec2ade8629e8fb429429",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 540p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:c438c09f2391ddc96c152aa84621eff47b555d5ec84b25545392ed33443595b9#1",
+      "rowHash": "sha256:c438c09f2391ddc96c152aa84621eff47b555d5ec84b25545392ed33443595b9",
+      "semanticKey": "sha256:bd49b05e6de1826936f05ba8f318db426ec3d3cb7d157ac3d441d2acfb950c07",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 360p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:197654af0b757d28a5cbc2c677a138a5cee1164d9bc92a5d2a17d9374a0106ea#1",
+      "rowHash": "sha256:197654af0b757d28a5cbc2c677a138a5cee1164d9bc92a5d2a17d9374a0106ea",
+      "semanticKey": "sha256:d029ba374c259730741e201eccb2de7082fa31f30cbbd852ca3f29a37bd075e2",
+      "raw": {
+        "modelDescription": "pixverse-v6, Reference To Video, 360p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4.0",
+        "creditUnit": "per second",
+        "usdPrice": "0.020",
+        "falPrice": "0.025",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:8ac17eb4c410e12780ce619e9ee0188db8fc386ef94d99cad80d26b27a10d77c#1",
+      "rowHash": "sha256:8ac17eb4c410e12780ce619e9ee0188db8fc386ef94d99cad80d26b27a10d77c",
+      "semanticKey": "sha256:988d97184c8d6f36c68982b7bc63ad422fafa50c81545c3a64b7fa36e1d585ae",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 1080p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "95",
+        "creditUnit": "per second",
+        "usdPrice": "0.475",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:83da4e90424026baa68a1d573aacc413454f949cbb157a7b8c223ef7dbcbe756#1",
+      "rowHash": "sha256:83da4e90424026baa68a1d573aacc413454f949cbb157a7b8c223ef7dbcbe756",
+      "semanticKey": "sha256:e02d2b8bb477100578786c5123a474743561b071b0b32bc58f67fd4bcf71645f",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 1080p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "158",
+        "creditUnit": "per second",
+        "usdPrice": "0.79",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:517a10dcbab7157bb013f94299a774698ccd444d886ba3256c8ad54ff4192906#1",
+      "rowHash": "sha256:517a10dcbab7157bb013f94299a774698ccd444d886ba3256c8ad54ff4192906",
+      "semanticKey": "sha256:82a3f27f0860e28c09e2471599b430b1a89eae888a7bc6c1dcfcda0dbd27c39b",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 720p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "38",
+        "creditUnit": "per second",
+        "usdPrice": "0.190",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:c1522c5a4291f5b1f72f24dfc9a26ff6668f3aa3f11aa47b8482f77c6de166a0#1",
+      "rowHash": "sha256:c1522c5a4291f5b1f72f24dfc9a26ff6668f3aa3f11aa47b8482f77c6de166a0",
+      "semanticKey": "sha256:c15c202644ab532e3a2ef8b747cdac1d29cb0ba28b5a476b04fc76d73df528b0",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 720p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "63",
+        "creditUnit": "per second",
+        "usdPrice": "0.315",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ebe6684f14600abc1da2b09b68627928326aefa33ca7491fb7e2854eb44861de#1",
+      "rowHash": "sha256:ebe6684f14600abc1da2b09b68627928326aefa33ca7491fb7e2854eb44861de",
+      "semanticKey": "sha256:e735d7107d20535e416785f2426be3117be6615e8233d00ee4e108ab22c8c1e3",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 480p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:a66674c2d4bc5504e9e937be04a7bb8416da92c68ec01534c841159ba3b41b20#1",
+      "rowHash": "sha256:a66674c2d4bc5504e9e937be04a7bb8416da92c68ec01534c841159ba3b41b20",
+      "semanticKey": "sha256:88b1d40f75c8c88f0e2dd38f6a06bcaa9eec824ccaf3dffcf3444595b92ec361",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2-5, 480p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "28",
+        "creditUnit": "per second",
+        "usdPrice": "0.140",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:5d8c0bce2950500a7523777716184d13c38241669e73c03daaf8412d1b9f69d3#1",
+      "rowHash": "sha256:5d8c0bce2950500a7523777716184d13c38241669e73c03daaf8412d1b9f69d3",
+      "semanticKey": "sha256:c737172c019a85d7835093acaeb05e79b0c52e49b2d667be8ffb9a7636c51be3",
+      "raw": {
+        "modelDescription": "MiniMax H3, video input, 768p",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.08",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ffbef93e02e4e336d8cb9c3950a6f299c67347d31106b3e1709321dc2238dd81#1",
+      "rowHash": "sha256:ffbef93e02e4e336d8cb9c3950a6f299c67347d31106b3e1709321dc2238dd81",
+      "semanticKey": "sha256:897798766cd08d6731ded60c840606a4878d1b9082f84881dc3e6cc36b0f363c",
+      "raw": {
+        "modelDescription": "MiniMax H3, reference to video, 768p",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.08",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:c19b0442a0bcc0f563cc297491b54a53eb94d5bb144bf8fe1bd34d1df6a387b5#1",
+      "rowHash": "sha256:c19b0442a0bcc0f563cc297491b54a53eb94d5bb144bf8fe1bd34d1df6a387b5",
+      "semanticKey": "sha256:c1e174161ade3251ffaf07b8901794c7cc17e4f008f79ddd9c12d5695d0e762f",
+      "raw": {
+        "modelDescription": "MiniMax H3, image to video, 768p",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.08",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:13df77e832f83f675bedaeb6343a6f071744ca563f8e5fb575e2e893cfa2080a#1",
+      "rowHash": "sha256:13df77e832f83f675bedaeb6343a6f071744ca563f8e5fb575e2e893cfa2080a",
+      "semanticKey": "sha256:9fc2b299ba79ba89e0b76ecefa167f4ebf6327ef09ab75a8840a71e85d7aae56",
+      "raw": {
+        "modelDescription": "MiniMax H3, text to video, 768p",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.08",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:b971fe4d8284d00dbf53c38bfbe61df72443d52036267fb4acb39cc947801acd#1",
+      "rowHash": "sha256:b971fe4d8284d00dbf53c38bfbe61df72443d52036267fb4acb39cc947801acd",
+      "semanticKey": "sha256:a9330c89f15ff7db0925c9f2de14699cd935c714ee245cdb7e697d6a978360fc",
+      "raw": {
+        "modelDescription": "MiniMax H3, text to video, 2K",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "13",
+        "creditUnit": "per second",
+        "usdPrice": "0.065",
+        "falPrice": "0.13",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:ab425d4483bd9fc054f0d694a5a7d3f320a4b3af14cc56d43289d47b3106ceed#1",
+      "rowHash": "sha256:ab425d4483bd9fc054f0d694a5a7d3f320a4b3af14cc56d43289d47b3106ceed",
+      "semanticKey": "sha256:bdfaf672a4a214258775248cf123b6db32a0be8a514cf4d69ad05596df86a5a6",
+      "raw": {
+        "modelDescription": "MiniMax H3, image to video, 2K",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "13",
+        "creditUnit": "per second",
+        "usdPrice": "0.065",
+        "falPrice": "0.13",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:4b7e790339ac33ebb477408674ad98d134958c0bdf804d364f0be4874d770c87#1",
+      "rowHash": "sha256:4b7e790339ac33ebb477408674ad98d134958c0bdf804d364f0be4874d770c87",
+      "semanticKey": "sha256:2dee6f57250fdc9867bdcec60c878b64911acd32246b87c8c46f6f77f4b69f7b",
+      "raw": {
+        "modelDescription": "MiniMax H3, reference to video, 2K",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "13",
+        "creditUnit": "per second",
+        "usdPrice": "0.065",
+        "falPrice": "0.13",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:d41124d2a5a54b7949cd6b05d5547ce59a8f454508dacb7a7521f053cbda6262#1",
+      "rowHash": "sha256:d41124d2a5a54b7949cd6b05d5547ce59a8f454508dacb7a7521f053cbda6262",
+      "semanticKey": "sha256:1d173dabf17802d7f5fa21287848fa21d6280dd701955916ca2ea4a6015336b0",
+      "raw": {
+        "modelDescription": "MiniMax H3, video input, 2k",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "13",
+        "creditUnit": "per second",
+        "usdPrice": "0.065",
+        "falPrice": "0.13",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:70f8e63da7af9c8040a4d4e125d1785a14959dea570279decc7fbed6b661a9b1#1",
+      "rowHash": "sha256:70f8e63da7af9c8040a4d4e125d1785a14959dea570279decc7fbed6b661a9b1",
+      "semanticKey": "sha256:a587a6a24ef69099826ae4b76b1284574cadfc4356b3a8d3a9a4f684826729c8",
+      "raw": {
+        "modelDescription": "MiniMax H3, image input, 768p, 2k",
+        "interfaceType": "video",
+        "provider": "Hailuo",
+        "creditPrice": "4",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "0.04",
+        "discountRate": 50,
+        "anchor": "https://kie.ai/minimax-h3",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:420f8951cf653158019bcfa793e9902b15fbe54783819a18ddd205f36db3e051#1",
+      "rowHash": "sha256:420f8951cf653158019bcfa793e9902b15fbe54783819a18ddd205f36db3e051",
+      "semanticKey": "sha256:2a8c859c6418999e071651613bfba6196dc45e444f6e681780d0d0c155dd419a",
+      "raw": {
+        "modelDescription": "Claude-fable-5, chat, Output",
+        "interfaceType": "chat",
+        "provider": "Anthropic",
+        "creditPrice": "4000",
+        "creditUnit": "per 1M tokens",
+        "usdPrice": "20",
+        "falPrice": "50",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/claude-fable-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:8ea208328eb76031644006202ab824c9fd41b84844a6679136f277d5f66dcd79#1",
+      "rowHash": "sha256:8ea208328eb76031644006202ab824c9fd41b84844a6679136f277d5f66dcd79",
+      "semanticKey": "sha256:1bc3977ebbc4861e1fbd44dec0efd8e09217bd16763396e39198978b00c9e53c",
+      "raw": {
+        "modelDescription": "Claude-fable-5, chat, Input",
+        "interfaceType": "chat",
+        "provider": "Anthropic",
+        "creditPrice": "800",
+        "creditUnit": "per 1M tokens",
+        "usdPrice": "4",
+        "falPrice": "10",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/claude-fable-5",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:53af7a46da90e95039ce2809eacea51f86cfdf633b99cbbae51cb71fae267e66#1",
+      "rowHash": "sha256:53af7a46da90e95039ce2809eacea51f86cfdf633b99cbbae51cb71fae267e66",
+      "semanticKey": "sha256:f23e4bf84a4a8e87d4b3ea43ddb08430f0287fb2c227d630a0de4540070cedcb",
+      "raw": {
+        "modelDescription": "bytedance/seedance-2, 480p with video input",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "11.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.057",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:43b9cb047cb90e51ac1ed563363d794c527083087a11779860a1f77297299762#1",
+      "rowHash": "sha256:43b9cb047cb90e51ac1ed563363d794c527083087a11779860a1f77297299762",
+      "semanticKey": "sha256:93e84975c3b5a7a7af334e82d581fa697f92301379fb2b5928f8da11d16e943f",
+      "raw": {
+        "modelDescription": "gpt-5-2, Chat, Input",
+        "interfaceType": "chat",
+        "provider": "OpenAI",
+        "creditPrice": "87.5",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.44",
+        "falPrice": "1.75",
+        "discountRate": 74.9,
+        "anchor": "https://kie.ai/gpt-5-2",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:24523f6803fde7550ef667b7541e6ddee959826e2f9a777fe2ac1100fa042fd2#1",
+      "rowHash": "sha256:24523f6803fde7550ef667b7541e6ddee959826e2f9a777fe2ac1100fa042fd2",
+      "semanticKey": "sha256:511a426cd50cdc9e1b7b76a1f9fc533abef2eabb76478c53206acfaf1aef6d1c",
+      "raw": {
+        "modelDescription": "gpt-5-2, Chat, Output",
+        "interfaceType": "chat",
+        "provider": "OpenAI",
+        "creditPrice": "700",
+        "creditUnit": "per million tokens",
+        "usdPrice": "3.5",
+        "falPrice": "14",
+        "discountRate": 75,
+        "anchor": "https://kie.ai/gpt-5-2",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:e4872a0eb02c2ec3681c6c3e272f179b61616f5b7c37f8ae9e0b1837ea643d1e#1",
+      "rowHash": "sha256:e4872a0eb02c2ec3681c6c3e272f179b61616f5b7c37f8ae9e0b1837ea643d1e",
+      "semanticKey": "sha256:2d3e3433b0ddb1b5341c24cac8a7fc1580fff73fd898dc30f477da703686069e",
+      "raw": {
+        "modelDescription": "wan 2.6, video-to-video, 5.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "105",
+        "creditUnit": "per video",
+        "usdPrice": "0.525",
+        "falPrice": "0.75",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:f6a0883f4b51af14dd92b31ceff0915fbf58509e49bbd968ee5a85ccbd3594d8#1",
+      "rowHash": "sha256:f6a0883f4b51af14dd92b31ceff0915fbf58509e49bbd968ee5a85ccbd3594d8",
+      "semanticKey": "sha256:a966bd8aa03fd89750423de0cfb2542c60161f1d86875641f207833ae61246e8",
+      "raw": {
+        "modelDescription": "wan 2.6, video-to-video, 10.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "210",
+        "creditUnit": "per video",
+        "usdPrice": "1.05",
+        "falPrice": "1.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:d38f8e61dae51d7d1f47cac1cf60ef756eac9bf67ac97083ca3572d952de7cc2#1",
+      "rowHash": "sha256:d38f8e61dae51d7d1f47cac1cf60ef756eac9bf67ac97083ca3572d952de7cc2",
+      "semanticKey": "sha256:6bc5426f10451ac889009fb8bea8a3628375265e70cfff1a66cedef1f0b2c559",
+      "raw": {
+        "modelDescription": "wan 2.6, video-to-video, 10.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "140.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.7",
+        "falPrice": "1.0",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:78f97447c25529fc0461fc6714c88ee2306c0068c055b55926a450c30b784b59#1",
+      "rowHash": "sha256:78f97447c25529fc0461fc6714c88ee2306c0068c055b55926a450c30b784b59",
+      "semanticKey": "sha256:25c350b62e3596076ff64783bf9a05c79e71c98488203c429102b8a130343ab6",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 10.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "210",
+        "creditUnit": "per video",
+        "usdPrice": "1.05",
+        "falPrice": "1.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:3d65e554fee42b56185d25979275a6e88bdfd5fba4ad515c0f53e05e423d612f#1",
+      "rowHash": "sha256:3d65e554fee42b56185d25979275a6e88bdfd5fba4ad515c0f53e05e423d612f",
+      "semanticKey": "sha256:d3b9b217310319904480b5c601a81fbf5dac6d75c842a77005ac3081fbe8d7b1",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 15.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "315.0",
+        "creditUnit": "per video",
+        "usdPrice": "1.575",
+        "falPrice": "2.25",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:bc680b2489cbead012c74f6ef88db40d81fb8f72129d0fff65a6bc7be32ae367#1",
+      "rowHash": "sha256:bc680b2489cbead012c74f6ef88db40d81fb8f72129d0fff65a6bc7be32ae367",
+      "semanticKey": "sha256:da70ed2d6d985cf3bb4f07bd97477568f0a5c4d6e368d060f557b3b934a21b1d",
+      "raw": {
+        "modelDescription": "wan 2.6, video-to-video, 5.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "70.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.35",
+        "falPrice": "0.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:684980363e18ef0dbfab641b1dc2ebb502255979d6357c92329010c156b73749#1",
+      "rowHash": "sha256:684980363e18ef0dbfab641b1dc2ebb502255979d6357c92329010c156b73749",
+      "semanticKey": "sha256:fa4b68de874ff7452fb884f4b4d5e862910ff7eebe35a00e57310ef32c1d8546",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 5.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "105",
+        "creditUnit": "per video",
+        "usdPrice": "0.525",
+        "falPrice": "0.75",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:5da32c80be06eb6ea7231e670d1713c8c6ad225beca27208d9c807a2be0936ac#1",
+      "rowHash": "sha256:5da32c80be06eb6ea7231e670d1713c8c6ad225beca27208d9c807a2be0936ac",
+      "semanticKey": "sha256:1fff5e3eb8c84c330fe6ad3ce0aacb3e85f1eb8f5acd2ebba28eb251213a499f",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 5.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "70.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.35",
+        "falPrice": "0.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:eba792fea1fdc6c384c84aa80064dea80b2d040f5147fe7d42ec8879db890222#1",
+      "rowHash": "sha256:eba792fea1fdc6c384c84aa80064dea80b2d040f5147fe7d42ec8879db890222",
+      "semanticKey": "sha256:de8bd4986d104cf67d7ae132e4abdeb59143b6781b267078d7f6ef27d978e26e",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 10.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "140.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.7",
+        "falPrice": "1.0",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:d5ab0aeb4e55d821bb11d68fe0f9043afd3b169d5eafe03bd926445fed50d1b2#1",
+      "rowHash": "sha256:d5ab0aeb4e55d821bb11d68fe0f9043afd3b169d5eafe03bd926445fed50d1b2",
+      "semanticKey": "sha256:0911dc3e9618128c434fdf5aae6034bdda1553ef6eb0391ed0c063df0242b234",
+      "raw": {
+        "modelDescription": "wan 2.6, image-to-video, 15.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "210.0",
+        "creditUnit": "per video",
+        "usdPrice": "1.05",
+        "falPrice": "1.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:e63951f0e3e705e575f9bb4248dc996199be86148ba36058835b1bcdd78a79c2#1",
+      "rowHash": "sha256:e63951f0e3e705e575f9bb4248dc996199be86148ba36058835b1bcdd78a79c2",
+      "semanticKey": "sha256:aeb6baa3635107c718f885579e81b0a257a0d049950dcac1f5530d2302248cb5",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 5.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "105",
+        "creditUnit": "per video",
+        "usdPrice": "0.525",
+        "falPrice": "0.75",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:28821f4366b1a88ab3ff4863cbb0bee8a6054d5ff432e2356b79b0b2645fb138#1",
+      "rowHash": "sha256:28821f4366b1a88ab3ff4863cbb0bee8a6054d5ff432e2356b79b0b2645fb138",
+      "semanticKey": "sha256:5fc52439667b3dd20cf6e54158c91cdc21ff4aaff734d480959125ec64772191",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 10.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "210",
+        "creditUnit": "per video",
+        "usdPrice": "1.05",
+        "falPrice": "1.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:83c3f3c36be791e0a1ba42696dd7de79880d3480520d9e592d404b96ebd59291#1",
+      "rowHash": "sha256:83c3f3c36be791e0a1ba42696dd7de79880d3480520d9e592d404b96ebd59291",
+      "semanticKey": "sha256:659385cb129bf99a0848feb8ae14e889dcb78772519d29170f8f1b98dbc62372",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 15.0s-1080p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "315.0",
+        "creditUnit": "per video",
+        "usdPrice": "1.575",
+        "falPrice": "2.25",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:fd26299ae8dcfdc61efa68d08526d01121298249431040097275a47d21cb6195#1",
+      "rowHash": "sha256:fd26299ae8dcfdc61efa68d08526d01121298249431040097275a47d21cb6195",
+      "semanticKey": "sha256:daa79be1949dab7aa5bf53ffec47c69402a509b8adbe1c37bd04db3ad7976121",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 15.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "210.0",
+        "creditUnit": "per video",
+        "usdPrice": "1.05",
+        "falPrice": "1.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:2cefacd1cc22e63a622761d4aaab050f4325111e52ae1d830a3ea1fc8183416a#1",
+      "rowHash": "sha256:2cefacd1cc22e63a622761d4aaab050f4325111e52ae1d830a3ea1fc8183416a",
+      "semanticKey": "sha256:a2cb3e9ffff61698ba9dffeaeaeb7077de6835403c2b5e2b80000743b9024304",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 10.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "140.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.7",
+        "falPrice": "1.0",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:6fad8d46a5902b906873040dd3c17509cdf6f375554facb2c0fe62b11cbff39a#1",
+      "rowHash": "sha256:6fad8d46a5902b906873040dd3c17509cdf6f375554facb2c0fe62b11cbff39a",
+      "semanticKey": "sha256:7012e2818cfeb123e3e1190ab420c32f38dc7ab8bd181fa2472f383a34581708",
+      "raw": {
+        "modelDescription": "wan 2.6, text to video, 5.0s-720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "70.0",
+        "creditUnit": "per video",
+        "usdPrice": "0.35",
+        "falPrice": "0.5",
+        "discountRate": 30,
+        "anchor": "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:716097ca88c3097bf432e1cde41c8b8c2ec1b1232b7bfea54477adefaa94a2e7#1",
+      "rowHash": "sha256:716097ca88c3097bf432e1cde41c8b8c2ec1b1232b7bfea54477adefaa94a2e7",
+      "semanticKey": "sha256:c25e1bd95891a456ae189e29b116fb04d4c9d73c2fe49b8b8f930bbb490d9c37",
+      "raw": {
+        "modelDescription": "Wan 2.2 A14B Turbo API image to Video, 720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "16",
+        "creditUnit": "per second",
+        "usdPrice": "0.08",
+        "falPrice": "0.10",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-image-to-video-turbo",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:4f40660558c4ad68909e18d1503af2817386bb3347e805ae52b71a3f6bcc33e7#1",
+      "rowHash": "sha256:4f40660558c4ad68909e18d1503af2817386bb3347e805ae52b71a3f6bcc33e7",
+      "semanticKey": "sha256:20d7914a262e9a4b811d4377ba15fde042eb0781b5472c220f1448a6bf8e8ab6",
+      "raw": {
+        "modelDescription": "Wan 2.2 A14B Turbo API text to Video, 720p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "16",
+        "creditUnit": "per second",
+        "usdPrice": "0.08",
+        "falPrice": "0.10",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-text-to-video-turbo",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:787ebb73819203c4048919cb92927ab5bc8ebf54ea00b741dd0ce2563f883f3c#1",
+      "rowHash": "sha256:787ebb73819203c4048919cb92927ab5bc8ebf54ea00b741dd0ce2563f883f3c",
+      "semanticKey": "sha256:317623d60a6420dad959138988fe690048dda08b53946a2896dfeffeb5c8f3fd",
+      "raw": {
+        "modelDescription": "Wan 2.2 A14B Turbo API image to Video, 480p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.05",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-image-to-video-turbo",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:a8e9b1c0446c12974979b87a4677fe41da354c84e23c2499e8e029da9e8ea628#1",
+      "rowHash": "sha256:a8e9b1c0446c12974979b87a4677fe41da354c84e23c2499e8e029da9e8ea628",
+      "semanticKey": "sha256:22077f8501e38d049b4115bd62fabf58182d2d8db84760fc97e9346f4f665e6c",
+      "raw": {
+        "modelDescription": "Wan 2.2 A14B Turbo API text to Video, 480p",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.05",
+        "discountRate": 20,
+        "anchor": "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-text-to-video-turbo",
+        "discountPrice": false
+      }
+    }
+  ]
+}

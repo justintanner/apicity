@@ -388,6 +388,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- KIE `wan/2-6-text-to-video`, `wan/2-6-image-to-video` and
+  `wan/2-6-video-to-video` price 5 s and 10 s at 1080p at 0.525 and 1.05 USD
+  (105 and 210 credits), as the 2026-11-04 feed and page print them. They were
+  0.5225 and 1.0475 (ac-p3e0c6).
 - **Breaking:** fal `xai/grok-imagine-video/extend-video` prices what its card
   bills: the new seconds at 0.05 USD/s (480p) or 0.07 USD/s (720p), plus 0.01
   USD per source second. The request carries neither the source's length nor

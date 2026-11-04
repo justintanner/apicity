@@ -1056,10 +1056,9 @@ export const kie: Record<string, ModelPricing> = {
     "2026-10-14",
     viduQ4Seconds
   ),
-  // veo3 = the page's Quality tier. Both 4K rows print $1.85 while their
-  // credit cells disagree (text-to-video 380 credits, image-to-video 370);
-  // the published USD is identical either way, so one rate is correct here
-  // and the credit-row discrepancy is upstream's, not a derivation choice.
+  // veo3 = the page's Quality tier. Both 4K rows print $1.85. The frozen pull's
+  // text-to-video row said 380 credits against image-to-video's 370, and the
+  // 2026-11-04 feed says 370 on both.
   veo3: veoPerVideo({ "720p": 1.25, "1080p": 1.275, "4k": 1.85 }),
   // veo3_fast = the page's Fast tier. Its 1080p USD cell is malformed on the
   // page ("0,325"), so the credit cell is authoritative: the family bills
@@ -1394,10 +1393,12 @@ export const kie: Record<string, ModelPricing> = {
     "https://kie.ai/wan-2-5?model=wan%2F2-5-image-to-video"
   ),
 
-  // wan/2.6 standard trio — per VIDEO by duration × resolution. 1080p is not a
-  // fixed multiple of 720p (5s is 1.493x, 15s is 1.5x), so the tiered
-  // per-second helper cannot express this family: every cell is listed.
-  //   5s  $0.35 / $0.5225      10s $0.70 / $1.0475      15s $1.05 / $1.575
+  // wan/2.6 standard trio — per VIDEO by duration × resolution, every cell
+  // listed. The 2026-11-04 feed and https://kie.ai/wan-2-6 print 105 and 210
+  // credits at 5 s and 10 s 1080p, where the frozen pull printed 104.5 and 209.5
+  // (tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json). No recording
+  // bills these cells.
+  //   5s  $0.35 / $0.525       10s $0.70 / $1.05        15s $1.05 / $1.575
   //
   // Two asymmetries against the wan 2.5 pair directly above:
   //
@@ -1445,9 +1446,9 @@ export const kie: Record<string, ModelPricing> = {
     ...perVideoByDurationAndResolution(
       {
         "5|720p": 0.35,
-        "5|1080p": 0.5225,
+        "5|1080p": 0.525,
         "10|720p": 0.7,
-        "10|1080p": 1.0475,
+        "10|1080p": 1.05,
         "15|720p": 1.05,
         "15|1080p": 1.575,
       },
@@ -1457,16 +1458,16 @@ export const kie: Record<string, ModelPricing> = {
     ),
     source: {
       ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video"),
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
   },
   "wan/2-6-image-to-video": {
     ...perVideoByDurationAndResolution(
       {
         "5|720p": 0.35,
-        "5|1080p": 0.5225,
+        "5|1080p": 0.525,
         "10|720p": 0.7,
-        "10|1080p": 1.0475,
+        "10|1080p": 1.05,
         "15|720p": 1.05,
         "15|1080p": 1.575,
       },
@@ -1476,16 +1477,16 @@ export const kie: Record<string, ModelPricing> = {
     ),
     source: {
       ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video"),
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
   },
   "wan/2-6-video-to-video": {
     ...perVideoByDurationAndResolution(
       {
         "5|720p": 0.35,
-        "5|1080p": 0.5225,
+        "5|1080p": 0.525,
         "10|720p": 0.7,
-        "10|1080p": 1.0475,
+        "10|1080p": 1.05,
       },
       "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
       "5",
@@ -1493,7 +1494,7 @@ export const kie: Record<string, ModelPricing> = {
     ),
     source: {
       ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video"),
-      asOf: "2026-08-07",
+      asOf: "2026-11-04",
     },
   },
 

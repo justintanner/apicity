@@ -106,6 +106,21 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   ...[
+    "wan/2-6-text-to-video",
+    "wan/2-6-image-to-video",
+    "wan/2-6-video-to-video",
+  ].flatMap((key) =>
+    ["5|1080p", "10|1080p"].map((variant) => ({
+      key,
+      variant,
+      status: "pricing-only",
+      provenance:
+        "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json: the feed and page read 2026-11-04 print 105 and 210 credits = 0.525 and 1.05 USD per video",
+      rationale:
+        "The frozen September feed printed 104.5 and 209.5 credits. No recording bills these cells, so the feed and the page are the witnesses.",
+    }))
+  ),
+  ...[
     "360p|no-audio",
     "360p|audio",
     "540p|no-audio",
@@ -759,7 +774,8 @@ const SELECTOR_RULES = Object.freeze([
   },
   {
     family: "pixverse-quality-audio",
-    matches: (key) => key.startsWith("pixverse-v6/"),
+    matches: (key) =>
+      key.startsWith("pixverse-v6/") || key.startsWith("pixverse-v6-max/"),
     apply: (_key, text, candidates) => {
       // PixVerse omits a separator before the opening parenthesis on Extend
       // and Reference rows ("1080p(with audio)"), and 360p/540p are outside
@@ -775,6 +791,23 @@ const SELECTOR_RULES = Object.freeze([
       } else if (/no (?:audio|aiduo)/i.test(text)) {
         candidates.generate_audio_switch = false;
       }
+    },
+  },
+  {
+    family: "vidu-q4-resolution",
+    matches: (key) => key.startsWith("vidu-q4/"),
+    apply: (_key, text, candidates) => {
+      // 540p is outside the generic resolution vocabulary, as on PixVerse.
+      if (/(?:^|[-,\s])540p(?:$|[-,\s])/i.test(text)) {
+        candidates.resolution = "540p";
+      }
+    },
+  },
+  {
+    family: "kling-omni-native-audio",
+    matches: (key) => key.startsWith("kling-3.0-omni/"),
+    apply: (_key, text, candidates) => {
+      if (/with native audio/i.test(text)) candidates.audio = true;
     },
   },
   {
@@ -920,6 +953,17 @@ export function applySelectorRules({ key, text, candidates, context }) {
 }
 
 const PAYLOAD_RULES = Object.freeze([
+  {
+    family: "kling-video-input",
+    matches: (key) =>
+      key === "kling-3.0-omni/reference-to-video" ||
+      key === "kling-4.0/reference-to-video",
+    apply: (input, text) => {
+      if (/with video input/i.test(text)) {
+        input.video_urls = ["https://example.com/a.mp4"];
+      }
+    },
+  },
   {
     family: "pixverse-inputs",
     matches: (key) => key.startsWith("pixverse-v6/"),
@@ -1356,12 +1400,14 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "minimax-video-input",
+    liveComparable: true,
     matches: (description) => /MiniMax H3,\s*video input/i.test(description),
     message:
       "MiniMax H3 video-input billing is duration-based, but the reference video duration is not present in the callable request payload.",
   },
   {
     family: "seedance-2-rate-conflict",
+    liveComparable: true,
     matches: (description, _key, official) =>
       /bytedance\/seedance-2,\s*480p with video/i.test(description) &&
       String(official.usdPrice) === "0.057",
@@ -1377,6 +1423,7 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "grok-image-video-rate-conflict",
+    liveComparable: true,
     matches: (description, _key, official) =>
       /grok-imagine,\s*image-to-video,\s*1080p/i.test(description) &&
       String(official.usdPrice) === "0.004",
@@ -1385,6 +1432,7 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "wan-3-0-720p-rate-conflict",
+    liveComparable: true,
     matches: (description, _key, official) =>
       /^wan 3\.0 video,\s*720p,\s*video$/i.test(description) &&
       String(official.usdPrice) === "0.09",
@@ -1393,6 +1441,7 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "pixverse-v6-extend-540p-rate-conflict",
+    liveComparable: true,
     matches: (description, key, official) =>
       key === "pixverse-v6/extend" &&
       /^pixverse-v6,\s*Extend,\s*540p\(with aiduo\)$/i.test(description) &&
@@ -1402,6 +1451,7 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "pixverse-v6-reference-refreshed",
+    liveComparable: true,
     matches: (description, key) =>
       key === "pixverse-v6/reference-to-video" &&
       /^pixverse-v6,\s*Reference To Video,/i.test(description),
@@ -1410,10 +1460,20 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     family: "seedance-2-5-1080p-refreshed",
+    liveComparable: true,
     matches: (description, key) =>
       key === "bytedance/seedance-2-5" && /1080p/i.test(description),
     message:
       "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions.",
+  },
+  {
+    family: "wan-2-6-1080p-refreshed",
+    liveComparable: true,
+    matches: (description, key) =>
+      /^wan\/2-6-(?:text|image|video)-to-video$/.test(key ?? "") &&
+      /,\s*(?:5|10)\.0s-1080p$/i.test(description),
+    message:
+      "The frozen September 5 s and 10 s 1080p rates (104.5 and 209.5 credits) are superseded by the 2026-11-04 feed and https://kie.ai/wan-2-6 (105 and 210); see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json.",
   },
   {
     family: "qwen-image-per-preset",
@@ -1431,9 +1491,38 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
 ]);
 
-export function knownFalseMapping({ description, key, official }) {
-  const rule = KNOWN_FALSE_MAPPING_RULES.find((candidate) =>
-    candidate.matches(description, key, official)
+// A feed row that prints a different billing unit from the table's cell, with
+// what one table unit holds of the feed's. Wan 2.2 Turbo's table cell is one
+// fixed 5 s clip, and the 2026-11-04 feed prints the same 40 and 80 credits per
+// video as 8 and 16 credits per second.
+const FEED_UNIT_RULES = Object.freeze([
+  {
+    family: "wan-2-2-turbo-per-second",
+    matches: (description, key) =>
+      /^wan\/2-2-a14b-(?:text|image)-to-video-turbo$/.test(key) &&
+      /^Wan 2\.2 A14B Turbo API (?:text|image) to Video,/i.test(description),
+    feedUnitsPerTableUnit: 5,
+  },
+]);
+
+export function feedUnitsPerTableUnit({ description, key }) {
+  return FEED_UNIT_RULES.find((rule) => rule.matches(description, key))
+    ?.feedUnitsPerTableUnit;
+}
+
+// A liveComparable rule keeps a row out of the frozen guard, where its price is
+// older than the table's or disagrees with its own credits. It must not hide that
+// row from a comparison against a newer pull (`live`), which reads both figures.
+export function knownFalseMapping({
+  description,
+  key,
+  official,
+  live = false,
+}) {
+  const rule = KNOWN_FALSE_MAPPING_RULES.find(
+    (candidate) =>
+      !(live && candidate.liveComparable) &&
+      candidate.matches(description, key, official)
   );
   return rule?.message;
 }

@@ -2646,7 +2646,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "tokens",
       reason:
-        "Named rates plus size bands for other models; the six bundled rows are old",
+        "Dated named-model and pinned size-band token rates; unknown model metadata fails closed",
       source: {
         url: "https://docs.fireworks.ai/serverless/pricing.md",
         asOf: "2026-11-04",
@@ -2661,9 +2661,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "fireworks",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "tokens",
-      reason: "Size bands per 1M input tokens",
+      reason:
+        "Published legacy embedding size bands and Qwen3 Embedding 8B input-token rates",
       source: {
         url: "https://docs.fireworks.ai/serverless/pricing.md",
         asOf: "2026-11-04",
@@ -2674,11 +2675,12 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "fireworks",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "tokens",
-      reason: "Only the Qwen3 8B line is published; Voyage rerank has no row",
+      reason:
+        "Qwen3 Reranker 8B: 0.20 USD per million input tokens; Voyage uses dedicated capacity and has no per-call rate",
       source: {
-        url: "https://docs.fireworks.ai/serverless/pricing.md",
+        url: "https://docs.fireworks.ai/guides/querying-embeddings-models.md",
         asOf: "2026-11-04",
       },
     },

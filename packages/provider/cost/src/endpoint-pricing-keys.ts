@@ -409,6 +409,11 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST xai.grokImagineVideo.v1p5.textToVideo":
     "xai/grok-imagine-video/v1.5/text-to-video",
   "fal POST xai.grokVoice": "xai/grok-voice",
+  "fireworks POST inference.v1.chat.completions": "chat",
+  "fireworks POST inference.v1.completions": "chat",
+  "fireworks POST inference.v1.embeddings": "embeddings",
+  "fireworks POST inference.v1.messages": "chat",
+  "fireworks POST inference.v1.rerank": "rerank",
   "kie GET api.v1.veo.get1080pVideo": "veo/get-1080p-video",
   "kie POST api.v1.generate": "suno/generate",
   "kie POST api.v1.generate.addInstrumental": "suno/add-instrumental-generate",

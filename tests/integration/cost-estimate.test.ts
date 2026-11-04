@@ -353,13 +353,13 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings[0]).toMatch(/duration/);
   });
 
-  it("fireworks heuristic → chars/4 × deepseek-v3 rate", () => {
+  it("fireworks heuristic → chars/4 × Ember rate", () => {
     const c = createCost();
     const text = "x".repeat(400);
     const r = c.estimate({
       provider: "fireworks",
       payload: {
-        model: "deepseek-v3",
+        model: "accounts/fireworks/models/ember-1",
         messages: [{ role: "user", content: text }],
         max_tokens: 100,
       },
@@ -367,7 +367,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.source).toBe("tokens-heuristic+table");
     expect(r.breakdown.inputTokens).toBe(100);
     expect(r.breakdown.outputTokens).toBe(100);
-    const expected = (100 * 0.56 + 100 * 1.68) / 1_000_000;
+    const expected = (100 * 3 + 100 * 15) / 1_000_000;
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
@@ -919,7 +919,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     const r = c.estimate({
       provider: "fireworks",
       payload: {
-        model: "deepseek-v3",
+        model: "accounts/fireworks/models/ember-1",
         messages: [{ role: "user", content: "abcd" }],
       },
     });

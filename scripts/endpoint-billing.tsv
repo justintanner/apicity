@@ -871,11 +871,11 @@ fireworks	inference.v1.audio.batch.transcriptions	POST	unpriced	seconds	Neither 
 fireworks	inference.v1.audio.batch.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.audio.transcriptions	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.audio.translations	POST	unpriced	seconds	Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
-fireworks	inference.v1.chat.completions	POST	metered	tokens	Named rates plus size bands for other models; the six bundled rows are old	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
-fireworks	inference.v1.completions	POST	metered	tokens	Named rates plus size bands for other models; the six bundled rows are old	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
-fireworks	inference.v1.embeddings	POST	unpriced	tokens	Size bands per 1M input tokens	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
-fireworks	inference.v1.messages	POST	metered	tokens	Named rates plus size bands for other models; the six bundled rows are old	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
-fireworks	inference.v1.rerank	POST	unpriced	tokens	Only the Qwen3 8B line is published; Voyage rerank has no row	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
+fireworks	inference.v1.chat.completions	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
+fireworks	inference.v1.completions	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
+fireworks	inference.v1.embeddings	POST	metered	tokens	Published legacy embedding size bands and Qwen3 Embedding 8B input-token rates	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
+fireworks	inference.v1.messages	POST	metered	tokens	Dated named-model and pinned size-band token rates; unknown model metadata fails closed	https://docs.fireworks.ai/serverless/pricing.md	2026-11-04
+fireworks	inference.v1.rerank	POST	metered	tokens	Qwen3 Reranker 8B: 0.20 USD per million input tokens; Voyage uses dedicated capacity and has no per-call rate	https://docs.fireworks.ai/guides/querying-embeddings-models.md	2026-11-04
 fireworks	inference.v1.workflows.getResult	POST	followup		Result poll; billed on the submit it follows	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.workflows.kontext	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04
 fireworks	inference.v1.workflows.textToImage	POST	unpriced	images	Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed	https://fireworks.ai/pricing	2026-11-04

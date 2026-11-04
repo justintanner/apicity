@@ -98,13 +98,22 @@ function deriveFromTokens(
   const { usage, serviceTier } = extracted;
   // Anthropic and Kimi call their Standard tier "standard", which OpenAI's
   // declared usage rightly refuses. The response is the record of what ran, so
-  // only OpenAI also reads the tier its request asked for.
+  // OpenAI and Fireworks also read the requested tier when the response
+  // omits it. Fireworks must keep an explicit Standard response authoritative.
   const tier =
-    provider !== "openai" && serviceTier === "standard"
-      ? undefined
-      : serviceTier;
+    serviceTier === "standard" && provider === "fireworks"
+      ? "default"
+      : provider !== "openai" && serviceTier === "standard"
+        ? undefined
+        : serviceTier;
   const hints = tokenHints(usage, tier);
   if (provider === "xai" && new URL(exchange.url).hostname === "us.api.x.ai") {
+    hints.regionalProcessing = true;
+  }
+  if (
+    provider === "fireworks" &&
+    new URL(exchange.url).hostname === "us.api.fireworks.ai"
+  ) {
     hints.regionalProcessing = true;
   }
   if (DECLARED_USAGE_PROVIDERS.has(provider)) {
@@ -112,7 +121,7 @@ function deriveFromTokens(
       evaluateDeclaredUsage(
         provider,
         key,
-        provider === "openai" || provider === "xai"
+        provider === "openai" || provider === "xai" || provider === "fireworks"
           ? {
               ...exchange.requestBody,
               ...(provider === "xai" ? { service_tier: tier } : {}),

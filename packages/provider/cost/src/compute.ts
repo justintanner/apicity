@@ -1,3 +1,9 @@
+import {
+  FIREWORKS_EMBEDDING_RATES,
+  FIREWORKS_MODEL_SIZES,
+  fireworksEntry,
+  fireworksPricingProblem,
+} from "./pricing/fireworks";
 import { S3_EXCLUSIONS } from "./pricing/s3";
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import {
@@ -540,9 +546,14 @@ export function evaluateDeclaredUsage(
       ? openaiPricingProblem(payload, hints)
       : provider === "xai"
         ? xaiPricingProblem(model, payload, hints)
-        : undefined;
+        : provider === "fireworks"
+          ? fireworksPricingProblem(model, payload, hints)
+          : undefined;
   if (problem) return failed(source, [problem]);
-  const entry = PRICING[provider][model];
+  const entry =
+    provider === "fireworks"
+      ? fireworksEntry(model, payload, hints)
+      : PRICING[provider][model];
   if (!entry) {
     return failed(source, [
       `model '${model}' not found in pricing table for provider '${provider}'`,
@@ -652,6 +663,7 @@ export function evaluateDeclaredUsage(
   const tier = hints?.serviceTier ?? payload.service_tier;
   if (
     provider !== "xai" &&
+    provider !== "fireworks" &&
     tier !== undefined &&
     tier !== null &&
     !(typeof tier === "string" && STANDARD_SERVICE_TIERS.has(tier))
@@ -664,6 +676,7 @@ export function evaluateDeclaredUsage(
   }
   if (
     provider !== "xai" &&
+    provider !== "fireworks" &&
     hints?.regionalProcessing !== undefined &&
     hints.regionalProcessing !== false
   ) {
@@ -805,7 +818,20 @@ export function evaluateDeclaredUsage(
         ? openaiWarnings(payload)
         : provider === "xai"
           ? xaiWarnings(payload)
-          : [],
+          : provider === "fireworks" &&
+              Array.isArray(payload.tools) &&
+              payload.tools.length > 0
+            ? [
+                "fireworks: tool charges are not included in this token estimate",
+              ]
+            : [],
+    ...(provider === "fireworks" && Object.hasOwn(FIREWORKS_MODEL_SIZES, model)
+      ? {
+          notes: [
+            "Fireworks size-band rate from pinned model metadata; cached input has the same rate as other input and output.",
+          ],
+        }
+      : {}),
   };
 }
 
@@ -985,7 +1011,119 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
-    case "fireworks":
+    case "fireworks": {
+      const model = asString(req.payload.model);
+      if (!model)
+        return failed("tokens-heuristic+table", [
+          "fireworks: payload.model is required",
+        ]);
+      if (
+        req.endpoint !== undefined &&
+        !["chat", "embeddings", "rerank"].includes(req.endpoint)
+      ) {
+        return failed("per-unit-table", [
+          `fireworks: no published price for endpoint '${req.endpoint}' and model '${model}'`,
+        ]);
+      }
+      const inputOnly = Object.hasOwn(FIREWORKS_EMBEDDING_RATES, model);
+      const reranker = model.endsWith("/qwen3-reranker-8b");
+      if (
+        (req.endpoint === "chat" && inputOnly) ||
+        (req.endpoint === "embeddings" && !inputOnly) ||
+        (req.endpoint === "rerank" && !reranker)
+      ) {
+        return failed("declared-tokens+table", [
+          `fireworks: model '${model}' has no published rate for ${req.endpoint}; a model-specific price is required`,
+        ]);
+      }
+      if (inputOnly) {
+        if (
+          req.costHints?.outputTokens !== undefined &&
+          req.costHints.outputTokens !== 0
+        ) {
+          return failed("declared-tokens+table", [
+            "fireworks: embedding/rerank outputTokens must be 0",
+          ]);
+        }
+        if (hasDeclaredUsage(req.costHints)) {
+          return evaluateDeclaredUsage("fireworks", model, req.payload, {
+            ...req.costHints,
+            outputTokens: 0,
+          });
+        }
+        if (reranker)
+          return failed("declared-tokens+table", [
+            "fireworks: pass costHints.inputTokens for reranking; model-specific query/document template tokens cannot be counted from text alone",
+          ]);
+        const input = req.payload.input;
+        let tokens: number | undefined;
+        if (typeof input === "string" && input.length > 0)
+          tokens = heuristicTokens(input);
+        else if (
+          Array.isArray(input) &&
+          input.length > 0 &&
+          input.every((x) => typeof x === "string" && x.length > 0)
+        )
+          tokens = input.reduce(
+            (sum, value) => sum + heuristicTokens(value),
+            0
+          );
+        else if (
+          Array.isArray(input) &&
+          input.length > 0 &&
+          input.every(
+            (x) => typeof x === "number" && Number.isSafeInteger(x) && x >= 0
+          )
+        )
+          tokens = input.length;
+        else if (
+          Array.isArray(input) &&
+          input.length > 0 &&
+          input.every(
+            (x) =>
+              Array.isArray(x) &&
+              x.length > 0 &&
+              x.every(
+                (t) =>
+                  typeof t === "number" && Number.isSafeInteger(t) && t >= 0
+              )
+          )
+        )
+          tokens = input.reduce((sum, value) => sum + value.length, 0);
+        if (tokens === undefined)
+          return failed("declared-tokens+table", [
+            "fireworks: pass costHints.inputTokens or non-empty embedding input",
+          ]);
+        const result = evaluateDeclaredUsage("fireworks", model, req.payload, {
+          ...req.costHints,
+          inputTokens: tokens,
+          outputTokens: 0,
+        });
+        result.source = "tokens-heuristic+table";
+        return result;
+      }
+      if (hasDeclaredUsage(req.costHints))
+        return evaluateDeclaredUsage(
+          "fireworks",
+          model,
+          req.payload,
+          req.costHints
+        );
+      const ext = extractChat("fireworks", req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      const result = evaluateDeclaredUsage("fireworks", model, req.payload, {
+        ...req.costHints,
+        inputTokens: heuristicTokens(ext.data.text),
+        outputTokens: ext.data.maxOutputTokens ?? 0,
+        cacheReadInputTokens: 0,
+      });
+      result.source = "tokens-heuristic+table";
+      if (ext.data.maxOutputTokens === undefined)
+        result.warnings.push(
+          "maxOutputTokens not provided; output cost not included in estimate"
+        );
+      return result;
+    }
     case "kimicoding": {
       const ext = extractChat(req.provider, req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);

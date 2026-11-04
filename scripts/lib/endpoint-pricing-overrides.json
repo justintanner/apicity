@@ -159,5 +159,12 @@
     "GET objects.getTagging": "standard-read",
     "GET objects.getTorrent": "standard-read",
     "HEAD objects.head": "standard-read"
+  },
+  "fireworks": {
+    "inference.v1.chat.completions": "chat",
+    "inference.v1.completions": "chat",
+    "inference.v1.messages": "chat",
+    "inference.v1.embeddings": "embeddings",
+    "inference.v1.rerank": "rerank"
   }
 }

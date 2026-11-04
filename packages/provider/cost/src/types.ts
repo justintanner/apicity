@@ -217,6 +217,7 @@ export interface CostHints {
   // "flex", "batch", ...) fails closed rather than quoting Standard rates.
   // xAI also reads this: default/auto are Standard, priority costs 2x;
   // undocumented tiers (including batch) fail closed. Cost-only.
+  // Fireworks: documented Standard/priority rates; Fast/US use router model IDs.
   serviceTier?: string;
   // True when an openai request ran on a regional-processing (data
   // residency) or FedRAMP endpoint, which OpenAI bills at a 10% uplift for
@@ -225,6 +226,7 @@ export interface CostHints {
   // estimator cannot see the endpoint otherwise. Cost-only.
   // xAI: true means US processing (1.1x), documented for Grok 4.6/4.7 only.
   // Other models or non-boolean values fail closed. Cost-only.
+  // Fireworks: true only with a documented US router or an inherently US model.
   regionalProcessing?: boolean;
 }
 
@@ -341,6 +343,7 @@ export interface CostActual {
   // solved from such a call would absorb the fee.
   uncoveredCharge?: string;
   // The service tier the response names; a non-standard one bills other rates.
+  // Fireworks: documented Standard/priority rates; Fast/US use router model IDs.
   serviceTier?: string;
   // The per-unit rate this exchange's request selected, kept so mergeActuals
   // can price the units a later poll reports: the request is on the submit and

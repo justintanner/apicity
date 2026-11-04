@@ -3215,7 +3215,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
   // AC-4 paper trail: the two OTP pay-gated Gemini Omni routes that are NOT
   // the video generator publish no rate in the 2026-08-06 pull (0 of 404
   // rows), so they are intentionally unpriced rather than silently skipped.
-  // Same treatment as the unpriced wan/2-6-flash-* pair below — no entry,
+  // No published rate for this operation — no entry,
   // fail-safe `prohibitive`, and an estimate that fails loudly instead of
   // quoting a guessed rate. Delete this pin only when a page row appears.
   it.each(["api.v1.omni.audio.create", "api.v1.omni.character.create"])(
@@ -4354,16 +4354,6 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
       "10|1080p": 1.0475,
     });
   });
-
-  // R2: kie publishes no flash rate on any surface, so the pair stays unpriced
-  // and fails safe into the prohibitive tier rather than borrowing the standard
-  // trio's rate. Same discipline as pixverse-v6/*.
-  it.each(["wan/2-6-flash-image-to-video", "wan/2-6-flash-video-to-video"])(
-    "leaves %s unpriced",
-    (model) => {
-      expect(PRICING.kie[model]).toBeUndefined();
-    }
-  );
 
   // Both Wan 3.0 entries cite the family's live feed anchors; the `?model=`
   // page URLs they used to cite answered HTTP 404 on 2026-09-11. Pinning the

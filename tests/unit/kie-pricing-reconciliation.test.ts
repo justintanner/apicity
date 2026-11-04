@@ -283,9 +283,9 @@ describe("Kie pricing reconciliation", () => {
     expect(inventory.models).toHaveLength(163);
     expect(inventory.descriptors).toHaveLength(163);
     expect(inventory.guards).toHaveLength(163);
-    expect(inventory.pricingKeys).toHaveLength(189);
-    expect(inventory.slugKeys).toHaveLength(191);
-    expect(inventory.displayKeys).toHaveLength(191);
+    expect(inventory.pricingKeys).toHaveLength(228);
+    expect(inventory.slugKeys).toHaveLength(230);
+    expect(inventory.displayKeys).toHaveLength(230);
     expect(inventory.endpoints).toHaveLength(84);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
@@ -391,6 +391,17 @@ describe("Kie pricing reconciliation", () => {
     ).toEqual([]);
   });
 
+  it("keeps mapped chat rows in the token audit, not the media audit", () => {
+    const rows = generatedManifest.rows.filter(
+      (row) => row.official.interfaceType === "chat"
+    );
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((row) => row.disposition === "token-billed")).toBe(true);
+    expect(
+      rows.some((row) => row.mappedApiCityKeys.includes("gpt-6-astra"))
+    ).toBe(true);
+  });
+
   it("passes the committed zero-unclassified manifest", async () => {
     const result = await runCheck({ root, manifestPath });
 
@@ -399,9 +410,9 @@ describe("Kie pricing reconciliation", () => {
       rows: 483,
       models: 163,
       endpoints: 84,
-      pricingKeys: 189,
-      slugs: 191,
-      displays: 191,
+      pricingKeys: 228,
+      slugs: 230,
+      displays: 230,
       zeroUnclassifiedRows: true,
       zeroUnclassifiedApiCityKeys: true,
     });
@@ -415,8 +426,8 @@ describe("Kie pricing reconciliation", () => {
         row.disposition === "canonical-alias"
     );
 
-    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(6);
-    expect(manifest.apiCity.pricingOnly).toHaveLength(32);
+    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(4);
+    expect(manifest.apiCity.pricingOnly).toHaveLength(69);
     expect(manifest.inventory.baseline).toEqual({
       models: 127,
       pricingKeys: 135,
@@ -428,11 +439,11 @@ describe("Kie pricing reconciliation", () => {
     });
     expect(manifest.inventory.final).toEqual({
       models: 163,
-      pricingKeys: 189,
-      slugKeys: 191,
-      displayKeys: 191,
-      schemaWithoutPricing: 6,
-      pricingOnly: 32,
+      pricingKeys: 228,
+      slugKeys: 230,
+      displayKeys: 230,
+      schemaWithoutPricing: 4,
+      pricingOnly: 69,
       endpoints: 84,
     });
     expect(implemented.length).toBeGreaterThan(0);
@@ -1266,11 +1277,11 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Runtime Variant Coverage");
     expect(markdown).toContain("| Schema model IDs | 127 | 163 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 84 |");
-    expect(markdown).toContain("| Runtime pricing keys | 135 | 189 |");
-    expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 6 |");
-    expect(markdown).toContain("| Pricing-only inventory | 31 | 32 |");
-    expect(markdown).toContain("| Slug keys | 137 | 191 |");
-    expect(markdown).toContain("| Display keys | 137 | 191 |");
+    expect(markdown).toContain("| Runtime pricing keys | 135 | 228 |");
+    expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 4 |");
+    expect(markdown).toContain("| Pricing-only inventory | 31 | 69 |");
+    expect(markdown).toContain("| Slug keys | 137 | 230 |");
+    expect(markdown).toContain("| Display keys | 137 | 230 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
   });

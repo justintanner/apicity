@@ -783,6 +783,39 @@ const perVideoByDurationAndResolution = (
   source: pricePage(url, asOf),
 });
 
+// November feed publishes all twenty Wan 2.6 Flash cells. Audio has no
+// documented default, so require an explicit boolean even on the optional
+// video-to-video wire field. Duration and resolution retain schema defaults.
+const wan26Flash = (
+  rates: Record<string, number>,
+  model: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    { name: "duration", pick: (p) => inputDurationKey(p, "5") },
+    { name: "resolution", pick: (p) => inputResolution(p) ?? "1080p" },
+    {
+      name: "audio",
+      required: true,
+      pick: (p) => {
+        const audio = asObject(p.input)?.audio;
+        return typeof audio === "boolean"
+          ? audio
+            ? "audio"
+            : "no-audio"
+          : undefined;
+      },
+    },
+  ],
+  rates,
+  source: pricePage(
+    `https://kie.ai/wan-2-6-flash?model=${encodeURIComponent(model)}`,
+    "2026-11-04"
+  ),
+});
+
 // Per-video entry keyed by resolution alone (the wan 2.2 A14B turbo pair). Same
 // per-video basis as the two helpers above, minus the duration axis: kie bills
 // these off one fixed ~5s clip and the schemas declare no duration field at
@@ -1378,13 +1411,36 @@ export const kie: Record<string, ModelPricing> = {
   //    pricing a duration this model's own guard rejects would quote a video
   //    that cannot be ordered.
   //
-  // The two wan/2-6-flash-* ids are deliberately absent. Rechecked 2026-08-22:
-  // neither the fresh 441-row KIE catalog nor the matching
-  // https://docs.kie.ai/market/wan/2-6-flash-* operation pages publishes a
-  // flash rate. They stay unpriced and fail safe into the prohibitive tier
-  // rather than borrowing the standard rate (mayor ruling R2). R2 confirmed
-  // the standard table on 2026-08-07, one day after the shared pricePage stamp,
-  // so each standard entry still carries its own evidence date below.
+  "wan/2-6-flash-image-to-video": wan26Flash(
+    {
+      "15|1080p|no-audio": 0.45,
+      "10|1080p|no-audio": 0.3,
+      "5|1080p|no-audio": 0.15,
+      "10|1080p|audio": 0.6,
+      "15|1080p|audio": 0.9,
+      "5|1080p|audio": 0.3,
+      "15|720p|no-audio": 0.3,
+      "5|720p|no-audio": 0.1,
+      "10|720p|no-audio": 0.2,
+      "15|720p|audio": 0.6,
+      "10|720p|audio": 0.4,
+      "5|720p|audio": 0.2,
+    },
+    "wan/2-6-flash-image-to-video"
+  ),
+  "wan/2-6-flash-video-to-video": wan26Flash(
+    {
+      "5|1080p|no-audio": 0.15,
+      "10|1080p|no-audio": 0.3,
+      "10|1080p|audio": 0.6,
+      "5|1080p|audio": 0.3,
+      "5|720p|no-audio": 0.1,
+      "10|720p|no-audio": 0.2,
+      "10|720p|audio": 0.4,
+      "5|720p|audio": 0.2,
+    },
+    "wan/2-6-flash-video-to-video"
+  ),
   "wan/2-6-text-to-video": {
     ...perVideoByDurationAndResolution(
       {
@@ -3471,5 +3527,206 @@ export const kie: Record<string, ModelPricing> = {
     kind: "tokens",
     rate: { input: 0.06, output: 0.3 },
     source: pricePage("https://kie.ai/claude-haiku-5-5", "2026-10-22"),
+  },
+
+  // Public pricing feed read 2026-11-04; credits × $0.005 per million.
+  // Wire IDs and feed rows are archived in chat-models-2026-11-04.json.
+  // Bonus top-ups are excluded. Missing cache rates remain unsupported.
+  "gpt-6-1-terra": {
+    kind: "tokens",
+    rate: { input: 0.3, output: 1.5, cacheRead: 0.015, cacheWrite: 0.375 },
+    source: pricePage("https://kie.ai/gpt-6-1-terra", "2026-11-04"),
+  },
+  "gemini-4-argon": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 4.0 },
+    source: pricePage("https://kie.ai/gemini-4-argon", "2026-11-04"),
+  },
+  "gemini-4-argon-openai": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 4.0 },
+    source: pricePage("https://kie.ai/gemini-4-argon", "2026-11-04"),
+  },
+  "gemini-3.1-pro": {
+    kind: "tokens",
+    rate: { input: 0.5, output: 3.5 },
+    source: pricePage("https://kie.ai/gemini-3-1-pro", "2026-11-04"),
+  },
+  "claude-sonnet-5-5": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 4.0 },
+    source: pricePage("https://kie.ai/claude-sonnet-5-5", "2026-11-04"),
+  },
+  "claude-opus-5-5": {
+    kind: "tokens",
+    rate: { input: 1.6, output: 8.0 },
+    source: pricePage("https://kie.ai/claude-opus-5-5", "2026-11-04"),
+  },
+  "gpt-6-luna": {
+    kind: "tokens",
+    rate: { input: 0.03, output: 0.15, cacheRead: 0.003, cacheWrite: 0.0375 },
+    source: pricePage(
+      "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+      "2026-11-04"
+    ),
+  },
+  "gpt-6-sol": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 3.0, cacheRead: 0.06, cacheWrite: 0.75 },
+    source: pricePage(
+      "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+      "2026-11-04"
+    ),
+  },
+  "kimi-k3": {
+    kind: "tokens",
+    rate: { input: 2.4, output: 12.0, cacheRead: 0.24 },
+    source: pricePage("https://kie.ai/kimi-k3", "2026-11-04"),
+  },
+  "deepseek-v4-1-flash": {
+    kind: "tokens",
+    rate: { input: 0.12, output: 0.475, cacheRead: 0.0025 },
+    source: pricePage("https://kie.ai/deepseek-v4-1-Flash", "2026-11-04"),
+  },
+  "grok-4-7": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 2.4, cacheRead: 0.2 },
+    source: pricePage("https://kie.ai/grok-4-7", "2026-11-04"),
+  },
+  "gpt-6-astra": {
+    kind: "tokens",
+    rate: { input: 2.8, output: 14.0, cacheRead: 0.28, cacheWrite: 3.5 },
+    source: pricePage("https://kie.ai/gpt-6-astra", "2026-11-04"),
+  },
+  "gemini-3-8-flash": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-8-flash", "2026-11-04"),
+  },
+  "gemini-3-8-flash-openai": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-8-flash", "2026-11-04"),
+  },
+  "gemini-3-7-flash": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-7-flash", "2026-11-04"),
+  },
+  "gemini-3-7-flash-openai": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-7-flash", "2026-11-04"),
+  },
+  "grok-4-6": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 2.4, cacheRead: 0.2 },
+    source: pricePage("https://kie.ai/grok-4-6", "2026-11-04"),
+  },
+  "claude-opus-5": {
+    kind: "tokens",
+    rate: { input: 2.0, output: 10.0 },
+    source: pricePage("https://kie.ai/claude-opus-5", "2026-11-04"),
+  },
+  "gemini-3-6-flash": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-6-flash", "2026-11-04"),
+  },
+  "gemini-3-6-flash-openai": {
+    kind: "tokens",
+    rate: { input: 0.225, output: 1.125 },
+    source: pricePage("https://kie.ai/gemini-3-6-flash", "2026-11-04"),
+  },
+  "gpt-5-6-terra": {
+    kind: "tokens",
+    rate: { input: 0.56, output: 3.36, cacheRead: 0.056, cacheWrite: 0.7 },
+    source: pricePage(
+      "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+      "2026-11-04"
+    ),
+  },
+  "gpt-5-6-sol": {
+    kind: "tokens",
+    rate: { input: 1.4, output: 8.4, cacheRead: 0.14, cacheWrite: 1.75 },
+    source: pricePage("https://kie.ai/gpt-5-6?model=gpt-5-6-sol", "2026-11-04"),
+  },
+  "gpt-5-6-luna": {
+    kind: "tokens",
+    rate: { input: 0.056, output: 0.336, cacheRead: 0.0056, cacheWrite: 0.07 },
+    source: pricePage(
+      "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+      "2026-11-04"
+    ),
+  },
+  "grok-4-5": {
+    kind: "tokens",
+    rate: { input: 0.8, output: 2.4, cacheRead: 0.12 },
+    source: pricePage("https://kie.ai/grok-4-5", "2026-11-04"),
+  },
+  "claude-sonnet-5": {
+    kind: "tokens",
+    rate: { input: 0.85, output: 4.275 },
+    source: pricePage("https://kie.ai/claude-sonnet-5", "2026-11-04"),
+  },
+  "claude-fable-5": {
+    kind: "tokens",
+    rate: { input: 4.0, output: 20.0 },
+    source: pricePage("https://kie.ai/claude-fable-5", "2026-11-04"),
+  },
+  "claude-opus-4-8": {
+    kind: "tokens",
+    rate: { input: 2.0, output: 10.0 },
+    source: pricePage("https://kie.ai/claude-opus-4.8", "2026-11-04"),
+  },
+  "claude-opus-4-7": {
+    kind: "tokens",
+    rate: { input: 1.425, output: 7.15 },
+    source: pricePage("https://kie.ai/claude-opus-4-7", "2026-11-04"),
+  },
+  "gpt-5-5": {
+    kind: "tokens",
+    rate: { input: 1.4, output: 8.4, cacheRead: 0.14 },
+    source: pricePage("https://kie.ai/gpt-5-5", "2026-11-04"),
+  },
+  "gpt-5.5": {
+    kind: "tokens",
+    rate: { input: 1.4, output: 8.4, cacheRead: 0.14 },
+    source: pricePage("https://kie.ai/gpt-5-5", "2026-11-04"),
+  },
+  "claude-haiku-4-5": {
+    kind: "tokens",
+    rate: { input: 0.275, output: 1.425 },
+    source: pricePage("https://kie.ai/claude-haiku-4-5", "2026-11-04"),
+  },
+  "claude-opus-4-6": {
+    kind: "tokens",
+    rate: { input: 1.425, output: 7.15 },
+    source: pricePage("https://kie.ai/claude-opus-4-6", "2026-11-04"),
+  },
+  "claude-sonnet-4-6": {
+    kind: "tokens",
+    rate: { input: 0.85, output: 4.275 },
+    source: pricePage("https://kie.ai/claude-sonnet-4-6", "2026-11-04"),
+  },
+  "claude-sonnet-4-5": {
+    kind: "tokens",
+    rate: { input: 0.85, output: 4.275 },
+    source: pricePage("https://kie.ai/claude-sonnet-4-5", "2026-11-04"),
+  },
+  "claude-opus-4-5": {
+    kind: "tokens",
+    rate: { input: 1.425, output: 7.15 },
+    source: pricePage("https://kie.ai/claude-opus-4-5", "2026-11-04"),
+  },
+  "gpt-5-2": {
+    kind: "tokens",
+    rate: { input: 0.4375, output: 3.5 },
+    source: pricePage("https://kie.ai/gpt-5-2", "2026-11-04"),
+  },
+  "gemini-3-pro": {
+    kind: "tokens",
+    rate: { input: 0.5, output: 3.5 },
+    source: pricePage("https://kie.ai/gemini-3-pro", "2026-11-04"),
   },
 };

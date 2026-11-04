@@ -221,7 +221,7 @@ function evaluatePerUnit(
 // A rate that publishes cacheRead or cacheWrite also requires that count.
 // inputTokens stays the total; the cache counts are disjoint subsets, and the
 // uncached remainder is inputTokens minus both. A model with no cache rate
-// ignores those hints, so Gemini TTS estimates are unchanged.
+// rejects positive cached usage rather than billing it at an uncached rate.
 function evaluateDeclaredTokens(
   provider: PricedProviderId,
   pricingKey: string,
@@ -244,7 +244,7 @@ function evaluateDeclaredTokens(
       if (required) missing.push(name);
       return;
     }
-    if (required && !isTokenCount(value)) invalid.push(name);
+    if (!isTokenCount(value)) invalid.push(name);
   };
   consider(inputTokens, true, "costHints.inputTokens");
   consider(outputTokens, true, "costHints.outputTokens");
@@ -275,6 +275,14 @@ function evaluateDeclaredTokens(
       warnings.push(`${invalid.join(" and ")} must be a non-negative integer`);
     }
     return closed(warnings);
+  }
+  if (
+    (!wantsCacheRead && (cacheReadTokens ?? 0) > 0) ||
+    (!wantsCacheWrite && (cacheWriteTokens ?? 0) > 0)
+  ) {
+    return closed([
+      `${provider} '${pricingKey}' publishes no rate for the declared cached tokens; no estimate is quoted`,
+    ]);
   }
   const cacheRead = wantsCacheRead ? (cacheReadTokens as number) : 0;
   const cacheWrite = wantsCacheWrite ? (cacheWriteTokens as number) : 0;
@@ -1000,12 +1008,39 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         asString(req.payload.model_id);
       const entry = pricingKey ? PRICING.kie[pricingKey] : undefined;
       if (entry?.kind === "tokens") {
-        return evaluateDeclaredTokens(
+        // Gemini TTS predates chat pricing and accepts input/output counts
+        // only. Preserve its established handling of unrelated chat hints.
+        if (
+          pricingKey?.startsWith("google/gemini-") &&
+          pricingKey.endsWith("-tts")
+        ) {
+          return evaluateDeclaredTokens("kie", pricingKey, entry, {
+            inputTokens: req.costHints?.inputTokens,
+            outputTokens: req.costHints?.outputTokens,
+          });
+        }
+        const tier = req.costHints?.serviceTier ?? req.payload.service_tier;
+        if (
+          (tier !== undefined && tier !== "default" && tier !== "auto") ||
+          (req.costHints?.regionalProcessing !== undefined &&
+            req.costHints.regionalProcessing !== false)
+        ) {
+          return failed("declared-tokens+table", [
+            "kie: only standard processing is priced; tier, batch or regional uplifts are not bundled",
+          ]);
+        }
+        const result = evaluateDeclaredTokens(
           "kie",
           pricingKey as string,
           entry,
           req.costHints
         );
+        if (Array.isArray(req.payload.tools) && req.payload.tools.length > 0) {
+          result.warnings.push(
+            "kie: tool fees are not included in this token estimate"
+          );
+        }
+        return result;
       }
       return evaluatePerUnit(
         "kie",

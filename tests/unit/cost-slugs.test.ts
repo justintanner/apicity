@@ -121,8 +121,9 @@ describe("MODEL_SLUGS", () => {
       "wan/2-2-animate-replace": "wan2p2",
       "wan/2-5-text-to-video": "wan2p5",
       "wan/2-5-image-to-video": "wan2p5",
-      // The standard trio shares the wan2p6 family slug. The two
-      // wan/2-6-flash-* ids are absent by ruling R2 — unpriced, so unslugged.
+      // Standard and Flash have different rates and family slugs.
+      "wan/2-6-flash-image-to-video": "wan2p6f",
+      "wan/2-6-flash-video-to-video": "wan2p6f",
       "wan/2-6-text-to-video": "wan2p6",
       "wan/2-6-image-to-video": "wan2p6",
       "wan/2-6-video-to-video": "wan2p6",

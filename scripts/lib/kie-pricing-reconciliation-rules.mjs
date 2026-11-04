@@ -105,6 +105,21 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
 });
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["image", "video"].flatMap((mode) =>
+    (mode === "image" ? ["5", "10", "15"] : ["5", "10"]).flatMap((duration) =>
+      ["720p", "1080p"].flatMap((resolution) =>
+        ["no-audio", "audio"].map((audio) => ({
+          key: `wan/2-6-flash-${mode}-to-video`,
+          variant: `${duration}|${resolution}|${audio}`,
+          status: "pricing-only",
+          provenance:
+            "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+          rationale:
+            "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition.",
+        }))
+      )
+    )
+  ),
   {
     key: "grok-imagine-video-1-5-preview",
     variant: "1080p",
@@ -717,6 +732,13 @@ export function familyMappingCandidates({ description, anchor, pricing }) {
 }
 
 const SELECTOR_RULES = Object.freeze([
+  {
+    family: "wan-flash-audio",
+    matches: (key) => key.startsWith("wan/2-6-flash-"),
+    apply: (_key, text, candidates) => {
+      candidates.audio = /with audio/i.test(text);
+    },
+  },
   {
     family: "pixverse-quality-audio",
     matches: (key) => key.startsWith("pixverse-v6/"),

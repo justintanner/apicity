@@ -435,6 +435,19 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "kie POST api.v1.veo.get4kVideo": "veo/get-4k-video",
   "kie POST api.v1.vocalRemoval.generate": "suno/vocal-removal-generate",
   "kie POST api.v1.wav.generate": "suno/wav-generate",
+  "kie POST gemini.v1.models.gemini36Flash.streamGenerateContent":
+    "gemini-3-6-flash",
+  "kie POST gemini.v1.models.gemini37Flash.streamGenerateContent":
+    "gemini-3-7-flash",
+  "kie POST gemini.v1.models.gemini38Flash.streamGenerateContent":
+    "gemini-3-8-flash",
+  "kie POST gemini31Pro.v1.chat.completions": "gemini-3.1-pro",
+  "kie POST gemini36FlashOpenai.v1.chat.completions": "gemini-3-6-flash-openai",
+  "kie POST gemini37FlashOpenai.v1.chat.completions": "gemini-3-7-flash-openai",
+  "kie POST gemini38FlashOpenai.v1.chat.completions": "gemini-3-8-flash-openai",
+  "kie POST gemini3Pro.v1.chat.completions": "gemini-3-pro",
+  "kie POST gemini4ArgonOpenai.v1.chat.completions": "gemini-4-argon-openai",
+  "kie POST gpt52.v1.chat.completions": "gpt-5-2",
   "wavespeed POST api.v3.alibaba.happyhorse1p1.imageToVideo":
     "alibaba/happyhorse-1.1/image-to-video",
   "wavespeed POST api.v3.alibaba.wan3p0.imageToVideo":

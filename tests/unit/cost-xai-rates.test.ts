@@ -27,6 +27,19 @@ const counts = {
   cacheReadInputTokens: 200,
   outputTokens: 100,
 };
+const recordedExchange = (name: string) => {
+  const har = JSON.parse(
+    readFileSync(
+      new URL(
+        `../recordings/xai_3613880225/${name}/recording.har`,
+        import.meta.url
+      ),
+      "utf8"
+    )
+  ) as { log: { entries: HarEntry[] } };
+  const entry = har.log.entries.find((e) => e.request.method === "POST")!;
+  return entryToProviderExchange(entry, { provider: "xai" });
+};
 
 describe("xAI November 2026 pricing", () => {
   it.each([
@@ -81,17 +94,17 @@ describe("xAI November 2026 pricing", () => {
       cached_prompt_text_token_price: number;
       completion_text_token_price: number;
     }>;
-    for (const model of ["grok-4", "grok-4-fast"]) {
+    // The historical feed also predates the 2026-05-15 retirement.
+    for (const [model, input] of [
+      ["grok-4", 3],
+      ["grok-4-fast", 0.2],
+    ] as const) {
       const recorded = catalog.find(
         (row) => row.id === model || row.aliases.includes(model)
       )!;
-      const row = PRICING.xai[model];
-      expect(row.kind).toBe("tokens");
-      if (row.kind !== "tokens") throw new Error("expected token pricing");
-      expect(row.rate).toEqual({
-        input: recorded.prompt_text_token_price / 1e4,
-        cacheRead: recorded.cached_prompt_text_token_price / 1e4,
-        output: recorded.completion_text_token_price / 1e4,
+      expect(recorded.prompt_text_token_price / 1e4).toBe(input);
+      expect(PRICING.xai[model]).toMatchObject({
+        rate: { input: 1.25, cacheRead: 0.2, output: 2.5 },
       });
     }
     const oldCode = catalog.find((row) => row.id === "grok-code-fast-1")!;
@@ -115,6 +128,14 @@ describe("xAI November 2026 pricing", () => {
     expect(PRICING.xai["grok-code-fast"]).toBe(PRICING.xai["grok-build-0.1"]);
   });
 
+  // https://docs.x.ai/developers/migration/may-15-retirement.md
+  it.each(["grok-4", "grok-3", "grok-4-fast", "grok-4-1-fast"])(
+    "bills retired %s as grok-4.3",
+    (model) => {
+      expect(PRICING.xai[model]).toBe(PRICING.xai["grok-4.3"]);
+    }
+  );
+
   it("requires declared counts in strict and forecast modes for long-context rows", () => {
     for (const mode of ["strict", "forecast"] as const) {
       const result = estimateEndpoint({
@@ -133,14 +154,15 @@ describe("xAI November 2026 pricing", () => {
     ).toContain("costHints.cacheReadInputTokens");
   });
 
-  it("keeps legacy heuristic estimation and uses declared cache counts when given", () => {
+  it("asks a retired slug for declared counts, then prices grok-4.3's rates", () => {
     const result = estimate("grok-4-fast", undefined, {
       input: "hello",
       max_output_tokens: 20,
     });
-    expect(result.source).toBe("tokens-heuristic+table");
-    expect(result.status).toBe("priced");
-    expect(estimate("grok-4-fast", counts).usd).toBeCloseTo(0.00022, 12);
+    expect(result.source).toBe("declared-tokens+table");
+    expect(result.status).toBe("unavailable");
+    expect(classifyEstimate(result)).toBe("prohibitive");
+    expect(estimate("grok-4-fast", counts).usd).toBeCloseTo(0.00129, 12);
   });
 
   it("prices confirmed priority and supported US processing, including their combination", () => {
@@ -184,40 +206,48 @@ describe("xAI November 2026 pricing", () => {
     expect(result.warnings.join(" ")).toContain("tool fees");
   });
 
+  it("derives the committed charge exactly to the tick", () => {
+    const exchange = recordedExchange("grok-4-6-responses_2467291669");
+    const actual = extractActual(exchange);
+    expect(actual.statedUsd).toBe(10180000 / 1e10);
+    expect(actual.derivedUsd).not.toBeNull();
+    expect(Math.round(actual.derivedUsd! * 1e10)).toBe(10180000);
+    expect(actual.warnings).toEqual([]);
+    const toolActual = extractActual({
+      ...exchange,
+      requestBody: {
+        ...exchange.requestBody,
+        tools: [{ type: "web_search" }],
+      },
+    });
+    expect(toolActual.derivedUsd).toBeNull();
+  });
+
+  // xAI's team usage for 2026-06-27 bills this grok-4-fast call as grok-4.3, at
+  // exactly its units: 444 prompt, 128 cached, 237 completion and 607 reasoning.
+  it("derives what xAI billed for a retired slug", () => {
+    const actual = extractActual(
+      recordedExchange("responses-compact_101159155")
+    );
+    expect(actual.statedUsd).toBeNull();
+    expect(Math.round(actual.derivedUsd! * 1e10)).toBe(26906000);
+    expect(actual.usd).toBe(actual.derivedUsd);
+  });
+
+  // These billed the old rates, before the retirement, so what they state stands.
   it.each([
     ["responses-crud-create_10211913", 859500],
     ["responses-create_280461930", 600500],
     ["vision-analysis-json_243984103", 174442500],
     ["responses-crud-delete_2661153406", 1304500],
     ["responses-crud-get_2571518523", 1386500],
-    ["grok-4-6-responses_2467291669", 10180000],
   ] as const)(
-    "derives the committed charge exactly to the tick: %s",
+    "keeps the charge stated before the retirement: %s",
     (name, ticks) => {
-      const har = JSON.parse(
-        readFileSync(
-          new URL(
-            `../recordings/xai_3613880225/${name}/recording.har`,
-            import.meta.url
-          ),
-          "utf8"
-        )
-      ) as { log: { entries: HarEntry[] } };
-      const entry = har.log.entries.find((e) => e.request.method === "POST")!;
-      const exchange = entryToProviderExchange(entry, { provider: "xai" });
-      const actual = extractActual(exchange);
+      const actual = extractActual(recordedExchange(name));
       expect(actual.statedUsd).toBe(ticks / 1e10);
-      expect(actual.derivedUsd).not.toBeNull();
-      expect(Math.round(actual.derivedUsd! * 1e10) - ticks).toBe(0);
-      expect(actual.warnings).toEqual([]);
-      const toolActual = extractActual({
-        ...exchange,
-        requestBody: {
-          ...exchange.requestBody,
-          tools: [{ type: "web_search" }],
-        },
-      });
-      expect(toolActual.derivedUsd).toBeNull();
+      expect(actual.usd).toBe(ticks / 1e10);
+      expect(Math.round(actual.derivedUsd! * 1e10)).not.toBe(ticks);
     }
   );
 

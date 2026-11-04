@@ -5,8 +5,9 @@ separate loop that this one does not touch.
 
 The pass compares what `@apicity/cost` estimates with what calls actually cost. It
 applied six rate corrections and removed an invented 0.75 USD from the recordings.
-Of the 16 groups beyond tolerance, 13 remain, and none of them is a wrong rate. No
-paid call was made and no recording was re-recorded.
+Of the 16 groups beyond tolerance, 13 remain, and this pass found no wrong rate among
+them, though a later check did ([below](#found-after-this-pass)). No paid call was made
+and no recording was re-recorded.
 
 ## Reproduce and evidence
 
@@ -193,6 +194,16 @@ hosts.
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
+
+## Found after this pass
+
+A later reconcile against xAI's own bill (`ac-q1v7y1`) found what this pass could not see.
+xAI's [2026-05-15 retirement](https://docs.x.ai/developers/migration/may-15-retirement.md)
+left `grok-4-fast`, `grok-4-1-fast`, `grok-4` and `grok-3` resolving, but billing as
+`grok-4.3`. Every recording of them that states a charge predates it, so nothing in the
+recordings contradicted the old rates. The `grok-4` row above measured a real effect, the
+vision input, but its rate was stale too. `ac-t1isrq` moved all four rows to `grok-4.3`.
+Those April calls now read `no-estimate`, so `grok-4` left the guard's list below.
 
 ## What keeps this honest
 

@@ -387,7 +387,7 @@ describe("PRICING data", () => {
   it("xai has token-priced models", () => {
     expect(PRICING.xai["grok-4"]).toMatchObject({
       kind: "tokens",
-      rate: { input: 3, output: 15 },
+      rate: { input: 1.25, output: 2.5 },
     });
     expect(PRICING.xai["grok-4.6"]).toMatchObject({
       kind: "tokens",

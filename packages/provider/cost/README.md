@@ -190,7 +190,7 @@ interface CostEstimate {
   usd: number;
   currency: "USD";
   source:
-    | "tokens-heuristic+table" // openai/anthropic/xai/kimicoding/fireworks/alibaba — chars/4 ≈ tokens × bundled rate
+    | "tokens-heuristic+table" // openai/anthropic/kimicoding/fireworks/alibaba — chars/4 ≈ tokens × bundled rate
     | "declared-tokens+table" // costHints token counts × bundled rate (declared openai usage, kie Gemini TTS and token-priced kie chat models)
     | "per-unit-table" // elevenlabs/kie — payload-derived units × bundled rate
     | "free";
@@ -343,9 +343,11 @@ Grok 4.7, 4.6, 4.5, 4.3, 4.20 and Build 0.1 families and their catalog aliases.
 At **200,000 or more total input tokens**, the long-context rate applies to
 all input, cached input and output tokens. Those models require
 `costHints.inputTokens`, `outputTokens` and `cacheReadInputTokens` (zero when
-none); missing counts fail closed in strict and forecast modes. Any token
-hint also selects declared usage for legacy xAI rows. Older rows without
-long-context rates retain the chars/4 estimate when no token hints are passed.
+none); missing counts fail closed in strict and forecast modes. `grok-4`,
+`grok-3`, `grok-4-fast` and `grok-4-1-fast` behave the same way at Grok 4.3's
+rates, because they still resolve but have billed as `grok-4.3` since
+[xAI retired them](https://docs.x.ai/developers/migration/may-15-retirement.md)
+on 2026-05-15.
 
 For xAI text, `costHints.serviceTier` overrides `payload.service_tier`:
 `default`/`auto` use Standard and `priority` applies 2x. For actuals, the

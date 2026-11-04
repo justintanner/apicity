@@ -388,6 +388,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** xAI `grok-4`, `grok-3`, `grok-4-fast` and `grok-4-1-fast` price
+  as `grok-4.3` (1.25 input, 0.20 cached and 2.50 output USD per 1M), which is
+  what xAI has billed them as since its 2026-05-15 retirement. The old rows read
+  4-6x low on the two fast slugs and 2.4-6x high on the other two. Like
+  `grok-4.3`, they now need `costHints` token counts: without them an estimate
+  is `unavailable` and classifies as `prohibitive`, where it used to return a
+  chars/4 figure. A recorded 2026-06-27 `grok-4-fast` call that xAI billed
+  0.0026906 USD now derives exactly that, and bills from before the retirement
+  keep their stated charge (ac-t1isrq).
 - xAI `grok-imagine-image-quality` prices as `grok-imagine-image-2.0` at
   low quality: 0.04, 0.05 and 0.06 USD per image at 1k, 1.5k and 2k, plus
   0.01 USD per edit input image, whatever quality the request names. xAI

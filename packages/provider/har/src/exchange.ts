@@ -1,3 +1,4 @@
+import { streamCompletion } from "./stream-completion.js";
 import { createHash } from "node:crypto";
 import {
   longBase64Bytes,
@@ -33,6 +34,7 @@ interface SerializedBody {
   sha256: string;
   /** The read failed partway, so this holds what arrived. */
   failed?: boolean;
+  streamIncomplete?: boolean;
 }
 interface BodyLimits {
   max: number;
@@ -111,10 +113,6 @@ function joinStream(head: Buffer, tail: Buffer, dropped: number): string {
   if (dropped === 0) return decode(Buffer.concat([head, tail]));
   const headEnd = head.lastIndexOf(0x0a) + 1;
   const lineEnd = tail.indexOf(0x0a);
-  // With no line ends at all nothing here is framed, so the head stands alone.
-  if (headEnd === 0 && lineEnd < 0) {
-    return new TextDecoder().decode(head, { stream: true });
-  }
   let tailStart = lineEnd < 0 ? tail.length : lineEnd + 1;
   while (tail[tailStart] === 0x0a || tail[tailStart] === 0x0d) tailStart += 1;
   const gap = dropped + head.length - headEnd + tailStart;
@@ -139,7 +137,8 @@ async function multipartSummaryOf(
 async function serializeBody(
   message: Request | Response,
   limits: BodyLimits,
-  streamed: boolean
+  streamed: boolean,
+  signal?: AbortSignal
 ): Promise<SerializedBody> {
   const { max } = limits;
   const contentType =
@@ -156,6 +155,7 @@ async function serializeBody(
       : max;
   const tail =
     streamed && limits.tail > 0 ? rollingTail(limits.tail) : undefined;
+  const completion = streamed ? streamCompletion() : undefined;
   const hash = createHash("sha256");
   const chunks: Uint8Array[] = [];
   let bytes = 0;
@@ -163,10 +163,18 @@ async function serializeBody(
   let failed = false;
   if (message.body) {
     const reader = message.body.getReader();
+    const abort = () => {
+      failed = true;
+      // Do not await a tee's cancellation: the application's branch may be open.
+      void reader.cancel(signal?.reason).catch(() => undefined);
+    };
+    signal?.addEventListener("abort", abort, { once: true });
+    if (signal?.aborted) abort();
     try {
       for (;;) {
         const { value, done } = await reader.read();
         if (done) break;
+        completion?.push(value);
         hash.update(value);
         bytes += value.byteLength;
         const taken = Math.min(headLimit - retained, value.byteLength);
@@ -183,11 +191,13 @@ async function serializeBody(
       // outcome reports it, and the capture itself did nothing wrong.
       failed = true;
     } finally {
+      signal?.removeEventListener("abort", abort);
       reader.releaseLock();
     }
   }
+  const streamIncomplete = completion?.cut() ?? false;
   const sha256 = hash.digest("hex");
-  const truncated = bytes > max || failed;
+  const truncated = bytes > max || failed || streamIncomplete;
   if (multipart && !failed) {
     const text = await multipartSummaryOf(Buffer.concat(chunks), contentType);
     if (text !== undefined) {
@@ -219,6 +229,7 @@ async function serializeBody(
     sha256,
     truncated,
     failed,
+    streamIncomplete,
   });
   if (!textual || (bytes > max && !streamed)) return placeholder();
   const stream = tail && bytes > max ? tail.finish() : undefined;
@@ -228,7 +239,8 @@ async function serializeBody(
         stream: bytes > max,
       });
   // A frame is scrubbed alone, and only a whole one parses.
-  if (failed && streamed) text = text.slice(0, text.lastIndexOf("\n") + 1);
+  if (streamed && (failed || bytes > max || !text.endsWith("\n")))
+    text = text.slice(0, text.lastIndexOf("\n") + 1);
   try {
     const result = summarizeJsonMediaStrings(JSON.parse(text));
     if (result.summarized) text = JSON.stringify(result.value);
@@ -237,7 +249,7 @@ async function serializeBody(
     // frames, whatever the content type says, so nothing cut outside a stream is text.
     if (failed && !streamed) return placeholder();
   }
-  return { text, bytes, truncated, sha256, failed };
+  return { text, bytes, truncated, sha256, failed, streamIncomplete };
 }
 
 /** Serializes clones: the caller's request and response bodies remain readable. */
@@ -284,7 +296,12 @@ export async function serializeExchange(
   // Read both at once: a stream drops the chunks nobody has read when it errors, so
   // a response left waiting for the request's read could lose what had arrived.
   const [req, res] = await Promise.all([
-    serializeBody(requestCopy, { max, holdUpTo, tail: 0 }, false),
+    serializeBody(
+      requestCopy,
+      { max, holdUpTo, tail: 0 },
+      false,
+      request.signal
+    ),
     responseCopy
       ? // Only a request is held to summarize: a response's usage is what a stream
         // tail keeps, and its media can run far past any cap.
@@ -345,6 +362,7 @@ export async function serializeExchange(
       ...(streamed ? { streamed: true } : {}),
       ...(req.truncated || res.truncated ? { bodyTruncated: true } : {}),
       ...(res.failed ? { responseCut: true } : {}),
+      ...(res.streamIncomplete ? { streamIncomplete: true } : {}),
     },
   };
   scrubEntry(entry);

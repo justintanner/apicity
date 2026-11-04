@@ -137,7 +137,7 @@ describe("exchange serializer", () => {
       timing,
       { maxBodyBytes: 12, sseTailBytes: 0 }
     );
-    expect(entry.response.content.text).toBe("data: one\nda");
+    expect(entry.response.content.text).toBe("data: one\n");
     expect(entry._apicity).toMatchObject({
       streamed: true,
       bodyTruncated: true,

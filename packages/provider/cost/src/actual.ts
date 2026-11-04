@@ -297,7 +297,8 @@ export function extractActual(exchange: ProviderExchange): CostActual {
   const cutShort =
     bodyTruncated === true &&
     Array.isArray(responseBody) &&
-    (!streamHasFinalUsage(responseBody) ||
+    (exchange.responseCut === true ||
+      !streamHasFinalUsage(responseBody) ||
       (extracted.usage.outputTokens !== undefined &&
         extracted.usage.inputTokens === undefined));
   if (cutShort) {

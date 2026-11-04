@@ -1,3 +1,4 @@
+import { queuedResponse } from "./response-queue.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -389,7 +390,7 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
       const response = await base(request);
       scope.metadata.status = response.status;
       serialize(response);
-      return response;
+      return queuedResponse(response);
     } catch (error) {
       scope.networkError = true;
       serialize(error instanceof Error ? error : new Error(String(error)));

@@ -528,7 +528,7 @@ describe("an oversized SSE response", () => {
     ).toBe(true);
   });
 
-  it("keeps the head of a body with no line ends, and no marker", async () => {
+  it("discards an unframed head rather than persisting a cut field", async () => {
     for (const [text, contentType] of [
       ["x".repeat(400_000), "text/plain"],
       ['data: {"delta":"word"}\r\r'.repeat(20_000), "text/event-stream"],
@@ -540,8 +540,7 @@ describe("an oversized SSE response", () => {
         { streamed: true }
       );
       const stored = entry.response.content.text!;
-      expect(stored).not.toContain("apicity-gap");
-      expect(Buffer.byteLength(stored)).toBe(262144);
+      expect(stored).toMatch(/^\n\n: apicity-gap \d+ bytes dropped\n\n$/);
     }
   });
 

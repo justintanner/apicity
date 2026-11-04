@@ -605,13 +605,30 @@ function inputBytes(value: unknown): Uint8Array | undefined {
  * and sizes, never the bytes. Short strings and long prose stay.
  */
 export function summarizeInputMedia(input: unknown): unknown {
-  const text = JSON.stringify(input, (_key, value: unknown) => {
+  const copies = new WeakMap<object, unknown>();
+  function prepare(value: unknown, key: string, useToJSON = true): unknown {
     const bytes = inputBytes(value);
     if (bytes) return mediaPlaceholder(bytes, OCTET_STREAM);
-    return typeof value === "string"
-      ? (inputStringPlaceholder(value) ?? value)
-      : value;
-  });
+    if (typeof value === "string")
+      return inputStringPlaceholder(value) ?? value;
+    if (value === null || typeof value !== "object") return value;
+    // Buffer must be handled before toJSON expands every byte to a number.
+    const object = value as Record<string, unknown>;
+    if (useToJSON && typeof object.toJSON === "function") {
+      return prepare(object.toJSON(key), key, false);
+    }
+    if (types.isBoxedPrimitive(value)) return value;
+    if (copies.has(value)) return copies.get(value);
+    const result: Record<string, unknown> | unknown[] = Array.isArray(value)
+      ? new Array(value.length)
+      : Object.create(null);
+    copies.set(value, result);
+    for (const name of Object.keys(value)) {
+      (result as Record<string, unknown>)[name] = prepare(object[name], name);
+    }
+    return result;
+  }
+  const text = JSON.stringify(prepare(input, ""));
   return text === undefined ? input : JSON.parse(text);
 }
 

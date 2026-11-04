@@ -566,6 +566,53 @@ export const MODEL_SLUGS = {
   },
 
   fireworks: {
+    "accounts/fireworks/models/ember-1": "fwember1",
+    "accounts/fireworks/models/muse-spark-open": "fwmusesparkopen",
+    "accounts/fireworks/models/kimi-k3": "fwkimik3",
+    "accounts/fireworks/routers/kimi-k3-fast": "fwkimik3fast",
+    "accounts/fireworks/routers/kimi-k3-us": "fwkimik3us",
+    "accounts/fireworks/models/deepseek-v4p1-flash": "fwdeepseekv4p1flash",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-us":
+      "fwdeepseekv4p1flashus",
+    "accounts/fireworks/models/deepseek-v4p1-flash-1017":
+      "fwdeepseekv4p1flash1017",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-1017-ultrafast":
+      "fwdeepseekv4p1flash1017ultrafast",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-1017-us":
+      "fwdeepseekv4p1flash1017us",
+    "accounts/fireworks/models/glm-5p3-flash": "fwglm5p3flash",
+    "accounts/fireworks/routers/glm-5p3-flash-us": "fwglm5p3flashus",
+    "accounts/fireworks/models/ultramarine-1-flash-us": "fwultramarine1flashus",
+    "accounts/fireworks/models/glm-5p3": "fwglm5p3",
+    "accounts/fireworks/routers/glm-5p3-us": "fwglm5p3us",
+    "accounts/fireworks/routers/glm-5p3-fast": "fwglm5p3fast",
+    "accounts/fireworks/models/qwen3p8-max": "fwqwen3p8max",
+    "accounts/fireworks/models/minimax-m3": "fwminimaxm3",
+    "accounts/fireworks/models/gpt-oss-120b": "fwgptoss120b",
+    "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b":
+      "fwnemotronlightning3p530ba3b",
+    "accounts/fireworks/models/nemotron-3-ultra-nvfp4": "fwnemotron3ultranvfp4",
+    "accounts/fireworks/models/rune": "fwrune",
+    "accounts/fireworks/models/chronos-hermes-13b-v2": "fwchronoshermes13bv2",
+    "accounts/fireworks/models/codegemma-2b": "fwcodegemma2b",
+    "accounts/fireworks/models/codegemma-7b": "fwcodegemma7b",
+    "accounts/fireworks/models/code-llama-13b": "fwcodellama13b",
+    "accounts/fireworks/models/code-llama-13b-instruct":
+      "fwcodellama13binstruct",
+    "accounts/fireworks/models/llama-v3p3-70b-instruct":
+      "fwllamav3p370binstruct",
+    "BAAI/bge-small-en-v1.5": "fwbaaibgesmallenv15",
+    "thenlper/gte-base": "fwthenlpergtebase",
+    "BAAI/bge-base-en-v1.5": "fwbaaibgebaseenv15",
+    "nomic-ai/nomic-embed-text-v1.5": "fwnomicainomicembedtextv15",
+    "nomic-ai/nomic-embed-text-v1": "fwnomicainomicembedtextv1",
+    "thenlper/gte-large": "fwthenlpergtelarge",
+    "WhereIsAI/UAE-Large-V1": "fwwhereisaiuaelargev1",
+    "mixedbread-ai/mxbai-embed-large-v1": "fwmixedbreadaimxbaiembedlargev1",
+    "fireworks/qwen3-embedding-8b": "fwqwen3embedding8b",
+    "accounts/fireworks/models/qwen3-embedding-8b": "fwqwen3embedding8b",
+    "fireworks/qwen3-reranker-8b": "fwqwen3reranker8b",
+    "accounts/fireworks/models/qwen3-reranker-8b": "fwqwen3reranker8b",
     "deepseek-v3": "ds3",
     "deepseek-v4-pro": "ds4p",
     "glm-5": "glm5",
@@ -1377,6 +1424,55 @@ export const MODEL_DISPLAY = {
   },
 
   fireworks: {
+    "accounts/fireworks/models/ember-1": "Ember-1",
+    "accounts/fireworks/models/muse-spark-open": "Muse Spark Open",
+    "accounts/fireworks/models/kimi-k3": "Kimi K3",
+    "accounts/fireworks/routers/kimi-k3-fast": "Kimi K3 Fast",
+    "accounts/fireworks/routers/kimi-k3-us": "Kimi K3 (US)",
+    "accounts/fireworks/models/deepseek-v4p1-flash": "DeepSeek V4.1 Flash",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-us":
+      "DeepSeek V4.1 Flash (US)",
+    "accounts/fireworks/models/deepseek-v4p1-flash-1017":
+      "DeepSeek V4.1 Flash 1017",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-1017-ultrafast":
+      "DeepSeek V4.1 Flash 1017 Ultra-fast (Preview)",
+    "accounts/fireworks/routers/deepseek-v4p1-flash-1017-us":
+      "DeepSeek V4.1 Flash 1017 (US)",
+    "accounts/fireworks/models/glm-5p3-flash": "GLM 5.3 Flash",
+    "accounts/fireworks/routers/glm-5p3-flash-us": "GLM 5.3 Flash (US)",
+    "accounts/fireworks/models/ultramarine-1-flash-us":
+      "Ultramarine 1 Flash (US)",
+    "accounts/fireworks/models/glm-5p3": "GLM 5.3",
+    "accounts/fireworks/routers/glm-5p3-us": "GLM 5.3 (US)",
+    "accounts/fireworks/routers/glm-5p3-fast": "GLM 5.3 Fast",
+    "accounts/fireworks/models/qwen3p8-max": "Qwen 3.8 Max",
+    "accounts/fireworks/models/minimax-m3": "MiniMax M3",
+    "accounts/fireworks/models/gpt-oss-120b": "OpenAI GPT OSS 120B",
+    "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b":
+      "NVIDIA Nemotron 3.5 Lightning 30B A3B",
+    "accounts/fireworks/models/nemotron-3-ultra-nvfp4":
+      "NVIDIA Nemotron 3 Ultra (Preview)",
+    "accounts/fireworks/models/rune": "Rune 26B-A4B",
+    "accounts/fireworks/models/chronos-hermes-13b-v2": "chronos hermes 13b v2",
+    "accounts/fireworks/models/codegemma-2b": "codegemma 2b",
+    "accounts/fireworks/models/codegemma-7b": "codegemma 7b",
+    "accounts/fireworks/models/code-llama-13b": "code llama 13b",
+    "accounts/fireworks/models/code-llama-13b-instruct":
+      "code llama 13b instruct",
+    "accounts/fireworks/models/llama-v3p3-70b-instruct":
+      "llama v3p3 70b instruct",
+    "BAAI/bge-small-en-v1.5": "bge small en v1.5",
+    "thenlper/gte-base": "gte base",
+    "BAAI/bge-base-en-v1.5": "bge base en v1.5",
+    "nomic-ai/nomic-embed-text-v1.5": "nomic embed text v1.5",
+    "nomic-ai/nomic-embed-text-v1": "nomic embed text v1",
+    "thenlper/gte-large": "gte large",
+    "WhereIsAI/UAE-Large-V1": "UAE Large V1",
+    "mixedbread-ai/mxbai-embed-large-v1": "mxbai embed large v1",
+    "fireworks/qwen3-embedding-8b": "qwen3 embedding 8b",
+    "accounts/fireworks/models/qwen3-embedding-8b": "qwen3 embedding 8b",
+    "fireworks/qwen3-reranker-8b": "qwen3 reranker 8b",
+    "accounts/fireworks/models/qwen3-reranker-8b": "qwen3 reranker 8b",
     "deepseek-v3": "DeepSeek V3",
     "deepseek-v4-pro": "DeepSeek V4 Pro",
     "glm-5": "GLM 5",

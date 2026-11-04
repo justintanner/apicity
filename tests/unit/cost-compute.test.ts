@@ -407,15 +407,15 @@ describe("computeEstimate", () => {
       const req = {
         provider: "fireworks" as const,
         payload: {
-          model: "deepseek-v3",
+          model: "accounts/fireworks/models/ember-1",
           messages: [{ role: "user", content: "hello" }],
           max_tokens: 100,
         },
       };
       const result = computeEstimate(req);
       expect(result.usd).toBeGreaterThan(0);
-      expect(result.breakdown.inputUsdPerMillion).toBe(0.56);
-      expect(result.breakdown.outputUsdPerMillion).toBe(1.68);
+      expect(result.breakdown.inputUsdPerMillion).toBe(3);
+      expect(result.breakdown.outputUsdPerMillion).toBe(15);
       expect(result.warnings).toEqual([]);
     });
 

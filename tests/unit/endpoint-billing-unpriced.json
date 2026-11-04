@@ -4,8 +4,6 @@
   "fireworks POST inference.v1.audio.batch.translations": "P7 ac-kxko3y",
   "fireworks POST inference.v1.audio.transcriptions": "P7 ac-kxko3y",
   "fireworks POST inference.v1.audio.translations": "P7 ac-kxko3y",
-  "fireworks POST inference.v1.embeddings": "P7 ac-kxko3y",
-  "fireworks POST inference.v1.rerank": "P7 ac-kxko3y",
   "fireworks POST inference.v1.workflows.kontext": "P7 ac-kxko3y",
   "fireworks POST inference.v1.workflows.textToImage": "P7 ac-kxko3y",
   "google POST v1.publishers.google.models.generateContent": "P9 ac-ht1n6b",

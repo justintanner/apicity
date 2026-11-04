@@ -243,6 +243,15 @@ describe("PRICING data", () => {
   const UNPRICED_SLUG_ALLOWLIST: Partial<
     Record<SlugProviderId, readonly string[]>
   > = {
+    // Legacy identifiers retained; the current card no longer publishes their rates.
+    fireworks: [
+      "deepseek-v4-pro",
+      "deepseek-v3",
+      "glm-5",
+      "glm-5.1",
+      "kimi-k2.6",
+      "qwen3-vl-30b",
+    ],
     kie: [
       // Synthetic tier keys over the single mode-tiered "kling-3.0/video"
       // pricing entry (slugs.ts:10-14).
@@ -535,9 +544,11 @@ describe("PRICING data", () => {
   });
 
   it("fireworks has token-priced models", () => {
-    expect(PRICING.fireworks["deepseek-v3"]).toMatchObject({
+    expect(
+      PRICING.fireworks["accounts/fireworks/models/ember-1"]
+    ).toMatchObject({
       kind: "tokens",
-      rate: { input: 0.56, output: 1.68 },
+      rate: { input: 3, output: 15, cacheRead: 0.3 },
     });
   });
 

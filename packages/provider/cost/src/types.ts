@@ -248,6 +248,7 @@ export type EstimateRequest =
       provider:
         | "openai"
         | "anthropic"
+        | "s3"
         | "x"
         | "xai"
         | "kimicoding"

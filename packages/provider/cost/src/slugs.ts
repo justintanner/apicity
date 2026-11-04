@@ -470,6 +470,11 @@ export const MODEL_SLUGS = {
     "tts-1-hd": "tts1hd",
   },
 
+  s3: {
+    "standard-write": "s3write",
+    "standard-read": "s3read",
+    "express-rename": "s3rename",
+  },
   x: {
     post: "xpost",
     "posts-read": "xpostsread",
@@ -1282,6 +1287,11 @@ export const MODEL_DISPLAY = {
     "tts-1-hd": "tts 1 hd",
   },
 
+  s3: {
+    "standard-write": "S3 Standard Write",
+    "standard-read": "S3 Standard Read",
+    "express-rename": "S3 Express Rename",
+  },
   x: {
     post: "X Post",
     "posts-read": "X Posts Read",

@@ -17,9 +17,10 @@
  * never `cheap`/`expensive` by default.
  *
  * `cheap` is only ever assigned to providers whose ENTIRE surface has no
- * marginal USD compute cost (public data APIs, free file hosts, object-storage
- * request ops, social posting). Any provider that meters tokens/units bills real
- * money and is classified at least `expensive`; media-generation providers
+ * marginal USD compute cost (public data APIs and free file hosts). Documented
+ * sub-cent AWS S3 request classes are an explicit exception; its unpriced
+ * feature routes remain prohibitive. Other providers that meter tokens/units
+ * are classified at least `expensive`; media-generation providers
  * (image/video/audio synthesis) are `prohibitive` because a single call is
  * routinely dollars and its exact cost is request-dependent and underivable
  * without the concrete payload.
@@ -128,7 +129,68 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     match: { provider: "s3" },
     tier: "cheap",
     rationale:
-      "S3-compatible object-storage request ops; per-request cost << $0.01",
+      "AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.",
+  },
+  {
+    match: { provider: "s3", method: "POST", dotPath: "objects.restore" },
+    tier: "prohibitive",
+    rationale: "Archive storage class and retrieval tier are not modeled",
+  },
+  {
+    match: { provider: "s3", method: "POST", dotPath: "objects.selectContent" },
+    tier: "prohibitive",
+    rationale: "SELECT scanned and returned bytes are not modeled",
+  },
+  {
+    match: {
+      provider: "s3",
+      method: "POST",
+      dotPath: "objectLambda.writeGetObjectResponse",
+    },
+    tier: "prohibitive",
+    rationale:
+      "Object Lambda returned bytes and Lambda charges are not modeled",
+  },
+  {
+    match: { provider: "s3", method: "GET", dotPath: "buckets.createSession" },
+    tier: "prohibitive",
+    rationale: "Express session has no independently pinned per-call rate",
+  },
+  {
+    match: {
+      provider: "s3",
+      method: "POST",
+      dotPath: "buckets.createMetadataConfiguration",
+    },
+    tier: "prohibitive",
+    rationale: "S3 Metadata feature charges are not modeled",
+  },
+  {
+    match: {
+      provider: "s3",
+      method: "POST",
+      dotPath: "buckets.createMetadataTableConfiguration",
+    },
+    tier: "prohibitive",
+    rationale: "S3 Metadata feature charges are not modeled",
+  },
+  {
+    match: {
+      provider: "s3",
+      method: "PUT",
+      dotPath: "buckets.updateMetadataInventoryTable",
+    },
+    tier: "prohibitive",
+    rationale: "S3 Metadata feature charges are not modeled",
+  },
+  {
+    match: {
+      provider: "s3",
+      method: "PUT",
+      dotPath: "buckets.updateMetadataJournalTable",
+    },
+    tier: "prohibitive",
+    rationale: "S3 Metadata feature charges are not modeled",
   },
   {
     match: { provider: "b2" },

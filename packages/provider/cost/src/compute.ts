@@ -1,3 +1,4 @@
+import { S3_EXCLUSIONS } from "./pricing/s3";
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import {
   FAL_DYNAMIC_PRICING_ENDPOINTS,
@@ -1166,6 +1167,38 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+    case "s3": {
+      const storageClass =
+        req.endpoint === "express-rename" ? "EXPRESS_ONEZONE" : "STANDARD";
+      const warnings: string[] = [];
+      if (
+        req.payload.region !== undefined &&
+        req.payload.region !== "us-east-1"
+      ) {
+        warnings.push("s3: region is not priced; only us-east-1 is bundled");
+      }
+      if (
+        req.payload.storageClass !== undefined &&
+        req.payload.storageClass !== storageClass
+      ) {
+        warnings.push(
+          `s3: storageClass is not priced for this request; only ${storageClass} is bundled`
+        );
+      }
+      const estimate = warnings.length
+        ? failed("per-unit-table", warnings)
+        : evaluatePerUnit(
+            "s3",
+            req.payload,
+            { keyedBy: "endpoint", endpoint: req.endpoint },
+            req.costHints
+          );
+      estimate.warnings.push(S3_EXCLUSIONS);
+      estimate.notes = [
+        `S3 request baseline: us-east-1, ${storageClass === "STANDARD" ? "S3 Standard" : "S3 Express One Zone"}; one request.`,
+      ];
+      return estimate;
+    }
     case "x": {
       if (req.endpoint === "media-upload") {
         return failed("per-unit-table", [

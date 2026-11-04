@@ -186,6 +186,8 @@ describe("endpoint cost-tier classification — fail-closed invariants", () => {
     const offenders: string[] = [];
     for (const e of SURFACE) {
       if (!pricedProviders.includes(e.provider)) continue;
+      // S3 documented request classes are sub-cent; pinned in cost-s3.test.ts.
+      if (e.provider === "s3") continue;
       if (classifyEndpoint(e.provider, e.method, e.dotPath) === "cheap") {
         offenders.push(`${e.provider}.${e.dotPath} [${e.method}]`);
       }

@@ -1232,118 +1232,118 @@ polymarket	gamma.tags.relatedTags.tags.slug	GET	cheap	Gamma/Data/CLOB market-dat
 polymarket	gamma.tags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
 polymarket	gamma.teams	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
 quo	v1.messages	POST	expensive	Metered SMS provider; per-segment messaging charges bill real money
-s3	buckets.create	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.createMetadataConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.createMetadataTableConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.createSession	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.del	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delAnalytics	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delCors	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delEncryption	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delIntelligentTiering	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delInventory	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delLifecycle	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delMetadataConfiguration	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delMetadataTableConfiguration	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delMetrics	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delOwnershipControls	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delPolicy	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delPublicAccessBlock	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delReplication	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delTagging	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.delWebsite	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getAbac	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getAccelerateConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getAcl	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getAnalytics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getCors	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getEncryption	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getIntelligentTiering	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getInventory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getLifecycle	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getLifecycleLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getLogging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getMetadataConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getMetadataTableConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getMetrics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getNotification	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getNotificationLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getObjectLockConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getOwnershipControls	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getPolicy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getPolicyStatus	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getPublicAccessBlock	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getReplication	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getRequestPayment	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getTagging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getVersioning	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.getWebsite	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.head	HEAD	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.list	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.listAnalytics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.listDirectory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.listIntelligentTiering	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.listInventory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.listMetrics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.location	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putAbac	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putAccelerateConfiguration	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putAcl	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putAnalytics	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putCors	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putEncryption	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putIntelligentTiering	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putInventory	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putLifecycle	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putLifecycleLegacy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putLogging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putMetrics	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putNotification	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putNotificationLegacy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putObjectLockConfiguration	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putOwnershipControls	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putPolicy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putPublicAccessBlock	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putReplication	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putRequestPayment	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putTagging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putVersioning	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.putWebsite	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.updateMetadataInventoryTable	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	buckets.updateMetadataJournalTable	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objectLambda.writeGetObjectResponse	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.abortMultipartUpload	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.completeMultipartUpload	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.copy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.createMultipartUpload	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.del	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.delMany	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.delTagging	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.get	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getAcl	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getAttributes	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getLegalHold	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getRetention	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getStream	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getTagging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.getTorrent	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.head	HEAD	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.list	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.listLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.listMultipartUploads	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.listParts	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.listVersions	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.put	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.putAcl	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.putLegalHold	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.putRetention	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.putTagging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.rename	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.restore	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.selectContent	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.updateEncryption	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.uploadPart	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
-s3	objects.uploadPartCopy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.create	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.createMetadataConfiguration	POST	prohibitive	S3 Metadata feature charges are not modeled
+s3	buckets.createMetadataTableConfiguration	POST	prohibitive	S3 Metadata feature charges are not modeled
+s3	buckets.createSession	GET	prohibitive	Express session has no independently pinned per-call rate
+s3	buckets.del	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delAnalytics	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delCors	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delEncryption	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delIntelligentTiering	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delInventory	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delLifecycle	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delMetadataConfiguration	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delMetadataTableConfiguration	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delMetrics	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delOwnershipControls	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delPolicy	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delPublicAccessBlock	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delReplication	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delTagging	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.delWebsite	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getAbac	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getAccelerateConfiguration	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getAcl	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getAnalytics	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getCors	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getEncryption	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getIntelligentTiering	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getInventory	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getLifecycle	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getLifecycleLegacy	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getLogging	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getMetadataConfiguration	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getMetadataTableConfiguration	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getMetrics	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getNotification	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getNotificationLegacy	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getObjectLockConfiguration	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getOwnershipControls	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getPolicy	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getPolicyStatus	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getPublicAccessBlock	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getReplication	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getRequestPayment	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getTagging	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getVersioning	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.getWebsite	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.head	HEAD	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.list	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.listAnalytics	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.listDirectory	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.listIntelligentTiering	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.listInventory	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.listMetrics	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.location	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putAbac	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putAccelerateConfiguration	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putAcl	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putAnalytics	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putCors	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putEncryption	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putIntelligentTiering	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putInventory	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putLifecycle	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putLifecycleLegacy	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putLogging	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putMetrics	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putNotification	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putNotificationLegacy	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putObjectLockConfiguration	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putOwnershipControls	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putPolicy	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putPublicAccessBlock	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putReplication	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putRequestPayment	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putTagging	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putVersioning	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.putWebsite	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	buckets.updateMetadataInventoryTable	PUT	prohibitive	S3 Metadata feature charges are not modeled
+s3	buckets.updateMetadataJournalTable	PUT	prohibitive	S3 Metadata feature charges are not modeled
+s3	objectLambda.writeGetObjectResponse	POST	prohibitive	Object Lambda returned bytes and Lambda charges are not modeled
+s3	objects.abortMultipartUpload	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.completeMultipartUpload	POST	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.copy	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.createMultipartUpload	POST	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.del	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.delMany	POST	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.delTagging	DELETE	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.get	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getAcl	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getAttributes	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getLegalHold	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getRetention	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getStream	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getTagging	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.getTorrent	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.head	HEAD	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.list	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.listLegacy	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.listMultipartUploads	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.listParts	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.listVersions	GET	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.put	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.putAcl	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.putLegalHold	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.putRetention	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.putTagging	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.rename	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.restore	POST	prohibitive	Archive storage class and retrieval tier are not modeled
+s3	objects.selectContent	POST	prohibitive	SELECT scanned and returned bytes are not modeled
+s3	objects.updateEncryption	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.uploadPart	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
+s3	objects.uploadPartCopy	PUT	cheap	AWS S3 documented Standard requests and Express rename are sub-cent; DELETE is free. Exception to the priced-provider floor; feature charges override below.
 simplefunctions	api.agent.feed	GET	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.agent.inspect	GET	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.agent.world	GET	cheap	Public agent/world data API; no per-call USD compute cost

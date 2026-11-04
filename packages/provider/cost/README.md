@@ -11,6 +11,48 @@ cross-provider helper. Provider packages keep their runtime pay-gate verifier
 bundled locally; this package remains the canonical place to estimate costs,
 mint OTPs, and document the shared OTP format.
 
+## Endpoint billing and forecasts
+
+`endpointBilling(provider, method, dotPath)` returns the reviewed billing
+record for an endpoint. Unknown endpoints (including new rows of known
+providers) return `kind: "unpriced"`.
+
+`estimateEndpoint` accepts any provider and returns `status: "priced"`,
+`"zero"`, or `"unavailable"`. Free calls, followups and flat subscriptions
+return zero with `zeroReason`; accrual and unpriced calls return unavailable
+with a warning. A numeric zero alone never means a call is free.
+
+```ts
+import { estimateEndpoint } from "@apicity/cost";
+
+const estimate = estimateEndpoint({
+  provider: "kie",
+  method: "POST",
+  dotPath: "api.v1.generate.extend",
+  payload: { model: "V5" },
+});
+```
+
+Fixed fal and WaveSpeed paths and KIE Suno operations resolve their pricing
+keys automatically. Dynamic routes such as `fal.v1.queue.submit` still need
+`endpoint`, and an explicit `endpoint` overrides the generated key.
+
+The default `mode: "strict"` delegates metered calls to `computeEstimate`
+unchanged. For token models with bundled cache-write rates, `mode: "forecast"` can use
+input text and an output-token limit before usage exists: `range.low` prices
+all estimated input as cache reads with no output; `range.high` prices all
+input as cache writes plus the full output limit. `usd` equals the high
+scenario. These chars/4 scenarios are forecasts, not guaranteed bounds.
+Declared usage, unsupported tiers and multimodal inputs retain strict
+validation. Forecasts never replace strict estimation in the paygate.
+
+Maintainers add exact reviewed records to `ENDPOINT_BILLING`; new rows fail
+the coverage guard. Unpriced exceptions in
+`tests/unit/endpoint-billing-unpriced.json` name the responsible price child.
+Regenerate the inventory with
+`UPDATE_ENDPOINT_BILLING=1 pnpm run test:run tests/unit/endpoint-billing.test.ts`
+and the pricing-key module with `pnpm run gen:endpoint-pricing-keys`.
+
 ## Frontier models
 
 `frontier(type)` returns the committed snapshot of frontier image and video

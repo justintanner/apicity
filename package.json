@@ -144,7 +144,7 @@
     "dev:preflight:fast": "node scripts/preflight-provider.mjs",
     "dev:preflight:changed": "node scripts/preflight-changed.mjs",
     "dev:preflight:provider": "node scripts/preflight-provider.mjs",
-    "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run gen:call-shapes:check && pnpm run gen:frontier:check && pnpm run doc-gen:check && pnpm run check:readme-types && pnpm run build && pnpm run check:packed-types && pnpm run typecheck:tests && pnpm run lint && pnpm run test:run",
+    "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run gen:call-shapes:check && pnpm run gen:frontier:check && pnpm run gen:endpoint-pricing-keys:check && pnpm run doc-gen:check && pnpm run check:readme-types && pnpm run build && pnpm run check:packed-types && pnpm run typecheck:tests && pnpm run lint && pnpm run test:run",
     "audit": "node scripts/audit.mjs --audit-level=moderate",
     "audit:op-env": "node scripts/audit-op-env.mjs",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",
@@ -155,7 +155,9 @@
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs",
     "build:machgen": "pnpm --filter @apicity/machgen build",
     "doc-gen:machgen": "node scripts/doc-gen.mjs machgen",
-    "build:har": "pnpm --filter @apicity/har run build"
+    "build:har": "pnpm --filter @apicity/har run build",
+    "gen:endpoint-pricing-keys": "node scripts/gen-endpoint-pricing-keys.mjs",
+    "gen:endpoint-pricing-keys:check": "node scripts/gen-endpoint-pricing-keys.mjs --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

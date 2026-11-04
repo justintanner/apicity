@@ -29,6 +29,8 @@
  * whichever provider it was invoked for. Why that step exists and what it
  * costs: scripts/lib/tests-project.mjs.
  *
+ * Endpoint-surface inventory covers cost tiers and exact billing records.
+ *
  * Step `cross-cutting` runs the repo-wide guards in
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
  * consistently: recording-corpus allowlists, endpoint-surface inventory,

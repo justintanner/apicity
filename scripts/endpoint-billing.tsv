@@ -942,7 +942,7 @@ kie	api.v1.voice.validateInfo	GET	followup		Poll or result; data.creditsConsumed
 kie	api.v1.wav.recordInfo	GET	followup		Poll or result; data.creditsConsumed states the final bill	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	openai.v1.models	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	xai.v1.models	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	anthropic.v1.messages	POST	metered	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	anthropic.v1.messages	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.fileBase64Upload	POST	free		Docs: file uploads are free; files are deleted after 24 hours	https://docs.kie.ai/file-upload-api/quickstart.md	2026-11-04
 kie	api.fileStreamUpload	POST	free		Docs: file uploads are free; files are deleted after 24 hours	https://docs.kie.ai/file-upload-api/quickstart.md	2026-11-04
 kie	api.fileUrlUpload	POST	free		Docs: file uploads are free; files are deleted after 24 hours	https://docs.kie.ai/file-upload-api/quickstart.md	2026-11-04
@@ -968,7 +968,7 @@ kie	api.v1.mj.generate	POST	metered	per-model	PAID_ENDPOINTS lists it, but the f
 kie	api.v1.mp4.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.omni.audio.create	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/market/gemini-omni-audio.md	2026-11-04
 kie	api.v1.omni.character.create	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/market/gemini-omni-character.md	2026-11-04
-kie	api.v1.responses	POST	metered	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	api.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.runway.extend	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.runway.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.style.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -983,24 +983,24 @@ kie	api.v1.voice.generate	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS
 kie	api.v1.voice.regenerate	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/suno-api/suno-voice-regenerate.md	2026-11-04
 kie	api.v1.voice.validate	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/suno-api/suno-voice-validate.md	2026-11-04
 kie	api.v1.wav.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	claude.v1.messages	POST	metered	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	codex.v1.responses	POST	metered	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini38Flash.streamGenerateContent	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini25Pro.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini31Pro.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini36FlashOpenai.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini37FlashOpenai.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini38FlashOpenai.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini3Pro.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini4ArgonOpenai.v1.chat.completions	POST	unpriced	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gpt52.v1.chat.completions	POST	unpriced	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	grok.v1.responses	POST	unpriced	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	openai.v1.responses	POST	metered	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	xai.v1.responses	POST	unpriced	tokens	Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	claude.v1.messages	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	codex.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini38Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini25Pro.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini31Pro.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini36FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini37FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini38FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini3Pro.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini4ArgonOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gpt52.v1.chat.completions	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	grok.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	openai.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	xai.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kimicoding	coding.v1.models	GET	free		Token count or model list; no charge	https://www.kimi.com/code/docs/	2026-11-04
 kimicoding	coding.v1.chat.completions	POST	subscription	tokens	Kimi Code plan: flat and quota-limited, zero marginal USD. List rates are for comparison, and the plan's model ids (k3-256k, k2p5) do not match the platform's	https://www.kimi.com/code/docs/	2026-11-04
 kimicoding	coding.v1.countTokens	POST	free		Token count or model list; no charge	https://www.kimi.com/code/docs/	2026-11-04

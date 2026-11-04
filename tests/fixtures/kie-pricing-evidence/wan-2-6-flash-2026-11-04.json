@@ -1,0 +1,259 @@
+{
+  "readAt": "2026-11-04T09:06:46.114972+00:00",
+  "url": "https://kie.ai/wan-2-6-flash",
+  "sha256": "4fba278993dce459d2284b9bbb0aab3042e5e106a58663fae043888209a4988f",
+  "groups": [
+    {
+      "userPath": "wan",
+      "path": "2-6-flash-video-to-video",
+      "pricingDesc": "720p with audio: 40 / 80 credits for 5 / 10 s (~$0.20 / $0.40)\n720p without audio: 20 / 40 credits for 5 / 10 s (~$0.10 / $0.20)\n1080p with audio: 60 / 120 credits for 5 / 10 s (~$0.30 / $0.60)\n1080p without audio: 30 / 60 credits for 5 / 10 s (~$0.15 / $0.30)\n\nAll tiers are 20% below official pricing. High-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    },
+    {
+      "userPath": "wan",
+      "path": "2-6-flash-image-to-video",
+      "pricingDesc": "720p with audio: 40 / 80 / 120 credits for 5 / 10 / 15 s (~$0.20 / $0.40 / $0.60)\n720p without audio: 20 / 40 / 60 credits for 5 / 10 / 15 s (~$0.10 / $0.20 / $0.30)\n1080p with audio: 60 / 120 / 180 credits for 5 / 10 / 15 s (~$0.30 / $0.60 / $0.90)\n1080p without audio: 30 / 60 / 90 credits for 5 / 10 / 15 s (~$0.15 / $0.30 / $0.45)\n\nAll tiers are 20% below official pricing. High-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  ],
+  "rows": [
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, without audio-5.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "30",
+      "creditUnit": "per video",
+      "usdPrice": "0.15",
+      "falPrice": "0.1875",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, without audio-10.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "60",
+      "creditUnit": "per video",
+      "usdPrice": "0.30",
+      "falPrice": "0.375",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, with audio-10.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "120",
+      "creditUnit": "per video",
+      "usdPrice": "0.60",
+      "falPrice": "0.75",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, with audio-5.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "60",
+      "creditUnit": "per video",
+      "usdPrice": "0.30",
+      "falPrice": "0.375",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, without audio-5.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "20",
+      "creditUnit": "per video",
+      "usdPrice": "0.10",
+      "falPrice": "0.125",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, without audio-10.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "40",
+      "creditUnit": "per video",
+      "usdPrice": "0.20",
+      "falPrice": "0.25",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, with audio-10.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "80",
+      "creditUnit": "per video",
+      "usdPrice": "0.40",
+      "falPrice": "0.50",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-15.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "90",
+      "creditUnit": "per video",
+      "usdPrice": "0.45",
+      "falPrice": "0.5625",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, video-to-video, with audio-5.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "40",
+      "creditUnit": "per video",
+      "usdPrice": "0.20",
+      "falPrice": "0.25",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-video-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-10.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "60",
+      "creditUnit": "per video",
+      "usdPrice": "0.30",
+      "falPrice": "0.375",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-5.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "30",
+      "creditUnit": "per video",
+      "usdPrice": "0.15",
+      "falPrice": "0.1875",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-10.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "120",
+      "creditUnit": "per video",
+      "usdPrice": "0.60",
+      "falPrice": "0.75",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-15.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "180",
+      "creditUnit": "per video",
+      "usdPrice": "0.90",
+      "falPrice": "1.125",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-5.0s-1080p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "60",
+      "creditUnit": "per video",
+      "usdPrice": "0.30",
+      "falPrice": "0.375",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-15.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "60",
+      "creditUnit": "per video",
+      "usdPrice": "0.30",
+      "falPrice": "0.375",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-5.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "20",
+      "creditUnit": "per video",
+      "usdPrice": "0.10",
+      "falPrice": "0.125",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, without audio-10.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "40",
+      "creditUnit": "per video",
+      "usdPrice": "0.20",
+      "falPrice": "0.25",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-15.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "120",
+      "creditUnit": "per video",
+      "usdPrice": "0.60",
+      "falPrice": "0.75",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-10.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "80",
+      "creditUnit": "per video",
+      "usdPrice": "0.40",
+      "falPrice": "0.50",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "wan 2.6 flash, image-to-video, with audio-5.0s-720p",
+      "interfaceType": "video",
+      "provider": "Wan",
+      "creditPrice": "40",
+      "creditUnit": "per video",
+      "usdPrice": "0.20",
+      "falPrice": "0.25",
+      "discountRate": 20,
+      "anchor": "https://kie.ai/wan-2-6-flash?model=wan%2F2-6-flash-image-to-video",
+      "discountPrice": false
+    }
+  ]
+}

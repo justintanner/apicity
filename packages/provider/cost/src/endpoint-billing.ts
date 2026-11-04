@@ -2897,7 +2897,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "tokens",
       reason:
-        "Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.",
+        "Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.",
       source: {
         url: "https://api.kie.ai/client/v1/model-pricing/page",
         asOf: "2026-11-04",
@@ -3180,7 +3180,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "tokens",
       reason:
-        "credits_consumed states the charge in every response; the feed lists this model's rates",
+        "No current published rate; product pages redirect to newer models.",
       source: {
         url: "https://api.kie.ai/client/v1/model-pricing/page",
         asOf: "2026-11-04",
@@ -3188,12 +3188,27 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     },
     [
       "POST gemini.v1.models.gemini35Flash.streamGenerateContent",
+      "POST gemini25Pro.v1.chat.completions",
+      "POST gemini35FlashOpenai.v1.chat.completions",
+    ]
+  ),
+  ...rows(
+    "kie",
+    {
+      kind: "metered",
+      unit: "tokens",
+      reason:
+        "credits_consumed states the charge in every response; the feed lists this model's rates",
+      source: {
+        url: "https://api.kie.ai/client/v1/model-pricing/page",
+        asOf: "2026-11-04",
+      },
+    },
+    [
       "POST gemini.v1.models.gemini36Flash.streamGenerateContent",
       "POST gemini.v1.models.gemini37Flash.streamGenerateContent",
       "POST gemini.v1.models.gemini38Flash.streamGenerateContent",
-      "POST gemini25Pro.v1.chat.completions",
       "POST gemini31Pro.v1.chat.completions",
-      "POST gemini35FlashOpenai.v1.chat.completions",
       "POST gemini36FlashOpenai.v1.chat.completions",
       "POST gemini37FlashOpenai.v1.chat.completions",
       "POST gemini38FlashOpenai.v1.chat.completions",
@@ -3204,10 +3219,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "kie",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "tokens",
       reason:
-        "Only gpt-6-1-sol and claude-haiku-5-5 have token rows. credits_consumed states the charge in every response.",
+        "Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.",
       source: {
         url: "https://api.kie.ai/client/v1/model-pricing/page",
         asOf: "2026-11-04",

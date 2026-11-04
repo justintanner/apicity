@@ -123,8 +123,7 @@ function deriveFromTokens(
     );
   }
   if (provider !== "kie") return NOT_DERIVED;
-  // KIE's token route ignores a cache count with no published rate, which would
-  // bill those tokens at the input rate.
+  // Keep an explicit diagnostic when KIE publishes no cache rate.
   const entry = PRICING.kie[key];
   if (
     entry?.kind === "tokens" &&

@@ -1,0 +1,1717 @@
+{
+  "capturedAt": "2026-11-04T08:49:34.090Z",
+  "creditUsd": 0.005,
+  "snapshotSha256": "sha256:e32c9eae25428c59bae8bbf5350718304160484ad57560d43ca6769ebd8b4412",
+  "models": [
+    {
+      "id": "gpt-6-1-terra",
+      "title": "gpt-6-1-terra",
+      "url": "https://kie.ai/gpt-6-1-terra",
+      "pageSha256": "32d2b9c422a29bd92433e8f4803dd21fc880b33c997254c76747b79934ebcfc3",
+      "ratesUsdPerMillion": {
+        "input": 0.3,
+        "output": 1.5,
+        "cacheRead": 0.015,
+        "cacheWrite": 0.375
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-6-1-terra, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "60",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.3",
+          "falPrice": "1",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-terra, chat, output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "300",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.5",
+          "falPrice": "5",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-terra, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "3",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.015",
+          "falPrice": "0.05",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-terra, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "75",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.375",
+          "falPrice": "1.25",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-terra",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-4-argon",
+      "title": "Gemini 4 Argon",
+      "url": "https://kie.ai/gemini-4-argon",
+      "pageSha256": "ca60307f711026b1d1e13005a9da46f75c8690698bdbbd49b635442233b9a6df",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 4.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 4 Argon, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.80",
+          "falPrice": "2",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/gemini-4-argon",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 4 Argon, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "800",
+          "creditUnit": "per million tokens",
+          "usdPrice": "4.00",
+          "falPrice": "10",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/gemini-4-argon",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-4-argon-openai",
+      "title": "Gemini 4 Argon",
+      "url": "https://kie.ai/gemini-4-argon",
+      "pageSha256": "ca60307f711026b1d1e13005a9da46f75c8690698bdbbd49b635442233b9a6df",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 4.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 4 Argon, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.80",
+          "falPrice": "2",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/gemini-4-argon",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 4 Argon, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "800",
+          "creditUnit": "per million tokens",
+          "usdPrice": "4.00",
+          "falPrice": "10",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/gemini-4-argon",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3.1-pro",
+      "title": "Gemini 3.1 Pro",
+      "url": "https://kie.ai/gemini-3-1-pro",
+      "pageSha256": "b61b8228dfc90e93daf8706d7cce24aa214a54f906f26ebdbcd2e3de0e3236e8",
+      "ratesUsdPerMillion": {
+        "input": 0.5,
+        "output": 3.5
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.1 Pro, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "100",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.50",
+          "falPrice": "2",
+          "discountRate": 75,
+          "anchor": "https://kie.ai/gemini-3-1-pro",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.1 Pro, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "700",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.50",
+          "falPrice": "12",
+          "discountRate": 70.83,
+          "anchor": "https://kie.ai/gemini-3-1-pro",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-haiku-5-5",
+      "title": "claude-haiku-5-5",
+      "url": "https://kie.ai/claude-haiku-5-5",
+      "pageSha256": "a78f07682273c329bb3344b75cb2b4490fe9ddbdd60302c8a8f5cef86e61d514",
+      "ratesUsdPerMillion": {
+        "input": 0.06,
+        "output": 0.3
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-haiku-5-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "12",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.06",
+          "falPrice": "0.10",
+          "discountRate": 40,
+          "anchor": "https://kie.ai/claude-haiku-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-haiku-5-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "60",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.30",
+          "falPrice": "0.50",
+          "discountRate": 40,
+          "anchor": "https://kie.ai/claude-haiku-5-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-6-1-sol",
+      "title": "gpt-6-1-sol",
+      "url": "https://kie.ai/gpt-6-1-sol",
+      "pageSha256": "65ca9046b6fc6d0eb9fd293e78dc3d76003e575ef2ddce8dd65dcedd765e6e8c",
+      "ratesUsdPerMillion": {
+        "input": 0.6,
+        "output": 3.0,
+        "cacheRead": 0.03,
+        "cacheWrite": 0.75
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-6-1-sol, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "120",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.6",
+          "falPrice": "2",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-sol, chat, output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "600",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3",
+          "falPrice": "10",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-sol, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "6",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.03",
+          "falPrice": "0.10",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-1-sol, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "150",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.75",
+          "falPrice": "2.5",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-1-sol",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-sonnet-5-5",
+      "title": "claude-sonnet-5-5",
+      "url": "https://kie.ai/claude-sonnet-5-5",
+      "pageSha256": "88edf4abfb53c76726ace3ff5cea977ab37521e2cf91a6cda4ae68233345e1cb",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 4.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-sonnet-5-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.8",
+          "falPrice": "2",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-sonnet-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-sonnet-5-5, chat, output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "800",
+          "creditUnit": "per million tokens",
+          "usdPrice": "4",
+          "falPrice": "10",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-sonnet-5-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-5-5",
+      "title": "claude-opus-5-5",
+      "url": "https://kie.ai/claude-opus-5-5",
+      "pageSha256": "ba0db65944f21c8b0dc58cd08407cbc5066213a71fd9fe1e4d3d517b1f8016a8",
+      "ratesUsdPerMillion": {
+        "input": 1.6,
+        "output": 8.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-opus-5-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "320",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.60",
+          "falPrice": "4.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-opus-5-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "1600",
+          "creditUnit": "per million tokens",
+          "usdPrice": "8.00",
+          "falPrice": "20.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-5-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-6-luna",
+      "title": "gpt-6-luna",
+      "url": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+      "pageSha256": "18e4c3f22cf6d7cbdbfac94176b13d02fda962b230b3cb55568129d85015ed69",
+      "ratesUsdPerMillion": {
+        "input": 0.03,
+        "output": 0.15,
+        "cacheRead": 0.003,
+        "cacheWrite": 0.0375
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-6-luna, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "6",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.03",
+          "falPrice": "0.10",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-luna, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "30",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.15",
+          "falPrice": "0.50",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-luna, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "0.6",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.003",
+          "falPrice": "0.01",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-luna, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "7.5",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.0375",
+          "falPrice": "0.125",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-luna",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-6-sol",
+      "title": "gpt-6-sol",
+      "url": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+      "pageSha256": "18e4c3f22cf6d7cbdbfac94176b13d02fda962b230b3cb55568129d85015ed69",
+      "ratesUsdPerMillion": {
+        "input": 0.6,
+        "output": 3.0,
+        "cacheRead": 0.06,
+        "cacheWrite": 0.75
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-6-sol, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "120",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.60",
+          "falPrice": "2.00",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-sol, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "600",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.00",
+          "falPrice": "10.00",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-sol, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "12",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.06",
+          "falPrice": "0.20",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-sol, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "150",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.75",
+          "falPrice": "2.50",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gpt-6-sol-and-luna?model=gpt-6-sol",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "kimi-k3",
+      "title": "Kimi K3",
+      "url": "https://kie.ai/kimi-k3",
+      "pageSha256": "13fbe9a258b5e2ebce91da673b606ba6a29d39ee489cadb13158206f1545491f",
+      "ratesUsdPerMillion": {
+        "input": 2.4,
+        "output": 12.0,
+        "cacheRead": 0.24
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Kimi K3, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Other",
+          "creditPrice": "480",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2.40",
+          "falPrice": "3",
+          "discountRate": 20,
+          "anchor": "https://kie.ai/kimi-k3",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Kimi K3, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Other",
+          "creditPrice": "2400",
+          "creditUnit": "per million tokens",
+          "usdPrice": "12.00",
+          "falPrice": "15",
+          "discountRate": 20,
+          "anchor": "https://kie.ai/kimi-k3",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Kimi K3, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "Other",
+          "creditPrice": "48",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.24",
+          "falPrice": "0.3",
+          "discountRate": 20,
+          "anchor": "https://kie.ai/kimi-k3",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "deepseek-v4-1-flash",
+      "title": "DeepSeek V4.1 Flash",
+      "url": "https://kie.ai/deepseek-v4-1-Flash",
+      "pageSha256": "de599d342dbe06f4ba6298cdb57e6f8966ab423fbb19dd7a134abeb62ce88897",
+      "ratesUsdPerMillion": {
+        "input": 0.12,
+        "output": 0.475,
+        "cacheRead": 0.0025
+      },
+      "feedRows": [
+        {
+          "modelDescription": "DeepSeek V4.1 Flash, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "DeepSeek",
+          "creditPrice": "24",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.12",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/deepseek-v4-1-Flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "DeepSeek V4.1 Flash, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "DeepSeek",
+          "creditPrice": "95",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.475",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/deepseek-v4-1-Flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "DeepSeek V4.1 Flash, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "DeepSeek",
+          "creditPrice": "0.5",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.0025",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/deepseek-v4-1-Flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "grok-4-7",
+      "title": "grok-4-7",
+      "url": "https://kie.ai/grok-4-7",
+      "pageSha256": "1766142082b608300002713c4a11b20ec4410cb173a7b49927293e9c584f5bdf",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 2.4,
+        "cacheRead": 0.2
+      },
+      "feedRows": [
+        {
+          "modelDescription": "grok-4-7, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.80",
+          "falPrice": "2.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-7",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-7, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "480",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2.40",
+          "falPrice": "6.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-7",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-7, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "40",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.20",
+          "falPrice": "0.50",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-7",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-6-astra",
+      "title": "gpt-6-astra",
+      "url": "https://kie.ai/gpt-6-astra",
+      "pageSha256": "0163c2f7f1e0125ed923252d395f8fc89c2c30f34f1b866066592343982dc91a",
+      "ratesUsdPerMillion": {
+        "input": 2.8,
+        "output": 14.0,
+        "cacheRead": 0.28,
+        "cacheWrite": 3.5
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-6-astra, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "560",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2.80",
+          "falPrice": "10.00",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-6-astra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-astra, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "2800",
+          "creditUnit": "per million tokens",
+          "usdPrice": "14.00",
+          "falPrice": "50.00",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-6-astra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-astra, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "56",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.28",
+          "falPrice": "1.00",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-6-astra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-6-astra, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "700",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.50",
+          "falPrice": "12.50",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-6-astra",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-8-flash",
+      "title": "Gemini 3.8 Flash",
+      "url": "https://kie.ai/gemini-3-8-flash",
+      "pageSha256": "5ea60130720947cdf92c60da4aa7e6811084b0ec7e922cee0a254145e20db8b0",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.8 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-8-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.8 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-8-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-8-flash-openai",
+      "title": "Gemini 3.8 Flash",
+      "url": "https://kie.ai/gemini-3-8-flash",
+      "pageSha256": "5ea60130720947cdf92c60da4aa7e6811084b0ec7e922cee0a254145e20db8b0",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.8 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-8-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.8 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-8-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-7-flash",
+      "title": "Gemini 3.7 Flash",
+      "url": "https://kie.ai/gemini-3-7-flash",
+      "pageSha256": "5ea60130720947cdf92c60da4aa7e6811084b0ec7e922cee0a254145e20db8b0",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.7 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-7-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.7 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-7-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-7-flash-openai",
+      "title": "Gemini 3.7 Flash",
+      "url": "https://kie.ai/gemini-3-7-flash",
+      "pageSha256": "5ea60130720947cdf92c60da4aa7e6811084b0ec7e922cee0a254145e20db8b0",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.7 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-7-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.7 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-7-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "grok-4-6",
+      "title": "grok-4-6",
+      "url": "https://kie.ai/grok-4-6",
+      "pageSha256": "268b1e521ce32d1714be092c120e2d5a2dbe11526dbdd866074d34128c3ee0eb",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 2.4,
+        "cacheRead": 0.2
+      },
+      "feedRows": [
+        {
+          "modelDescription": "grok-4-6, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.80",
+          "falPrice": "2.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-6",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-6, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "480",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2.40",
+          "falPrice": "6.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-6",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-6, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "40",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.20",
+          "falPrice": "0.50",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-6",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-5",
+      "title": "claude-opus-5",
+      "url": "https://kie.ai/claude-opus-5",
+      "pageSha256": "4508ab5209a9ebaa8f6f5abf8a16541352f93e65e84c3730b75c18dcafdf2cc5",
+      "ratesUsdPerMillion": {
+        "input": 2.0,
+        "output": 10.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-opus-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "400",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2",
+          "falPrice": "5",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-opus-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "2000",
+          "creditUnit": "per million tokens",
+          "usdPrice": "10",
+          "falPrice": "25",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-6-flash",
+      "title": "Gemini 3.6 Flash",
+      "url": "https://kie.ai/gemini-3-6-flash",
+      "pageSha256": "03948ab0578be104920bacc4a081419d49c030d489919d5f9e92fa332a11b18c",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.6 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-6-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.6 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-6-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-6-flash-openai",
+      "title": "Gemini 3.6 Flash",
+      "url": "https://kie.ai/gemini-3-6-flash",
+      "pageSha256": "03948ab0578be104920bacc4a081419d49c030d489919d5f9e92fa332a11b18c",
+      "ratesUsdPerMillion": {
+        "input": 0.225,
+        "output": 1.125
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3.6 Flash, chat, input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "45",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-6-flash",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3.6 Flash, chat, output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "225",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "anchor": "https://kie.ai/gemini-3-6-flash",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5-6-terra",
+      "title": "gpt-5.6-terra",
+      "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+      "pageSha256": "0d72d4bd011cf58232d43cccee5a1dda71679503c84b9b67c7457ea93561214b",
+      "ratesUsdPerMillion": {
+        "input": 0.56,
+        "output": 3.36,
+        "cacheRead": 0.056,
+        "cacheWrite": 0.7
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5.6-terra, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "112",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.56",
+          "falPrice": "2",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-terra, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "672",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.36",
+          "falPrice": "12",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-terra, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "11.2",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.056",
+          "falPrice": "0.20",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-terra, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "140",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.70",
+          "falPrice": "2.5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5-6-sol",
+      "title": "gpt-5.6-sol",
+      "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
+      "pageSha256": "0d72d4bd011cf58232d43cccee5a1dda71679503c84b9b67c7457ea93561214b",
+      "ratesUsdPerMillion": {
+        "input": 1.4,
+        "output": 8.4,
+        "cacheRead": 0.14,
+        "cacheWrite": 1.75
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5.6-sol, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "280",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.4",
+          "falPrice": "5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-sol, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "1680",
+          "creditUnit": "per million tokens",
+          "usdPrice": "8.4",
+          "falPrice": "30",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-sol, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "28",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.14",
+          "falPrice": "0.5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-sol, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "350",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.75",
+          "falPrice": "6.25",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5-6-luna",
+      "title": "gpt-5.6-luna",
+      "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+      "pageSha256": "0d72d4bd011cf58232d43cccee5a1dda71679503c84b9b67c7457ea93561214b",
+      "ratesUsdPerMillion": {
+        "input": 0.056,
+        "output": 0.336,
+        "cacheRead": 0.0056,
+        "cacheWrite": 0.07
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5.6-luna, chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "11.2",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.056",
+          "falPrice": "0.20",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-luna, chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "67.2",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.336",
+          "falPrice": "1.2",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-luna, chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "1.12",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.0056",
+          "falPrice": "0.02",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.6-luna, chat, Cache Writes",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "14",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.07",
+          "falPrice": "0.25",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "grok-4-5",
+      "title": "grok-4-5",
+      "url": "https://kie.ai/grok-4-5",
+      "pageSha256": "0b65d868e8c61edd6b966583bf6f54fd2fd660ec926a71ac700a05f3bd3c79a6",
+      "ratesUsdPerMillion": {
+        "input": 0.8,
+        "output": 2.4,
+        "cacheRead": 0.12
+      },
+      "feedRows": [
+        {
+          "modelDescription": "grok-4-5, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "160",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.80",
+          "falPrice": "2.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-5, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "480",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2.40",
+          "falPrice": "6.00",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-4-5, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "Grok",
+          "creditPrice": "24",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.12",
+          "falPrice": "0.3",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/grok-4-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-sonnet-5",
+      "title": "claude-sonnet-5",
+      "url": "https://kie.ai/claude-sonnet-5",
+      "pageSha256": "e4d1f36f3a071bfbd3195556e0176d2f4e12ea3916f619fc8b763ad485c3c2ee",
+      "ratesUsdPerMillion": {
+        "input": 0.85,
+        "output": 4.275
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-sonnet-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "170",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.850",
+          "falPrice": "2",
+          "discountRate": 57.5,
+          "anchor": "https://kie.ai/claude-sonnet-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-sonnet-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "855",
+          "creditUnit": "per million tokens",
+          "usdPrice": "4.275",
+          "falPrice": "10",
+          "discountRate": 57.25,
+          "anchor": "https://kie.ai/claude-sonnet-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-fable-5",
+      "title": "Claude-fable-5",
+      "url": "https://kie.ai/claude-fable-5",
+      "pageSha256": "ad5b2847958f2824cf05d1fb04e289a3e0955f3edc75d7d566635d9fb864c651",
+      "ratesUsdPerMillion": {
+        "input": 4.0,
+        "output": 20.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-fable-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "800",
+          "creditUnit": "per 1M tokens",
+          "usdPrice": "4",
+          "falPrice": "10",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-fable-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-fable-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "4000",
+          "creditUnit": "per 1M tokens",
+          "usdPrice": "20",
+          "falPrice": "50",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-fable-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-4-8",
+      "title": "Claude-Opus-4-8",
+      "url": "https://kie.ai/claude-opus-4.8",
+      "pageSha256": "dd773b02d53f31e84d0727388701fb01af41b376a6341a0f4b2883a05a028726",
+      "ratesUsdPerMillion": {
+        "input": 2.0,
+        "output": 10.0
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-Opus-4-8, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "400",
+          "creditUnit": "per million tokens",
+          "usdPrice": "2",
+          "falPrice": "5",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-4.8",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-Opus-4-8, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "2000",
+          "creditUnit": "per 1M tokens",
+          "usdPrice": "10",
+          "falPrice": "25",
+          "discountRate": 60,
+          "anchor": "https://kie.ai/claude-opus-4.8",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-4-7",
+      "title": "Claude-Opus-4-7",
+      "url": "https://kie.ai/claude-opus-4-7",
+      "pageSha256": "c50f43873015379f9bf23a693690c34849230b4660b6449a7f35e88acc6f9951",
+      "ratesUsdPerMillion": {
+        "input": 1.425,
+        "output": 7.15
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-Opus-4-7, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "285",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.425",
+          "falPrice": "5",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-opus-4-7",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-Opus-4-7, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "1430",
+          "creditUnit": "per million tokens",
+          "usdPrice": "7.150",
+          "falPrice": "25",
+          "discountRate": 71.4,
+          "anchor": "https://kie.ai/claude-opus-4-7",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5-5",
+      "title": "gpt-5.5",
+      "url": "https://kie.ai/gpt-5-5",
+      "pageSha256": "5ac938932379a103e84d6922cb80ff6458974bf2d0c81ceeb1804cba2a89658c",
+      "ratesUsdPerMillion": {
+        "input": 1.4,
+        "output": 8.4,
+        "cacheRead": 0.14
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5.5, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "280",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.4",
+          "falPrice": "5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.5, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "1680",
+          "creditUnit": "per million tokens",
+          "usdPrice": "8.4",
+          "falPrice": "30",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.5, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "28",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.14",
+          "falPrice": "0.5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5.5",
+      "title": "gpt-5.5",
+      "url": "https://kie.ai/gpt-5-5",
+      "pageSha256": "5ac938932379a103e84d6922cb80ff6458974bf2d0c81ceeb1804cba2a89658c",
+      "ratesUsdPerMillion": {
+        "input": 1.4,
+        "output": 8.4,
+        "cacheRead": 0.14
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5.5, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "280",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.4",
+          "falPrice": "5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.5, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "1680",
+          "creditUnit": "per million tokens",
+          "usdPrice": "8.4",
+          "falPrice": "30",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5.5, Chat, Cached Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "28",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.14",
+          "falPrice": "0.5",
+          "discountRate": 72,
+          "anchor": "https://kie.ai/gpt-5-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "title": "Claude-Haiku-4-5",
+      "url": "https://kie.ai/claude-haiku-4-5",
+      "pageSha256": "c810a3005787f030a9df687b3eec6db8bef001d2a4f2bc9a9172e5685f3ab8ef",
+      "ratesUsdPerMillion": {
+        "input": 0.275,
+        "output": 1.425
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-Haiku-4-5, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "55",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.275",
+          "falPrice": "1",
+          "discountRate": 72.5,
+          "anchor": "https://kie.ai/claude-haiku-4-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-Haiku-4-5, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "285",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.425",
+          "falPrice": "5",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-haiku-4-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-4-6",
+      "title": "Claude-Opus-4-6",
+      "url": "https://kie.ai/claude-opus-4-6",
+      "pageSha256": "fdb5632a94d07d04ac823dbe37c3ebeb64b9b069a189518353ff62ab4b44d9a6",
+      "ratesUsdPerMillion": {
+        "input": 1.425,
+        "output": 7.15
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-Opus-4-6, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "285",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.425",
+          "falPrice": "5",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-opus-4-6",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-Opus-4-6, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "1430",
+          "creditUnit": "per million tokens",
+          "usdPrice": "7.150",
+          "falPrice": "25",
+          "discountRate": 71.4,
+          "anchor": "https://kie.ai/claude-opus-4-6",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "title": "Claude-Sonnet-4-6",
+      "url": "https://kie.ai/claude-sonnet-4-6",
+      "pageSha256": "968f863cc2a9c493dc05d4d1a818480808a6eb62e45fa9c567f2e9163e8896fa",
+      "ratesUsdPerMillion": {
+        "input": 0.85,
+        "output": 4.275
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Claude-Sonnet-4-6, chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "170",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.850",
+          "falPrice": "3",
+          "discountRate": 71.67,
+          "anchor": "https://kie.ai/claude-sonnet-4-6",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Claude-Sonnet-4-6, chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "855",
+          "creditUnit": "per million tokens",
+          "usdPrice": "4.275",
+          "falPrice": "15",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-sonnet-4-6",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-sonnet-4-5",
+      "title": "claude-sonnet-4-5",
+      "url": "https://kie.ai/claude-sonnet-4-5",
+      "pageSha256": "a5490af84f2a9127fcb02309cf5819cc01235640c82c00b5381bd018140bb391",
+      "ratesUsdPerMillion": {
+        "input": 0.85,
+        "output": 4.275
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-sonnet-4-5, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "170",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.850",
+          "falPrice": "3",
+          "discountRate": 71.7,
+          "anchor": "https://kie.ai/claude-sonnet-4-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-sonnet-4-5, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "855",
+          "creditUnit": "per 1M tokens",
+          "usdPrice": "4.275",
+          "falPrice": "15",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-sonnet-4-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "claude-opus-4-5",
+      "title": "claude-opus-4-5",
+      "url": "https://kie.ai/claude-opus-4-5",
+      "pageSha256": "940dc100a8a4795d08e6c83ad0e2024630c4a834f54e801ff0b19b2bf1707fad",
+      "ratesUsdPerMillion": {
+        "input": 1.425,
+        "output": 7.15
+      },
+      "feedRows": [
+        {
+          "modelDescription": "claude-opus-4-5, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "285",
+          "creditUnit": "per million tokens",
+          "usdPrice": "1.425",
+          "falPrice": "5",
+          "discountRate": 71.5,
+          "anchor": "https://kie.ai/claude-opus-4-5",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "claude-opus-4-5, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Anthropic",
+          "creditPrice": "1430",
+          "creditUnit": "per million tokens",
+          "usdPrice": "7.150",
+          "falPrice": "25",
+          "discountRate": 71.4,
+          "anchor": "https://kie.ai/claude-opus-4-5",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gpt-5-2",
+      "title": "gpt-5-2",
+      "url": "https://kie.ai/gpt-5-2",
+      "pageSha256": "edcf84a90df4282bd4832dfd6f8958f83b09fa6cf4bb00510a44dcd551249c05",
+      "ratesUsdPerMillion": {
+        "input": 0.4375,
+        "output": 3.5
+      },
+      "feedRows": [
+        {
+          "modelDescription": "gpt-5-2, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "87.5",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.44",
+          "falPrice": "1.75",
+          "discountRate": 74.9,
+          "anchor": "https://kie.ai/gpt-5-2",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "gpt-5-2, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "OpenAI",
+          "creditPrice": "700",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.5",
+          "falPrice": "14",
+          "discountRate": 75,
+          "anchor": "https://kie.ai/gpt-5-2",
+          "discountPrice": false
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-pro",
+      "title": "Gemini 3 Pro",
+      "url": "https://kie.ai/gemini-3-pro",
+      "pageSha256": "a6a6918d96a89277e865ed0d8f2cc5ccff74fc1f18f2eb571db3fe3b0be06b4e",
+      "ratesUsdPerMillion": {
+        "input": 0.5,
+        "output": 3.5
+      },
+      "feedRows": [
+        {
+          "modelDescription": "Gemini 3 Pro, Chat, Input",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "100",
+          "creditUnit": "per million tokens",
+          "usdPrice": "0.50",
+          "falPrice": "2",
+          "discountRate": 75,
+          "anchor": "https://kie.ai/gemini-3-pro",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "Gemini 3 Pro, Chat, Output",
+          "interfaceType": "chat",
+          "provider": "Google",
+          "creditPrice": "700",
+          "creditUnit": "per million tokens",
+          "usdPrice": "3.5",
+          "falPrice": "12",
+          "discountRate": 70.9,
+          "anchor": "https://kie.ai/gemini-3-pro",
+          "discountPrice": false
+        }
+      ]
+    }
+  ],
+  "exceptions": {
+    "gemini-3-7-flash": "Wire IDs from existing SDK routes; current feed retains 3.7 although the product page redirects to 3.8.",
+    "gpt-5.5": "Recorded OpenAI-compatible request/response alias for the published gpt-5-5 model.",
+    "gemini-2-5-pro": "No current feed row; page redirects to Gemini 4 Argon.",
+    "gemini-3-5-flash": "No current feed row; page redirects to Gemini 3.6 Flash.",
+    "elevenlabs/sound-effect-v2": "No published rate; no pricing entry added."
+  }
+}

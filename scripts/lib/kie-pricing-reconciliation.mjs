@@ -1019,15 +1019,15 @@ function classifyRawRow(raw, inventories) {
   } else if (isFree) {
     disposition = "free-nonbillable";
     rationale = "The official snapshot reports an explicit zero USD price.";
+  } else if (String(official.interfaceType).toLowerCase() === "chat") {
+    disposition = "token-billed";
+    rationale =
+      "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.";
   } else if (mappedKeys.length && !issues.length && auditedUnit) {
     disposition = canonicalAlias ? "canonical-alias" : "implemented";
     rationale = canonicalAlias
       ? "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell."
       : "The row maps to an existing ApiCity pricing key with a complete official cell.";
-  } else if (String(official.interfaceType).toLowerCase() === "chat") {
-    disposition = "token-billed";
-    rationale =
-      "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.";
   } else if (!mappedKeys.length) {
     disposition = "upstream-unmappable";
     rationale =

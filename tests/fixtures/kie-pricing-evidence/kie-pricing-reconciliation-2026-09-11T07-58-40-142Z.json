@@ -1802,11 +1802,11 @@
     },
     "final": {
       "models": 163,
-      "pricingKeys": 189,
-      "slugKeys": 191,
-      "displayKeys": 191,
-      "schemaWithoutPricing": 6,
-      "pricingOnly": 32,
+      "pricingKeys": 228,
+      "slugKeys": 230,
+      "displayKeys": 230,
+      "schemaWithoutPricing": 4,
+      "pricingOnly": 69,
       "endpoints": 84
     }
   },
@@ -1823,8 +1823,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:111ff369cd5b976e18025bd133b60ad553f870e3b2c3f05a4cdc253c3b235326",
       "packages/provider/kie/src/model-schemas.ts": "sha256:04c34dcb2a8ae3afc7eade88456ccb107df6db8e7aebeeb6c0cc7595b4c9c5b9",
       "packages/provider/kie/src/kie.ts": "sha256:6f38173005b380518864c6add45a0c06279378a4e02fb4aaef673ef5cd5c217f",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:b9d5e9c6aed154e0b54852d9559f58c0807edaeaa173a039c3d3f62edf75d263",
-      "packages/provider/cost/src/slugs.ts": "sha256:e4493706fcf31a61b92a649dbf5e4a78b167eb0545f7d06819a1a15224caa311",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:019f4684e036c4c83bc8e9da6de73cf9e8d616e9d4ed3d094f2f721917011895",
+      "packages/provider/cost/src/slugs.ts": "sha256:f32ef813cea8c36cb33d94ca39ea3892f25c8e0300d52e0a273af89488d6775d",
       "scripts/endpoint-docs.tsv": "sha256:2c614f60010b1474c67ffe899e7833f140e21ead8d62e7b7e0f3dc2e7cb85dea"
     }
   },
@@ -2416,12 +2416,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-6-astra"],
       "evidence": {
         "url": "https://kie.ai/gpt-6-astra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:3d61fc76fecad5c5e7aeebe906f6f1d076d5eeb4b41328efa1757c26ffb2ec4c#1",
@@ -2440,12 +2440,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-6-astra"],
       "evidence": {
         "url": "https://kie.ai/gpt-6-astra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:b14ff24e038363c66b15b8de62f0d4768bdaba37ae82615399846269a98ee8e6#1",
@@ -2464,12 +2464,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-6-astra"],
       "evidence": {
         "url": "https://kie.ai/gpt-6-astra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:a697c36e23e2bdbbf753bdcae001a3eb45bf41f4c681c357f17b749634792f0b#1",
@@ -2488,12 +2488,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-6-astra"],
       "evidence": {
         "url": "https://kie.ai/gpt-6-astra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9f48cc562cd9c3757be53cf4f9a3d073637d6938fc7f7b129239ee03cda65fd6#1",
@@ -2512,12 +2512,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-8-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-8-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:2b62c8f5d4aea44bc55aa26608b3ab8b3ff9722df9712e4d2cffab6d9c88bf2c#1",
@@ -2536,12 +2536,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-8-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-8-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:234c96edcf05b68e4c6780b7434a076900ab58a4e6ad9057ea28ecea9bf46443#1",
@@ -5228,12 +5228,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-7-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-7-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:b05f1af7fd17738e6d153d2cb9ed28a984b1805c8d6d73d6944bda42c970bbc3#1",
@@ -5252,12 +5252,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-7-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-7-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:ced34c57a62c8f45f09d4e4365083724674af8dc0682294e19c856fb3268390f#1",
@@ -5276,12 +5276,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-6"],
       "evidence": {
         "url": "https://kie.ai/grok-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -5301,12 +5301,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-6"],
       "evidence": {
         "url": "https://kie.ai/grok-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -5326,12 +5326,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-6"],
       "evidence": {
         "url": "https://kie.ai/grok-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -6606,12 +6606,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-5"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:29df83a04291c16f5f050feb071d66000a4b02020b5b7653140186ca3f28efcd#1",
@@ -6630,12 +6630,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-5"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:5e2f6bd74f93b520073775a5a392ef6fa65f7887122b0364595ebd8d2a8e8305#1",
@@ -6654,12 +6654,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-6-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-6-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:d4a4f5fd8d69de1e398edba52e55156c680edc9cd9c69ddb957c70395782709a#1",
@@ -6678,12 +6678,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-6-flash"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-6-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:6eae729878c834ee49e41127803089debfb34f1e249b94ed312f97335d15b2c8#1",
@@ -6802,12 +6802,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-terra"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9e4d48dc822bb288b02157e78b300c54fdf4050c151e2d978299de151508c1c9#1",
@@ -6826,12 +6826,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-terra"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:04deadd7728baca9f326fb7f305043b8ceebaa73b004e3d1e93f270d4d6bd476#1",
@@ -6850,12 +6850,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-terra"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:7e658ee2b07c5732e6fd8b424f80b548d7e33e1cd981c61775127ae0df7a5b51#1",
@@ -6874,12 +6874,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-terra"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-terra",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:1aa815e5bb60f580e0b624395f37f6f00eee6ff07eeb1c34f658c28316cc8a7f#1",
@@ -6898,12 +6898,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-sol"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:5171f4ab9d97d7212cd3f0aa39884d887b5f0a84f1b11fff1731e3ba409bcb95#1",
@@ -6922,12 +6922,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-sol"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:307fec94989c4b4a1991c5177d188c6836e7a5fac95c6819b9603e4afce75c85#1",
@@ -6946,12 +6946,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-sol"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:4bf7a5b82d7f8e9f68d5a8b7945cb199efc1f7e8febf4df2684e68e2c847d0d5#1",
@@ -6970,12 +6970,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-sol"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-sol",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:dc79124992009374244fd8b295e60de3d2d111d54b1189591e0e22aba00fd78d#1",
@@ -6994,12 +6994,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-luna"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:fe31c3b590c012e56e4b90d1b53e314b0026a8c2a43001fda611497f2fed5c62#1",
@@ -7018,12 +7018,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-luna"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:02771e1c8761d5efb99605703773b204c7afd36472ccb992e7df7dd5c0ee2be0#1",
@@ -7042,12 +7042,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-luna"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:8d4e5c2a73b01c7f26bb2e5bbb19537a6d10b46cc546e580dc055f8d67939c16#1",
@@ -7066,12 +7066,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-6-luna"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-6?model=gpt-5-6-luna",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:c661563e2a79e52a935f4375e7c1549f54efce2ed051199573d07c3bce962847#1",
@@ -7090,12 +7090,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-5"],
       "evidence": {
         "url": "https://kie.ai/grok-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -7115,12 +7115,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-5"],
       "evidence": {
         "url": "https://kie.ai/grok-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -7140,12 +7140,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["grok-4-5"],
       "evidence": {
         "url": "https://kie.ai/grok-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -7571,7 +7571,7 @@
         "url": "https://kie.ai/grok-4-3",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9fefdf4f60a077952ab3965d9ef3eb1ff1b6592b212f4687f43dbc51e5d4e21d#1",
@@ -7595,7 +7595,7 @@
         "url": "https://kie.ai/grok-4-3",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:eac0c042562b19e6ece380aa96b222d796319352e7de7cc777713ac3aa69f84a#1",
@@ -7619,7 +7619,7 @@
         "url": "https://kie.ai/grok-4-3",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:ba658eda662a8d9d3c7d392c69c52e1b440918abc9f950701263f2266e3bb521#1",
@@ -7638,12 +7638,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-5"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:466c503195f5337413a0aeb3bdf5a133b400ffdc1bd576d75fba6cdb0dbe05de#1",
@@ -7662,12 +7662,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-5"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:594b19117ae5ab277795788d6de36da41fb253a7436e6451ccb18c5d84e5f5bf#1",
@@ -8885,12 +8885,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-fable-5"],
       "evidence": {
         "url": "https://kie.ai/claude-fable-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -8910,12 +8910,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-fable-5"],
       "evidence": {
         "url": "https://kie.ai/claude-fable-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -9033,12 +9033,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-8"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4.8",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -9058,12 +9058,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-8"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4.8",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:5a561267ed622a56019621b31b371adcd257722ad19b6a3b564e852238309781#1",
@@ -9087,7 +9087,7 @@
         "url": "https://kie.ai/gemini-3-5-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:6d85242873a736002c7badc6a822088a596b6083c00d6e6626f6de19ea3f7841#1",
@@ -9111,7 +9111,7 @@
         "url": "https://kie.ai/gemini-3-5-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:d0a7c677dc4e6002379e542f71e2b0f0dfa39fd0b7ee9ef268ad0309a618d104#1",
@@ -9891,12 +9891,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-7"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-7",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:351363f4f0701ccbe0e6aaab25a4457b5135ad0ad2cb7badf567b3eab6f214f2#1",
@@ -9915,12 +9915,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-7"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-7",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:238ebcaa5dca0c0deb95f8379f6b5e8d73efde2f99ec729bab8cc6087bc6cd2f#1",
@@ -10345,12 +10345,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-5"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9a9b63de5aa9fe8dbaa31a05ecac937dc4e4ceb6922e4a5937185a4b05bfe9f6#1",
@@ -10369,12 +10369,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-5"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:d268c6c3e64dfeca79e6b5f4282e3cceb55c4c9b4364bc663e92deca9f8d7009#1",
@@ -10393,12 +10393,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-5"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:acada35a6185d511c4c6ce679ccb7bf27de6de3287c394fba73315c4984b6521#1",
@@ -11098,12 +11098,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3.1-pro"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-1-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:99d02e9e6b6aec0539769be8dc134391c4d1fc313c00518a82bb3987d46ee770#1",
@@ -11122,12 +11122,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3.1-pro"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-1-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9e63744fc5591aa504aa2bffb7552c9e3cd868b6d6543011a7e485baf257e7ab#1",
@@ -12052,12 +12052,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-haiku-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-haiku-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:35ca8e9df24caa303751c329b2fc2d505fe2a5e4be9cc9f0eac6ab28d025efaa#1",
@@ -12076,12 +12076,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-haiku-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-haiku-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:2fcfd11a4356c46b999a6a5aacdd739d08c3f31f4395a49110c245d6fc27cb66#1",
@@ -12100,12 +12100,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-6"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:8ce044afacd93efec6047e4ff59f24e6f8e1de9cedee8dda9d90ce0fbf3d5824#1",
@@ -12124,12 +12124,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-6"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:7b22a9d076ed19ee17d484e8d46af2281c96c9be16b4bdb8524fd9b619e306d5#1",
@@ -12148,12 +12148,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-4-6"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:e8a236117989d0bef980ea69f5453fca30a012344e60615baf6a404592f50185#1",
@@ -12172,12 +12172,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-4-6"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-4-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:cbb1e5a5b79a764121eea82347a58f8eee2dbac847d1eab16d80928ac3a28c6b#1",
@@ -12196,12 +12196,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction.",
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit.",
       "officialCellIssues": ["credit-unit-format"]
     },
     {
@@ -12221,12 +12221,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-sonnet-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-sonnet-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:5deb2f494fbd545ff9130699303505ed919db86a058af5ea4ea13dd8cbadcac1#1",
@@ -12245,12 +12245,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:256331ac04622d474e70bb15d61db9587002be4ee5c08555d7250d0341bba374#1",
@@ -12269,12 +12269,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["claude-opus-4-5"],
       "evidence": {
         "url": "https://kie.ai/claude-opus-4-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:6f98121fe1cf99a3f57738d37e8aa9778df0767d5366bf0acd2004c23a33252e#1",
@@ -12472,7 +12472,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:56dde98210f7b450b82e60983bcdb6f52ef32ad21396f72ecbe28810b9ff0685#1",
@@ -12496,7 +12496,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:7c96337fe6e3929cdd91d69e0f1d808b79318be301f238d328eee86834714968#1",
@@ -12520,7 +12520,7 @@
         "url": "https://kie.ai/gpt-5-4",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:72cda4988996c506ea3ed7cd91c2efa5cf986e27e147fbc7371a01dd6be2f779#1",
@@ -12544,7 +12544,7 @@
         "url": "https://kie.ai/gpt-5-4",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:3f4ff081142c7f8c6db226f4d2ffa097cef3002d0ae432ded7c4701b0c82c3e4#1",
@@ -12676,7 +12676,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:86b9cf70c95342e804f73d25db0392d886d5a6b571cfd2ae4a34f5885e537fe0#1",
@@ -12700,7 +12700,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:d65f2cae9ed0f9a3b771a22494b72984a1d4f4d60324fb82b11d1318139ec15c#1",
@@ -12719,12 +12719,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-2"],
       "evidence": {
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:b1c30aa268474efa8b8e0be488e7b7fb9c1b658bf9fb788195b88f3c0412c17b#1",
@@ -12743,12 +12743,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-2"],
       "evidence": {
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:70e1ed54e68989b98196e0cc58ad90dffa27392fb5bc7a49e16f20550188d7a1#1",
@@ -12772,7 +12772,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:0daa21fa65481ddc9e420b80750bcce0d2c6d8fd57ffefb2827bef2873161d3a#1",
@@ -12796,7 +12796,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:7665a3b6e6ce7376a0bb2a69033b67f7ccdc223745c1aefee70083e4ce17e539#1",
@@ -12820,7 +12820,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:9ed578a73101737f42f22a1632dcd802bd97538ac1078971536ac9393c97e6c6#1",
@@ -12844,7 +12844,7 @@
         "url": "https://kie.ai/codex",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:d21dccb231825296ec576a2f405a25b0ca29765c48a396be6095f64e7baec2b1#1",
@@ -13004,12 +13004,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-2"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-2",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:24523f6803fde7550ef667b7541e6ddee959826e2f9a777fe2ac1100fa042fd2#1",
@@ -13028,12 +13028,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gpt-5-2"],
       "evidence": {
         "url": "https://kie.ai/gpt-5-2",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:5ace91c318f9c8ecad7d69e6ef6be5ba6e3b3a24e135e9bee6a2a8581165310d#1",
@@ -13527,7 +13527,7 @@
         "url": "https://kie.ai/gemini-3-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:046970949b09d3ca40324c6d10cfe554b2e98b93be6b6631796d87d44e9ea287#1",
@@ -13551,7 +13551,7 @@
         "url": "https://kie.ai/gemini-3-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:526924441525fc980b660e99a5bb55ef7aeb1cf598a58a4e753262c2633537ae#1",
@@ -13570,12 +13570,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-pro"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:f7c36fd2a010e78aab93726cb6b7f7ebefe78b978651cf1401cc5cf2457921c4#1",
@@ -13594,12 +13594,12 @@
         "discountPrice": false
       },
       "disposition": "token-billed",
-      "mappedApiCityKeys": [],
+      "mappedApiCityKeys": ["gemini-3-pro"],
       "evidence": {
         "url": "https://kie.ai/gemini-3-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:c4db184128d4bfffdc47c7369647da10e4a2cd33cf5f0e3ff0e2a26531358cde#1",
@@ -22422,7 +22422,7 @@
         "url": "https://kie.ai/gemini-2.5-flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:73eb7135d74bd9e9415ec00f754896353ff74276fe1683a71bac714f77d1d691#1",
@@ -22446,7 +22446,7 @@
         "url": "Gemini 2.5 flash",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:974ec2b0a48e21b1336e0278e1e932eaa6b583b24d8c5f1b09b5e01986a60956#1",
@@ -22470,7 +22470,7 @@
         "url": "https://kie.ai/gemini-2.5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:4843ecfe99058a43975fb868aa5d0680d50b78e32b18a5a50f817d2a6c2aa554#1",
@@ -22494,7 +22494,7 @@
         "url": "https://kie.ai/gemini-2.5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official row is token-billed; the Kie pricing table is a per-unit estimator and does not own token extraction."
+      "rationale": "The official row is token-billed; dated chat-rate evidence and declared-token tests verify these cells separately from the per-unit runtime audit."
     },
     {
       "occurrenceId": "sha256:6346939fedaef1a63f5b33709fb960e0a4c2ce2ae99e70b077fef53607b41f5a#1",
@@ -23917,7 +23917,7 @@
         "id": "wan/2-6-flash-image-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "wan/2-6-flash-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23926,7 +23926,7 @@
         "id": "wan/2-6-flash-video-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "wan/2-6-flash-video-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -25807,6 +25807,18 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "wan/2-6-flash-image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "wan/2-6-text-to-video",
         "linkedRows": [
           "sha256:633c1c1dbf4a16521870ff8da5119f9657d345689d37795a9e6215b0a8bf1617#1",
@@ -27228,6 +27240,310 @@
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-1-terra",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-4-argon",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-4-argon-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-3.1-pro",
+        "linkedRows": [
+          "sha256:d0dd01e5d96f1f856d60ee23e4be969e5493d54b8922c775af876abb6c0a8e45#1",
+          "sha256:99d02e9e6b6aec0539769be8dc134391c4d1fc313c00518a82bb3987d46ee770#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-5-5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "claude-opus-5-5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-luna",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-sol",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kimi-k3",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "deepseek-v4-1-flash",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-4-7",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-astra",
+        "linkedRows": [
+          "sha256:e435be4cc5f4e5c879e3c8e55c9fc757a942283527b717dd5750b9662db7945f#1",
+          "sha256:3d61fc76fecad5c5e7aeebe906f6f1d076d5eeb4b41328efa1757c26ffb2ec4c#1",
+          "sha256:b14ff24e038363c66b15b8de62f0d4768bdaba37ae82615399846269a98ee8e6#1",
+          "sha256:a697c36e23e2bdbbf753bdcae001a3eb45bf41f4c681c357f17b749634792f0b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-8-flash",
+        "linkedRows": [
+          "sha256:9f48cc562cd9c3757be53cf4f9a3d073637d6938fc7f7b129239ee03cda65fd6#1",
+          "sha256:2b62c8f5d4aea44bc55aa26608b3ab8b3ff9722df9712e4d2cffab6d9c88bf2c#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-8-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-3-7-flash",
+        "linkedRows": [
+          "sha256:23f7cf9d2854b680d3191e298cf32d975b022fd078de4229ac96438e401e6c33#1",
+          "sha256:b05f1af7fd17738e6d153d2cb9ed28a984b1805c8d6d73d6944bda42c970bbc3#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-7-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-4-6",
+        "linkedRows": [
+          "sha256:ced34c57a62c8f45f09d4e4365083724674af8dc0682294e19c856fb3268390f#1",
+          "sha256:adcf600f9d0b0fe0bcc7595c232df1d6dd059046c0685c8f7d76f02c9dcf358d#1",
+          "sha256:d10e3c724e726150962a018770b8bc5680c826d10fe151ce317cfe76a0c9b22e#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-5",
+        "linkedRows": [
+          "sha256:99922e46dd9a051f5871c0c3c9c7fdd867a03a41a20980ab62a25d271ff88fe1#1",
+          "sha256:29df83a04291c16f5f050feb071d66000a4b02020b5b7653140186ca3f28efcd#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-6-flash",
+        "linkedRows": [
+          "sha256:5e2f6bd74f93b520073775a5a392ef6fa65f7887122b0364595ebd8d2a8e8305#1",
+          "sha256:d4a4f5fd8d69de1e398edba52e55156c680edc9cd9c69ddb957c70395782709a#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-6-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-5-6-terra",
+        "linkedRows": [
+          "sha256:eeb11939ca264e3a8e0ce1cfc7ef23f573cdcb43241d8e85a65e3c8e3e4a9263#1",
+          "sha256:9e4d48dc822bb288b02157e78b300c54fdf4050c151e2d978299de151508c1c9#1",
+          "sha256:04deadd7728baca9f326fb7f305043b8ceebaa73b004e3d1e93f270d4d6bd476#1",
+          "sha256:7e658ee2b07c5732e6fd8b424f80b548d7e33e1cd981c61775127ae0df7a5b51#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-6-sol",
+        "linkedRows": [
+          "sha256:1aa815e5bb60f580e0b624395f37f6f00eee6ff07eeb1c34f658c28316cc8a7f#1",
+          "sha256:5171f4ab9d97d7212cd3f0aa39884d887b5f0a84f1b11fff1731e3ba409bcb95#1",
+          "sha256:307fec94989c4b4a1991c5177d188c6836e7a5fac95c6819b9603e4afce75c85#1",
+          "sha256:4bf7a5b82d7f8e9f68d5a8b7945cb199efc1f7e8febf4df2684e68e2c847d0d5#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-6-luna",
+        "linkedRows": [
+          "sha256:dc79124992009374244fd8b295e60de3d2d111d54b1189591e0e22aba00fd78d#1",
+          "sha256:fe31c3b590c012e56e4b90d1b53e314b0026a8c2a43001fda611497f2fed5c62#1",
+          "sha256:02771e1c8761d5efb99605703773b204c7afd36472ccb992e7df7dd5c0ee2be0#1",
+          "sha256:8d4e5c2a73b01c7f26bb2e5bbb19537a6d10b46cc546e580dc055f8d67939c16#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "grok-4-5",
+        "linkedRows": [
+          "sha256:c661563e2a79e52a935f4375e7c1549f54efce2ed051199573d07c3bce962847#1",
+          "sha256:75676629885edb93635ce4f355e50a9584aab60bbceb153b7174df460f916507#1",
+          "sha256:412c186f278699f823412f4ddeb6c58ad7dc21d756d986a13cd4a9d5782dd3ee#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-5",
+        "linkedRows": [
+          "sha256:ba658eda662a8d9d3c7d392c69c52e1b440918abc9f950701263f2266e3bb521#1",
+          "sha256:466c503195f5337413a0aeb3bdf5a133b400ffdc1bd576d75fba6cdb0dbe05de#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-fable-5",
+        "linkedRows": [
+          "sha256:6d02ded92b2ac43445e40b03c06639de472601391a1005a8dd6e776a89b80bff#1",
+          "sha256:91d91736be572f35eb57d3ab4adb8b67292b14084240c6f286b0a6ab6cd14260#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-8",
+        "linkedRows": [
+          "sha256:518c5e461eb2dbc7036ece15fa03a3b33c76d9be39e82faf9d37fa066feec3c5#1",
+          "sha256:2b4a1b23a399de70faae8081ebd4eb7944b542b106ddf1e95ef84938b77b1cf1#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-7",
+        "linkedRows": [
+          "sha256:b3b361fb716dce4a33844779069bdbca2f866da3bea18134ee6c38dc16f9480e#1",
+          "sha256:351363f4f0701ccbe0e6aaab25a4457b5135ad0ad2cb7badf567b3eab6f214f2#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-5",
+        "linkedRows": [
+          "sha256:fe888abad9d89f41a9dd4ae89c0c3ff22304f6fcc310da327d0a54ae467a4c3b#1",
+          "sha256:9a9b63de5aa9fe8dbaa31a05ecac937dc4e4ceb6922e4a5937185a4b05bfe9f6#1",
+          "sha256:d268c6c3e64dfeca79e6b5f4282e3cceb55c4c9b4364bc663e92deca9f8d7009#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5.5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "claude-haiku-4-5",
+        "linkedRows": [
+          "sha256:060739e2008adabe2f8626a6ae3ad95d1d3678e6cded948879bb24b100559476#1",
+          "sha256:35ca8e9df24caa303751c329b2fc2d505fe2a5e4be9cc9f0eac6ab28d025efaa#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-6",
+        "linkedRows": [
+          "sha256:2fcfd11a4356c46b999a6a5aacdd739d08c3f31f4395a49110c245d6fc27cb66#1",
+          "sha256:8ce044afacd93efec6047e4ff59f24e6f8e1de9cedee8dda9d90ce0fbf3d5824#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-4-6",
+        "linkedRows": [
+          "sha256:7b22a9d076ed19ee17d484e8d46af2281c96c9be16b4bdb8524fd9b619e306d5#1",
+          "sha256:e8a236117989d0bef980ea69f5453fca30a012344e60615baf6a404592f50185#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-4-5",
+        "linkedRows": [
+          "sha256:cbb1e5a5b79a764121eea82347a58f8eee2dbac847d1eab16d80928ac3a28c6b#1",
+          "sha256:4a32ec86596c23eb4c4f1b658d8da6b3882d8570bb6654e00b3882267e120b7b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-5",
+        "linkedRows": [
+          "sha256:5deb2f494fbd545ff9130699303505ed919db86a058af5ea4ea13dd8cbadcac1#1",
+          "sha256:256331ac04622d474e70bb15d61db9587002be4ee5c08555d7250d0341bba374#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-2",
+        "linkedRows": [
+          "sha256:d65f2cae9ed0f9a3b771a22494b72984a1d4f4d60324fb82b11d1318139ec15c#1",
+          "sha256:b1c30aa268474efa8b8e0be488e7b7fb9c1b658bf9fb788195b88f3c0412c17b#1",
+          "sha256:43b9cb047cb90e51ac1ed563363d794c527083087a11779860a1f77297299762#1",
+          "sha256:24523f6803fde7550ef667b7541e6ddee959826e2f9a777fe2ac1100fa042fd2#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-pro",
+        "linkedRows": [
+          "sha256:526924441525fc980b660e99a5bb55ef7aeb1cf598a58a4e753262c2633537ae#1",
+          "sha256:f7c36fd2a010e78aab93726cb6b7f7ebefe78b978651cf1401cc5cf2457921c4#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       }
     ],
     "slugs": [
@@ -27337,6 +27653,14 @@
       },
       {
         "key": "wan/2-6-video-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
         "disposition": "supported"
       },
       {
@@ -27597,6 +27921,154 @@
       },
       {
         "key": "claude-haiku-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-1-terra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-4-argon",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-4-argon-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3.1-pro",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-luna",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-sol",
+        "disposition": "supported"
+      },
+      {
+        "key": "kimi-k3",
+        "disposition": "supported"
+      },
+      {
+        "key": "deepseek-v4-1-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-7",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-astra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-8-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-8-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-7-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-7-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-6-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-6-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-terra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-sol",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-luna",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-fable-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-8",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-7",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5.5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-haiku-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-2",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-pro",
         "disposition": "supported"
       },
       {
@@ -28106,6 +28578,14 @@
         "disposition": "supported"
       },
       {
+        "key": "wan/2-6-flash-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/3-0-video",
         "disposition": "supported"
       },
@@ -28363,6 +28843,154 @@
       },
       {
         "key": "claude-haiku-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-1-terra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-4-argon",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-4-argon-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3.1-pro",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-luna",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-sol",
+        "disposition": "supported"
+      },
+      {
+        "key": "kimi-k3",
+        "disposition": "supported"
+      },
+      {
+        "key": "deepseek-v4-1-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-7",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-6-astra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-8-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-8-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-7-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-7-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-6-flash",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-6-flash-openai",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-terra",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-sol",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-6-luna",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-fable-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-8",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-7",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5.5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-haiku-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-4-6",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-sonnet-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "claude-opus-4-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-5-2",
+        "disposition": "supported"
+      },
+      {
+        "key": "gemini-3-pro",
         "disposition": "supported"
       },
       {
@@ -28764,18 +29392,6 @@
     ],
     "schemaWithoutPricing": [
       {
-        "id": "wan/2-6-flash-image-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "wan/2-6-flash-video-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
         "id": "omnihuman-1-5/human-identification",
         "disposition": "upstream-unmappable",
         "linkedRows": [],
@@ -29076,6 +29692,310 @@
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-1-terra",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-4-argon",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-4-argon-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-3.1-pro",
+        "linkedRows": [
+          "sha256:d0dd01e5d96f1f856d60ee23e4be969e5493d54b8922c775af876abb6c0a8e45#1",
+          "sha256:99d02e9e6b6aec0539769be8dc134391c4d1fc313c00518a82bb3987d46ee770#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-5-5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "claude-opus-5-5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-luna",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-sol",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kimi-k3",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "deepseek-v4-1-flash",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-4-7",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-6-astra",
+        "linkedRows": [
+          "sha256:e435be4cc5f4e5c879e3c8e55c9fc757a942283527b717dd5750b9662db7945f#1",
+          "sha256:3d61fc76fecad5c5e7aeebe906f6f1d076d5eeb4b41328efa1757c26ffb2ec4c#1",
+          "sha256:b14ff24e038363c66b15b8de62f0d4768bdaba37ae82615399846269a98ee8e6#1",
+          "sha256:a697c36e23e2bdbbf753bdcae001a3eb45bf41f4c681c357f17b749634792f0b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-8-flash",
+        "linkedRows": [
+          "sha256:9f48cc562cd9c3757be53cf4f9a3d073637d6938fc7f7b129239ee03cda65fd6#1",
+          "sha256:2b62c8f5d4aea44bc55aa26608b3ab8b3ff9722df9712e4d2cffab6d9c88bf2c#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-8-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gemini-3-7-flash",
+        "linkedRows": [
+          "sha256:23f7cf9d2854b680d3191e298cf32d975b022fd078de4229ac96438e401e6c33#1",
+          "sha256:b05f1af7fd17738e6d153d2cb9ed28a984b1805c8d6d73d6944bda42c970bbc3#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-7-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-4-6",
+        "linkedRows": [
+          "sha256:ced34c57a62c8f45f09d4e4365083724674af8dc0682294e19c856fb3268390f#1",
+          "sha256:adcf600f9d0b0fe0bcc7595c232df1d6dd059046c0685c8f7d76f02c9dcf358d#1",
+          "sha256:d10e3c724e726150962a018770b8bc5680c826d10fe151ce317cfe76a0c9b22e#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-5",
+        "linkedRows": [
+          "sha256:99922e46dd9a051f5871c0c3c9c7fdd867a03a41a20980ab62a25d271ff88fe1#1",
+          "sha256:29df83a04291c16f5f050feb071d66000a4b02020b5b7653140186ca3f28efcd#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-6-flash",
+        "linkedRows": [
+          "sha256:5e2f6bd74f93b520073775a5a392ef6fa65f7887122b0364595ebd8d2a8e8305#1",
+          "sha256:d4a4f5fd8d69de1e398edba52e55156c680edc9cd9c69ddb957c70395782709a#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-6-flash-openai",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-5-6-terra",
+        "linkedRows": [
+          "sha256:eeb11939ca264e3a8e0ce1cfc7ef23f573cdcb43241d8e85a65e3c8e3e4a9263#1",
+          "sha256:9e4d48dc822bb288b02157e78b300c54fdf4050c151e2d978299de151508c1c9#1",
+          "sha256:04deadd7728baca9f326fb7f305043b8ceebaa73b004e3d1e93f270d4d6bd476#1",
+          "sha256:7e658ee2b07c5732e6fd8b424f80b548d7e33e1cd981c61775127ae0df7a5b51#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-6-sol",
+        "linkedRows": [
+          "sha256:1aa815e5bb60f580e0b624395f37f6f00eee6ff07eeb1c34f658c28316cc8a7f#1",
+          "sha256:5171f4ab9d97d7212cd3f0aa39884d887b5f0a84f1b11fff1731e3ba409bcb95#1",
+          "sha256:307fec94989c4b4a1991c5177d188c6836e7a5fac95c6819b9603e4afce75c85#1",
+          "sha256:4bf7a5b82d7f8e9f68d5a8b7945cb199efc1f7e8febf4df2684e68e2c847d0d5#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-6-luna",
+        "linkedRows": [
+          "sha256:dc79124992009374244fd8b295e60de3d2d111d54b1189591e0e22aba00fd78d#1",
+          "sha256:fe31c3b590c012e56e4b90d1b53e314b0026a8c2a43001fda611497f2fed5c62#1",
+          "sha256:02771e1c8761d5efb99605703773b204c7afd36472ccb992e7df7dd5c0ee2be0#1",
+          "sha256:8d4e5c2a73b01c7f26bb2e5bbb19537a6d10b46cc546e580dc055f8d67939c16#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "grok-4-5",
+        "linkedRows": [
+          "sha256:c661563e2a79e52a935f4375e7c1549f54efce2ed051199573d07c3bce962847#1",
+          "sha256:75676629885edb93635ce4f355e50a9584aab60bbceb153b7174df460f916507#1",
+          "sha256:412c186f278699f823412f4ddeb6c58ad7dc21d756d986a13cd4a9d5782dd3ee#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-5",
+        "linkedRows": [
+          "sha256:ba658eda662a8d9d3c7d392c69c52e1b440918abc9f950701263f2266e3bb521#1",
+          "sha256:466c503195f5337413a0aeb3bdf5a133b400ffdc1bd576d75fba6cdb0dbe05de#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-fable-5",
+        "linkedRows": [
+          "sha256:6d02ded92b2ac43445e40b03c06639de472601391a1005a8dd6e776a89b80bff#1",
+          "sha256:91d91736be572f35eb57d3ab4adb8b67292b14084240c6f286b0a6ab6cd14260#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-8",
+        "linkedRows": [
+          "sha256:518c5e461eb2dbc7036ece15fa03a3b33c76d9be39e82faf9d37fa066feec3c5#1",
+          "sha256:2b4a1b23a399de70faae8081ebd4eb7944b542b106ddf1e95ef84938b77b1cf1#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-7",
+        "linkedRows": [
+          "sha256:b3b361fb716dce4a33844779069bdbca2f866da3bea18134ee6c38dc16f9480e#1",
+          "sha256:351363f4f0701ccbe0e6aaab25a4457b5135ad0ad2cb7badf567b3eab6f214f2#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-5",
+        "linkedRows": [
+          "sha256:fe888abad9d89f41a9dd4ae89c0c3ff22304f6fcc310da327d0a54ae467a4c3b#1",
+          "sha256:9a9b63de5aa9fe8dbaa31a05ecac937dc4e4ceb6922e4a5937185a4b05bfe9f6#1",
+          "sha256:d268c6c3e64dfeca79e6b5f4282e3cceb55c4c9b4364bc663e92deca9f8d7009#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5.5",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "claude-haiku-4-5",
+        "linkedRows": [
+          "sha256:060739e2008adabe2f8626a6ae3ad95d1d3678e6cded948879bb24b100559476#1",
+          "sha256:35ca8e9df24caa303751c329b2fc2d505fe2a5e4be9cc9f0eac6ab28d025efaa#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-6",
+        "linkedRows": [
+          "sha256:2fcfd11a4356c46b999a6a5aacdd739d08c3f31f4395a49110c245d6fc27cb66#1",
+          "sha256:8ce044afacd93efec6047e4ff59f24e6f8e1de9cedee8dda9d90ce0fbf3d5824#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-4-6",
+        "linkedRows": [
+          "sha256:7b22a9d076ed19ee17d484e8d46af2281c96c9be16b4bdb8524fd9b619e306d5#1",
+          "sha256:e8a236117989d0bef980ea69f5453fca30a012344e60615baf6a404592f50185#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-sonnet-4-5",
+        "linkedRows": [
+          "sha256:cbb1e5a5b79a764121eea82347a58f8eee2dbac847d1eab16d80928ac3a28c6b#1",
+          "sha256:4a32ec86596c23eb4c4f1b658d8da6b3882d8570bb6654e00b3882267e120b7b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "claude-opus-4-5",
+        "linkedRows": [
+          "sha256:5deb2f494fbd545ff9130699303505ed919db86a058af5ea4ea13dd8cbadcac1#1",
+          "sha256:256331ac04622d474e70bb15d61db9587002be4ee5c08555d7250d0341bba374#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gpt-5-2",
+        "linkedRows": [
+          "sha256:d65f2cae9ed0f9a3b771a22494b72984a1d4f4d60324fb82b11d1318139ec15c#1",
+          "sha256:b1c30aa268474efa8b8e0be488e7b7fb9c1b658bf9fb788195b88f3c0412c17b#1",
+          "sha256:43b9cb047cb90e51ac1ed563363d794c527083087a11779860a1f77297299762#1",
+          "sha256:24523f6803fde7550ef667b7541e6ddee959826e2f9a777fe2ac1100fa042fd2#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "gemini-3-pro",
+        "linkedRows": [
+          "sha256:526924441525fc980b660e99a5bb55ef7aeb1cf598a58a4e753262c2633537ae#1",
+          "sha256:f7c36fd2a010e78aab93726cb6b7f7ebefe78b978651cf1401cc5cf2457921c4#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       }
     ],
     "plannedPricingKeys": []
@@ -29115,7 +30035,7 @@
         "count": 163,
         "descriptors": 163,
         "guards": 163,
-        "withoutPricing": 6,
+        "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
@@ -29139,20 +30059,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 189,
+        "count": 228,
         "dispositionCounts": {
-          "supported": 144,
+          "supported": 167,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 45
+          "upstream-unmappable": 61
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 191,
+        "count": 230,
         "dispositionCounts": {
-          "supported": 191,
+          "supported": 230,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29161,9 +30081,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 191,
+        "count": 230,
         "dispositionCounts": {
-          "supported": 191,
+          "supported": 230,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29172,24 +30092,24 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 6,
+        "count": 4,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 6
+          "upstream-unmappable": 4
         },
         "unclassified": 0
       },
       "pricingOnly": {
-        "count": 32,
+        "count": 69,
         "dispositionCounts": {
-          "supported": 28,
+          "supported": 51,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 4
+          "upstream-unmappable": 18
         },
         "unclassified": 0
       },
@@ -29202,6 +30122,146 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "5|720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "5|720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "5|1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "5|1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "10|720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "10|720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "10|1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "10|1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "15|720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "15|720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "15|1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-image-to-video",
+        "variant": "15|1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "5|720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "5|720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "5|1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "5|1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "10|720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "10|720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "10|1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
+      {
+        "key": "wan/2-6-flash-video-to-video",
+        "variant": "10|1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/wan-2-6-flash-2026-11-04.json: current feed and both product-page tabs publish twenty cells at 20-180 credits per video",
+        "rationale": "Wan 2.6 Flash rates postdate the frozen September feed; current published credit prices supersede the earlier no-price disposition."
+      },
       {
         "key": "grok-imagine-video-1-5-preview",
         "variant": "1080p",

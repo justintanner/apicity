@@ -143,51 +143,43 @@ describe("computeEstimate", () => {
       expect(result.warnings).toContain("anthropic: payload.model is required");
     });
 
-    it("estimates xai with messages", () => {
-      const req = {
-        provider: "xai" as const,
-        payload: {
-          model: "grok-4",
-          messages: [{ role: "user", content: "hello" }],
-          max_tokens: 100,
-        },
-      };
-      const result = computeEstimate(req);
-      expect(result.usd).toBeGreaterThan(0);
-      expect(result.breakdown.inputUsdPerMillion).toBe(3);
-      expect(result.breakdown.outputUsdPerMillion).toBe(15);
-      expect(result.warnings).toEqual([]);
-    });
+    // Every xAI text row reprices above 200K prompt tokens, so none takes a
+    // chars/4 figure, whichever field holds the text.
+    it.each([
+      {
+        model: "grok-4",
+        field: "messages",
+        body: { messages: [{ role: "user", content: "hello" }] },
+      },
+      { model: "grok-3", field: "text", body: { text: "hello world" } },
+      {
+        model: "grok-4-fast",
+        field: "prompt",
+        body: { prompt: "hello world" },
+      },
+    ])(
+      "asks xai for declared counts: $model with $field",
+      ({ model, body }) => {
+        const payload = { model, max_tokens: 100, ...body };
+        const missing = computeEstimate({ provider: "xai", payload });
+        expect(missing.usd).toBe(0);
+        expect(missing.warnings.join(" ")).toContain("costHints.inputTokens");
 
-    it("estimates xai with text field (tokenize-text)", () => {
-      const req = {
-        provider: "xai" as const,
-        payload: {
-          model: "grok-3",
-          text: "hello world",
-          max_tokens: 50,
-        },
-      };
-      const result = computeEstimate(req);
-      expect(result.usd).toBeGreaterThan(0);
-      expect(result.warnings).toEqual([]);
-    });
-
-    it("estimates xai with prompt field", () => {
-      const req = {
-        provider: "xai" as const,
-        payload: {
-          model: "grok-4-fast",
-          prompt: "hello world",
-          max_tokens: 50,
-        },
-      };
-      const result = computeEstimate(req);
-      expect(result.usd).toBeGreaterThan(0);
-      expect(result.breakdown.inputUsdPerMillion).toBe(0.2);
-      expect(result.breakdown.outputUsdPerMillion).toBe(0.5);
-      expect(result.warnings).toEqual([]);
-    });
+        const result = computeEstimate({
+          provider: "xai",
+          payload,
+          costHints: {
+            inputTokens: 1000,
+            cacheReadInputTokens: 0,
+            outputTokens: 100,
+          },
+        });
+        expect(result.usd).toBeCloseTo((1000 * 1.25 + 100 * 2.5) / 1e6, 12);
+        expect(result.breakdown.inputUsdPerMillion).toBe(1.25);
+        expect(result.breakdown.outputUsdPerMillion).toBe(2.5);
+        expect(result.warnings).toEqual([]);
+      }
+    );
 
     it("prices Alibaba messages from declared counts at the factory-default scope", () => {
       const result = computeEstimate({
@@ -1423,11 +1415,16 @@ describe("computeEstimate", () => {
           messages: [{ role: "user", content: "hello" }],
           max_tokens: 100,
         },
+        costHints: {
+          inputTokens: 8,
+          cacheReadInputTokens: 0,
+          outputTokens: 100,
+        },
       };
       const result = computeEstimate(req);
-      expect(result.source).toBe("tokens-heuristic+table");
-      expect(result.breakdown.inputUsdPerMillion).toBe(3);
-      expect(result.breakdown.outputUsdPerMillion).toBe(15);
+      expect(result.source).toBe("declared-tokens+table");
+      expect(result.breakdown.inputUsdPerMillion).toBe(1.25);
+      expect(result.breakdown.outputUsdPerMillion).toBe(2.5);
       expect(result.warnings).toEqual([]);
     });
 
@@ -2130,9 +2127,9 @@ describe("computeEstimate", () => {
 
     it("uses max_output_tokens as fallback for max output", () => {
       const req = {
-        provider: "xai" as const,
+        provider: "openai" as const,
         payload: {
-          model: "grok-4",
+          model: "gpt-5",
           messages: [{ role: "user", content: "hi" }],
           max_output_tokens: 60,
         },

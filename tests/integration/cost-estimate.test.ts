@@ -436,20 +436,21 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.inputTokens).toBe(101);
   });
 
-  it("xai grok-4-fast → chars/4 heuristic × bundled rate", () => {
+  it("xai grok-4-fast → declared grok-4.3 rate", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "xai",
+      costHints: { inputTokens: 8, outputTokens: 100, cacheReadInputTokens: 0 },
       payload: {
         model: "grok-4-fast",
         text: "What does this cost?",
         max_tokens: 100,
       },
     });
-    expect(r.source).toBe("tokens-heuristic+table");
-    expect(r.breakdown.inputTokens).toBeGreaterThan(0);
-    expect(r.breakdown.inputUsdPerMillion).toBe(0.2);
-    expect(r.breakdown.outputUsdPerMillion).toBe(0.5);
+    expect(r.source).toBe("declared-tokens+table");
+    expect(r.breakdown.inputTokens).toBe(8);
+    expect(r.breakdown.inputUsdPerMillion).toBe(1.25);
+    expect(r.breakdown.outputUsdPerMillion).toBe(2.5);
   });
 
   it("xai grok-code-fast-1 alias → declared Grok Build 0.1 rate", () => {

@@ -188,7 +188,7 @@ describe("PRICING data", () => {
   it("alibaba has token-priced models", () => {
     expect(PRICING.alibaba["qwen3.6-plus"]).toMatchObject({
       kind: "tokens",
-      rate: { input: 0.325, output: 1.95 },
+      rate: { input: 0.276, output: 1.651 },
     });
     expect(PRICING.alibaba["qwen3.5-0.8b"]).toMatchObject({
       kind: "tokens",

@@ -1310,3 +1310,27 @@ ElevenLabs estimates use dated API list prices. `notes` are informational and do
 S3 estimates cover one AWS request at the us-east-1 Standard baseline, or Express One Zone for rename. Supplied `payload.region` and `payload.storageClass` must match that bundled baseline; other values fail closed. The assumption is recorded in `notes`. Every S3 result warns that storage, egress and non-AWS endpoints are excluded, so these request-only estimates do not derive a complete actual cost. DELETE, CANCEL and multi-object delete return a documented zero. Restore, SELECT, Object Lambda writes, metadata configuration/update and CreateSession remain unavailable because their feature charges are not modeled.
 
 Fireworks uses dated serverless rates and the full model/router IDs from its pricing and mode guides. Standard and published Priority rates include cached input; Fast and US modes use their documented router IDs. Unsupported tiers, regions, batch/Spot settings and unknown model metadata fail closed. Legacy short identifiers keep their display names but no longer carry stale prices. Size bands are applied only to independently pinned model metadata, with cached input billed at the uniform band rate. Embeddings accept text, token-ID arrays or declared `costHints.inputTokens`; reranking requires that count because its query/document template adds tokens. Qwen3 Reranker 8B is priced from the embedding guide at $0.20 per million input tokens. Audio and image workflow prices remain unavailable, and deployment/training/batch jobs remain accrual. No network calls occur during estimation.
+
+### Alibaba and Google deployment context
+
+Pass `baseURL` alongside the payload when estimating Alibaba or Google calls.
+Alibaba also accepts `costHints.alibabaDeploymentScope` (`International`,
+`Chinese mainland`, `Global`, `US`, `EU`, `Japan`, or `Hong Kong`). The selector
+is required for custom hosts and workspace-dependent regions; conflicting
+unambiguous host/scope values fail closed. Without either field, the estimator
+uses Alibaba's factory-default Chinese mainland scope and adds a note. The
+bundled International media rates never price mainland traffic.
+
+Alibaba chat uses declared `inputTokens` and `outputTokens` to select the
+whole-request tier. Where thinking changes the output rate, pass the request's
+`enable_thinking` value. Current text list rates exclude temporary promotions;
+unbundled cache, modality and time-of-day rates fail closed. Historical model
+identities can remain in the catalog without an available current scoped rate.
+
+Google reads the model from `endpoint`, matching the generateContent path
+parameter, and requires declared token counts (including `cacheReadInputTokens`
+for models with a cache rate). The payload is never modified. Rates are dated
+Standard global text snapshots; regional hosts, unsupported modalities and
+tiers fail closed. Actuals use `usageMetadata`, adding thoughts to candidate
+output tokens. Alibaba's retired `qwen3-max` recording remains usage-only
+because the current price card has no row.

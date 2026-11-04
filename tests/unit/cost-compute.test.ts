@@ -189,42 +189,37 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
-    it("estimates alibaba with messages", () => {
-      const req = {
-        provider: "alibaba" as const,
+    it("prices Alibaba messages from declared counts at the factory-default scope", () => {
+      const result = computeEstimate({
+        provider: "alibaba",
         payload: {
           model: "qwen3.6-plus",
           messages: [{ role: "user", content: "hello" }],
-          max_tokens: 100,
         },
-      };
-      const result = computeEstimate(req);
-      expect(result.usd).toBeGreaterThan(0);
-      expect(result.source).toBe("tokens-heuristic+table");
-      expect(result.breakdown.inputUsdPerMillion).toBe(0.325);
-      expect(result.breakdown.outputUsdPerMillion).toBe(1.95);
+        costHints: { inputTokens: 10, outputTokens: 100 },
+      });
+      expect(result.usd).toBeCloseTo((10 * 0.276 + 100 * 1.651) / 1e6);
+      expect(result.source).toBe("declared-tokens+table");
       expect(result.warnings).toEqual([]);
+      expect(result.notes?.join()).toContain("Chinese mainland");
     });
-
-    it("estimates alibaba with prompt field", () => {
-      const req = {
-        provider: "alibaba" as const,
+    it("does not price a retired Alibaba model from its historical catalog row", () => {
+      const result = computeEstimate({
+        provider: "alibaba",
         payload: {
           model: "qwen3.5-0.8b",
           prompt: "hello world",
           max_tokens: 50,
         },
-      };
-      const result = computeEstimate(req);
-      expect(result.usd).toBeGreaterThan(0);
-      expect(result.breakdown.inputUsdPerMillion).toBe(0.01);
-      expect(result.breakdown.outputUsdPerMillion).toBe(0.04);
-      expect(result.warnings).toEqual([]);
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings.join()).toContain("no bundled rate");
     });
 
     it("estimates alibaba wan2.7-i2v per second of output", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-i2v",
           input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
@@ -245,6 +240,7 @@ describe("computeEstimate", () => {
     it("estimates alibaba wan2.7-videoedit at the same per-second rate", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-videoedit",
           input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
@@ -261,6 +257,7 @@ describe("computeEstimate", () => {
     it("estimates alibaba video at 1080P and when parameters are omitted", () => {
       const hd = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-i2v",
           input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
@@ -272,6 +269,7 @@ describe("computeEstimate", () => {
 
       const bare = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-i2v",
           input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
@@ -286,6 +284,7 @@ describe("computeEstimate", () => {
     it("falls back to the 5s default for alibaba duration 0", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-videoedit",
           input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
@@ -299,6 +298,7 @@ describe("computeEstimate", () => {
     it("estimates alibaba image models per image, scaling with parameters.n", () => {
       const one = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "qwen-image-2.0",
           input: { messages: [] },
@@ -313,6 +313,7 @@ describe("computeEstimate", () => {
 
       const four = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "qwen-image-2.0",
           input: { messages: [] },
@@ -323,6 +324,7 @@ describe("computeEstimate", () => {
 
       const wan = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload: {
           model: "wan2.7-image",
           input: { messages: [] },
@@ -343,6 +345,7 @@ describe("computeEstimate", () => {
       };
       const withEndpoint = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         endpoint: "api.v1.services.aigc.video-generation.video-synthesis",
         payload,
       });
@@ -352,6 +355,7 @@ describe("computeEstimate", () => {
 
       const without = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         payload,
       });
       expect(withEndpoint.usd).toBe(without.usd);
@@ -362,6 +366,7 @@ describe("computeEstimate", () => {
     it("ignores a nonsense endpoint for alibaba image pricing", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
+        baseURL: "https://dashscope-intl.aliyuncs.com",
         endpoint: "not.a.real.endpoint",
         payload: {
           model: "qwen-image-2.0",
@@ -377,13 +382,14 @@ describe("computeEstimate", () => {
     it("still token-prices alibaba chat models after per-unit routing", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
+        costHints: { inputTokens: 10, outputTokens: 100 },
         payload: {
           model: "qwen3.6-plus",
           messages: [{ role: "user", content: "hello" }],
           max_tokens: 100,
         },
       });
-      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.source).toBe("declared-tokens+table");
       expect(result.breakdown.unit).toBe("tokens");
     });
 

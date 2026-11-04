@@ -1,3 +1,4 @@
+import { ALIBABA_CHAT } from "./alibaba-chat";
 import type { ModelPricing } from "./types";
 import { asNumber, asObject } from "./helpers";
 
@@ -56,16 +57,28 @@ const flatVideo = (perUnit: number): ModelPricing => ({
 });
 
 export const alibaba: Record<string, ModelPricing> = {
-  "qwen3.6-plus": {
-    kind: "tokens",
-    rate: { input: 0.325, output: 1.95 },
-    source,
-  },
+  // Historical catalog identity retained for consumers. The scoped selector
+  // refuses this retired model because the current card has no rate.
   "qwen3.5-0.8b": {
     kind: "tokens",
     rate: { input: 0.01, output: 0.04 },
-    source,
+    source: { ...source, asOf: "2026-04-30" },
   },
+  ...Object.fromEntries(
+    Object.entries(ALIBABA_CHAT).map(([model, scopes]) => {
+      const band = (scopes["Chinese mainland"] ??
+        scopes.International ??
+        Object.values(scopes)[0])![0];
+      return [
+        model,
+        {
+          kind: "tokens",
+          rate: { input: band[2], output: band[3] },
+          source: { ...source, asOf: "2026-11-04" },
+        } satisfies ModelPricing,
+      ];
+    })
+  ),
 
   // Image — Qwen Image 2.0 (text-to-image) and the Qwen Image Edit family.
   "qwen-image-2.0": flatImage(0.035),

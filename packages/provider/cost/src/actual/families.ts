@@ -89,7 +89,15 @@ function uncoveredChargeOf(
   if (exchange.requestBody?.speed === "fast") {
     return "fast mode bills rates that are not bundled";
   }
-  if (/^https?:\/\/[a-z]{2}\.api\.(openai\.com|x\.ai)\//.test(exchange.url)) {
+  // xAI's documented US models are validated and repriced by deriveFromTokens.
+  // Every other regional host still has no bundled uplift.
+  if (
+    /^https?:\/\/[a-z]{2}\.api\.(openai\.com|x\.ai)\//.test(exchange.url) &&
+    !(
+      exchange.provider === "xai" &&
+      /^https:\/\/us\.api\.x\.ai\//.test(exchange.url)
+    )
+  ) {
     return "a regional endpoint bills an uplift that is not bundled";
   }
   return undefined;

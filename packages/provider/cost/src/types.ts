@@ -22,7 +22,9 @@ export type CostUnit =
   | "images"
   | "songs"
   | "generations"
-  | "megapixels";
+  | "megapixels"
+  | "requests"
+  | "gib-downloaded";
 
 // One token modality's share of a declared usage estimate (text, audio or
 // image): its input tokens, cached subset included, its output tokens (absent
@@ -89,6 +91,9 @@ export interface CostEstimate {
 // Additive by design: new hint fields are optional, so adding one is never a
 // breaking change.
 export interface CostHints {
+  // Download byte count; per-GiB routes divide by 2**30 (binary GiB).
+  // Positive finite only; invalid counts as absent. Never inferred by network reads.
+  downloadBytes?: number;
   // Billable text absent from ElevenLabs conversion payloads. Positive finite.
   characters?: number;
   // Only ElevenLabs project/chapter conversion routes read this hint.
@@ -206,13 +211,16 @@ export interface CostHints {
   // a project's Fast default. Declared openai usage prices Standard only:
   // absent, "default" or "auto" is Standard, and anything else ("priority",
   // "flex", "batch", ...) fails closed rather than quoting Standard rates.
-  // Cost-only.
+  // xAI also reads this: default/auto are Standard, priority costs 2x;
+  // undocumented tiers (including batch) fail closed. Cost-only.
   serviceTier?: string;
   // True when an openai request ran on a regional-processing (data
   // residency) or FedRAMP endpoint, which OpenAI bills at a 10% uplift for
   // eligible models released on or after 2026-03-05. The uplift is not
   // bundled, so declared openai usage fails closed when this is set; the
   // estimator cannot see the endpoint otherwise. Cost-only.
+  // xAI: true means US processing (1.1x), documented for Grok 4.6/4.7 only.
+  // Other models or non-boolean values fail closed. Cost-only.
   regionalProcessing?: boolean;
 }
 

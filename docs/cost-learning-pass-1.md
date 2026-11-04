@@ -194,6 +194,15 @@ hosts.
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
 
+## What keeps this honest
+
+`tests/unit/cost-recording-accuracy.test.ts` holds every committed call with a stated
+charge and a priced estimate to the 2% tolerance, or lists it with a reason from the
+verdict table above. A rate edit that contradicts a recorded bill fails it, naming the
+recording and the ratio, and a listed call that now agrees fails too. It quotes the Why
+column, so rewording a listed row fails it as well. Calls that only report usage are not
+covered, since a chars/4 estimate says nothing about a rate.
+
 ## When to repeat
 
 Repeat the pass when any of these holds:

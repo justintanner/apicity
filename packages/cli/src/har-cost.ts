@@ -549,6 +549,45 @@ function renderCost(report: HarCostReport): string {
   return lines.join("\n");
 }
 
+/** One call's figures, for a reader that needs each call, not a group. */
+export interface HarCostCall {
+  file: string;
+  provider: string;
+  endpoint: string;
+  model: string | null;
+  /** The provider's own figure, or its list price where it states one apart. */
+  statedUsd: number | null;
+  estimateUsd: number | null;
+  ratio: number | null;
+  verdict: CostHelperVerdict;
+}
+
+/**
+ * Every call in these paths, assembled and compared as `har cost` does, without
+ * grouping it. tests/unit/cost-recording-accuracy.test.ts reads this to hold
+ * each recorded bill to the tables.
+ */
+export async function harCostCalls(
+  paths: string[],
+  tolerance: number = DEFAULT_TOLERANCE
+): Promise<HarCostCall[]> {
+  const corpus = await loadCorpus(paths, await loadTsv(), { since: null });
+  const helpers = await loadCostActualHelpers();
+  return assembleCalls(corpus, helpers).map((call) => {
+    const { actual, comparison, model } = costOf(call, helpers, tolerance);
+    return {
+      file: call.file,
+      provider: call.row.provider,
+      endpoint: call.row.dotPath,
+      model,
+      statedUsd: actual.statedListUsd ?? actual.statedUsd,
+      estimateUsd: comparison.estimateUsd,
+      ratio: comparison.ratio,
+      verdict: comparison.verdict,
+    };
+  });
+}
+
 export async function runHarCost(
   args: string[],
   writer: CliWriter

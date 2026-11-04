@@ -119,22 +119,22 @@ These are the rows in the survey's `fal-billable-ratio.tsv` where header units x
 price differ from the estimate, read again today. fal states no USD, so header units x
 price is the witness, and the survey found it sound on 133 of 155 rows.
 
-| Rows                                                 |     Ratio | Verdict    | Why                                                                              |
-| ---------------------------------------------------- | --------: | ---------- | -------------------------------------------------------------------------------- |
-| `minimax/h3/t2v/trainer`                             |       100 | CORRECTION | Applied                                                                          |
-| `minimax/h3-max/*` (3), `minimax/h3-max-turbo/*` (2) | 1.08, 0.7 | CORRECTION | Applied                                                                          |
-| `heygen/heygen-video/*` (3)                          |         2 | CORRECTION | Applied                                                                          |
-| `mureka/api/generate/*` (2)                          |      0.67 | CORRECTION | Applied                                                                          |
-| `fal-ai/nano-banana`, `/edit`                        |      1.02 | CORRECTION | Applied                                                                          |
-| `fal-ai/vidu/q4/*` (2)                               |       0.7 | NO-ACTION  | Promotion to 11-30. The table holds list rates on purpose; see `ac-cukhhs`       |
-| `krea/v3/edit`                                       |      0.88 | NO-ACTION  | The table counts each reference at output size, the card's maximum, and warns    |
-| `xai/grok-imagine-image/edit`                        |       1.1 | NO-ACTION  | Old capture (04-18). The price list today has the flat 0.02 the table uses       |
-| `bytedance/seedance-2.0/us/*` (2)                    |      0.83 | NO-ACTION  | The card and the table say 0.0168, and only the price list says 0.014            |
-| `bytedance/seedance-2.5/us/text-to-video`            |      0.83 | Open       | Card and price list say 0.0214, and the last bill says 0.02568. `ac-1m1poe`      |
-| `xai/grok-imagine-video/extend-video`                |       1.4 | Open       | Card adds 0.01/s of input and a 720p tier, and the table lacks both. `ac-1m1poe` |
-| `fal-ai/gpt-image-1.5`                               |      2.22 | Open       | Card adds text tokens to the image price. One old call. `ac-1m1poe`              |
+| Rows                                                 |     Ratio | Verdict    | Why                                                                           |
+| ---------------------------------------------------- | --------: | ---------- | ----------------------------------------------------------------------------- |
+| `minimax/h3/t2v/trainer`                             |       100 | CORRECTION | Applied                                                                       |
+| `minimax/h3-max/*` (3), `minimax/h3-max-turbo/*` (2) | 1.08, 0.7 | CORRECTION | Applied                                                                       |
+| `heygen/heygen-video/*` (3)                          |         2 | CORRECTION | Applied                                                                       |
+| `mureka/api/generate/*` (2)                          |      0.67 | CORRECTION | Applied                                                                       |
+| `fal-ai/nano-banana`, `/edit`                        |      1.02 | CORRECTION | Applied                                                                       |
+| `fal-ai/vidu/q4/*` (2)                               |       0.7 | NO-ACTION  | Promotion to 11-30. The table holds list rates on purpose; see `ac-cukhhs`    |
+| `krea/v3/edit`                                       |      0.88 | NO-ACTION  | The table counts each reference at output size, the card's maximum, and warns |
+| `xai/grok-imagine-image/edit`                        |       1.1 | NO-ACTION  | Old capture (04-18). The price list today has the flat 0.02 the table uses    |
+| `bytedance/seedance-2.0/us/*` (2)                    |      0.83 | NO-ACTION  | The card and the table say 0.0168, and only the price list says 0.014         |
+| `bytedance/seedance-2.5/us/text-to-video`            |      0.83 | NO-ACTION  | Held at the last bill, 0.02568, against 0.0214 today. See below               |
+| `xai/grok-imagine-video/extend-video`                |       1.4 | CORRECTION | Applied later, with two hints. See below                                      |
+| `fal-ai/gpt-image-1.5`                               |      2.22 | NO-ACTION  | Tokens no call states. The estimate now warns it is a floor. See below        |
 
-The usage API would settle the open rows, but the configured key answers 403 on it.
+The usage API would settle the Seedance rows, but the configured key answers 403 on it.
 
 `fal-ai/sora-2/text-to-video` and `image-to-video` answer 404 on the price list while
 videobook's catalog still names them: `ac-jgqanj`.
@@ -184,7 +184,7 @@ hosts.
 
 | Bead        | Family  | What                                                                 |
 | ----------- | ------- | -------------------------------------------------------------------- |
-| `ac-1m1poe` | fal     | Seedance 2.5 US, Grok video extend, GPT Image 1.5                    |
+| `ac-cgqsxq` | fal     | Read the usage API once its scope returns. Settles Seedance US       |
 | `ac-cukhhs` | fal     | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
 | `ac-eue5ej` | fal     | Timed: FLUX 3 Max's promotion ends 11-07                             |
 | `ac-jgqanj` | fal     | `sora-2` answers 404 while videobook names it                        |
@@ -204,6 +204,29 @@ left `grok-4-fast`, `grok-4-1-fast`, `grok-4` and `grok-3` resolving, but billin
 recordings contradicted the old rates. The `grok-4` row above measured a real effect, the
 vision input, but its rate was stale too. `ac-t1isrq` moved all four rows to `grok-4.3`.
 Those April calls now read `no-estimate`, so `grok-4` left the guard's list below.
+
+`ac-1m1poe` closed the three fal rows this pass left open, with no paid call:
+
+- **`xai/grok-imagine-video/extend-video` is corrected.** The recorded call's input is
+  now confirmed. `tests/fixtures/jump.mp4` has 193 frames at 848x480 (8.042 s), and 4 s at
+  24 fps gives the 289 frames returned, so its 5.6 units at 0.05 USD are 4 x 0.05 + 8 x 0.01.
+  A 720p source bills 0.07/s. Neither the source's length nor its resolution is in the
+  request, so the estimate needs `costHints.inputDurationSeconds` and
+  `costHints.inputResolution`, and fails closed without them.
+- **`fal-ai/gpt-image-1.5` and `/edit` stay at the card's image rates, as a floor.** Text
+  tokens and an edit's input image tokens bill on top, the response reports no counts,
+  and the output tokens depend on the model's reasoning, so no request can price them.
+  The recorded generation and edit each billed exactly 0.02 USD, on different prompts and
+  with an input image on one, so the header may round to a cent. The estimate now warns.
+- **`bytedance/seedance-2.5/us/{text,reference}-to-video` is held at 0.02568.** The
+  reason this pass gave is weaker than it looked. The price list was US-aware on 2026-10-16:
+  it read 0.0168 and 0.02568 on the US routes, each matching the usage API's bill that
+  day. By 2026-11-04 the list and each page's billing record read the standard 0.014 and
+  0.0214, and 2.5 US's card agrees. Against that, 2.0 US's card still says 0.0168, and
+  fal's FAQ says US hosting is priced separately. That may be a real cut or a data error,
+  and only a bill can say. A new call would not: its header reports the same units at
+  either rate. So `ac-cgqsxq`'s usage read decides, and until then the estimate runs 20%
+  over if the cut is real, which is the safe direction.
 
 ## What keeps this honest
 

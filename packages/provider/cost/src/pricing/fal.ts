@@ -528,6 +528,25 @@ const happyHorseEditWarn = (
     : [];
 };
 
+// Grok Imagine extend-video bills the new seconds at the output's rate, plus
+// each source second at $0.01. The output keeps the source's resolution, at
+// most 720p (docs.x.ai/developers/model-capabilities/video/extension.md), and
+// the request carries neither the source's length nor its resolution, so both
+// come from hints, and without them the estimate fails closed.
+// xai-grok-imagine-video-extend-video_332223061 extended
+// tests/fixtures/jump.mp4 (8.042 s, 193 frames, 848x480) by 4 s, returned 289
+// frames, and billed 5.6 units at $0.05: $0.28 = 4 x 0.05 + 8 x 0.01. Edit-video
+// also billed that file as 8 s. One length cannot say how fal rounds, so a
+// fractional hint prices as declared, here $0.0004 over.
+const GROK_EXTEND_RATES: Record<string, number> = {
+  "480p": 0.05,
+  "720p": 0.07,
+};
+const GROK_EXTEND_USD_PER_INPUT_SECOND = 0.01;
+const grokExtendHinted = (hints?: CostHints): boolean =>
+  hintInputSeconds(hints) !== undefined &&
+  Object.hasOwn(GROK_EXTEND_RATES, asString(hints?.inputResolution) ?? "");
+
 const resolutionTier = (defaultTier: string) => ({
   name: "resolution",
   pick: (p: Record<string, unknown>) => asString(p.resolution) ?? defaultTier,
@@ -986,7 +1005,12 @@ const FLUX_3_MAX_RATES: Record<string, number> = {
 // fixed row — an omitted or "auto" size on edit surfaces as a warning
 // instead of a guessed square rate. The prompt-dependent token components
 // (text in $0.005/1k, text out $0.010/1k, image in $0.008/1k on edit) are
-// excluded from the static per-image estimate.
+// excluded from the static per-image estimate, which warns that it is a floor:
+// the response reports no token counts, and the model's reasoning tokens depend
+// on the prompt. gpt-image-1-5_4206709809 (low, 1024x1024) billed 0.02 units at
+// $1 against the $0.009 image rate. Its edit twin, with an input image and
+// another prompt, also billed 0.02, so the header may round to a cent, and
+// these two calls cannot price the tokens.
 const GPT_IMAGE_1P5_RATES: Record<string, number> = {
   "low|1024x1024": 0.009,
   "low|1536x1024": 0.013,
@@ -1017,7 +1041,10 @@ const gptImagePerImage = (
     },
   ],
   rates: GPT_IMAGE_1P5_RATES,
-  source: source(endpointId, sweepAsOf),
+  warn: () => [
+    `fal '${endpointId}': prices the image output only; text tokens, and an edit's input image tokens, bill on top, so this estimate is a floor`,
+  ],
+  source: source(endpointId, learningPass1AsOf),
 });
 
 // Endpoints whose fal pricing is genuinely dynamic — the price is not
@@ -3278,9 +3305,14 @@ export const fal: Record<string, ModelPricing> = {
     taskField: true,
   }),
   // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p, the card's
-  // figure on 2026-10-31, and the recorded call billed $0.02568. The card and the
-  // pricing API read $0.0214 on 2026-11-04, but the pricing API already prices 2.0
-  // US below its card and its bill, so this waits for a bill (cost learning pass 1).
+  // figure on 2026-10-31. On 2026-10-16 the usage API billed the recorded calls
+  // at $0.02568 (2.0 US at $0.0168), and the pricing API read the same. By
+  // 2026-11-04 the pricing API and each US page's billing record read the
+  // standard rates, $0.0214 (2.0 US: $0.014), and 2.5 US's card agrees, but 2.0
+  // US's card still says $0.0168 and fal's FAQ says US hosting is priced
+  // separately. This holds the last billed rate, 20% over if the cut is real,
+  // until the usage API reads a bill (ac-cgqsxq): the unit header on a new call
+  // cannot tell, as it reports the same units at either rate.
   // No US 1080p call is recorded; if it carries the same 1.094 factor
   // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
   // draft flag also renders a 480p preview (queue OpenAPI read 2026-10-31).
@@ -3484,12 +3516,8 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Video — Grok Imagine, resolution-tiered on output seconds. The flat
-  // $0.002 image-input surcharge (i2v/r2v) is excluded — PerUnitPricing has
-  // no constant add-on and it is two orders of magnitude below a second of
-  // output. extend-video bills the extension `duration`; its schema has no
-  // resolution field (output follows the source video), so it carries the
-  // 480p output rate — 720p sources bill $0.07/s upstream — and its
-  // $0.01/s source-video input seconds are likewise not payload-derivable.
+  // $0.002 image-input surcharge (i2v/r2v) is excluded: it is two orders of
+  // magnitude below a second of output. extend-video: see GROK_EXTEND_RATES.
   "xai/grok-imagine-video/image-to-video": perSecondTiered(
     "xai/grok-imagine-video/image-to-video",
     [resolutionTier("720p")],
@@ -3502,11 +3530,32 @@ export const fal: Record<string, ModelPricing> = {
     { "480p": 0.05, "720p": 0.07 },
     numericSeconds(8)
   ),
-  "xai/grok-imagine-video/extend-video": perSecond(
-    "xai/grok-imagine-video/extend-video",
-    0.05,
-    numericSeconds(6)
-  ),
+  "xai/grok-imagine-video/extend-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) =>
+      grokExtendHinted(hints) ? numericSeconds(6)(p) : undefined,
+    select: [
+      {
+        name: "resolution",
+        pick: (_p, hints) => asString(hints?.inputResolution),
+      },
+    ],
+    rates: GROK_EXTEND_RATES,
+    extra: (_p, hints) => {
+      const input = hintInputSeconds(hints);
+      return input === undefined
+        ? undefined
+        : input * GROK_EXTEND_USD_PER_INPUT_SECOND;
+    },
+    warn: (_p, hints) =>
+      grokExtendHinted(hints)
+        ? []
+        : [
+            "fal 'xai/grok-imagine-video/extend-video': the request carries neither the source video's length nor its resolution, and both bill; declare costHints.inputDurationSeconds and costHints.inputResolution (480p or 720p; a larger source renders at 720p)",
+          ],
+    source: source("xai/grok-imagine-video/extend-video", learningPass1AsOf),
+  },
   // Video edit — fal bills the source input at $0.01/s and the output at
   // $0.05/s (480p) or $0.07/s (720p). Output duration matches the source, so
   // the two components sum to $0.06/s and $0.08/s over the caller's known

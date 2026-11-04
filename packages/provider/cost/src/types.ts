@@ -139,9 +139,21 @@ export interface CostHints {
   // Ignored when the payload has no video input; a zero, negative, non-finite
   // or non-numeric value counts as absent, and a reference-video request with
   // no valid value fails closed with a warning that names this field.
+  // Fal `xai/grok-imagine-video/extend-video` reads it as the length of its
+  // required source `video_url`, billed beside the output, with
+  // `inputResolution`.
   // Cost-only, like the rest of CostHints: never merged into payload, never
   // canonicalHash'd, never signed.
   inputDurationSeconds?: number;
+  // The source video's resolution, for fal
+  // `xai/grok-imagine-video/extend-video`. The output keeps it, at most 720p,
+  // and bills by it, and the request has no resolution field. A larger source
+  // declares "720p". Any value but "480p" or "720p" counts as absent, and the
+  // estimate fails closed with a warning that names this field. The
+  // (string & {}) member keeps autocomplete for the known values while still
+  // accepting a runtime-sourced value. Cost-only, like the rest of CostHints:
+  // never merged into payload, never canonicalHash'd, never signed.
+  inputResolution?: "480p" | "720p" | (string & {});
   // The fixed aspect ratio of a fal Seedance 2.5 draft, for
   // `bytedance/seedance-2.5/draft/complete` and
   // `bytedance/seedance-2.5/us/draft/complete`. A completed draft keeps the

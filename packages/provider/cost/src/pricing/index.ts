@@ -23,6 +23,7 @@ import { kimicoding } from "./kimicoding";
 import { machgen } from "./machgen";
 import { openai } from "./openai";
 import { wavespeed } from "./wavespeed";
+import { s3 } from "./s3";
 import { x } from "./x";
 import { xai } from "./xai";
 
@@ -40,6 +41,7 @@ export const PRICING = {
   machgen,
   openai,
   wavespeed,
+  s3,
   x,
   xai,
 } as const;

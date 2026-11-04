@@ -414,6 +414,11 @@ function modalityPartitionProblem(c: {
   return undefined;
 }
 
+// A rate sets at most one write field; see TokenRate.
+function writeRateOf(rate: TokenPricing["rate"]): number | undefined {
+  return rate.cacheWrite ?? rate.cacheWrite5m;
+}
+
 function isTokenCount(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
@@ -428,7 +433,13 @@ function isTokenCount(value: unknown): value is number {
 // closed with no rate in the breakdown, so classifyEstimate reads it as
 // unknown instead of quoting Standard rates for a bill OpenAI computes
 // differently.
-function evaluateDeclaredUsage(
+//
+// computeEstimate reaches this only on the openai route, so the other token
+// providers keep their chars/4 output whatever hints they get. extractActual
+// calls it directly for xai, anthropic, alibaba, fireworks and kimicoding to
+// price a response's reported usage, which is also why it reads either write
+// field: Anthropic's rows publish cacheWrite5m.
+export function evaluateDeclaredUsage(
   provider: PricedProviderId,
   model: string,
   payload: Record<string, unknown>,
@@ -458,7 +469,7 @@ function evaluateDeclaredUsage(
 
   const required: DeclaredUsageField[] = ["inputTokens", "outputTokens"];
   if (entry.rate.cacheRead !== undefined) required.push("cacheReadInputTokens");
-  if (entry.rate.cacheWrite !== undefined) {
+  if (writeRateOf(entry.rate) !== undefined) {
     required.push("cacheWriteInputTokens");
   }
   const audioRate = entry.modalityRates?.audio;
@@ -572,7 +583,8 @@ function evaluateDeclaredUsage(
         "costHints.cacheReadInputTokens must be 0. No estimate is quoted."
     );
   }
-  if (cacheWrite > 0 && rate.cacheWrite === undefined) {
+  const writeRate = writeRateOf(rate);
+  if (cacheWrite > 0 && writeRate === undefined) {
     return unknown(
       `${provider} '${model}' has no bundled cache-write rate, so ` +
         "costHints.cacheWriteInputTokens must be 0. No estimate is quoted."
@@ -610,7 +622,7 @@ function evaluateDeclaredUsage(
   const usd =
     (uncached * rate.input +
       textCached * (rate.cacheRead ?? 0) +
-      cacheWrite * (rate.cacheWrite ?? 0) +
+      cacheWrite * (writeRate ?? 0) +
       textOut * rate.output +
       (audioIn - audioCached) * (audioRate?.input ?? 0) +
       audioCached * (audioRate?.cacheRead ?? 0) +
@@ -653,10 +665,10 @@ function evaluateDeclaredUsage(
             cacheReadUsdPerMillion: rate.cacheRead,
           }
         : {}),
-      ...(rate.cacheWrite !== undefined
+      ...(writeRate !== undefined
         ? {
             cacheWriteInputTokens: cacheWrite,
-            cacheWriteUsdPerMillion: rate.cacheWrite,
+            cacheWriteUsdPerMillion: writeRate,
           }
         : {}),
       ...(entry.longContext ? { contextTier: long ? "long" : "short" } : {}),

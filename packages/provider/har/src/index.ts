@@ -1,5 +1,9 @@
 export * from "./types.js";
 export {
+  entryToProviderExchange,
+  type ProviderExchange,
+} from "./provider-exchange.js";
+export {
   exchangeToEntry,
   type ExchangeTiming,
   type ExchangeOptions,

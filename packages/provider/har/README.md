@@ -80,6 +80,27 @@ from outside the repository without a package build or a Vitest alias.
 before any package build. `gen:shared:check` prevents drift. No runtime package
 dependency or build-on-import is needed by those scripts.
 
+## Cost evidence
+
+`entryToProviderExchange` turns one HAR entry into the exchange shape
+`extractActual` in `@apicity/cost` reads: lower-cased header names, parsed JSON or
+SSE data frames, and a null `requestBody` for a captured placeholder. This package
+does not import `@apicity/cost`; the shapes match structurally.
+
+```ts
+import { entryToProviderExchange, type HarEntry } from "@apicity/har";
+
+declare const entry: HarEntry;
+
+const exchange = entryToProviderExchange(entry, {
+  provider: "openai",
+  dotPath: "v1.responses",
+});
+exchange.responseHeaders["content-type"];
+```
+
+`provider` falls back to the one that owns the request's host.
+
 ## Exchange analysis helpers
 
 `exchangeSucceeded(provider, entry)` requires HTTP 2xx and rejects KIE and xAI

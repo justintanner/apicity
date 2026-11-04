@@ -105,6 +105,24 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
 });
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...[
+    "360p|no-audio",
+    "360p|audio",
+    "540p|no-audio",
+    "540p|audio",
+    "720p|no-audio",
+    "720p|audio",
+    "1080p|no-audio",
+    "1080p|audio",
+  ].map((variant) => ({
+    key: "pixverse-v6/reference-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/pixverse-v6-reference-2026-11-04.json: the feed read 2026-11-04 prints 4-18.4 credits = 0.02-0.092 USD/s by quality and audio",
+    rationale:
+      "The frozen September feed printed 4.5-20.7 credits, and the committed recording billed the current 4 credits per second at 360p without audio, so the frozen cells are superseded (cost learning pass 1).",
+  })),
   ...["image", "video"].flatMap((mode) =>
     (mode === "image" ? ["5", "10", "15"] : ["5", "10"]).flatMap((duration) =>
       ["720p", "1080p"].flatMap((resolution) =>
@@ -1381,6 +1399,14 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       String(official.usdPrice) === "0.028",
     message:
       "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
+  },
+  {
+    family: "pixverse-v6-reference-refreshed",
+    matches: (description, key) =>
+      key === "pixverse-v6/reference-to-video" &&
+      /^pixverse-v6,\s*Reference To Video,/i.test(description),
+    message:
+      "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
   },
   {
     family: "seedance-2-5-1080p-refreshed",

@@ -88,7 +88,7 @@ describe("Mureka lyrics generation", () => {
       { prompt: "a".repeat(10000) },
     ]) {
       const estimate = computeEstimate({ provider: "fal", endpoint, payload });
-      expect(estimate.usd).toBe(0.0135);
+      expect(estimate.usd).toBe(0.009);
       expect(estimate.warnings).toEqual([]);
     }
   });

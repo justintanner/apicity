@@ -1,0 +1,99 @@
+{
+  "capturedAt": "2026-11-04",
+  "source": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+  "models": ["pixverse-v6/reference-to-video"],
+  "basis": "Live pricing-feed rows read 2026-11-04 by the cost survey (plans/ac-0lt830/survey/rates/kie.json, POST https://api.kie.ai/client/v1/model-pricing/page). The committed recording tests/recordings/kie_2079838932/pixverse-v6-reference-to-video_2396754018 billed 4 credits for 1 s at 360p without audio.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "rows": [
+      {
+        "description": "pixverse-v6, Reference To Video, 1080p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 18.4,
+        "usd": 0.092,
+        "unit": "per second",
+        "falPrice": "0.115",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 1080p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 14.4,
+        "usd": 0.072,
+        "unit": "per second",
+        "falPrice": "0.090",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 720p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 9.6,
+        "usd": 0.048,
+        "unit": "per second",
+        "falPrice": "0.060",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 720p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 7.2,
+        "usd": 0.036,
+        "unit": "per second",
+        "falPrice": "0.045",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 540p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 7.2,
+        "usd": 0.036,
+        "unit": "per second",
+        "falPrice": "0.045",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 540p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 5.6,
+        "usd": 0.028,
+        "unit": "per second",
+        "falPrice": "0.035",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 360p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 5.6,
+        "usd": 0.028,
+        "unit": "per second",
+        "falPrice": "0.035",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      },
+      {
+        "description": "pixverse-v6, Reference To Video, 360p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "credits": 4.0,
+        "usd": 0.02,
+        "unit": "per second",
+        "falPrice": "0.025",
+        "discountRate": 20.0,
+        "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video"
+      }
+    ]
+  }
+}

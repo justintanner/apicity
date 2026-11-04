@@ -1,3 +1,4 @@
+import { runHarCost } from "./har-cost.js";
 import { runHarReport } from "./har-report.js";
 import { randomUUID } from "node:crypto";
 import { accessSync, constants, existsSync, statSync } from "node:fs";
@@ -134,8 +135,9 @@ export async function runHarCommand(
 ): Promise<number> {
   const [command, ...args] = argv;
   if (command === "report") return runHarReport(args, writer);
+  if (command === "cost") return runHarCost(args, writer);
   if (!["list", "show", "scrub"].includes(command)) {
-    throw new CliError("usage", "run: apicity har list|show|scrub|report");
+    throw new CliError("usage", "run: apicity har list|show|scrub|report|cost");
   }
   const values: Record<string, string> = {};
   const switches = new Set<string>();

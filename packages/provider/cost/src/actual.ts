@@ -320,6 +320,10 @@ export function extractActual(exchange: ProviderExchange): CostActual {
     rateAsOf: derived.rateAsOf,
     warnings,
     ...(derived.notes ? { notes: derived.notes } : {}),
+    ...(extracted.uncoveredCharge
+      ? { uncoveredCharge: extracted.uncoveredCharge }
+      : {}),
+    ...(extracted.serviceTier ? { serviceTier: extracted.serviceTier } : {}),
     ...(derived.unitRate ? { unitRate: derived.unitRate } : {}),
   };
 }
@@ -391,6 +395,12 @@ export function mergeActuals(parts: readonly CostActual[]): CostActual {
   let derivedUsd = lastNonNull(parts.map((part) => part.derivedUsd));
   let rateAsOf = lastNonNull(parts.map((part) => part.rateAsOf));
   const unitRate = lastNonNull(parts.map((part) => part.unitRate ?? null));
+  const uncoveredCharge = parts.find(
+    (part) => part.uncoveredCharge
+  )?.uncoveredCharge;
+  const serviceTier = lastNonNull(
+    parts.map((part) => part.serviceTier ?? null)
+  );
   const units = usage.seconds ?? usage.images ?? usage.characters;
   if (derivedUsd === null && unitRate && units !== undefined) {
     derivedUsd = unitRate.usd * units;
@@ -427,6 +437,8 @@ export function mergeActuals(parts: readonly CostActual[]): CostActual {
     ...(parts.some((p) => p.notes?.length)
       ? { notes: [...new Set(parts.flatMap((p) => p.notes ?? []))] }
       : {}),
+    ...(uncoveredCharge ? { uncoveredCharge } : {}),
+    ...(serviceTier ? { serviceTier } : {}),
     ...(unitRate ? { unitRate } : {}),
   };
 }

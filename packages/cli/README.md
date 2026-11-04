@@ -637,3 +637,15 @@ Reports group errors, compare real request schemas, summarize defaults and
 response drift, and include local failures. Nothing is sent to a provider.
 See [the report contract](../../docs/har-capture.md#learning-report) for units,
 filters, baseline rules and unavailable sections.
+
+### HAR cost reports
+
+Run `apicity har cost <path...> [--provider fal,kie] [--endpoint dot.path]
+[--model m] [--since iso] [--tolerance 0.02] [--json]` to see what calls actually
+cost and how many tokens they used, per provider, endpoint and model, from captures
+or legacy HAR recordings. Output is Markdown even when redirected; `--json` emits
+`{ok: true, data: ...}` with `schemaVersion: 1`. Equal inputs give equal bytes.
+The report sets each call's quote, or today's tables when no quote was stored,
+against its actual, and it lists rate corrections that a provider's stated charges
+point to, as leads to check. Nothing is sent to a provider. See
+[the report contract](../../docs/har-capture.md#cost-report).

@@ -675,6 +675,58 @@ describe("extractActual pins", () => {
     expect(actual.warnings.join(" ")).toContain("stops before");
   });
 
+  describe("what a solved rate must not absorb", () => {
+    const xai = (responseBody: Record<string, unknown>) =>
+      extractActual(
+        inlineExchange({
+          provider: "xai",
+          url: "https://api.x.ai/v1/responses",
+          requestBody: { model: "grok-4.6" },
+          responseBody: {
+            model: "grok-4.6",
+            status: "completed",
+            ...responseBody,
+          },
+        })
+      );
+    const usage = {
+      input_tokens: 10,
+      output_tokens: 5,
+      cost_in_usd_ticks: 1e6,
+    };
+
+    it("says nothing on a plain call", () => {
+      const actual = xai({ usage });
+      expect(actual).not.toHaveProperty("uncoveredCharge");
+      expect(actual).not.toHaveProperty("serviceTier");
+    });
+
+    it("names a fee no rate prices", () => {
+      const actual = xai({
+        usage: { ...usage, num_server_side_tools_used: 1 },
+      });
+      expect(actual.uncoveredCharge).toContain("server-side tool");
+    });
+
+    it("names the service tier the response reports", () => {
+      expect(xai({ usage, service_tier: "priority" }).serviceTier).toBe(
+        "priority"
+      );
+    });
+
+    it("keeps both across a merge", () => {
+      const merged = mergeActuals([
+        xai({
+          usage: { ...usage, num_server_side_tools_used: 1 },
+          service_tier: "priority",
+        }),
+        xai({ usage }),
+      ]);
+      expect(merged.uncoveredCharge).toContain("server-side tool");
+      expect(merged.serviceTier).toBe("priority");
+    });
+  });
+
   // A capture keeps a stream's two ends, so any frame can be missing from between.
   describe("a stream's two ends", () => {
     const anthropic = (responseBody: unknown[]) =>

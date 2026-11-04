@@ -56,6 +56,104 @@ export interface FrontierHelperRow {
   price: FrontierHelperPrice;
 }
 
+export interface CostHelperUsage {
+  inputTokens?: number;
+  outputTokens?: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+  reasoningTokens?: number;
+  audioInputTokens?: number;
+  imageInputTokens?: number;
+  audioOutputTokens?: number;
+  imageOutputTokens?: number;
+  characters?: number;
+  seconds?: number;
+  images?: number;
+  billableUnits?: number;
+  credits?: number;
+}
+
+export type CostHelperBasis = "stated" | "derived" | "usage-only" | "none";
+
+export interface CostHelperActual {
+  model: string | null;
+  usage: CostHelperUsage;
+  statedUsd: number | null;
+  statedListUsd: number | null;
+  usd: number | null;
+  basis: CostHelperBasis;
+  settled: boolean;
+  uncoveredCharge?: string;
+  serviceTier?: string;
+}
+
+export interface CostHelperEstimate {
+  usd: number;
+  source?: string;
+  warnings?: string[];
+  status?: string;
+}
+
+export type CostHelperVerdict =
+  | "match"
+  | "over"
+  | "under"
+  | "no-estimate"
+  | "no-actual"
+  | "free";
+
+export interface CostHelperComparison {
+  estimateUsd: number | null;
+  ratio: number | null;
+  verdict: CostHelperVerdict;
+}
+
+export interface CostHelperTokenPricing {
+  kind: "tokens";
+  rate: {
+    input: number;
+    output: number;
+    cacheRead?: number;
+    cacheWrite5m?: number;
+    cacheWrite?: number;
+  };
+  longContext?: unknown;
+  modalityRates?: unknown;
+  source: { asOf?: string };
+}
+
+export interface CostHelperHints {
+  durationSeconds?: number;
+}
+
+export interface CostHelperUnitPricing {
+  kind: "perUnit";
+  unit: string;
+  units: (
+    payload: Record<string, unknown>,
+    hints?: CostHelperHints
+  ) => number | undefined;
+  select: ReadonlyArray<{
+    pick: (
+      payload: Record<string, unknown>,
+      hints?: CostHelperHints
+    ) => string | undefined;
+    required?: boolean;
+  }>;
+  rates: Record<string, number>;
+  extra?: (
+    payload: Record<string, unknown>,
+    hints?: CostHelperHints
+  ) => number | undefined;
+  warn?: (
+    payload: Record<string, unknown>,
+    hints?: CostHelperHints
+  ) => string[];
+  source: { asOf?: string };
+}
+
+export type CostHelperPricing = CostHelperTokenPricing | CostHelperUnitPricing;
+
 export interface CostHelpers {
   PAID_ENDPOINTS: CostPaidEndpointEntry[];
   isPaidEndpoint: (
@@ -75,6 +173,30 @@ export interface CostHelpers {
    * unmapped footer read this.
    */
   FRONTIER: Record<string, { entries: FrontierHelperEntry[] }>;
+}
+
+export interface CostActualHelpers {
+  extractActual: (exchange: object) => CostHelperActual;
+  mergeActuals: (parts: readonly CostHelperActual[]) => CostHelperActual;
+  compareCost: (
+    estimate: CostHelperEstimate | null,
+    actual: CostHelperActual,
+    options?: { tolerance?: number }
+  ) => CostHelperComparison;
+  estimateEndpoint: (request: {
+    provider: string;
+    method: string;
+    dotPath: string;
+    payload?: Record<string, unknown>;
+  }) => CostHelperEstimate;
+  endpointBilling: (
+    provider: string,
+    method: string,
+    dotPath: string
+  ) => { kind: string };
+  PRICING: Record<string, Record<string, CostHelperPricing | undefined>>;
+  PRICING_AS_OF: string;
+  ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>>;
 }
 
 let costHelpersPromise: Promise<CostHelpers> | undefined;
@@ -134,4 +256,45 @@ export function loadCostHelpers(): Promise<CostHelpers> {
   });
 
   return costHelpersPromise;
+}
+
+let costActualHelpersPromise: Promise<CostActualHelpers> | undefined;
+
+/**
+ * What `har cost` needs, loaded apart from `loadCostHelpers` so that a report's
+ * exports can never stop the paygate and discovery paths from loading.
+ */
+export function loadCostActualHelpers(): Promise<CostActualHelpers> {
+  costActualHelpersPromise ??= import(COST_PACKAGE).then((mod) => {
+    const exports = mod as Record<string, unknown>;
+    for (const name of [
+      "extractActual",
+      "mergeActuals",
+      "compareCost",
+      "estimateEndpoint",
+      "endpointBilling",
+    ]) {
+      if (typeof exports[name] !== "function") {
+        throw new Error(
+          `Expected @apicity/cost to export ${name} as a function`
+        );
+      }
+    }
+    for (const name of ["PRICING", "ENDPOINT_PRICING_KEYS"]) {
+      const value = exports[name];
+      if (value === null || typeof value !== "object") {
+        throw new Error(
+          `Expected @apicity/cost to export ${name} as an object`
+        );
+      }
+    }
+    if (typeof exports.PRICING_AS_OF !== "string") {
+      throw new Error(
+        "Expected @apicity/cost to export PRICING_AS_OF as a string"
+      );
+    }
+    return exports as unknown as CostActualHelpers;
+  });
+
+  return costActualHelpersPromise;
 }

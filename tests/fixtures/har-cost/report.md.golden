@@ -1,0 +1,45 @@
+# apicity har cost
+
+Inputs: 16 files (4 annotated, 12 legacy), 0 unreadable, 24 entries.
+Calls: 16, 14 settled, 0 skipped. Unmatched exchanges: 0. Unresolved calls: 0.
+Verdict tolerance: 0.02.
+
+## Estimate against actual
+
+Ratio and verdicts compare each call's quote, or the recomputed figure when no quote was stored, with its actual at list price. A recomputed token figure counts input at chars/4, so its ratio measures that heuristic, not a rate. Paid USD, list USD and usage read settled calls only. USD cells show (calls).
+
+| Endpoint | Model | Calls | Settled | Quoted USD | Recomputed USD | Paid USD | List USD | Basis | Ratio p50 | Ratio p95 | Verdicts | Captured before rate |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| kie GET api.v1.chat.credit | — | 1 | 1 | n/a | 0 (1) | n/a | n/a | none 1 | n/a | n/a | free 1 | 0 |
+| kie POST api.v1.jobs.createTask | fixture/agrees | 2 | 2 | n/a | 1.35 (2) | 0.75 (2) | 0.75 (2) | stated 2 | 1.8 | 1.8 | over 2 | 0 |
+| kie POST api.v1.jobs.createTask | fixture/before-rate | 1 | 1 | n/a | 0.45 (1) | 0.25 (1) | 0.25 (1) | stated 1 | 1.8 | 1.8 | over 1 | 1 |
+| kie POST api.v1.jobs.createTask | fixture/disagrees | 2 | 2 | n/a | 0.9 (2) | 0.6 (2) | 0.6 (2) | stated 2 | 1.28571 | 1.8 | over 2 | 0 |
+| kie POST api.v1.jobs.createTask | fixture/matches | 2 | 1 | n/a | 0.9 (2) | 0.45 (1) | 0.45 (1) | stated 2 | 1 | 1 | match 1, no-actual 1 | 0 |
+| kie GET api.v1.jobs.recordInfo | fixture/matches | 1 | 1 | n/a | n/a | 0.45 (1) | 0.45 (1) | stated 1 | n/a | n/a | no-estimate 1 | 0 |
+| openai POST v1.responses | fixture-token | 4 | 3 | 0.003 (1) | 0.012012 (3) | 0.0171 (3) | 0.0171 (3) | derived 3, none 1 | 0.526316 | 0.526316 | under 1, no-estimate 2, no-actual 1 | 0 |
+| xai POST v1.responses | grok-4 | 1 | 1 | n/a | n/a | 0.0174443 (1) | 0.0174443 (1) | stated 1 | n/a | n/a | no-estimate 1 | 0 |
+| xai POST v1.responses | grok-4-fast | 1 | 1 | n/a | n/a | 0.00006005 (1) | 0.00006005 (1) | stated 1 | n/a | n/a | no-estimate 1 | 0 |
+| xai POST v1.responses | grok-4.6 | 1 | 1 | n/a | n/a | 0.001018 (1) | 0.001018 (1) | stated 1 | n/a | n/a | no-estimate 1 | 0 |
+
+## Usage
+
+| Endpoint | Model | Input tokens | Output tokens | Cache read | Cache write | Reasoning | Characters | Seconds | Credits | Billable units |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| kie POST api.v1.jobs.createTask | fixture/agrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 150 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/before-rate | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 50 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/disagrees | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 120 | n/a |
+| kie POST api.v1.jobs.createTask | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
+| kie GET api.v1.jobs.recordInfo | fixture/matches | n/a | n/a | n/a | n/a | n/a | n/a | n/a | 90 | n/a |
+| openai POST v1.responses | fixture-token | 3000 | 1500 | 600 | n/a | 300 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4 | 2684 | 728 | 679 | n/a | 623 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4-fast | 170 | 98 | 153 | n/a | 97 | n/a | n/a | n/a | n/a |
+| xai POST v1.responses | grok-4.6 | 221 | 128 | 128 | n/a | 127 | n/a | n/a | n/a | n/a |
+
+## Corrections
+
+| Provider | Pricing key | Field | Current | Implied | Unit | Calls | Files |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| kie | fixture/agrees | rates["720p"] | 0.09 | 0.05 | USD per second | 2 | tests/fixtures/har-cost/corpus/kie-agrees-a.har, tests/fixtures/har-cost/corpus/kie-agrees-b.har |
+| xai | grok-4 | cacheRead | n/a | 0.75 | USD per 1M tokens | 1 | tests/fixtures/har-cost/corpus/xai-grok-4.har |
+| xai | grok-4-fast | cacheRead | n/a | 0.05 | USD per 1M tokens | 1 | tests/fixtures/har-cost/corpus/xai-grok-4-fast.har |
+| xai | grok-4.6 | cacheRead | n/a | 0.5 | USD per 1M tokens | 1 | tests/fixtures/har-cost/corpus/xai-grok-4-6.har |

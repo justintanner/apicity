@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { types } from "node:util";
 import {
   PERSISTED_REQUEST_HEADER_PLACEHOLDERS,
   redactUrlSecrets,
@@ -59,6 +60,8 @@ const RESPONSE_ACCOUNT_METADATA_KEYS = new Set(["create_api_key_id"]);
 // Each `;` has one way to match: `[^,]` here made a run of them exponential.
 const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^;,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
+const MIN_BASE64_WRAP = 60;
+const OCTET_STREAM = "application/octet-stream";
 const BASE64ISH_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
 const BASE64ISH_BYTES = new Uint8Array(256);
 for (const byte of Buffer.from(
@@ -124,8 +127,49 @@ function isCredentialKey(key: string): boolean {
   return GENERIC_CREDENTIAL_KEYS.has(key.replace(/[_-]/g, "").toLowerCase());
 }
 
+// The index of the quote closing the string opened at `open`. A quote with an odd run
+// of backslashes before it is escaped.
+function closingQuote(text: string, open: number): number {
+  let quote = text.indexOf('"', open + 1);
+  while (quote >= 0) {
+    let backslashes = 0;
+    while (text[quote - 1 - backslashes] === "\\") backslashes += 1;
+    if (backslashes % 2 === 0) return quote;
+    quote = text.indexOf('"', quote + 1);
+  }
+  return text.length;
+}
+
+function afterJsonSpace(text: string, from: number): number {
+  let at = from;
+  while (
+    text[at] === " " ||
+    text[at] === "\n" ||
+    text[at] === "\r" ||
+    text[at] === "\t"
+  ) {
+    at += 1;
+  }
+  return at;
+}
+
+// How many keys a valid document's text holds: every string followed by a colon.
+// Walking its strings in order cannot lose its place, and a loop has no regex
+// backtrack stack for millions of escapes to overflow.
+function keysInJsonText(text: string): number {
+  let keys = 0;
+  let open = text.indexOf('"');
+  while (open >= 0) {
+    const close = closingQuote(text, open);
+    if (text[afterJsonSpace(text, close + 1)] === ":") keys += 1;
+    open = text.indexOf('"', close + 1);
+  }
+  return keys;
+}
+
 function redactGenericCredentialText(text: string): string {
   let changed = false;
+  let keys = 0;
   function visit(value: unknown, key?: string): unknown {
     if (key && isCredentialKey(key) && value !== null) {
       changed ||= value !== "***";
@@ -135,14 +179,18 @@ function redactGenericCredentialText(text: string): string {
     if (value === null || typeof value !== "object") return value;
     const result: Record<string, unknown> = Object.create(null);
     for (const [name, item] of Object.entries(value)) {
+      keys += 1;
       result[name] = visit(item, name);
     }
     return result;
   }
   try {
     const clean = visit(JSON.parse(text) as unknown);
+    // A parse keeps only a duplicate key's last value, so an earlier one is in the text
+    // where no rule reading the parse can see it. Write what was parsed instead.
+    if (changed || keys !== keysInJsonText(text)) return JSON.stringify(clean);
     // Keep formatting and ordinary provider payloads byte-for-byte.
-    return changed ? JSON.stringify(clean) : text;
+    return text;
   } catch {
     // SSE and truncated JSON cannot be parsed as one document. Match JSON
     // string fields (including escaped quotes) without rewriting other text. An
@@ -403,13 +451,109 @@ function summarizeInlineDataUrl(value: string): string | undefined {
   return `<inline ${mime} data URL — replace with a real URL or upload>`;
 }
 
-function summarizeLongBase64(value: string): string | undefined {
-  const compact = value.replace(/\s/g, "");
+// Base64 wraps on line ends, at one width. A string with spaces in it is text, and so
+// is a list of words, paths or ids with one to a line.
+function longBase64(value: string): string | undefined {
+  if (value.length <= LONG_BASE64_CHARS) return undefined;
+  const lines = value.trim().split(/\r?\n/);
+  const last = lines.length - 1;
+  const width = lines[0]!.length;
+  if (
+    last > 0 &&
+    (width < MIN_BASE64_WRAP ||
+      lines[last]!.length > width ||
+      lines.slice(0, last).some((line) => line.length !== width))
+  ) {
+    return undefined;
+  }
+  const compact = lines.join("");
   if (compact.length <= LONG_BASE64_CHARS) return undefined;
   if (compact.length % 4 === 1) return undefined;
-  if (!BASE64ISH_RE.test(compact)) return undefined;
+  return BASE64ISH_RE.test(compact) ? compact : undefined;
+}
 
-  return `<inline base64 data; ${base64ByteLength(compact)} bytes>`;
+function summarizeLongBase64(value: string): string | undefined {
+  const compact = longBase64(value);
+  return compact === undefined
+    ? undefined
+    : `<inline base64 data; ${base64ByteLength(compact)} bytes>`;
+}
+
+function mediaPlaceholder(bytes: Uint8Array, contentType: string): object {
+  return {
+    _apicity_placeholder: {
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      bytes: bytes.byteLength,
+      contentType,
+    },
+  };
+}
+
+// `data:[<media type>][;<parameter>...][;base64],<payload>`, read without a regex: a long
+// run of `;` overflows one's stack. Only base64 or a media type makes it a URL, since
+// `data:note, some words` and `data: a/b, more` are prose.
+function parseDataUrl(value: string) {
+  const comma = value.indexOf(",");
+  if (comma < 0 || value.slice(0, 5).toLowerCase() !== "data:")
+    return undefined;
+  const header = value.slice(5, comma);
+  const end = header.indexOf(";");
+  const mime = end < 0 ? header : header.slice(0, end);
+  const flag = header.slice(header.lastIndexOf(";") + 1);
+  const base64 = flag.trim().toLowerCase() === "base64";
+  if (!base64 && mime && (!mime.includes("/") || /\s/.test(mime))) {
+    return undefined;
+  }
+  return { mime: mime.trim(), base64, payload: value.slice(comma + 1) };
+}
+
+// A data URL's bytes are what it decodes to. One that is not base64 stays as written.
+function inputStringPlaceholder(value: string): object | undefined {
+  if (value.length <= LONG_BASE64_CHARS) return undefined;
+  const url = parseDataUrl(value.trimStart());
+  if (url) {
+    return mediaPlaceholder(
+      Buffer.from(url.payload, url.base64 ? "base64" : "utf8"),
+      url.mime || OCTET_STREAM
+    );
+  }
+  const compact = longBase64(value);
+  return compact === undefined
+    ? undefined
+    : mediaPlaceholder(Buffer.from(compact, "base64"), OCTET_STREAM);
+}
+
+// The bytes a value holds. A buffer transferred away reads as empty, and a view of it
+// throws. A Buffer has already gone through toJSON by the time a replacer sees it.
+function inputBytes(value: unknown): Uint8Array | undefined {
+  if (types.isAnyArrayBuffer(value)) {
+    return value.byteLength ? new Uint8Array(value) : undefined;
+  }
+  if (ArrayBuffer.isView(value)) {
+    return value.buffer.byteLength
+      ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+      : undefined;
+  }
+  const json = value as { type?: unknown; data?: unknown } | null | undefined;
+  return json?.type === "Buffer" && Array.isArray(json.data)
+    ? Buffer.from(json.data)
+    : undefined;
+}
+
+/**
+ * Call input as JSON, with each long data URL, base64 field and byte array replaced
+ * by the placeholder a dropped body leaves: cost evidence needs the model, parameters
+ * and sizes, never the bytes. Short strings and long prose stay.
+ */
+export function summarizeInputMedia(input: unknown): unknown {
+  const text = JSON.stringify(input, (_key, value: unknown) => {
+    const bytes = inputBytes(value);
+    if (bytes) return mediaPlaceholder(bytes, OCTET_STREAM);
+    return typeof value === "string"
+      ? (inputStringPlaceholder(value) ?? value)
+      : value;
+  });
+  return text === undefined ? input : JSON.parse(text);
 }
 
 // The bytes summarizing could remove from a JSON body, counted without parsing it.

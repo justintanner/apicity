@@ -25,8 +25,12 @@ entry._id = pollyEntryId(entry);
   `close()` before exit; a call's `context` is merged shallowly over the capture's
   `context` for that call only. `estimate` (`usd`, `source`, `rateAsOf`, `warnings`,
   `breakdown`, `status`) is written to `log._apicity.estimate` and as `estimateUsd`
-  in `index.jsonl`. Capture is disabled after a write error without changing the
-  provider result.
+  in `index.jsonl`. `input` is written with each data URL or base64 field over 1024
+  characters, and each byte array, replaced by a placeholder of its hash, decoded
+  size and media type. Capture is disabled after a write error without changing the
+  provider result. A body that fails mid-read does not disable it: the exchange is
+  saved with `bodyTruncated`, and `responseCut` for a response, and the call's outcome
+  is `network_error`.
 - `exchangeToEntry(request: Request, responseOrError: Response | Error, timing,
   options?)` reads clones and returns a scrubbed entry. Timing has `startedAt`,
   `durationMs` and optional HAR `timings`. Options are `maxBodyBytes` (262144 by
@@ -38,7 +42,9 @@ entry._id = pollyEntryId(entry);
   the cap keeps its first `maxBodyBytes` and last `sseTailBytes`, in whole lines
   joined by an `: apicity-gap <n> bytes dropped` comment;
   `_apicity.streamed` and `bodyTruncated` describe
-  them. A network error produces status 0; call-level error metadata belongs in
+  them. A body that fails mid-read keeps what arrived: a stream's whole lines, or a
+  placeholder for anything that does not parse as a whole JSON document. A network
+  error produces status 0; call-level error metadata belongs in
   `log._apicity`. Bodies must be unused and streams must eventually finish.
 - `scrubEntry(entry)` and `scrubHar(har)` mutate and return their argument.
   Scrubbing covers provider credentials in headers, URLs and JSON, cookies,

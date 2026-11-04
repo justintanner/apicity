@@ -144,6 +144,15 @@ describe("entryToProviderExchange", () => {
     expect(exchange.responseBody).toBeNull();
   });
 
+  it("carries responseCut only when the capture set it", () => {
+    const cut = entryToProviderExchange(
+      entry({ text: "{}", _apicity: { kind: "http", responseCut: true } })
+    );
+    expect(cut.responseCut).toBe(true);
+    const whole = entryToProviderExchange(entry({ text: "{}" }));
+    expect("responseCut" in whole).toBe(false);
+  });
+
   it("carries bodyTruncated only when the capture set it", () => {
     const truncated = entryToProviderExchange(
       entry({ text: "{}", _apicity: { kind: "http", bodyTruncated: true } })

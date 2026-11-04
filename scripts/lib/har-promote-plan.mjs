@@ -210,6 +210,10 @@ export function validateBodies(context) {
       /<inline .*data URL — replace with a real URL or upload>|<inline base64 data; \d+ bytes>/.test(
         t
       )
+    ) ||
+    contains(
+      meta.input,
+      (v) => plain(v) && Object.hasOwn(v, "_apicity_placeholder")
     )
   )
     refuse("media-summary");

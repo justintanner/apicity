@@ -266,9 +266,10 @@ export function extractActual(exchange: ProviderExchange): CostActual {
   let settled = extracted.settled ?? true;
   // A 4xx ends the call: there is no later read to wait for. A 429 or a 5xx may
   // pass, so it keeps what the family said.
+  const failedForGood =
+    exchange.status >= 400 && exchange.status < 500 && exchange.status !== 429;
   if (exchange.status >= 400) {
     warnings.push(`the provider answered HTTP ${exchange.status}`);
-    const failedForGood = exchange.status < 500 && exchange.status !== 429;
     if (failedForGood && !extracted.stillPending) {
       settled = true;
       removeWarning(warnings, SUBMIT_PENDING);
@@ -290,6 +291,17 @@ export function extractActual(exchange: ProviderExchange): CostActual {
   }
   if (bodyTruncated === true && responseBody === null) {
     warnings.push(RESPONSE_NOT_CAPTURED);
+  }
+  // A body cut before it closed is not a final answer with nothing in it: a poll cut
+  // that way must not end its call. Headers arrive whole, so a figure from them stands.
+  if (
+    exchange.responseCut === true &&
+    responseBody === null &&
+    !failedForGood &&
+    extracted.statedUsd == null &&
+    Object.keys(extracted.usage).length === 0
+  ) {
+    settled = false;
   }
   const model = extracted.model ?? null;
   const derived = cutShort ? NOT_DERIVED : derive(exchange, model, extracted);

@@ -18,7 +18,10 @@ import {
   validate,
   unknownKeys,
 } from "../../packages/cli/src/har-report-schema";
-import { normalizeMessage } from "../../packages/cli/src/har-report-values";
+import {
+  normalizeMessage,
+  shape,
+} from "../../packages/cli/src/har-report-values";
 import { zodToJsonSchema } from "../../packages/cli/src/schema";
 import type { HarReport } from "../../packages/cli/src/har-report-types";
 import type { Har } from "@apicity/har";
@@ -272,6 +275,62 @@ it("prefixes nested union paths and ignores captured media placeholders", () => 
       }
     )
   ).toEqual(["items[].extra"]);
+  const inputPlaceholder = {
+    _apicity_placeholder: {
+      sha256: "ab",
+      bytes: 9,
+      contentType: "image/png",
+    },
+  };
+  expect(
+    validate(
+      {
+        safe: media,
+        json: zodToJsonSchema(media),
+        status: "ok",
+        variantKey: null,
+      },
+      { url: inputPlaceholder },
+      null
+    )
+  ).toMatchObject({ accepted: true, placeholders: 1, issues: [] });
+  expect(
+    unknownKeys(
+      {
+        url: inputPlaceholder,
+        items: [inputPlaceholder, { known: 1, extra: true }],
+      },
+      {
+        type: "object",
+        properties: {
+          url: { type: "string" },
+          items: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { known: { type: "number" } },
+            },
+          },
+        },
+      }
+    )
+  ).toEqual(["items[].extra"]);
+  expect([
+    ...shape({
+      model: "m",
+      image: inputPlaceholder,
+      nested: { image: inputPlaceholder },
+      images: [inputPlaceholder, { url: "u" }],
+    }),
+  ]).toEqual([
+    ["model", new Set(["string"])],
+    ["image", new Set(["media"])],
+    ["nested", new Set(["object"])],
+    ["nested.image", new Set(["media"])],
+    ["images", new Set(["array"])],
+    ["images[].url", new Set(["string"])],
+  ]);
+  expect([...shape(inputPlaceholder)]).toEqual([]);
 });
 it("normalizes message identifiers in the specified order", () => {
   expect(

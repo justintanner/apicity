@@ -286,6 +286,8 @@ export interface ProviderExchange {
   // parsed JSON, or the array of SSE data frames
   responseBody: unknown;
   bodyTruncated?: boolean;
+  // the response's body failed mid-read, so it holds what arrived
+  responseCut?: boolean;
 }
 
 export interface ActualUsage {

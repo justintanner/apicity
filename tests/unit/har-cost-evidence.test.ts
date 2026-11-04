@@ -697,6 +697,101 @@ describe("what a cut stream settles", () => {
   });
 });
 
+describe("what a body that dies mid-read settles", () => {
+  function dying(chunks: string[], contentType = "text/event-stream") {
+    const queue = chunks.map((chunk) => new TextEncoder().encode(chunk));
+    return new Response(
+      new ReadableStream<Uint8Array>({
+        async pull(controller) {
+          await new Promise((resolve) => setImmediate(resolve));
+          const next = queue.shift();
+          if (next) controller.enqueue(next);
+          else controller.error(new Error("socket hang up"));
+        },
+      }),
+      { headers: { "content-type": contentType } }
+    );
+  }
+  async function actualOf(
+    response: Response,
+    provider = "openai",
+    url = "https://api.openai.com/v1/responses"
+  ) {
+    const entry = await exchangeToEntry(postJson("{}", url), response, timing);
+    expect(entry._apicity?.bodyTruncated).toBe(true);
+    return extractActual(entryToProviderExchange(entry, { provider }));
+  }
+  const delta = 'data: {"type":"response.output_text.delta","delta":"w"}\n\n';
+  const completed =
+    'data: {"type":"response.completed","response":{"model":"gpt-5","status":"completed","usage":{"input_tokens":1000,"output_tokens":50}}}\n\n';
+  const chunk = (finish: string | null) =>
+    `data: {"id":"c","model":"gpt-5","choices":[{"index":0,"delta":{"content":"w"},"finish_reason":${JSON.stringify(finish)}}],"usage":{"prompt_tokens":1000,"completion_tokens":7,"total_tokens":1007}}\n\n`;
+  const start =
+    'event: message_start\ndata: {"type":"message_start","message":{"id":"m","type":"message","role":"assistant","model":"claude-sonnet-4-5","content":[],"usage":{"input_tokens":100000,"output_tokens":1}}}\n\n';
+
+  it.each([
+    ["before its final frame", [delta, delta], "openai", undefined],
+    [
+      "inside its final frame",
+      [delta, completed.slice(0, 60)],
+      "openai",
+      undefined,
+    ],
+    [
+      "on a running count",
+      [chunk(null)],
+      "openai",
+      "https://api.openai.com/v1/chat/completions",
+    ],
+    [
+      "after Anthropic's opening frame",
+      [start],
+      "anthropic",
+      "https://api.anthropic.com/v1/messages",
+    ],
+    ["before its first byte", [], "openai", undefined],
+  ])("a stream cut %s is unsettled", async (_, chunks, provider, url) => {
+    const actual = await actualOf(dying(chunks), provider, url);
+    expect(actual.settled).toBe(false);
+    expect(actual.usd).toBeNull();
+    expect(actual.warnings.join(" ")).toContain("stops before");
+  });
+
+  it.each([
+    ["the Responses API's last frame", [delta, completed], undefined],
+    [
+      "a chat stream's finish",
+      [chunk(null), chunk("stop")],
+      "https://api.openai.com/v1/chat/completions",
+    ],
+  ])("a stream cut after %s keeps its figure", async (_, chunks, url) => {
+    const actual = await actualOf(dying(chunks), "openai", url);
+    expect(actual.settled).toBe(true);
+    expect(actual.usd).toBeGreaterThan(0);
+  });
+
+  it("a JSON body cut before it closes states no figure", async () => {
+    const actual = await actualOf(
+      dying(['{"usage":{"cost_in_usd_ticks":2000'], "application/json"),
+      "xai",
+      "https://api.x.ai/v1/images/edits"
+    );
+    expect(actual.usd).toBeNull();
+    expect(actual.statedUsd).toBeNull();
+    expect(actual.settled).toBe(false);
+    expect(actual.warnings.join(" ")).toContain("not captured");
+  });
+
+  it("a JSON body whose connection dies after its last byte keeps its figure", async () => {
+    const actual = await actualOf(
+      dying(['{"usage":{"cost_in_usd_ticks":200000000}}'], "application/json"),
+      "xai",
+      "https://api.x.ai/v1/images/edits"
+    );
+    expect(actual.statedUsd).toBe(0.02);
+  });
+});
+
 describe("scrubbing a stream frame by frame", () => {
   const filler = 'data: {"type":"delta","delta":"word"}\n\n'.repeat(10_000);
   const rules = [
@@ -1138,6 +1233,38 @@ describe("the CLI reads old and new captures", () => {
     expect(exit).toBe(2);
     expect(lines.join("")).toContain(`(${code})`);
     expect(await readdir(dir)).toEqual([]);
+  });
+
+  it("har promote refuses a capture whose input lost its media", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => okResponse())
+    );
+    const { dir, capture } = await setup();
+    await capture.call(
+      { ...meta, input: { model: "gpt-5.6-sol", image: dataUrl(4000) } },
+      () =>
+        capture.fetch("https://api.openai.com/v1/responses", {
+          method: "POST",
+          body: JSON.stringify({ model: "gpt-5.6-sol" }),
+          headers: { "content-type": "application/json" },
+        })
+    );
+    await capture.flush();
+    const { lines: rows } = await read(dir);
+    const root = await mkdtemp(
+      join(tmpdir(), "apicity-cost-evidence-promote-")
+    );
+    dirs.push(root);
+    const lines: string[] = [];
+    const write = (line: string) => lines.push(line);
+    const exit = await promote(
+      [join(dir, rows[0]!.file), "--name", "openai/refused", "--root", root],
+      { log: write, error: write }
+    );
+    expect(exit).toBe(2);
+    expect(lines.join("")).toContain("(media-summary)");
+    expect(await readdir(root)).toEqual([]);
   });
 
   it("har report reads every shape", async () => {

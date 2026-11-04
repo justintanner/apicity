@@ -42,7 +42,7 @@ export interface TokenRate {
 
 // USD per million tokens of one non-text token modality (OpenAI Realtime
 // audio and image tokens). `output` is absent for an input-only modality: an
-// image is never generated, so no image-output rate exists to bundle.
+// input-only modality has no output rate; image-generation rows do.
 export interface ModalityRate {
   input: number;
   cacheRead?: number;

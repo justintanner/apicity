@@ -109,7 +109,7 @@ describe("openai gpt-realtime-2.1 declared modality usage", () => {
     // 55 x 4 + 64 x 0.40 + 13 x 32 + 30 x 24 + 91 x 64 = 7,205.6 per million
     expect(est.usd).toBeCloseTo(0.0072056, 9);
     expect(est.source).toBe("declared-tokens+table");
-    expect(est.rateAsOf).toBe("2026-10-19");
+    expect(est.rateAsOf).toBe("2026-11-04");
     expect(est.warnings).toEqual([]);
     expect(est.breakdown.modalities).toEqual({
       text: {
@@ -266,12 +266,8 @@ describe("openai gpt-realtime-2.1 fails closed", () => {
     );
   });
 
-  it("does not price sibling realtime models", () => {
-    for (const model of [
-      "gpt-realtime-2.1-mini",
-      "gpt-realtime-2",
-      "gpt-realtime",
-    ]) {
+  it("does not price unknown realtime models", () => {
+    for (const model of ["gpt-realtime-unknown"]) {
       expectUnknown(
         computeEstimate({
           provider: "openai",

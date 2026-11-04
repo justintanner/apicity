@@ -1,7 +1,10 @@
 import type { ModelPricing } from "./types";
-import { asNumber, asString } from "./helpers";
+import { asNumber, asString, hintSeconds } from "./helpers";
 
-const source = { url: "https://openai.com/api/pricing" };
+const source = {
+  url: "https://developers.openai.com/api/docs/pricing",
+  asOf: "2026-11-04",
+};
 
 // GPT Image models bill image output tokens, plus text and image input tokens
 // that the request does not carry, so every estimate below prices the output
@@ -137,67 +140,560 @@ const gptImage1p5: ModelPricing = {
   },
 };
 
+// Duration-billed audio has no request-body length; never infer it from bytes.
+function perAudioMinute(perMinute: number): ModelPricing {
+  return {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => hintSeconds(hints),
+    select: [],
+    rates: { "": perMinute / 60 },
+    source,
+  };
+}
+function perCharacter(perMillion: number): ModelPricing {
+  return {
+    kind: "perUnit",
+    unit: "characters",
+    units: (p) => (typeof p.input === "string" ? p.input.length : undefined),
+    select: [],
+    rates: { "": perMillion / 1_000_000 },
+    source,
+  };
+}
+
 export const openai: Record<string, ModelPricing> = {
-  // GPT-5.6 Sol, Standard processing, verified 2026-10-19 against
-  // https://developers.openai.com/api/docs/pricing and
-  // https://developers.openai.com/api/docs/models/gpt-5.6-sol (ac-0y875w).
-  // Input tokens are uncached, cached or cache writes (1.25x uncached, not an
-  // additive fee). Prompts with more than 272K (272,000) input tokens bill
-  // the whole request at the long-context rates. These are OpenAI's
-  // promotional prices, "available at least through November 21, 2026".
-  // Priced from declared usage only; Batch, Flex and Fast tiers and the
-  // regional-processing uplift are not bundled and fail closed.
+  // Standard tier only, read 2026-11-04. Batch, Flex, Fast/Priority and
+  // Ultrafast are not bundled and fail closed. Cache writes use the 30m
+  // retention rate; 12h writes must not be billed at that rate.
+  "gpt-6-astra": {
+    kind: "tokens",
+    rate: { input: 10.0, output: 50.0, cacheRead: 1.0, cacheWrite: 12.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 20.0, output: 75.0, cacheRead: 2.0, cacheWrite: 25.0 },
+    },
+  },
+  "gpt-6.1-sol": {
+    kind: "tokens",
+    rate: { input: 2.0, output: 10.0, cacheRead: 0.1, cacheWrite: 2.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 4.0, output: 15.0, cacheRead: 0.2, cacheWrite: 5.0 },
+    },
+  },
+  "gpt-6.1-terra": {
+    kind: "tokens",
+    rate: { input: 1.0, output: 5.0, cacheRead: 0.05, cacheWrite: 1.25 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 2.0, output: 7.5, cacheRead: 0.1, cacheWrite: 2.5 },
+    },
+  },
+  "gpt-6-luna": {
+    kind: "tokens",
+    rate: { input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite: 0.125 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 0.2, output: 0.75, cacheRead: 0.02, cacheWrite: 0.25 },
+    },
+  },
+  "gpt-6-sol": {
+    kind: "tokens",
+    rate: { input: 2.0, output: 10.0, cacheRead: 0.2, cacheWrite: 2.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 4.0, output: 15.0, cacheRead: 0.4, cacheWrite: 5.0 },
+    },
+  },
+  // Promotional through at least 2026-11-21.
   "gpt-5.6-sol": {
     kind: "tokens",
-    rate: { input: 4, output: 20, cacheRead: 0.4, cacheWrite: 5 },
+    rate: { input: 4.0, output: 20.0, cacheRead: 0.4, cacheWrite: 5.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
     longContext: {
-      aboveInputTokens: 272_000,
-      rate: { input: 8, output: 30, cacheRead: 0.8, cacheWrite: 10 },
-    },
-    source: {
-      url: "https://developers.openai.com/api/docs/pricing",
-      asOf: "2026-10-19",
+      aboveInputTokens: 272000,
+      rate: { input: 8.0, output: 30.0, cacheRead: 0.8, cacheWrite: 10.0 },
     },
   },
-  // GPT-Realtime-2.1, verified 2026-10-19 against
-  // https://developers.openai.com/api/docs/pricing and
-  // https://developers.openai.com/api/docs/models/gpt-realtime-2.1
-  // (ac-ow167y). Realtime bills text, audio and image tokens at separate
-  // rates; `rate` is the text rate. Image is an input-only modality, and no
-  // cache-write charge is published. Priced only from declared modality usage
-  // (a Realtime response.done `usage`).
-  "gpt-realtime-2.1": {
+  "gpt-5.6-terra": {
     kind: "tokens",
-    rate: { input: 4, output: 24, cacheRead: 0.4 },
-    modalityRates: {
-      audio: { input: 32, cacheRead: 0.4, output: 64 },
-      image: { input: 5, cacheRead: 0.5 },
-    },
+    rate: { input: 2.0, output: 12.0, cacheRead: 0.2, cacheWrite: 2.5 },
     source: {
       url: "https://developers.openai.com/api/docs/pricing",
-      asOf: "2026-10-19",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 4.0, output: 18.0, cacheRead: 0.4, cacheWrite: 5.0 },
     },
   },
-  "gpt-5": { kind: "tokens", rate: { input: 1.25, output: 10 }, source },
-  "gpt-5-mini": { kind: "tokens", rate: { input: 0.25, output: 2 }, source },
-  "gpt-5-nano": { kind: "tokens", rate: { input: 0.05, output: 0.4 }, source },
-  "gpt-4.1": { kind: "tokens", rate: { input: 2, output: 8 }, source },
-  "gpt-4.1-mini": { kind: "tokens", rate: { input: 0.4, output: 1.6 }, source },
-  "gpt-4.1-nano": { kind: "tokens", rate: { input: 0.1, output: 0.4 }, source },
-  "gpt-4o": { kind: "tokens", rate: { input: 2.5, output: 10 }, source },
-  "gpt-4o-mini": { kind: "tokens", rate: { input: 0.15, output: 0.6 }, source },
-  o3: { kind: "tokens", rate: { input: 2, output: 8 }, source },
-  "o4-mini": { kind: "tokens", rate: { input: 1.1, output: 4.4 }, source },
+  "gpt-5.6-luna": {
+    kind: "tokens",
+    rate: { input: 0.2, output: 1.2, cacheRead: 0.02, cacheWrite: 0.25 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 0.4, output: 1.8, cacheRead: 0.04, cacheWrite: 0.5 },
+    },
+  },
+  "gpt-5.5": {
+    kind: "tokens",
+    rate: { input: 5.0, output: 30.0, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 10.0, output: 45.0, cacheRead: 1.0 },
+    },
+  },
+  "gpt-5.5-pro": {
+    kind: "tokens",
+    rate: { input: 30.0, output: 180.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 60.0, output: 270.0 },
+    },
+  },
+  "gpt-5.4": {
+    kind: "tokens",
+    rate: { input: 2.5, output: 15.0, cacheRead: 0.25 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 5.0, output: 22.5, cacheRead: 0.5 },
+    },
+  },
+  "gpt-5.4-pro": {
+    kind: "tokens",
+    rate: { input: 30.0, output: 180.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 60.0, output: 270.0 },
+    },
+  },
+  "gpt-5.4-mini": {
+    kind: "tokens",
+    rate: { input: 0.75, output: 4.5, cacheRead: 0.075 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5.4-nano": {
+    kind: "tokens",
+    rate: { input: 0.2, output: 1.25, cacheRead: 0.02 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5.2": {
+    kind: "tokens",
+    rate: { input: 1.75, output: 14.0, cacheRead: 0.175 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5.2-pro": {
+    kind: "tokens",
+    rate: { input: 21.0, output: 168.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5.1": {
+    kind: "tokens",
+    rate: { input: 1.25, output: 10.0, cacheRead: 0.125 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5": {
+    kind: "tokens",
+    rate: { input: 1.25, output: 10.0, cacheRead: 0.125 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5-mini": {
+    kind: "tokens",
+    rate: { input: 0.25, output: 2.0, cacheRead: 0.025 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5-nano": {
+    kind: "tokens",
+    rate: { input: 0.05, output: 0.4, cacheRead: 0.005 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5-pro": {
+    kind: "tokens",
+    rate: { input: 15.0, output: 120.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-4.1": {
+    kind: "tokens",
+    rate: { input: 2.0, output: 8.0, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-4.1-mini": {
+    kind: "tokens",
+    rate: { input: 0.4, output: 1.6, cacheRead: 0.1 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-4o": {
+    kind: "tokens",
+    rate: { input: 2.5, output: 10.0, cacheRead: 1.25 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-4o-mini": {
+    kind: "tokens",
+    rate: { input: 0.15, output: 0.6, cacheRead: 0.075 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "o3-pro": {
+    kind: "tokens",
+    rate: { input: 20.0, output: 80.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  o3: {
+    kind: "tokens",
+    rate: { input: 2.0, output: 8.0, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "chat-latest": {
+    kind: "tokens",
+    rate: { input: 5, output: 30, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5.3-codex": {
+    kind: "tokens",
+    rate: { input: 1.75, output: 14, cacheRead: 0.175 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-5-search-api": {
+    kind: "tokens",
+    rate: { input: 1.25, output: 10, cacheRead: 0.125 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
   "text-embedding-3-small": {
     kind: "tokens",
     rate: { input: 0.02, output: 0 },
-    source,
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
   },
   "text-embedding-3-large": {
     kind: "tokens",
     rate: { input: 0.13, output: 0 },
-    source,
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
   },
+  "text-embedding-ada-002": {
+    kind: "tokens",
+    rate: { input: 0.1, output: 0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "omni-moderation-latest": {
+    kind: "tokens",
+    rate: { input: 0, output: 0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  "gpt-5.6-cyber": {
+    kind: "tokens",
+    rate: { input: 12.5, output: 75.0, cacheRead: 1.25, cacheWrite: 15.625 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  "gpt-5.5-cyber": {
+    kind: "tokens",
+    rate: { input: 12.5, output: 75.0, cacheRead: 1.25 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  "gpt-6-rosalind": {
+    kind: "tokens",
+    rate: { input: 15.0, output: 75.0, cacheRead: 1.5, cacheWrite: 18.75 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+    longContext: {
+      aboveInputTokens: 272000,
+      rate: { input: 30.0, output: 112.5, cacheRead: 3.0, cacheWrite: 37.5 },
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  "gpt-rosalind-research": {
+    kind: "tokens",
+    rate: { input: 5.0, output: 25.0, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  "gpt-rosalind-discovery": {
+    kind: "tokens",
+    rate: { input: 5.0, output: 25.0, cacheRead: 0.5 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Limited access; availability is not implied by this price.
+  // Promotional through at least 2026-12-31.
+  "gpt-6-astra-law": {
+    kind: "tokens",
+    rate: { input: 10.0, output: 50.0, cacheRead: 1.0 },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime-2.1": {
+    kind: "tokens",
+    rate: { input: 4, output: 24, cacheRead: 0.4 },
+    modalityRates: {
+      audio: { input: 32, output: 64, cacheRead: 0.4 },
+      image: { input: 5, cacheRead: 0.5 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime-2.1-mini": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 2.4, cacheRead: 0.06 },
+    modalityRates: {
+      audio: { input: 10, output: 20, cacheRead: 0.3 },
+      image: { input: 0.8, cacheRead: 0.08 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime-2": {
+    kind: "tokens",
+    rate: { input: 4, output: 24, cacheRead: 0.4 },
+    modalityRates: {
+      audio: { input: 32, output: 64, cacheRead: 0.4 },
+      image: { input: 5, cacheRead: 0.5 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime-1.5": {
+    kind: "tokens",
+    rate: { input: 4, output: 16, cacheRead: 0.4 },
+    modalityRates: {
+      audio: { input: 32, output: 64, cacheRead: 0.4 },
+      image: { input: 5, cacheRead: 0.5 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime-mini": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 2.4, cacheRead: 0.06 },
+    modalityRates: {
+      audio: { input: 10, output: 20, cacheRead: 0.3 },
+      image: { input: 0.8, cacheRead: 0.08 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-realtime": {
+    kind: "tokens",
+    rate: { input: 4, output: 16, cacheRead: 0.4 },
+    modalityRates: {
+      audio: { input: 32, output: 64, cacheRead: 0.4 },
+      image: { input: 5, cacheRead: 0.5 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-audio-1.5": {
+    kind: "tokens",
+    rate: { input: 2.5, output: 10 },
+    modalityRates: { audio: { input: 32, output: 64 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-audio-mini": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 2.4 },
+    modalityRates: { audio: { input: 10, output: 20 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-audio": {
+    kind: "tokens",
+    rate: { input: 2.5, output: 10 },
+    modalityRates: { audio: { input: 32, output: 64 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-4o-mini-tts": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 0 },
+    modalityRates: { audio: { input: 0, output: 12 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "gpt-image-1-mini": {
+    kind: "tokens",
+    rate: { input: 2, output: 0, cacheRead: 0.2 },
+    modalityRates: { image: { input: 2.5, output: 8, cacheRead: 0.25 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  "chatgpt-image-latest": {
+    kind: "tokens",
+    rate: { input: 5, output: 10, cacheRead: 1.25 },
+    modalityRates: { image: { input: 8, output: 32, cacheRead: 2 } },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-11-04",
+    },
+  },
+  // Retained legacy keys: not listed on the current pricing page.
+  "gpt-4.1-nano": {
+    kind: "tokens",
+    rate: { input: 0.1, output: 0.4 },
+    source: { url: source.url, asOf: "2026-10-19" },
+  },
+  "o4-mini": {
+    kind: "tokens",
+    rate: { input: 1.1, output: 4.4 },
+    source: { url: source.url, asOf: "2026-10-19" },
+  },
+  "gpt-realtime-translate": perAudioMinute(0.034),
+  "gpt-live-transcribe": perAudioMinute(0.017),
+  "gpt-realtime-whisper": perAudioMinute(0.017),
+  "gpt-transcribe": perAudioMinute(0.0045),
+  "gpt-4o-transcribe": perAudioMinute(0.006),
+  "gpt-4o-mini-transcribe": perAudioMinute(0.003),
+  "gpt-4o-transcribe-diarize": perAudioMinute(0.006),
+  "whisper-1": perAudioMinute(0.006),
+  "gpt-live-1": perAudioMinute(0.05),
+  "tts-1": perCharacter(15),
+  "tts-1-hd": perCharacter(30),
 
   // GPT Image — USD per image (1.5) or per image output token (2 and 2.5).
   "gpt-image-1.5": gptImage1p5,

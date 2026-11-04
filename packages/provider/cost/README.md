@@ -675,6 +675,81 @@ One object can safely serve as estimate input, hashed request, and POST body.
 Putting the duration inside `payload` instead would either ship a field
 upstream never sees or bind the OTP to a hash the real call cannot reproduce.
 
+## Actual cost
+
+`computeEstimate` says what a call should cost. `extractActual` says what it did
+cost, from the provider's own response. It is pure and local, like the rest of
+this package, and it never guesses. `@apicity/har`'s `entryToProviderExchange`
+turns a captured HAR entry into the `ProviderExchange` it reads; the two packages
+do not import each other.
+
+```ts
+import { compareCost, extractActual, mergeActuals } from "@apicity/cost";
+import type { CostEstimate, ProviderExchange } from "@apicity/cost";
+
+declare const submit: ProviderExchange; // the POST that started the task
+declare const poll: ProviderExchange; // its terminal read
+declare const quoted: CostEstimate; // what computeEstimate said beforehand
+
+const actual = mergeActuals([extractActual(submit), extractActual(poll)]);
+actual.usd; // statedUsd ?? derivedUsd
+actual.basis; // "stated" | "derived" | "usage-only" | "none"
+actual.settled; // false until a terminal read arrives
+
+compareCost(quoted, actual).verdict; // "match", "over", "under", ...
+```
+
+`basis` says how far to trust the figure:
+
+| `basis`      | Means                                                                 |
+| ------------ | --------------------------------------------------------------------- |
+| `stated`     | The provider gave the charge, or a fixed conversion of it             |
+| `derived`    | The response's usage times a bundled rate                             |
+| `usage-only` | Usage was reported, but no bundled rate prices it; `warnings` say why |
+| `none`       | The response has nothing to read; `warnings` say so                   |
+
+Where each provider states its charge:
+
+| Provider              | Charge                                                                                                                                          | Usage                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| xai                   | `usage.cost_in_usd_ticks`, 1e10 ticks per USD                                                                                                   | Tokens; `video.duration`                                                                    |
+| kie                   | `data.creditsConsumed` or `credits_consumed`, 0.005 USD per credit                                                                              | Tokens, in Anthropic, OpenAI or Gemini shape by route                                       |
+| machgen               | `generation_cost_micros` (`statedListUsd`) and `net_cost_micros` (`statedUsd`), from the free `api.v0.tasks.billing`                            | `metadata.duration_secs`                                                                    |
+| elevenlabs            | `fiat-cost-before-overages` when above 0; inside a plan's quota it reads 0, which is not a charge. `character-cost` is `usage.credits`, not USD | `audio_duration_secs`; `metadata.charging` on agent conversations                           |
+| fal                   | `usage.cost` on openrouter routes only                                                                                                          | `x-fal-billable-units`, in fal's own unit, as `usage.billableUnits`, with no derived figure |
+| openai, anthropic     | None                                                                                                                                            | Tokens, cached, cache write                                                                 |
+| alibaba               | None                                                                                                                                            | Tokens; `usage.duration`; `usage.image_count`                                               |
+| fireworks             | None                                                                                                                                            | Tokens, cached; GPU seconds on jobs                                                         |
+| kimicoding, zaicoding | None; flat plans                                                                                                                                | Tokens, cached                                                                              |
+| google                | None                                                                                                                                            | `usageMetadata.*`                                                                           |
+| wavespeed, s3, x, quo | None; `basis` is `none`                                                                                                                         | None                                                                                        |
+
+`usage.inputTokens` is always the total. Anthropic-shaped responses report the
+uncached remainder in `input_tokens`, so the extractor adds the cache counts.
+`usage.outputTokens` holds reasoning too, even where `total_tokens` is the only
+place a response counts it.
+
+`derivedUsd` covers what a bundled rate covers. A charge the rate cannot see
+leaves it null with a warning: a web search or other server tool, US-only
+inference, fast mode, a regional endpoint, an Anthropic 1-hour cache write, or
+KIE cached tokens on a card with no cache rate.
+
+`settled` is false on a KIE `createTask`, a fal queue submit or status read, a
+MachGen `generate`, any in-flight poll, and a captured stream cut short before its
+final usage. A 4xx ends the call, except a MachGen receipt's 409, which means the
+task has not finished.
+
+`mergeActuals` takes the exchanges of **one** call, in order. A later figure
+replaces an earlier one, because the terminal read holds the final bill, and the
+last part says whether the call is settled. Units a poll reports are priced at the
+rate the submit's request selected. It does not sum several calls: split them
+first. A merge that looks like several calls says so in `warnings`.
+
+`compareCost` compares against `statedListUsd ?? usd`, so a credit or promotion
+that lowers what was paid is not reported as a rate error. An unsettled figure can
+still move, so it compares as `no-actual`. The default tolerance is 0.02. `deltaUsd`
+is estimate minus actual, and `ratio` is estimate over actual.
+
 ## Bundled pricing
 
 MachGen rates are gross USD per second, verified 2026-10-25 against

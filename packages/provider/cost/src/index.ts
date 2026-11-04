@@ -1,5 +1,7 @@
 export { createCost } from "./cost";
 export { computeEstimate } from "./compute";
+export { extractActual, mergeActuals } from "./actual";
+export { compareCost } from "./compare";
 export {
   resolveFalDynamicEstimate,
   isFalDynamicPricingEndpoint,
@@ -60,13 +62,21 @@ export type {
 } from "./pricing/index";
 
 export type {
+  ActualBasis,
+  ActualUsage,
+  CostActual,
   CostBreakdown,
+  CostComparison,
   CostEstimate,
   CostModalityBreakdown,
   CostHints,
   CostProvider,
   CostSource,
+  EndpointBilling,
+  EndpointBillingKind,
+  EndpointEstimate,
   EstimateRequest,
+  ProviderExchange,
 } from "./types";
 
 export type { ExtractResult, TextExtract } from "./extract/types";

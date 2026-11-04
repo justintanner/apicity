@@ -1,3 +1,5 @@
+import type { RateSource } from "./pricing/types";
+
 // "tokens-heuristic+table" — token counts estimated from text (chars/4).
 // "declared-tokens+table" — token counts supplied by the caller through
 //   CostHints. Used where an upstream publishes a per-token rate but the
@@ -243,4 +245,110 @@ export type EstimateRequest =
 
 export interface CostProvider {
   estimate: (req: EstimateRequest) => CostEstimate;
+}
+
+// One HTTP exchange with a provider, as extractActual reads it. A plain data
+// shape, so @apicity/cost needs no dependency on @apicity/har:
+// entryToProviderExchange there returns this shape structurally.
+export interface ProviderExchange {
+  provider: string;
+  dotPath?: string;
+  method: string;
+  url: string;
+  status: number;
+  // null when captured as a placeholder
+  requestBody: Record<string, unknown> | null;
+  // lower-cased names
+  responseHeaders: Record<string, string>;
+  // parsed JSON, or the array of SSE data frames
+  responseBody: unknown;
+  bodyTruncated?: boolean;
+}
+
+export interface ActualUsage {
+  // total, cached and cache-write included
+  inputTokens?: number;
+  // total, reasoning included
+  outputTokens?: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+  reasoningTokens?: number;
+  audioInputTokens?: number;
+  imageInputTokens?: number;
+  audioOutputTokens?: number;
+  imageOutputTokens?: number;
+  characters?: number;
+  seconds?: number;
+  images?: number;
+  // in the provider's own unit (fal header)
+  billableUnits?: number;
+  credits?: number;
+}
+
+// "stated": the provider gave the charge, or a fixed conversion of it.
+// "derived": usage times a bundled rate. "usage-only": usage with no rate.
+// "none": nothing to read.
+export type ActualBasis = "stated" | "derived" | "usage-only" | "none";
+
+export interface CostActual {
+  provider: string;
+  dotPath: string | null;
+  model: string | null;
+  usage: ActualUsage;
+  // Where each figure came from: "usage.cost_in_usd_ticks",
+  // "header:x-fal-billable-units".
+  evidence: string[];
+  // what was paid: the provider's figure, or a fixed conversion
+  statedUsd: number | null;
+  // before credits or promotions, when the provider says so
+  statedListUsd: number | null;
+  // usage x the bundled rate
+  derivedUsd: number | null;
+  // statedUsd ?? derivedUsd
+  usd: number | null;
+  basis: ActualBasis;
+  // false for a submit that reports no final usage
+  settled: boolean;
+  rateAsOf: string | null;
+  warnings: string[];
+  // The per-unit rate this exchange's request selected, kept so mergeActuals
+  // can price the units a later poll reports: the request is on the submit and
+  // the usage on the poll.
+  unitRate?: { usd: number; asOf: string | null };
+}
+
+export interface CostComparison {
+  estimateUsd: number | null;
+  actualUsd: number | null;
+  basis: ActualBasis;
+  deltaUsd: number | null;
+  ratio: number | null;
+  verdict: "match" | "over" | "under" | "no-estimate" | "no-actual" | "free";
+}
+
+export type EndpointBillingKind =
+  | "metered" // bills per unit
+  | "free" // documented free call
+  | "followup" // poll or result; billed on the submit it follows
+  | "subscription" // flat plan, zero marginal USD
+  | "accrual" // accrues while running, no per-call amount
+  | "unpriced"; // metered with no rate yet; fail-closed default
+
+export interface EndpointBilling {
+  provider: string;
+  method: string;
+  dotPath: string;
+  kind: EndpointBillingKind;
+  unit?: string;
+  // required for every kind but metered
+  reason?: string;
+  source?: RateSource;
+}
+
+export interface EndpointEstimate extends CostEstimate {
+  status: "priced" | "zero" | "unavailable";
+  billing: EndpointBilling;
+  zeroReason?: string;
+  // forecast mode only
+  range?: { low: number; high: number };
 }

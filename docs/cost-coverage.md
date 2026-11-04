@@ -169,7 +169,7 @@ so its rows come from the page's compiled source.
 
 ## Field map
 
-Field paths and pins are per endpoint in `actual-fields.tsv`, 535 rows over 138
+Field paths and pins are per endpoint in `actual-fields.tsv`, 526 rows over 129
 unique paths.
 
 | Family     | States the charge                                                                      | Usage fields                                                                  |

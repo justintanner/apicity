@@ -1334,3 +1334,25 @@ Standard global text snapshots; regional hosts, unsupported modalities and
 tiers fail closed. Actuals use `usageMetadata`, adding thoughts to candidate
 output tokens. Alibaba's retired `qwen3-max` recording remains usage-only
 because the current price card has no row.
+
+### Coding plan comparisons and remaining endpoint rates
+
+`estimateEndpoint` returns zero with a plan-specific `zeroReason` for Kimi
+Code and Z.ai coding subscriptions. To compare platform list prices, call
+`computeEstimate` explicitly with `provider: "kimicoding"` or `"zaicoding"`,
+a documented platform model key, and token `costHints`. The result includes a
+comparison note; `extractActual` never derives a list-price charge for these
+plans. Unmapped Kimi wire ids (`k3-256k`, `k2p5`, `k3.1-pro`) are unavailable,
+not guessed aliases. Historical Kimi K2/K2.5 table entries remain for registry
+compatibility but are unavailable for current comparisons. Kimi comparisons
+use the default cache-write rate; one-hour TTL comparisons are unavailable.
+The one-hour cache hint remains Anthropic-only.
+
+Quo SMS estimates use its published 160/70-character segmentation and $0.01
+base rate. Non-GSM text and destinations outside a single US/Canada number
+carry warnings because encoding or country rates can change the charge.
+Flow extensions resolve the Veo model (default `veo-3.1-fast`); video upscale
+prices 720p/1080p at zero credits and 4K at 50 credits on Ultra plans. GIF and
+concatenate remain unavailable pending documented prices (`ac-6nez46`).
+Every retained endpoint-billing exception records a reason and an open
+follow-up or mayor ruling in the registry and its guard allowlist.

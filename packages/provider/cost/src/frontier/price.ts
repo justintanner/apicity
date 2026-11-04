@@ -34,6 +34,7 @@ export interface FrontierPricedEndpoint {
 const DYNAMIC = new Set<string>(FAL_DYNAMIC_PRICING_ENDPOINTS);
 
 const UNIT_LABEL: Record<CostUnit, string> = {
+  segments: "segment",
   seconds: "s",
   images: "image",
   generations: "generation",

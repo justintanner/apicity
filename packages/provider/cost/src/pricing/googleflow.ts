@@ -216,6 +216,26 @@ const omniFlashResolution = (
 };
 
 export const googleflow: Record<string, ModelPricing> = {
+  "videos/upscale": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1080p" },
+      { name: "plan", pick: (_p, hints) => hints?.googleFlowPlan ?? "pro" },
+    ],
+    rates: {
+      ...everyPlan("720p", 0),
+      ...everyPlan("1080p", 0),
+      "4K|ultra": 50 * PLANS.ultra.creditUsd,
+      "4K|ultra-99": 50 * PLANS["ultra-99"].creditUsd,
+    },
+    warn: planWarn,
+    source: {
+      url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale",
+      asOf: "2026-11-04",
+    },
+  },
   "veo-3.1-quality": flatVideo({ nonUltra: 100, ultra: 100 }),
   "veo-3.1-fast": flatVideo({ nonUltra: 20, ultra: 10 }),
   "veo-3.1-lite": flatVideo({ nonUltra: 10, ultra: 5 }),

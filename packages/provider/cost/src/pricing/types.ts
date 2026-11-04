@@ -9,6 +9,7 @@
 import type { CostHints } from "../types";
 
 export type CostUnit =
+  | "segments"
   | "tokens"
   | "characters"
   | "seconds"

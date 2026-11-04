@@ -2631,7 +2631,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "seconds",
       reason:
-        "Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed",
+        "Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw",
       source: { url: "https://fireworks.ai/pricing", asOf: "2026-11-04" },
     },
     [
@@ -2693,7 +2693,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "images",
       reason:
-        "Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed",
+        "Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw",
       source: { url: "https://fireworks.ai/pricing", asOf: "2026-11-04" },
     },
     [
@@ -2845,9 +2845,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "googleflow",
     {
-      kind: "free",
-      reason:
-        "Docs and the plan table publish no credit cost for a concatenation; no recording states one",
+      kind: "unpriced",
+      reason: "No published credit cost for concatenation; follow-up ac-6nez46",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate",
         asOf: "2026-11-04",
@@ -2861,7 +2860,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "credits",
       reason:
-        "Uses the same Veo models and credit table as a generation; the route does not resolve it today",
+        "Uses the same Veo models and credit table as a generation; model defaults to veo-3.1-fast",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend",
         asOf: "2026-11-04",
@@ -2872,9 +2871,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "googleflow",
     {
-      kind: "free",
-      reason:
-        "Docs and the plan table publish no credit cost for a GIF render; no recording states one",
+      kind: "unpriced",
+      reason: "No published credit cost for GIF rendering; follow-up ac-6nez46",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif",
         asOf: "2026-11-04",
@@ -2885,9 +2883,9 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "googleflow",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "credits",
-      reason: "720p and 1080p are free; 4K costs 50 credits. No bundled row.",
+      reason: "720p and 1080p are free; 4K costs 50 credits on Ultra plans",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale",
         asOf: "2026-11-04",
@@ -3106,7 +3104,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "per-model",
       reason:
-        "The docs and the feed publish no price, so P4 fails it closed unless a price appears",
+        "The docs and the feed publish no price, so P4 fails it closed unless a price appears; follow-up ac-rnclk7",
       source: {
         url: "https://docs.kie.ai/suno-api/recovery-audio.md",
         asOf: "2026-11-04",
@@ -3184,7 +3182,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "tokens",
       reason:
-        "No current published rate; product pages redirect to newer models.",
+        "No current published rate; product pages redirect to newer models; follow-up ac-rnclk7",
       source: {
         url: "https://api.kie.ai/client/v1/model-pricing/page",
         asOf: "2026-11-04",
@@ -3560,7 +3558,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "images",
       reason:
-        "The page no longer lists the DALL-E models this endpoint serves, so P1 fails it closed",
+        "The page no longer lists the DALL-E models this endpoint serves, so P1 fails it closed; ruling ac-stu9mv, no follow-up",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",
@@ -3704,7 +3702,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "requests",
       reason:
-        "No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day",
+        "No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day; ruling ac-4pxiai, no follow-up",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",
@@ -3908,7 +3906,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "quo",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "segments",
       reason:
         "0.01 USD per outgoing US or Canada segment; international adds a country rate; 160 GSM-7 or 70 special characters per segment",
@@ -4077,7 +4075,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "Archive storage class and retrieval tier are not modeled",
+      reason:
+        "Archive storage class and retrieval tier are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST objects.restore"]
@@ -4087,7 +4086,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "SELECT scanned and returned bytes are not modeled",
+      reason:
+        "SELECT scanned and returned bytes are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST objects.selectContent"]
@@ -4097,7 +4097,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "Object Lambda returned bytes and Lambda charges are not modeled",
+      reason:
+        "Object Lambda returned bytes and Lambda charges are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST objectLambda.writeGetObjectResponse"]
@@ -4107,7 +4108,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "Express session has no independently pinned per-call rate",
+      reason:
+        "Express session has no independently pinned per-call rate; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["GET buckets.createSession"]
@@ -4117,7 +4119,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "S3 Metadata feature charges are not modeled",
+      reason:
+        "S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST buckets.createMetadataConfiguration"]
@@ -4127,7 +4130,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "S3 Metadata feature charges are not modeled",
+      reason:
+        "S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["POST buckets.createMetadataTableConfiguration"]
@@ -4137,7 +4141,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "S3 Metadata feature charges are not modeled",
+      reason:
+        "S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["PUT buckets.updateMetadataInventoryTable"]
@@ -4147,7 +4152,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     {
       kind: "unpriced",
       unit: "requests",
-      reason: "S3 Metadata feature charges are not modeled",
+      reason:
+        "S3 Metadata feature charges are not modeled; ruling ac-5r6k06, no follow-up",
       source: { url: "https://aws.amazon.com/s3/pricing/", asOf: "2026-11-04" },
     },
     ["PUT buckets.updateMetadataJournalTable"]
@@ -4553,7 +4559,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "telegram-stars",
       reason:
-        "Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table. No price child owns this row.",
+        "Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up",
       source: { url: "https://core.telegram.org/bots/api", asOf: "2026-11-04" },
     },
     [
@@ -4969,7 +4975,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "requests",
       reason:
-        "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint",
+        "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f",
       source: {
         url: "https://docs.x.com/x-api/getting-started/pricing.md",
         asOf: "2026-11-04",

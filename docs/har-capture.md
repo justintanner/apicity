@@ -35,9 +35,11 @@ error text, HTTP status, and timings. It scrubs authentication headers, signed
 URL credentials, known secret body fields and cookies before writing. Non-text
 bodies and bodies larger than `maxBodyBytes` (default 256 KiB) become placeholders
 with SHA-256, byte count and content type. Multipart uploads retain field and
-file summaries, not file bytes. Large base64 and data URL media are summarized.
-Captures still contain application data: choose a private directory and share
-only the captures you intend to share.
+file summaries, not file bytes. Large base64 and data URL media are summarized, in
+bodies and in the call's `input`. Base64 may wrap on line ends at one width of 60
+characters or more. A string with spaces in it, or with one word, path or ID to a
+line, is text. Captures still contain application data: choose a private directory
+and share only the captures you intend to share.
 
 Two kinds of oversized body keep what a cost report needs:
 
@@ -57,8 +59,29 @@ Two kinds of oversized body keep what a cost report needs:
   keep the head only.
 
 `bodyTruncated` covers both directions, so it can mean the request was cut while
-the response is whole. Captures from before this behaviour have a placeholder or a
-head-only stream, and read the same way as any other.
+the response is whole, and a body that failed mid-read as well as one over a cap.
+Captures from before this behaviour have a placeholder or a head-only stream, and
+read the same way as any other.
+
+A call's `input` holds no media. Each data URL or base64 field over 1024 characters,
+and each byte array, becomes the placeholder a dropped body leaves:
+
+```json
+{
+  "_apicity_placeholder": {
+    "sha256": "<hash>",
+    "bytes": 161585,
+    "contentType": "image/jpeg"
+  }
+}
+```
+
+The hash and byte count describe the decoded media, or the text as written for a
+data URL that is not base64. `contentType` is the data URL's media type, otherwise
+`application/octet-stream`. The model, parameters, prose and shorter strings stay,
+and neither the caller's value nor what the provider receives changes. Captures
+from before this behaviour keep their media in `input`: `apicity har scrub` scrubs
+it for secrets and leaves it there.
 
 Each call writes:
 
@@ -73,7 +96,7 @@ Unsafe path characters are escaped. The index contains one JSON line per file:
 `log.creator` identifies apicity and its package version. `log._apicity` carries
 call ID, provider, endpoint, input, outcome, optional error, optional estimate,
 context, runtime, version, start time and duration. Entry `_apicity` identifies
-HTTP or local entries, stream/truncation flags and `pollRepeat` (the number of
+HTTP or local entries, stream/truncation/`responseCut` flags and `pollRepeat` (the number of
 additional consecutive identical GET responses collapsed into that entry).
 Submissions are never collapsed. Timings measure fetch response-header latency;
 call duration measures the callback, not the asynchronous disk write.
@@ -110,8 +133,10 @@ copies `usd`, so a bare 0 in the index does not tell it from a free call.
 error after HTTP activity is `provider_error`, including KIE's HTTP 200 error
 envelope. An error before any exchange is `local_error`, with a synthetic
 status-zero entry whose URL contains the requested endpoint. A rejected fetch is
-`network_error`, including when a provider wraps the network error. `failures`
-mode keeps only non-`ok` calls; successful calls are discarded in memory.
+`network_error`, including when a provider wraps the network error, and so is a body
+that fails mid-read, even if the callback swallowed the error or had already
+returned. `failures` mode keeps only non-`ok` calls; successful calls are discarded
+in memory.
 Nested calls join the outer call and use its metadata. Concurrent outer calls
 remain isolated. Await the provider work inside the callback so its exchanges
 belong to that call.
@@ -150,6 +175,25 @@ installed by the application.
 A capture/serialization/write failure invokes `onError` once, disables the
 capture instance for the remainder of its lifetime, and leaves provider results
 and thrown values unchanged. `flush` and `close` do not throw capture failures.
+
+A body that fails mid-read, on a dropped connection or a timeout abort, is not a
+capture failure. The exchange is saved with `bodyTruncated`, and `bodySize` counts
+what arrived. A failed response also sets `responseCut`.
+
+- **A stream** keeps its whole lines. Each frame is scrubbed alone, and the one the
+  read ended inside would not parse. `extractActual` reads it as unsettled unless
+  its final usage had already arrived.
+- **Any other body** keeps its text only when it parses as a whole JSON document, as
+  when the connection died after the last byte. Otherwise it becomes a placeholder of
+  what arrived, whatever its content type says, because the scrub rules and media
+  summaries read whole documents. `extractActual` reads that as unsettled too unless
+  the headers stated a figure, so a poll cut this way does not end its call.
+
+A multipart body that arrives whole but will not parse becomes a placeholder as well,
+and is not marked truncated unless it is over the cap. A stream drops what nobody has
+read when it errors, so a request body stream that fails may keep nothing: its copy
+is read once the fetch has settled.
+
 `clock` and `idFactory` are optional deterministic test hooks; IDs must be unique
 within a directory and timestamp. There is no automatic retention or rotation.
 
@@ -253,7 +297,8 @@ The seven sections count:
    nested (including object elements in arrays). New keys compare against the
    baseline union; missing keys must appear in every baseline response. Type
    changes report newly observed types. KIE/xAI business failures are excluded.
-7. Local failures: normalized error groups with attempted input shapes only.
+7. Local failures: normalized error groups with attempted input shapes only. A
+   media placeholder in the input reads as type `media`.
 
 fal `v1.queue.submit` sends its request's `input` member as the whole body, so
 its schema sections (3, 4 and schema defaults) check each annotated call's

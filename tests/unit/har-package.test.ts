@@ -91,6 +91,36 @@ describe("exchange serializer", () => {
       data: "<inline base64 data; 771 bytes>",
     });
   });
+  it.each([
+    ["spaces", "cat dog tree house ".repeat(100)],
+    ["tabs", "cat\tdog\ttree\thouse\t".repeat(100)],
+    ["a word to a line", "cat\ndog\ntree\nhouse\n".repeat(100)],
+    ["an id to a line", "123e4567-e89b-12d3-a456-426614174000\n".repeat(60)],
+  ])("does not read unpunctuated prose as base64 (%s)", async (_, prompt) => {
+    const entry = await exchangeToEntry(
+      request(JSON.stringify({ prompt })),
+      new Response(JSON.stringify({ text: prompt }), {
+        headers: { "content-type": "application/json" },
+      }),
+      timing
+    );
+    expect(JSON.parse(entry.request.postData!.text!).prompt).toBe(prompt);
+    expect(JSON.parse(entry.response.content.text!).text).toBe(prompt);
+  });
+  it.each([
+    ["line feeds", "\n"],
+    ["CRLF", "\r\n"],
+  ])("still reads base64 wrapped on %s", async (_, end) => {
+    const data = `${"A".repeat(76)}${end}`.repeat(20);
+    const entry = await exchangeToEntry(
+      request(JSON.stringify({ data })),
+      new Response(),
+      timing
+    );
+    expect(JSON.parse(entry.request.postData!.text!).data).toBe(
+      "<inline base64 data; 1140 bytes>"
+    );
+  });
   it("concatenates SSE chunks up to the byte cap", async () => {
     const stream = new ReadableStream({
       start(c) {
@@ -509,6 +539,153 @@ describe("generic credential body keys", () => {
     const once = JSON.stringify(entry);
     scrubEntry(entry);
     expect(JSON.stringify(entry)).toBe(once);
+  });
+  describe("in a duplicate key, which a parse does not see", () => {
+    const LIVE = "sk-live-dup";
+    it.each([
+      [
+        "the last value null",
+        `{"model":"m","api_key":"${LIVE}","api_key":null}`,
+        '{"model":"m","api_key":null}',
+      ],
+      [
+        "the last value already redacted",
+        `{"api_key":"${LIVE}","api_key":"***"}`,
+        '{"api_key":"***"}',
+      ],
+      [
+        "space around it",
+        `{ "api_key" : "${LIVE}" ,\n\t\r "api_key" : null }`,
+        '{"api_key":null}',
+      ],
+      [
+        "an earlier string that would put a text match out of phase",
+        `{"a":[":"],"api_key":"${LIVE}","api_key":null}`,
+        '{"a":[":"],"api_key":null}',
+      ],
+      [
+        "an escaped key",
+        `{"api\\u005fkey":"${LIVE}","api_key":null}`,
+        '{"api_key":null}',
+      ],
+      [
+        "an escaped quote in the value",
+        `{"api_key":"${LIVE}\\"x","api_key":null}`,
+        '{"api_key":null}',
+      ],
+      [
+        "an earlier string ending in a backslash",
+        `{"path":"C:\\\\","api_key":"${LIVE}","api_key":null}`,
+        '{"path":"C:\\\\","api_key":null}',
+      ],
+      [
+        "the whole object overwritten",
+        `{"a":{"password":"${LIVE}"},"a":1}`,
+        '{"a":1}',
+      ],
+      [
+        "an array for its value",
+        `{"api_key":["${LIVE}"],"api_key":null}`,
+        '{"api_key":null}',
+      ],
+      [
+        "an object for its value",
+        `{"password":{"value":"${LIVE}"},"password":null}`,
+        '{"password":null}',
+      ],
+      [
+        "a number for its value",
+        '{"password":1234567890123,"password":null}',
+        '{"password":null}',
+      ],
+      [
+        "a guest token",
+        `{"guestToken":"${LIVE}","guestToken":null}`,
+        '{"guestToken":null}',
+      ],
+      [
+        "a request signature",
+        `{"Signature":"${LIVE}","Signature":null}`,
+        '{"Signature":null}',
+      ],
+      [
+        "an upload policy",
+        `{"policy":"${LIVE}","policy":null}`,
+        '{"policy":null}',
+      ],
+      [
+        "an account key id",
+        `{"create_api_key_id":"${LIVE}","create_api_key_id":null}`,
+        '{"create_api_key_id":null}',
+      ],
+      [
+        "a Fireworks key",
+        `{"apiKeys":[{"key":"${LIVE}","key":null}]}`,
+        '{"apiKeys":[{"key":null}]}',
+      ],
+      [
+        "a checkpoint signature",
+        `{"checkpoint":{"url":"https://x/a.safetensors","signature":"${LIVE}","signature":null}}`,
+        '{"checkpoint":{"url":"https://x/a.safetensors","signature":null}}',
+      ],
+    ])("scrubs it with %s", (_, text, clean) => {
+      const entry = {
+        request: { postData: { text } },
+        response: { content: { text } },
+      };
+      scrubEntry(entry);
+      expect(entry.request.postData.text).toBe(clean);
+      expect(entry.response.content.text).toBe(clean);
+      const once = JSON.stringify(entry);
+      scrubEntry(entry);
+      expect(JSON.stringify(entry)).toBe(once);
+    });
+    it("scrubs it in a stream frame", () => {
+      const text = `data: {"api_key":"${LIVE}","api_key":null}\n\ndata: {"a":1}\n\n`;
+      const entry = { response: { content: { text } } };
+      scrubEntry(entry);
+      expect(entry.response.content.text).not.toContain(LIVE);
+      expect(entry.response.content.text).toContain('data: {"a":1}');
+    });
+    it("drops it when the last value also scrubs", () => {
+      const entry = {
+        response: {
+          content: { text: `{"api_key":"${LIVE}","api_key":"also-live"}` },
+        },
+      };
+      scrubEntry(entry);
+      expect(JSON.parse(entry.response.content.text)).toEqual({
+        api_key: "***",
+      });
+    });
+    it.each([
+      '{"prompt":"say \\"api_key\\":\\"abc\\" please"}',
+      '{"a":"api_key","b":"x"}',
+      '["api_key",":","x"]',
+      '"api_key"',
+      '{ "token" : "kept",\n  "tokens" : 12 }\n',
+      '{"a":{"b":1},"c":{"b":1},"d":[{"b":1},{"b":1}]}',
+      '{ "path" : "C:\\\\", "text" : "\\"", "x" : "\\\\\\"" }',
+      "12",
+      "null",
+      "[]",
+    ])("leaves a document with no such key byte for byte: %s", (text) => {
+      const entry = { response: { content: { text } } };
+      scrubEntry(entry);
+      expect(entry.response.content.text).toBe(text);
+    });
+    it("stays linear on a long document", () => {
+      const text = JSON.stringify({
+        a: "x".repeat(32_000_000),
+        b: '"'.repeat(4_000_000),
+        items: Array.from({ length: 200_000 }, (_, i) => ({ key: `v${i}` })),
+      });
+      const entry = { response: { content: { text } } };
+      const started = performance.now();
+      scrubEntry(entry);
+      expect(performance.now() - started).toBeLessThan(20_000);
+      expect(entry.response.content.text).toBe(text);
+    }, 30_000);
   });
   it("redacts input/context for local failures with no exchange", () => {
     const har: Har = {

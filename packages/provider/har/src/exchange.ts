@@ -31,6 +31,8 @@ interface SerializedBody {
   bytes: number;
   truncated: boolean;
   sha256: string;
+  /** The read failed partway, so this holds what arrived. */
+  failed?: boolean;
 }
 interface BodyLimits {
   max: number;
@@ -40,6 +42,12 @@ interface BodyLimits {
 const DEFAULT_MAX_BODY_BYTES = 262144;
 const DEFAULT_MAX_SUMMARIZE_BYTES = 16 * 1024 * 1024;
 const DEFAULT_SSE_TAIL_BYTES = 64 * 1024;
+const NO_BODY: SerializedBody = {
+  text: "",
+  bytes: 0,
+  truncated: false,
+  sha256: "",
+};
 
 function headers(value: Headers): HarNameValue[] {
   return Array.from(value, ([name, value]) => ({ name, value }));
@@ -113,6 +121,21 @@ function joinStream(head: Buffer, tail: Buffer, dropped: number): string {
   return `${decode(head.subarray(0, headEnd))}\n\n: apicity-gap ${gap} bytes dropped\n\n${decode(tail.subarray(tailStart))}`;
 }
 
+// The form's field and file summary, or nothing for a body that is not a valid form.
+async function multipartSummaryOf(
+  body: Buffer,
+  contentType: string
+): Promise<string | undefined> {
+  try {
+    const form = await new Response(body as BodyInit, {
+      headers: { "content-type": contentType },
+    }).formData();
+    return JSON.stringify(summarizeMultipartFormData(form));
+  } catch {
+    return undefined;
+  }
+}
+
 async function serializeBody(
   message: Request | Response,
   limits: BodyLimits,
@@ -121,24 +144,23 @@ async function serializeBody(
   const { max } = limits;
   const contentType =
     message.headers.get("content-type") ?? "application/octet-stream";
-  if (/^multipart\/form-data\b/i.test(contentType)) {
-    const form = await message.formData();
-    const text = JSON.stringify(summarizeMultipartFormData(form));
-    return {
-      text,
-      bytes: Buffer.byteLength(text),
-      truncated: false,
-      sha256: createHash("sha256").update(text).digest("hex"),
-    };
-  }
-  const summarizable = !streamed && /json/i.test(contentType);
-  const headLimit = summarizable ? Math.max(max, limits.holdUpTo) : max;
+  // A parameter is not the type: a form's boundary can spell `xml` or `json`.
+  const mediaType = contentType.split(";")[0]!;
+  // Held whole, as parsing the form holds it, and parsed only once it has all come.
+  const multipart = /^multipart\/form-data\b/i.test(mediaType);
+  const summarizable = !streamed && /json/i.test(mediaType);
+  const headLimit = multipart
+    ? Number.POSITIVE_INFINITY
+    : summarizable
+      ? Math.max(max, limits.holdUpTo)
+      : max;
   const tail =
     streamed && limits.tail > 0 ? rollingTail(limits.tail) : undefined;
   const hash = createHash("sha256");
   const chunks: Uint8Array[] = [];
   let bytes = 0;
   let retained = 0;
+  let failed = false;
   if (message.body) {
     const reader = message.body.getReader();
     try {
@@ -156,60 +178,66 @@ async function serializeBody(
         // Past the hold limit this body can only become a placeholder.
         if (summarizable && bytes > headLimit) chunks.length = 0;
       }
+    } catch {
+      // A dropped connection or a timeout abort: keep what arrived. The call's
+      // outcome reports it, and the capture itself did nothing wrong.
+      failed = true;
     } finally {
       reader.releaseLock();
     }
   }
   const sha256 = hash.digest("hex");
+  const truncated = bytes > max || failed;
+  if (multipart && !failed) {
+    const text = await multipartSummaryOf(Buffer.concat(chunks), contentType);
+    if (text !== undefined) {
+      return {
+        text,
+        bytes: Buffer.byteLength(text),
+        truncated: false,
+        sha256: createHash("sha256").update(text).digest("hex"),
+      };
+    }
+  }
   const textual =
-    /(?:json|^text\/|xml|application\/x-www-form-urlencoded)/i.test(
-      contentType
-    );
+    /(?:json|^text\/|xml|application\/x-www-form-urlencoded)/i.test(mediaType);
   if (summarizable && bytes > max && bytes <= headLimit) {
     const text = summarizedJsonWithin(Buffer.concat(chunks), max);
-    if (text !== undefined) return { text, bytes, truncated: false, sha256 };
+    if (text !== undefined) {
+      return { text, bytes, truncated: failed, sha256, failed };
+    }
   }
-  if ((!textual || bytes > max) && !streamed) {
-    return {
-      text: JSON.stringify({
-        _apicity_placeholder: {
-          sha256,
-          bytes,
-          contentType,
-        },
-      }),
-      bytes,
-      sha256,
-      truncated: bytes > max,
-    };
-  }
-  if (!textual) {
-    return {
-      text: JSON.stringify({
-        _apicity_placeholder: {
-          sha256,
-          bytes,
-          contentType,
-        },
-      }),
-      bytes,
-      sha256,
-      truncated: bytes > max,
-    };
-  }
+  const placeholder = (): SerializedBody => ({
+    text: JSON.stringify({
+      _apicity_placeholder: {
+        sha256,
+        bytes,
+        contentType,
+      },
+    }),
+    bytes,
+    sha256,
+    truncated,
+    failed,
+  });
+  if (!textual || (bytes > max && !streamed)) return placeholder();
   const stream = tail && bytes > max ? tail.finish() : undefined;
   let text = stream
     ? joinStream(Buffer.concat(chunks), stream.tail, stream.dropped)
     : new TextDecoder().decode(Buffer.concat(chunks), {
         stream: bytes > max,
       });
+  // A frame is scrubbed alone, and only a whole one parses.
+  if (failed && streamed) text = text.slice(0, text.lastIndexOf("\n") + 1);
   try {
     const result = summarizeJsonMediaStrings(JSON.parse(text));
     if (result.summarized) text = JSON.stringify(result.value);
   } catch {
-    /* Plain text or SSE. */
+    // Plain text or SSE. Scrub rules and media summaries read whole documents and
+    // frames, whatever the content type says, so nothing cut outside a stream is text.
+    if (failed && !streamed) return placeholder();
   }
-  return { text, bytes, truncated: bytes > max, sha256 };
+  return { text, bytes, truncated, sha256, failed };
 }
 
 /** Serializes clones: the caller's request and response bodies remain readable. */
@@ -229,7 +257,11 @@ export async function serializeExchange(
   responseOrError: Response | Error,
   timing: ExchangeTiming,
   opts: ExchangeOptions = {}
-): Promise<{ entry: HarEntry; responseBodySha256: string }> {
+): Promise<{
+  entry: HarEntry;
+  responseBodySha256: string;
+  bodyFailed: boolean;
+}> {
   const max = opts.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES;
   const holdUpTo = opts.maxSummarizeBytes ?? DEFAULT_MAX_SUMMARIZE_BYTES;
   const tail = opts.sseTailBytes ?? DEFAULT_SSE_TAIL_BYTES;
@@ -249,16 +281,16 @@ export async function serializeExchange(
   // Tee both bodies before the first await, while the caller can still read them.
   const requestCopy = request.clone();
   const responseCopy = response?.clone();
-  const req = await serializeBody(
-    requestCopy,
-    { max, holdUpTo, tail: 0 },
-    false
-  );
-  const res = responseCopy
-    ? // Only a request is held to summarize: a response's usage is what a stream
-      // tail keeps, and its media can run far past any cap.
-      await serializeBody(responseCopy, { max, holdUpTo: 0, tail }, streamed)
-    : { text: "", bytes: 0, truncated: false, sha256: "" };
+  // Read both at once: a stream drops the chunks nobody has read when it errors, so
+  // a response left waiting for the request's read could lose what had arrived.
+  const [req, res] = await Promise.all([
+    serializeBody(requestCopy, { max, holdUpTo, tail: 0 }, false),
+    responseCopy
+      ? // Only a request is held to summarize: a response's usage is what a stream
+        // tail keeps, and its media can run far past any cap.
+        serializeBody(responseCopy, { max, holdUpTo: 0, tail }, streamed)
+      : NO_BODY,
+  ]);
   const entry: HarEntry = {
     startedDateTime: new Date(timing.startedAt).toISOString(),
     time: timing.durationMs,
@@ -312,6 +344,7 @@ export async function serializeExchange(
       ...(opts.role ? { role: opts.role } : {}),
       ...(streamed ? { streamed: true } : {}),
       ...(req.truncated || res.truncated ? { bodyTruncated: true } : {}),
+      ...(res.failed ? { responseCut: true } : {}),
     },
   };
   scrubEntry(entry);
@@ -322,5 +355,9 @@ export async function serializeExchange(
     new URL(entry.request.url).searchParams,
     ([name, value]) => ({ name, value })
   );
-  return { entry, responseBodySha256: res.sha256 };
+  return {
+    entry,
+    responseBodySha256: res.sha256,
+    bodyFailed: req.failed === true || res.failed === true,
+  };
 }

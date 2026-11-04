@@ -112,19 +112,29 @@ export function valueList(values: unknown[]) {
 }
 export function shape(value: unknown): Map<string, Set<string>> {
   const result = new Map<string, Set<string>>();
+  // A placeholder stands in for one media value: its keys are not the caller's.
+  const media = (v: unknown) => isObject(v) && placeholder(v);
   const add = (p: string, v: unknown) => {
     const types = result.get(p) ?? new Set<string>();
-    types.add(v === null ? "null" : Array.isArray(v) ? "array" : typeof v);
+    types.add(
+      media(v)
+        ? "media"
+        : v === null
+          ? "null"
+          : Array.isArray(v)
+            ? "array"
+            : typeof v
+    );
     result.set(p, types);
   };
-  if (isObject(value))
+  if (isObject(value) && !media(value))
     for (const [key, v] of Object.entries(value)) {
       add(key, v);
-      if (isObject(v))
+      if (isObject(v) && !media(v))
         for (const [k, child] of Object.entries(v)) add(`${key}.${k}`, child);
       if (Array.isArray(v))
         for (const item of v)
-          if (isObject(item))
+          if (isObject(item) && !media(item))
             for (const [k, child] of Object.entries(item))
               add(`${key}[].${k}`, child);
     }

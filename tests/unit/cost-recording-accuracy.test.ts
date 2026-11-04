@@ -97,12 +97,6 @@ const ALLOWED: readonly Allowed[] = [
     model: "Seedance-2.5",
     reason: SEEDANCE_CAPTURE,
   },
-  {
-    recording: "xai_3613880225/vision-analysis-json_243984103",
-    model: "grok-4",
-    reason:
-      "Tokens x rates equal the stated bill exactly. The estimate cannot see a vision input",
-  },
 ];
 
 function recordingOf(file: string): string {

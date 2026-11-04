@@ -298,26 +298,12 @@ export const xai: Record<string, ModelPricing> = {
   "grok-code-fast-1": grokBuild01,
   "grok-code-fast": grokBuild01,
   "grok-code-fast-1-0825": grokBuild01,
-  "grok-4": {
-    kind: "tokens",
-    rate: { input: 3, output: 15, cacheRead: 0.75 },
-    source,
-  },
-  "grok-3": {
-    kind: "tokens",
-    rate: { input: 3, output: 15 },
-    source: { url: "https://docs.x.ai" },
-  },
-  "grok-4-fast": {
-    kind: "tokens",
-    rate: { input: 0.2, output: 0.5, cacheRead: 0.05 },
-    source,
-  },
-  "grok-4-1-fast": {
-    kind: "tokens",
-    rate: { input: 0.2, output: 0.5 },
-    source: { url: "https://docs.x.ai" },
-  },
+  // Retired on 2026-05-15: these still resolve, and xAI bills them as grok-4.3.
+  // https://docs.x.ai/developers/migration/may-15-retirement.md
+  "grok-4": grok43,
+  "grok-3": grok43,
+  "grok-4-fast": grok43,
+  "grok-4-1-fast": grok43,
   "text-to-speech": {
     kind: "perUnit",
     unit: "characters",

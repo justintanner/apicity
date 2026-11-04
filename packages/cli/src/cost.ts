@@ -186,6 +186,8 @@ export interface CostActualHelpers {
     options?: { tolerance?: number }
   ) => CostHelperComparison;
   estimateEndpoint: (request: {
+    endpoint?: string;
+    baseURL?: string;
     provider: string;
     method: string;
     dotPath: string;

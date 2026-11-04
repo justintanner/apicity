@@ -119,6 +119,20 @@ function deriveFromTokens(
   ) {
     hints.regionalProcessing = true;
   }
+  if (provider === "google" || provider === "alibaba") {
+    return fromEstimate(
+      computeEstimate({
+        provider,
+        payload: {
+          ...exchange.requestBody,
+          ...(provider === "alibaba" ? { model: key } : {}),
+        },
+        endpoint: provider === "google" ? key : undefined,
+        baseURL: exchange.url,
+        costHints: hints,
+      })
+    );
+  }
   if (DECLARED_USAGE_PROVIDERS.has(provider)) {
     return fromEstimate(
       evaluateDeclaredUsage(
@@ -174,6 +188,7 @@ function deriveFromUnits(
   const estimate = computeEstimate({
     provider,
     payload: exchange.requestBody ?? {},
+    baseURL: exchange.url,
     endpoint: PER_UNIT_KEYED_BY_ENDPOINT.has(provider) ? key : undefined,
     costHints:
       usage.seconds !== undefined
@@ -184,7 +199,11 @@ function deriveFromUnits(
   const extra = estimate.breakdown.extraUsd;
   if (estimate.warnings.length > 0 || perUnit === undefined) {
     return units === undefined
-      ? { ...NOT_DERIVED, notes: estimate.notes }
+      ? {
+          ...NOT_DERIVED,
+          notes: estimate.notes,
+          ...(provider === "alibaba" ? { warnings: estimate.warnings } : {}),
+        }
       : { ...NOT_DERIVED, warnings: estimate.warnings, notes: estimate.notes };
   }
   if (units === undefined) {
@@ -214,7 +233,12 @@ function derive(
   // The tables key on what the caller sent; a response may answer with an alias.
   const requested =
     exchange.requestBody?.model ?? exchange.requestBody?.model_id;
-  const key = typeof requested === "string" ? requested : model;
+  const key =
+    provider === "google"
+      ? model
+      : typeof requested === "string"
+        ? requested
+        : model;
   if (!key || !isPriced(provider)) return NOT_DERIVED;
   const entry = PRICING[provider][key];
   const hasTokens =

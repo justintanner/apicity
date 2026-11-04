@@ -17,6 +17,7 @@ import { anthropic } from "./anthropic";
 import { elevenlabs } from "./elevenlabs";
 import { fal } from "./fal";
 import { fireworks } from "./fireworks";
+import { google } from "./google";
 import { googleflow } from "./googleflow";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
@@ -35,6 +36,7 @@ export const PRICING = {
   elevenlabs,
   fal,
   fireworks,
+  google,
   googleflow,
   kie,
   kimicoding,

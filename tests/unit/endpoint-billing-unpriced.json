@@ -5,7 +5,6 @@
   "fireworks POST inference.v1.audio.translations": "P7 ac-kxko3y",
   "fireworks POST inference.v1.workflows.kontext": "P7 ac-kxko3y",
   "fireworks POST inference.v1.workflows.textToImage": "P7 ac-kxko3y",
-  "google POST v1.publishers.google.models.generateContent": "P9 ac-ht1n6b",
   "googleflow POST v1.videos.upscale": "P10 ac-r9ivtg",
   "kie POST api.v1.suno.recovery": "P4 ac-i2onyq",
   "kie POST gemini.v1.models.gemini35Flash.streamGenerateContent": "P4 ac-i2onyq",

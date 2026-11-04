@@ -615,16 +615,16 @@ describe("extractActual pins", () => {
     const actual = extractActual(
       inlineExchange({
         provider: "google",
-        url: "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent",
+        url: "https://aiplatform.googleapis.com/v1/publishers/google/models/unpriced-model:generateContent",
         responseBody: {
           usageMetadata: { promptTokenCount: 7, candidatesTokenCount: 2 },
         },
       })
     );
     expect(actual.basis).toBe("usage-only");
-    expect(actual.model).toBe("gemini-2.5-flash");
+    expect(actual.model).toBe("unpriced-model");
     expect(actual.warnings).toEqual([
-      "no USD figure is derived: no bundled rate applies, or the request that selects one is not in this exchange",
+      "model 'unpriced-model' not found in pricing table for provider 'google'",
     ]);
   });
 
@@ -1078,7 +1078,7 @@ describe("extractActual pins", () => {
       expect(merged.model).toBe("Wan2.2-A14B");
     });
 
-    it("prices units on the poll at the rate the submit's request selected", () => {
+    it("does not derive International rates for the mainland Alibaba recording", () => {
       const parts = actuals(
         "alibaba_1329897167/wan-i2v_2196817451/recording.har",
         "alibaba"
@@ -1087,9 +1087,9 @@ describe("extractActual pins", () => {
       expect(poll.basis).toBe("usage-only");
       expect(poll.warnings.join(" ")).toContain("not in this exchange");
       const merged = mergeActuals(parts);
-      expect(merged.derivedUsd).toBeCloseTo(0.5, 10);
-      expect(merged.basis).toBe("derived");
-      expect(merged.warnings).toEqual([]);
+      expect(merged.derivedUsd).toBeNull();
+      expect(merged.basis).toBe("usage-only");
+      expect(merged.warnings.length).toBeGreaterThan(0);
     });
 
     it("reports no seconds when MachGen's length follows the source", () => {

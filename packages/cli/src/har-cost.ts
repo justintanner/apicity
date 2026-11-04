@@ -218,7 +218,7 @@ function assembleCalls(
 // A poll's bill belongs to the submit it follows, so a poll seen alone has no
 // figure of its own. A free row needs no request body to say it is free.
 function recompute(
-  { row, kind }: AssembledCall,
+  { row, kind, request }: AssembledCall,
   payload: Record<string, unknown> | null,
   helpers: CostActualHelpers
 ): CostHelperEstimate | null {
@@ -229,6 +229,11 @@ function recompute(
     method: row.method,
     dotPath: row.dotPath,
     payload: payload ?? {},
+    baseURL: request?.request.url,
+    endpoint:
+      row.provider === "google"
+        ? /\/models\/([^/:]+):/.exec(request?.request.url ?? "")?.[1]
+        : undefined,
   });
   // A figure the estimator warns about is partial (no output cost, a floor), and
   // a ratio against it says nothing.
@@ -289,6 +294,7 @@ function costOf(
   const payload = call.request ? requestBody(call.request) : null;
   // The tables key on what the caller sent; a response may answer with an alias.
   const model =
+    (row.provider === "google" ? actual.model : null) ??
     stringAt(payload, "model") ??
     stringAt(payload, "model_id") ??
     actual.model ??
@@ -306,7 +312,9 @@ function costOf(
   );
   const votes: RateVote[] = [];
   let wrongRow: string | null = null;
-  if (pricing && actual.settled) {
+  // The correction key has no deployment-scope dimension. A scoped Alibaba
+  // observation cannot safely propose edits to the representative catalog row.
+  if (pricing && actual.settled && row.provider !== "alibaba") {
     const { entry } = pricing;
     const base = {
       provider: row.provider,

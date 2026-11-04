@@ -75,7 +75,11 @@ function first(
 // not always: an xAI compact call adds it to total_tokens only, and a KIE Gemini
 // route reports thoughts nowhere else. So total_tokens decides: whatever it
 // holds beyond input and output is output.
-export function readTokenUsage(found: FoundUsage, out: Extracted): void {
+export function readTokenUsage(
+  found: FoundUsage,
+  out: Extracted,
+  anthropic = false
+): void {
   const { usage } = found;
   const read = (key: Parameters<typeof setNumber>[1], paths: string[]) => {
     const hit = first(found, paths);
@@ -84,7 +88,8 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
   };
   const anthropicShape =
     usage.cache_read_input_tokens !== undefined ||
-    usage.cache_creation_input_tokens !== undefined;
+    usage.cache_creation_input_tokens !== undefined ||
+    (anthropic && usage.cache_creation !== undefined);
 
   const cacheRead = read(
     "cacheReadInputTokens",
@@ -96,7 +101,7 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
           "cached_tokens",
         ]
   );
-  const cacheWrite = read(
+  let cacheWrite = read(
     "cacheWriteInputTokens",
     anthropicShape
       ? ["cache_creation_input_tokens"]
@@ -105,6 +110,68 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
           "prompt_tokens_details.cache_write_tokens",
         ]
   );
+  if (anthropic) {
+    const fivePath = "cache_creation.ephemeral_5m_input_tokens";
+    const hourPath = "cache_creation.ephemeral_1h_input_tokens";
+    const five = numberAt(usage, fivePath);
+    const hour = numberAt(usage, hourPath);
+    const count = (n: number | undefined) =>
+      n !== undefined && Number.isSafeInteger(n) && n >= 0;
+    const hasFive = get(usage, fivePath) !== undefined;
+    const hasHour = get(usage, hourPath) !== undefined;
+    if (hasFive || hasHour) {
+      if (hasFive) out.evidence.push(usageEvidence(found, fivePath));
+      if (hasHour) out.evidence.push(usageEvidence(found, hourPath));
+      if (
+        (hasFive && !count(five)) ||
+        (hasHour && !count(hour)) ||
+        (usage.cache_creation_input_tokens !== undefined && !count(cacheWrite))
+      ) {
+        out.uncoveredCharge =
+          "anthropic: invalid cache_creation split; no figure is derived";
+      } else {
+        if (
+          cacheWrite === undefined &&
+          five !== undefined &&
+          hour !== undefined
+        ) {
+          cacheWrite = five + hour;
+          setNumber(
+            out,
+            "cacheWriteInputTokens",
+            cacheWrite,
+            usageEvidence(found, "cache_creation")
+          );
+        }
+        const inferredHour =
+          hour ??
+          (cacheWrite !== undefined && five !== undefined
+            ? cacheWrite - five
+            : undefined);
+        const inferredFive =
+          five ??
+          (cacheWrite !== undefined && hour !== undefined
+            ? cacheWrite - hour
+            : undefined);
+        if (
+          !count(cacheWrite) ||
+          !count(inferredHour) ||
+          !count(inferredFive) ||
+          inferredFive! + inferredHour! !== cacheWrite
+        ) {
+          out.uncoveredCharge =
+            "anthropic: inconsistent or incomplete cache_creation split/total; no figure is derived";
+        } else {
+          setNumber(
+            out,
+            "cacheWrite1hInputTokens",
+            inferredHour,
+            usageEvidence(found, "cache_creation")
+          );
+        }
+      }
+    }
+  }
   const input = first(found, ["input_tokens", "prompt_tokens"]);
   const inputTotal =
     input && anthropicShape
@@ -154,7 +221,7 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
     out.evidence.push(
       usageEvidence(found, "cache_creation.ephemeral_1h_input_tokens")
     );
-    if (oneHour > 0) {
+    if (oneHour > 0 && !anthropic) {
       out.uncoveredCharge =
         "1-hour cache writes have no bundled rate, so no figure is derived";
     }

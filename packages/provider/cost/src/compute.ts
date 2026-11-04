@@ -1,3 +1,4 @@
+import { anthropicCacheTtl } from "./anthropic-cache";
 import {
   FIREWORKS_EMBEDDING_RATES,
   FIREWORKS_MODEL_SIZES,
@@ -574,6 +575,9 @@ export function evaluateDeclaredUsage(
     warnings: [warning],
   });
 
+  const ttl = provider === "anthropic" ? anthropicCacheTtl(payload) : "5m";
+  if (ttl === "invalid")
+    return unknown("anthropic: cache_control.ttl must be 5m or 1h");
   const required: DeclaredUsageField[] = ["inputTokens", "outputTokens"];
   if (entry.rate.cacheRead !== undefined) required.push("cacheReadInputTokens");
   if (writeRateOf(entry.rate) !== undefined) {
@@ -621,6 +625,38 @@ export function evaluateDeclaredUsage(
     );
   }
 
+  const oneHour =
+    provider === "anthropic" && hints?.cacheWrite1hInputTokens !== undefined
+      ? hints.cacheWrite1hInputTokens
+      : 0;
+  if (provider === "anthropic") {
+    if (
+      !isTokenCount(oneHour) ||
+      oneHour > (hints?.cacheWriteInputTokens ?? 0)
+    ) {
+      return unknown(
+        "anthropic: costHints.cacheWrite1hInputTokens must be a non-negative integer subset of costHints.cacheWriteInputTokens"
+      );
+    }
+    if (
+      ttl === "1h" &&
+      (hints?.cacheWriteInputTokens ?? 0) > 0 &&
+      hints?.cacheWrite1hInputTokens === undefined
+    ) {
+      return unknown(
+        "anthropic: pass costHints.cacheWrite1hInputTokens for the declared 1h cache TTL"
+      );
+    }
+    if (
+      (payload.inference_geo !== undefined &&
+        payload.inference_geo !== "global") ||
+      (payload.speed !== undefined && payload.speed !== "standard")
+    ) {
+      return unknown(
+        "anthropic: inference_geo or speed pricing is not bundled; no estimate is quoted"
+      );
+    }
+  }
   const inputTokens = hints?.inputTokens ?? 0;
   const outputTokens = hints?.outputTokens ?? 0;
   const cacheRead = hints?.cacheReadInputTokens ?? 0;
@@ -708,6 +744,9 @@ export function evaluateDeclaredUsage(
     );
   }
   const writeRate = writeRateOf(rate);
+  if (oneHour > 0 && rate.cacheWrite1h === undefined) {
+    return unknown("anthropic: no bundled one-hour cache-write rate");
+  }
   if (cacheWrite > 0 && writeRate === undefined) {
     return unknown(
       `${provider} '${model}' has no bundled cache-write rate, so ` +
@@ -747,7 +786,8 @@ export function evaluateDeclaredUsage(
   const usd =
     (uncached * rate.input +
       textCached * (rate.cacheRead ?? 0) +
-      cacheWrite * (writeRate ?? 0) +
+      (cacheWrite - oneHour) * (writeRate ?? 0) +
+      oneHour * (rate.cacheWrite1h ?? 0) +
       textOut * rate.output +
       (audioIn - audioCached) * (audioRate?.input ?? 0) +
       audioCached * (audioRate?.cacheRead ?? 0) +
@@ -797,6 +837,15 @@ export function evaluateDeclaredUsage(
             cacheWriteUsdPerMillion: writeRate,
           }
         : {}),
+      ...(provider === "anthropic" && rate.cacheWrite1h !== undefined
+        ? {
+            cacheWrite1hInputTokens: oneHour,
+            cacheWrite1h: {
+              inputTokens: oneHour,
+              usdPerMillion: rate.cacheWrite1h,
+            },
+          }
+        : {}),
       ...(entry.longContext ? { contextTier: long ? "long" : "short" } : {}),
       ...(entry.modalityRates
         ? {
@@ -818,11 +867,11 @@ export function evaluateDeclaredUsage(
         ? openaiWarnings(payload)
         : provider === "xai"
           ? xaiWarnings(payload)
-          : provider === "fireworks" &&
+          : (provider === "fireworks" || provider === "anthropic") &&
               Array.isArray(payload.tools) &&
               payload.tools.length > 0
             ? [
-                "fireworks: tool charges are not included in this token estimate",
+                `${provider}: tool charges are not included in this token estimate`,
               ]
             : [],
     ...(provider === "fireworks" && Object.hasOwn(FIREWORKS_MODEL_SIZES, model)
@@ -979,6 +1028,14 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
     case "anthropic": {
       const ext = extractAnthropic(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      if (req.costHints !== undefined) {
+        return evaluateDeclaredUsage(
+          "anthropic",
+          ext.data.model,
+          req.payload,
+          req.costHints
+        );
+      }
       const inputTokens = heuristicTokens(ext.data.text);
       return applyTokenRate(
         req.provider,

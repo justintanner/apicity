@@ -480,6 +480,7 @@ describe("extractActual pins", () => {
       inputTokens: 268,
       cacheReadInputTokens: 0,
       cacheWriteInputTokens: 0,
+      cacheWrite1hInputTokens: 0,
       outputTokens: 33,
     });
     // (268 x 3 + 33 x 15) / 1M
@@ -517,16 +518,16 @@ describe("extractActual pins", () => {
     expect(actual.derivedUsd).toBeCloseTo(0.0021, 10);
   });
 
-  it("derives nothing for a 1-hour cache write, which has no bundled rate", () => {
+  it("derives one-hour cache writes at their own bundled rate", () => {
     const actual = extractActual(
       anthropicMessage({
         ephemeral_5m_input_tokens: 0,
         ephemeral_1h_input_tokens: 200,
       })
     );
-    expect(actual.derivedUsd).toBeNull();
-    expect(actual.basis).toBe("usage-only");
-    expect(actual.warnings.join(" ")).toContain("1-hour cache writes");
+    expect(actual.derivedUsd).toBeCloseTo(0.00255, 12);
+    expect(actual.basis).toBe("derived");
+    expect(actual.usage.cacheWrite1hInputTokens).toBe(200);
   });
 
   it("merges Anthropic stream frames: input first, output last", () => {

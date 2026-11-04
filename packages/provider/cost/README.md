@@ -65,6 +65,25 @@ Read estimates carry an informational upper-bound note because X deduplicates
 resources within a UTC day. The four media-upload routes remain unpriced:
 a console rate is needed, and Media Metadata pricing does not apply to uploads.
 
+Anthropic strict endpoint estimates require declared input, output, cache-read and
+cache-write counts. `cacheWriteInputTokens` is the total across retention windows;
+`cacheWrite1hInputTokens` is its one-hour subset (five-minute writes are the
+remainder). If any request `cache_control.ttl` is `"1h"`, positive writes require
+that subset explicitly. Without a declared one-hour TTL, an omitted subset keeps
+the five-minute default. Actuals use the response's `cache_creation` split, infer
+one missing split from the total, and reject inconsistent counts. The optional
+field survives `mergeActuals` with its usual last-reported-value semantics.
+
+Anthropic forecasts use the highest declared cache TTL for the high scenario;
+unknown TTLs fail closed. The low scenario assumes cached input and no output.
+`POST v1.messages.batches` supports forecasts only: it sums each item's model and
+TTL scenario at the 50% batch rate and reports the range in `notes`. One invalid
+item makes the whole batch unavailable. Global usage hints cannot price a batch.
+Declared usage prices Haiku 5.5 prompts above 100,000 total input tokens at the
+published long-context rate. Tools remain an incompleteness warning; unsupported
+speed, tier and inference geography fail closed. The no-hint `computeEstimate`
+path retains its existing heuristic behavior for paygate compatibility.
+
 ## Frontier models
 
 `frontier(type)` returns the committed snapshot of frontier image and video
@@ -192,6 +211,7 @@ interface CostEstimate {
     // declared openai usage only — see "Declared usage (openai)"
     cacheReadInputTokens?: number;
     cacheWriteInputTokens?: number;
+    cacheWrite1hInputTokens?: number;
     cacheReadUsdPerMillion?: number;
     cacheWriteUsdPerMillion?: number;
     contextTier?: "short" | "long";
@@ -272,6 +292,7 @@ interface CostHints {
   outputTokens?: number;
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  cacheWrite1hInputTokens?: number;
   audioInputTokens?: number;
   imageInputTokens?: number;
   cacheReadAudioInputTokens?: number;
@@ -816,7 +837,7 @@ place a response counts it.
 
 `derivedUsd` covers what a bundled rate covers. A charge the rate cannot see
 leaves it null with a warning: a web search or other server tool, US-only
-inference, fast mode, a regional endpoint, an Anthropic 1-hour cache write, or
+inference, fast mode, a regional endpoint, or
 KIE cached tokens on a card with no cache rate.
 
 `settled` is false on a KIE `createTask`, a fal queue submit or status read, a
@@ -1263,7 +1284,7 @@ empty is a `usage` error, never a disarmed gate.
 
 ## Out of scope
 
-- Anthropic prompt-cache pricing (rates are in the table but `estimate()` ignores them — assumes no caching)
+- No-hint `computeEstimate()` uses the legacy Anthropic heuristic; use declared hints or endpoint forecasts for cache pricing
 - Batch API discount (50% off across providers), and OpenAI's Flex, Fast and Scale tiers
 - OpenAI's 10% regional-processing (data residency) and FedRAMP uplift
 - OpenAI built-in tool fees (web search, file search, containers), billed per call beside tokens

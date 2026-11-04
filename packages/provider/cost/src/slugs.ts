@@ -394,6 +394,16 @@ export const MODEL_SLUGS = {
     "claude-sonnet-4-6": "sonnet4p6",
     "claude-haiku-3-5": "haiku3p5",
     "claude-haiku-4-5": "haiku4p5",
+    "claude-fable-5-1": "fable5p1",
+    "claude-mythos-5-1": "mythos5p1",
+    "claude-fable-5": "fable5",
+    "claude-mythos-5": "mythos5",
+    "claude-opus-5-5": "opus5p5",
+    "claude-opus-5": "opus5",
+    "claude-opus-4-8": "opus4p8",
+    "claude-sonnet-5-5": "sonnet5p5",
+    "claude-sonnet-5": "sonnet5",
+    "claude-haiku-5-5": "haiku5p5",
   },
 
   openai: {
@@ -1260,6 +1270,16 @@ export const MODEL_DISPLAY = {
     "claude-sonnet-4-6": "Claude Sonnet 4.6",
     "claude-haiku-3-5": "Claude Haiku 3.5",
     "claude-haiku-4-5": "Claude Haiku 4.5",
+    "claude-fable-5-1": "Claude Fable 5.1",
+    "claude-mythos-5-1": "Claude Mythos 5.1",
+    "claude-fable-5": "Claude Fable 5",
+    "claude-mythos-5": "Claude Mythos 5",
+    "claude-opus-5-5": "Claude Opus 5.5",
+    "claude-opus-5": "Claude Opus 5",
+    "claude-opus-4-8": "Claude Opus 4.8",
+    "claude-sonnet-5-5": "Claude Sonnet 5.5",
+    "claude-sonnet-5": "Claude Sonnet 5",
+    "claude-haiku-5-5": "Claude Haiku 5.5",
   },
 
   openai: {

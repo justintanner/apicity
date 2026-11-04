@@ -273,9 +273,10 @@ describe("endpoint-aware estimates", () => {
         max_tokens: 100,
       },
     };
-    expect(estimateEndpoint(anthropic)).toMatchObject(
-      computeEstimate({ provider: "anthropic", payload: anthropic.payload })
-    );
+    expect(estimateEndpoint(anthropic)).toMatchObject({
+      status: "unavailable",
+      usd: 0,
+    });
     const forecast = estimateEndpoint({ ...anthropic, mode: "forecast" });
     expect(forecast.range!.low).toBeCloseTo((3 * 0.5) / 1_000_000, 12);
     expect(forecast.range!.high).toBeCloseTo(

@@ -26,6 +26,7 @@ const everyKey: Required<Record<keyof ActualUsage, number>> = {
   outputTokens: 1,
   cacheReadInputTokens: 0,
   cacheWriteInputTokens: 0,
+  cacheWrite1hInputTokens: 0,
   reasoningTokens: 0,
   audioInputTokens: 0,
   imageInputTokens: 0,

@@ -696,6 +696,37 @@ describe("the corrections method", () => {
     outputTokens: 128,
   };
 
+  it("keeps one-hour writes separate when solving a missing cache rate", () => {
+    const mixed = {
+      inputTokens: 1000,
+      outputTokens: 100,
+      cacheReadInputTokens: 0,
+      cacheWriteInputTokens: 300,
+      cacheWrite1hInputTokens: 100,
+    };
+    const result = tokenVote(
+      actual(0.0029, mixed),
+      entry({ cacheWrite5m: 2.5 }),
+      { ...base, provider: "anthropic" }
+    );
+    expect(result.vote?.field).toBe("cacheWrite1h");
+    expect(result.vote?.implied).toBeCloseTo(4, 12);
+    expect(
+      tokenVote(
+        actual(0.0029, mixed),
+        entry({ cacheWrite5m: 2.5, cacheWrite1h: 4 }),
+        { ...base, provider: "anthropic" }
+      )
+    ).toEqual({ contradicted: false });
+    expect(
+      tokenVote(
+        actual(0.0029, { ...mixed, cacheWrite1hInputTokens: 301 }),
+        entry({}),
+        base
+      )
+    ).toEqual({});
+  });
+
   it("needs a stated charge", () => {
     expect(tokenVote(actual(null, usage), entry({}), base)).toEqual({});
   });

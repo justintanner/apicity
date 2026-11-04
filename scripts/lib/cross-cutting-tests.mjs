@@ -167,6 +167,15 @@ import { repoRoot } from "./provider-scope.mjs";
  * provider-scoped, and the file is named after no provider, so this entry is
  * what runs it in the fast gates (ac-tsul8r).
  *
+ * The recording-accuracy guard holds the tables to what providers actually
+ * billed. `tests/unit/cost-recording-accuracy.test.ts` requires every committed
+ * call with a stated charge and a priced estimate to agree within har cost's
+ * tolerance, or be listed with a reason from docs/cost-learning-pass-1.md, and
+ * a listed call that now agrees fails too. Its name selects it only under a
+ * `cost` scope, while a recording that contradicts a rate lands under a
+ * provider's. It reads only recordings holding a stated-charge field, 190 of
+ * 1,057, to stay inside the block's budget (ac-ikcpvf).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly
  * replay, no network); `CROSS_CUTTING_COST_SECONDS` records their measured
@@ -264,6 +273,14 @@ import { repoRoot } from "./provider-scope.mjs";
  * (median 31.730s). CPU, threads and kernel match the reference; Node
  * v22.23.4 differs from v22.23.2. Retain 14.9 by the protocol below.
  *
+ * Re-measured for ac-ikcpvf at base acc9d7f5 with recording accuracy:
+ * seventeen entries, 1,108 tests in 17 files. Warm-up 13.868s (load 13.58);
+ * timed runs 15.931s, 19.295s, 13.145s at loads 14.48, 17.93, 19.97
+ * (median 15.931s). Interleaved with the sixteen entries before it (17.731s,
+ * 16.151s, 17.449s, median 17.449s) the block did not move. CPU, threads and
+ * kernel match the reference; Node v22.23.4 differs from v22.23.2. Retain 14.9
+ * by the protocol below.
+ *
  * Re-measure when the membership changes, and record the result here. The
  * protocol is the one this figure was taken by (ac-iag7fk): on this host -
  * `/proc/cpuinfo` model name, `nproc`, `uname -r` and `node -v` must match the
@@ -309,6 +326,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/examples-from-failed-exchanges.test.ts",
   "tests/unit/har-report-golden.test.ts",
   "tests/integration/captured-failures.test.ts",
+  "tests/unit/cost-recording-accuracy.test.ts",
 ];
 
 /**

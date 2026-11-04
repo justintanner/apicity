@@ -166,5 +166,11 @@
     "inference.v1.messages": "chat",
     "inference.v1.embeddings": "embeddings",
     "inference.v1.rerank": "rerank"
+  },
+  "googleflow": {
+    "v1.videos.upscale": "videos/upscale"
+  },
+  "quo": {
+    "v1.messages": "messages"
   }
 }

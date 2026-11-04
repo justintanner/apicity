@@ -16,6 +16,7 @@ export type CostSource =
   | "free";
 
 export type CostUnit =
+  | "segments"
   | "tokens"
   | "characters"
   | "seconds"
@@ -268,6 +269,8 @@ export type EstimateRequest =
         | "x"
         | "xai"
         | "kimicoding"
+        | "zaicoding"
+        | "quo"
         | "fireworks"
         | "alibaba"
         | "kie"

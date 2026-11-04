@@ -859,7 +859,11 @@ describe("PRICING data", () => {
     ]);
     for (const [model, entry] of Object.entries(PRICING.googleflow)) {
       expect(entry.source.asOf, model).toBe(
-        readOn20261017.has(model) ? "2026-10-17" : "2026-07-20"
+        model === "videos/upscale"
+          ? "2026-11-04"
+          : readOn20261017.has(model)
+            ? "2026-10-17"
+            : "2026-07-20"
       );
       expect(Date.parse(entry.source.asOf as string), model).toBeGreaterThan(
         Date.parse(PRICING_AS_OF)
@@ -888,6 +892,16 @@ describe("PRICING data", () => {
       expect(variants.size, `${model} variants`).toBeGreaterThan(0);
       for (const [variant, byPlan] of variants) {
         const label = `${model} ${variant || "(flat)"}`;
+        // 4K upscale is only offered on Ultra; absent tiers fail closed.
+        if (model === "videos/upscale" && variant === "4K") {
+          expect([...byPlan.keys()].sort(), label).toEqual([
+            "ultra",
+            "ultra-99",
+          ]);
+          expect(byPlan.get("ultra")).toBe(50 * 0.008);
+          expect(byPlan.get("ultra-99")).toBe(50 * 0.01);
+          continue;
+        }
         expect([...byPlan.keys()].sort(), label).toEqual([...plans].sort());
         const usd = plans.map((plan) => byPlan.get(plan) ?? NaN);
         if (usd.every((x) => x === 0)) continue;

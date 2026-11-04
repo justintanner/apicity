@@ -26,6 +26,8 @@ import { openai } from "./openai";
 import { wavespeed } from "./wavespeed";
 import { s3 } from "./s3";
 import { x } from "./x";
+import { zaicoding } from "./zaicoding";
+import { quo } from "./quo";
 import { xai } from "./xai";
 
 export const PRICING_AS_OF = "2026-04-30";
@@ -40,6 +42,8 @@ export const PRICING = {
   googleflow,
   kie,
   kimicoding,
+  zaicoding,
+  quo,
   machgen,
   openai,
   wavespeed,

@@ -98,9 +98,15 @@ describe("endpoint billing inventory", () => {
       .map(key)
       .sort();
     expect(actual).toEqual(Object.keys(unpriced).sort());
+    for (const [id, reason] of Object.entries(unpriced)) {
+      const [provider, method, dotPath] = id.split(" ");
+      expect(endpointBilling(provider, method, dotPath).reason, id).toBe(
+        reason
+      );
+    }
     for (const owner of Object.values(unpriced))
       expect(owner).toMatch(
-        /P(?:10|[1-9]) ac-|Mayor exception: paid in bot Stars, no USD rate/
+        /follow-up ac-[a-z0-9]+|ruling ac-[a-z0-9]+, no follow-up/
       );
   });
   it("every paid endpoint is metered except the five documented-free KIE operations", () => {

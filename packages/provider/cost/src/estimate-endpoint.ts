@@ -201,6 +201,27 @@ function anthropicBatch(req: EndpointEstimateRequest): EndpointEstimate {
   };
 }
 
+function flowExtensionModel(
+  payload: Record<string, unknown> = {},
+  hints?: CostHints
+): string {
+  if (
+    hints?.googleFlowPlan !== undefined &&
+    !["plus", "pro", "ultra", "ultra-99"].includes(hints.googleFlowPlan)
+  )
+    return `unsupported Flow plan tier: ${hints.googleFlowPlan}`;
+  const model = payload.model ?? "veo-3.1-fast";
+  return typeof model === "string" &&
+    [
+      "veo-3.1-fast",
+      "veo-3.1-quality",
+      "veo-3.1-lite",
+      "veo-3.1-lite-low-priority",
+    ].includes(model)
+    ? model
+    : `unsupported Flow extension model: ${String(model)}`;
+}
+
 /** Endpoint-aware estimation; computeEstimate and the paygate stay unchanged. */
 function estimateEndpointInternal(
   req: EndpointEstimateRequest
@@ -261,6 +282,9 @@ function estimateEndpointInternal(
           baseURL: req.baseURL,
           endpoint:
             req.endpoint ??
+            (req.provider === "googleflow" && req.dotPath === "v1.videos.extend"
+              ? flowExtensionModel(req.payload, req.costHints)
+              : undefined) ??
             ENDPOINT_PRICING_KEYS[
               `${req.provider} ${req.method} ${req.dotPath}`
             ],

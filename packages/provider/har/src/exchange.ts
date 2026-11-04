@@ -241,10 +241,24 @@ async function serializeBody(
   // A frame is scrubbed alone, and only a whole one parses.
   if (streamed && (failed || bytes > max || !text.endsWith("\n")))
     text = text.slice(0, text.lastIndexOf("\n") + 1);
+  let parsedWhole = false;
   try {
-    const result = summarizeJsonMediaStrings(JSON.parse(text));
+    const value: unknown = JSON.parse(text);
+    parsedWhole = true;
+    const result = summarizeJsonMediaStrings(value);
     if (result.summarized) text = JSON.stringify(result.value);
   } catch {
+    // A close-delimited HTTP body can end cleanly in the middle of JSON. A whole
+    // retained response that cannot parse is incomplete even without a read error.
+    if (
+      !parsedWhole &&
+      !streamed &&
+      message instanceof Response &&
+      message.body !== null &&
+      /(?:\/|\+)json$/i.test(mediaType.trim())
+    ) {
+      return { ...placeholder(), truncated: true, streamIncomplete: true };
+    }
     // Plain text or SSE. Scrub rules and media summaries read whole documents and
     // frames, whatever the content type says, so nothing cut outside a stream is text.
     if (failed && !streamed) return placeholder();

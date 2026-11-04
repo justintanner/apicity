@@ -30,7 +30,7 @@ export const NO_RATE_FOR_USAGE =
   "no USD figure is derived: no bundled rate applies, or the request that selects one is not in this exchange";
 
 export const TRUNCATED_STREAM =
-  "the captured stream stops before its final usage, so usage is incomplete";
+  "the captured response stops before complete usage, so usage is incomplete";
 
 export const RESPONSE_NOT_CAPTURED =
   "the response body was not captured, so any usage in it is lost";

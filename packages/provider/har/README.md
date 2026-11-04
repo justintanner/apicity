@@ -47,7 +47,9 @@ entry._id = pollyEntryId(entry);
   error produces status 0; call-level error metadata belongs in
   `log._apicity`. `streamIncomplete` marks a wire ending without a newline or
   without final usage in a recognized Anthropic, OpenAI or Google stream; it
-  also sets `bodyTruncated` and keeps cost evidence unsettled. Unclassifiable
+  also marks a whole retained JSON response that does not parse, even when the
+  transport reports clean EOF. Such JSON is saved only as a hash/size placeholder.
+  It sets `bodyTruncated` and keeps cost evidence unsettled. Unclassifiable
   frames or lines over 1 MiB in a recognized protocol are incomplete. This is
   independent of retention caps and `responseCut` (transport failure): complete
   final usage followed by a transport failure can still settle. Legacy captures

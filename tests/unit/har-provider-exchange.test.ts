@@ -134,6 +134,16 @@ describe("entryToProviderExchange", () => {
     expect(exchange.responseBody).toBeNull();
   });
 
+  it("tolerates a response with no headers or content", () => {
+    const bare = {
+      request: { method: "GET", url: "https://api.openai.com/v1/models" },
+      response: { status: 204 },
+    } as unknown as HarEntry;
+    const exchange = entryToProviderExchange(bare);
+    expect(exchange.responseHeaders).toEqual({});
+    expect(exchange.responseBody).toBeNull();
+  });
+
   it("carries bodyTruncated only when the capture set it", () => {
     const truncated = entryToProviderExchange(
       entry({ text: "{}", _apicity: { kind: "http", bodyTruncated: true } })

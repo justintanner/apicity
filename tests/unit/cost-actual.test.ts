@@ -105,8 +105,9 @@ const STATED_CHECKS: Record<string, (raw: number, actual: CostActual) => void> =
       expect(actual.statedListUsd).toBeCloseTo(raw / 1e6, 10),
     net_cost_micros: (raw, actual) =>
       expect(actual.statedUsd).toBeCloseTo(raw / 1e6, 10),
+    // Inside a plan's quota it reads 0, which says no overage was billed.
     "fiat-cost-before-overages": (raw, actual) =>
-      expect(actual.statedUsd).toBe(raw),
+      expect(actual.statedUsd).toBe(raw > 0 ? raw : null),
     cost: (raw, actual) => expect(actual.statedUsd).toBe(raw),
   };
 
@@ -201,10 +202,8 @@ describe("extractActual reads every field in the survey's map", () => {
           raw + cacheReadInputTokens + cacheWriteInputTokens,
         ]).toContain(value);
       } else if (actualKey === "outputTokens") {
-        // Google adds thoughts, and one xAI route adds reasoning.
-        expect([raw, raw + (actual.usage.reasoningTokens ?? 0)]).toContain(
-          value
-        );
+        // Google adds thoughts, and total_tokens can hold more than the field.
+        expect(value).toBeGreaterThanOrEqual(raw);
       } else {
         expect(value).toBe(raw);
       }
@@ -391,9 +390,11 @@ describe("extractActual pins", () => {
       "elevenlabs"
     )[0] as CostActual;
     expect(actual.evidence).toContain("header:fiat-cost-before-overages");
-    expect(actual.statedUsd).toBe(0);
+    // 0 inside a plan's quota says no overage was billed, not that it was free.
+    expect(actual.statedUsd).toBeNull();
     expect(actual.usage.seconds).toBe(0.5);
-    expect(actual.basis).toBe("stated");
+    expect(actual.basis).toBe("derived");
+    expect(actual.derivedUsd).toBeCloseTo((0.5 * 0.22) / 3600, 12);
     expect(actual.warnings.join(" ")).toContain("plan's quota");
   });
 
@@ -608,6 +609,23 @@ describe("extractActual pins", () => {
     expect(actual.warnings.join(" ")).toContain("billings/search");
   });
 
+  it("says why when usage has no figure", () => {
+    const actual = extractActual(
+      inlineExchange({
+        provider: "google",
+        url: "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent",
+        responseBody: {
+          usageMetadata: { promptTokenCount: 7, candidatesTokenCount: 2 },
+        },
+      })
+    );
+    expect(actual.basis).toBe("usage-only");
+    expect(actual.model).toBe("gemini-2.5-flash");
+    expect(actual.warnings).toEqual([
+      "no USD figure is derived: no bundled rate applies, or the request that selects one is not in this exchange",
+    ]);
+  });
+
   it("says so when a response reports nothing", () => {
     const actual = extractActual(
       inlineExchange({
@@ -653,7 +671,278 @@ describe("extractActual pins", () => {
       })
     );
     expect(actual.settled).toBe(false);
-    expect(actual.warnings.join(" ")).toContain("truncated");
+    expect(actual.warnings.join(" ")).toContain("stops before");
+  });
+
+  describe("a stream cut short", () => {
+    const anthropicStart = {
+      type: "message_start",
+      message: {
+        usage: {
+          input_tokens: 10,
+          cache_read_input_tokens: 5,
+          cache_creation_input_tokens: 0,
+          output_tokens: 1,
+        },
+      },
+    };
+
+    it("is unsettled and derives nothing from message_start's placeholder output", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "anthropic",
+          url: "https://api.anthropic.com/v1/messages",
+          requestBody: { model: "claude-sonnet-4-6" },
+          responseBody: [anthropicStart],
+          bodyTruncated: true,
+        })
+      );
+      expect(actual.settled).toBe(false);
+      expect(actual.derivedUsd).toBeNull();
+    });
+
+    it("is whole when the tail kept the final usage frame", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "anthropic",
+          url: "https://api.anthropic.com/v1/messages",
+          requestBody: { model: "claude-sonnet-4-6" },
+          responseBody: [
+            anthropicStart,
+            { type: "message_delta", usage: { output_tokens: 40 } },
+          ],
+          bodyTruncated: true,
+        })
+      );
+      expect(actual.settled).toBe(true);
+      expect(actual.usage.outputTokens).toBe(40);
+      expect(actual.derivedUsd).not.toBeNull();
+    });
+
+    it.each([
+      [
+        "kie",
+        "https://api.kie.ai/gemini/v1/models/x:streamGenerateContent",
+        [{ usageMetadata: { promptTokenCount: 4 } }],
+      ],
+      [
+        "google",
+        "https://aiplatform.googleapis.com/v1/publishers/google/models/m:generateContent",
+        [{ usageMetadata: { promptTokenCount: 4 }, candidates: [{}] }],
+      ],
+    ])("is unsettled on %s too", (provider, url, responseBody) => {
+      const actual = extractActual(
+        inlineExchange({ provider, url, responseBody, bodyTruncated: true })
+      );
+      expect(actual.settled).toBe(false);
+    });
+
+    it("the same flag on a whole JSON body means the request was truncated", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "xai",
+          url: "https://api.x.ai/v1/images/edits",
+          responseBody: { usage: { cost_in_usd_ticks: 200000000 } },
+          bodyTruncated: true,
+        })
+      );
+      expect(actual.settled).toBe(true);
+      expect(actual.statedUsd).toBe(0.02);
+      expect(actual.warnings.join(" ")).not.toContain("stops before");
+    });
+
+    it("a binary placeholder is settled and says its body is gone", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "elevenlabs",
+          url: "https://api.elevenlabs.io/v1/text-to-speech/v",
+          responseBody: null,
+          bodyTruncated: true,
+        })
+      );
+      expect(actual.settled).toBe(true);
+      expect(actual.warnings.join(" ")).toContain("not captured");
+    });
+  });
+
+  describe("a charge the token rate cannot see fails the figure closed", () => {
+    it("an OpenAI web search call", () => {
+      const actual = actuals(
+        "openai_3991279299/responses-web-search_2869815247/recording.har",
+        "openai"
+      )[0] as CostActual;
+      expect(actual.usage.inputTokens).toBe(309);
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.basis).toBe("usage-only");
+      expect(actual.warnings.join(" ")).toContain("web_search_call");
+    });
+
+    const anthropic = (usage: Record<string, unknown>, body = {}) =>
+      extractActual(
+        inlineExchange({
+          provider: "anthropic",
+          url: "https://api.anthropic.com/v1/messages",
+          requestBody: { model: "claude-sonnet-4-6", ...body },
+          responseBody: {
+            usage: { input_tokens: 1000, output_tokens: 100, ...usage },
+          },
+        })
+      );
+
+    it("prices an ordinary Anthropic call", () => {
+      expect(anthropic({ inference_geo: "global" }).derivedUsd).toBeCloseTo(
+        0.0045,
+        10
+      );
+    });
+
+    it.each([
+      ["US-only inference", { inference_geo: "us" }, {}, "multiplier"],
+      [
+        "a web search",
+        { server_tool_use: { web_search_requests: 1 } },
+        {},
+        "server tool",
+      ],
+      ["fast mode", {}, { speed: "fast" }, "fast mode"],
+    ])("Anthropic %s", (_name, usage, body, phrase) => {
+      const actual = anthropic(usage, body);
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.warnings.join(" ")).toContain(phrase);
+    });
+
+    it("web fetch is token-priced, so it still derives", () => {
+      expect(
+        anthropic({ server_tool_use: { web_fetch_requests: 1 } }).derivedUsd
+      ).toBeCloseTo(0.0045, 10);
+    });
+
+    it("an xAI server-side tool, with the ticks still stated", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "xai",
+          url: "https://api.x.ai/v1/responses",
+          requestBody: { model: "grok-build-0.1" },
+          responseBody: {
+            usage: {
+              input_tokens: 10,
+              input_tokens_details: { cached_tokens: 0 },
+              output_tokens: 5,
+              num_server_side_tools_used: 2,
+              cost_in_usd_ticks: 50000000,
+            },
+          },
+        })
+      );
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.statedUsd).toBe(0.005);
+      expect(actual.basis).toBe("stated");
+    });
+
+    it("a regional endpoint's uplift", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "xai",
+          url: "https://us.api.x.ai/v1/responses",
+          requestBody: { model: "grok-build-0.1" },
+          responseBody: {
+            usage: {
+              input_tokens: 10,
+              input_tokens_details: { cached_tokens: 0 },
+              output_tokens: 5,
+            },
+          },
+        })
+      );
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.warnings.join(" ")).toContain("regional");
+    });
+
+    it("KIE cached tokens on a card with no cache rate", () => {
+      const actual = one(
+        "kie_2079838932/claude-haiku-5-5-chat-hello_1507256244/recording.har",
+        "kie"
+      );
+      expect(actual.usage.cacheReadInputTokens).toBe(3616);
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.statedUsd).toBeCloseTo(0.0003, 10);
+      expect(actual.warnings.join(" ")).toContain("cached tokens");
+    });
+  });
+
+  describe("per-unit rows", () => {
+    it("a band prices once, matching the receipt", () => {
+      const parts = actuals(
+        "machgen_3663587242/vidu-q3-turbo-i2v-6s_3970792303/recording.har",
+        "machgen"
+      );
+      expect(parts[0]?.usage.seconds).toBe(6);
+      expect(parts[0]?.derivedUsd).toBeCloseTo(0.093, 10);
+      expect(parts.at(-1)?.statedListUsd).toBe(0.093);
+    });
+
+    it("prices by the model the caller sent when the response names an alias", () => {
+      const pin =
+        "machgen_3663587242/wan-2-2-a14b-i2v_3145422822/recording.har";
+      const parts = actuals(pin, "machgen");
+      expect(parts[0]?.derivedUsd).toBeCloseTo(0.09, 10);
+      const merged = mergeActuals(parts);
+      expect(merged.model).toBe("Wan2.2-A14B");
+    });
+
+    it("prices units on the poll at the rate the submit's request selected", () => {
+      const parts = actuals(
+        "alibaba_1329897167/wan-i2v_2196817451/recording.har",
+        "alibaba"
+      );
+      const poll = parts.at(-1) as CostActual;
+      expect(poll.basis).toBe("usage-only");
+      expect(poll.warnings.join(" ")).toContain("not in this exchange");
+      const merged = mergeActuals(parts);
+      expect(merged.derivedUsd).toBeCloseTo(0.5, 10);
+      expect(merged.basis).toBe("derived");
+      expect(merged.warnings).toEqual([]);
+    });
+
+    it("reports no seconds when MachGen's length follows the source", () => {
+      const parts = actuals(
+        "machgen_3663587242/seedance-2-5-r2v-video-edit_2669245042/recording.har",
+        "machgen"
+      );
+      for (const part of parts) {
+        expect(part.usage.seconds).toBeUndefined();
+      }
+    });
+  });
+
+  describe("usage totals", () => {
+    it("adds what total_tokens holds beyond input and output", () => {
+      const actual = one(
+        "kie_2079838932/gemini-31-pro-chat_166868540/recording.har",
+        "kie"
+      );
+      expect(actual.usage).toMatchObject({ inputTokens: 8, outputTokens: 107 });
+    });
+
+    it("does not read a cache-heavy Anthropic-shaped total as hidden output", () => {
+      const actual = extractActual(
+        inlineExchange({
+          provider: "kimicoding",
+          url: "https://api.kimi.com/coding/v1/messages",
+          responseBody: {
+            usage: {
+              input_tokens: 0,
+              cache_read_input_tokens: 92,
+              cache_creation_input_tokens: 0,
+              prompt_tokens: 92,
+              output_tokens: 38,
+              total_tokens: 130,
+            },
+          },
+        })
+      );
+      expect(actual.usage).toMatchObject({ inputTokens: 92, outputTokens: 38 });
+    });
   });
 });
 
@@ -714,7 +1003,42 @@ describe("settled", () => {
     expect(poll({ status: "GENERATE_AUDIO_FAILED" })).toBe(true);
   });
 
-  it("an xAI video settles when it is done or failed", () => {
+  it("reads the other KIE routes' words and numbers", () => {
+    const poll = (url: string, data: Record<string, unknown>) =>
+      extractActual(
+        inlineExchange({
+          provider: "kie",
+          method: "GET",
+          url: `https://api.kie.ai${url}`,
+          responseBody: { code: 200, data },
+        })
+      ).settled;
+    const wav = "/api/v1/wav/record-info";
+    expect(poll(wav, { successFlag: "PENDING" })).toBe(false);
+    expect(poll(wav, { successFlag: "SUCCESS" })).toBe(true);
+    expect(poll(wav, { successFlag: "GENERATE_WAV_FAILED" })).toBe(true);
+    const cover = "/api/v1/suno/cover/record-info";
+    expect(poll(cover, { successFlag: 2 })).toBe(false);
+    expect(poll(cover, { successFlag: 3 })).toBe(true);
+    const veo = "/api/v1/veo/record-info";
+    expect(poll(veo, { successFlag: 2 })).toBe(true);
+    const voice = "/api/v1/voice/record-info";
+    expect(poll(voice, { status: "wait_processing" })).toBe(false);
+    expect(poll(voice, { status: "processing_validate" })).toBe(false);
+    expect(poll(voice, { status: "processing_validate_fail" })).toBe(true);
+    expect(poll(voice, { status: "success" })).toBe(true);
+    expect(poll(voice, { status: "fail" })).toBe(true);
+  });
+
+  it("a KIE sync route that answers in its own words is finished", () => {
+    const parts = actuals(
+      "kie_2079838932/suno_690832138/style-boost_3473068648/recording.har",
+      "kie"
+    );
+    expect(parts[0]?.settled).toBe(true);
+  });
+
+  it("an xAI video is unsettled only while pending", () => {
     const poll = (status: string) =>
       extractActual(
         inlineExchange({
@@ -727,6 +1051,62 @@ describe("settled", () => {
     expect(poll("pending")).toBe(false);
     expect(poll("done")).toBe(true);
     expect(poll("failed")).toBe(true);
+    expect(poll("expired")).toBe(true);
+  });
+
+  it("a 4xx ends the call, and a 429 or 5xx may pass", () => {
+    const failed = (status: number, provider: string, url: string) =>
+      extractActual(inlineExchange({ provider, url, status }));
+    const generate = "https://api.machgen.ai/api/v0/generate";
+    const result = "https://queue.fal.run/fal-ai/flux/requests/r";
+    expect(failed(400, "machgen", generate).settled).toBe(true);
+    expect(failed(422, "fal", result).settled).toBe(true);
+    expect(failed(429, "machgen", generate).settled).toBe(false);
+    expect(failed(503, "machgen", generate).settled).toBe(false);
+    const invalidKey = one(
+      "machgen_3663587242/invalid-key_2715742494/recording.har",
+      "machgen"
+    );
+    expect(invalidKey.settled).toBe(true);
+    expect(invalidKey.warnings.join(" ")).not.toContain("no final usage");
+  });
+
+  it("a MachGen receipt that answers 409 is still pending", () => {
+    const running = extractActual(
+      inlineExchange({
+        provider: "machgen",
+        method: "GET",
+        url: "https://api.machgen.ai/api/v0/tasks/t",
+        responseBody: { status: "RUNNING" },
+      })
+    );
+    const receipt = extractActual(
+      inlineExchange({
+        provider: "machgen",
+        method: "GET",
+        status: 409,
+        url: "https://api.machgen.ai/api/v0/tasks/t/billing",
+        responseBody: { detail: "not finished" },
+      })
+    );
+    expect(receipt.settled).toBe(false);
+    expect(mergeActuals([running, receipt]).settled).toBe(false);
+  });
+
+  it("a Fireworks job settles when its state is final", () => {
+    const job = (state: string) =>
+      extractActual(
+        inlineExchange({
+          provider: "fireworks",
+          method: "GET",
+          url: "https://api.fireworks.ai/v1/accounts/a/batchInferenceJobs/j",
+          responseBody: { state, jobProgress: { inputTokens: 5 } },
+        })
+      ).settled;
+    expect(job("JOB_STATE_RUNNING")).toBe(false);
+    expect(job("JOB_STATE_WRITING_RESULTS")).toBe(false);
+    expect(job("JOB_STATE_COMPLETED")).toBe(true);
+    expect(job("JOB_STATE_FAILED")).toBe(true);
   });
 
   it("an Alibaba task settles once it leaves PENDING and RUNNING", () => {
@@ -793,7 +1173,9 @@ describe("mergeActuals", () => {
     expect(merged.settled).toBe(true);
     expect(merged.usage.billableUnits).toBe(211);
     expect(merged.model).toBe("blackforestlabs/flux-3/klein/base/trainer/edit");
-    expect(merged.warnings).toEqual([]);
+    expect(merged.warnings).toEqual([
+      "x-fal-billable-units is in fal's own unit, so no USD figure is derived",
+    ]);
   });
 
   it("stays unsettled while no part has finished", () => {
@@ -829,6 +1211,39 @@ describe("mergeActuals", () => {
       })
     );
     expect(mergeActuals([empty, receipt]).warnings).toEqual([]);
+  });
+
+  it("an upload before the submit does not settle the call", () => {
+    const parts = actuals(
+      "kie_2079838932/wan-27-first-last-frame_100869299/recording.har",
+      "kie"
+    );
+    const merged = mergeActuals(parts.slice(0, 4));
+    expect(merged.settled).toBe(false);
+    expect(merged.warnings.join(" ")).toContain("no final usage");
+    expect(mergeActuals(parts).settled).toBe(true);
+  });
+
+  it("a free quote before the submit does not settle the call", () => {
+    const parts = actuals(
+      "machgen_3663587242/topaz-video-precision-upscale_641924036/recording.har",
+      "machgen"
+    );
+    expect(mergeActuals(parts.slice(0, 3)).settled).toBe(false);
+  });
+
+  it.each([
+    [
+      "kie",
+      "kie_2079838932/bytedance-seedance-2-5-draft_83551116/recording.har",
+    ],
+    [
+      "machgen",
+      "machgen_3663587242/minimax-h3-upscale_2427716702/recording.har",
+    ],
+  ])("warns when %s parts look like two calls", (provider, pin) => {
+    const merged = mergeActuals(actuals(pin, provider));
+    expect(merged.warnings.join(" ")).toContain("more than one call");
   });
 
   it("reports nothing to merge", () => {
@@ -947,6 +1362,27 @@ describe("compareCost", () => {
   it("over, with no ratio, when the actual is zero", () => {
     const result = compareCost(estimate(1), actual({ usd: 0 }));
     expect(result).toMatchObject({ verdict: "over", ratio: null });
+  });
+
+  it("no-actual: an unsettled figure can still move", () => {
+    const waiting = actuals(
+      "kie_2079838932/seedream-5-pro-text-to-image_3273949277/recording.har",
+      "kie"
+    )[1] as CostActual;
+    expect(waiting.settled).toBe(false);
+    expect(waiting.statedUsd).toBe(0);
+    const result = compareCost(estimate(0.035), waiting);
+    expect(result).toMatchObject({ verdict: "no-actual", actualUsd: null });
+  });
+
+  it("a plan's zero fiat header is not a rate error", () => {
+    const actual = actuals(
+      "elevenlabs_2379486140/speech-to-text_1600104305/recording.har",
+      "elevenlabs"
+    )[0] as CostActual;
+    expect(actual.statedUsd).toBeNull();
+    const result = compareCost(estimate(actual.usd as number), actual);
+    expect(result.verdict).toBe("match");
   });
 
   it("compares a MachGen estimate with the list figure, not the net", () => {

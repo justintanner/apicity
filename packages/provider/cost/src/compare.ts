@@ -20,7 +20,8 @@ const DEFAULT_TOLERANCE = 0.02;
  * - "free": the estimate names a free call and the actual is zero or absent, or
  *   both sides are zero. A free estimate with a positive actual is "under",
  *   because that row is not free after all.
- * - "no-actual": the exchange reported no figure (`usage-only` or `none`).
+ * - "no-actual": the exchange reported no figure (`usage-only` or `none`), or
+ *   the call has not settled.
  * - "no-estimate": none was quoted, or the estimator failed closed.
  * - "match", "over", "under": both figures exist, and the estimate is within
  *   tolerance of, above, or below the actual.
@@ -31,7 +32,10 @@ export function compareCost(
   options?: { tolerance?: number }
 ): CostComparison {
   const tolerance = options?.tolerance ?? DEFAULT_TOLERANCE;
-  const actualUsd = actual.statedListUsd ?? actual.usd;
+  // An unsettled figure can still move, so it is not yet an actual.
+  const actualUsd = actual.settled
+    ? (actual.statedListUsd ?? actual.usd)
+    : null;
   const failedClosed =
     estimate !== null &&
     estimate.usd === 0 &&

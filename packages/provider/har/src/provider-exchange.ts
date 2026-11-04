@@ -37,7 +37,7 @@ function requestBodyOf(entry: HarEntry): Record<string, unknown> | null {
 }
 
 function responseText(entry: HarEntry): string | undefined {
-  const { text, encoding } = entry.response.content;
+  const { text, encoding } = entry.response.content ?? {};
   if (!text) return undefined;
   return encoding === "base64"
     ? Buffer.from(text, "base64").toString("utf8")
@@ -57,7 +57,7 @@ function sseFrames(text: string): unknown[] {
 function responseBodyOf(entry: HarEntry): unknown {
   const text = responseText(entry);
   if (text === undefined) return null;
-  const mime = (entry.response.content.mimeType ?? "").toLowerCase();
+  const mime = (entry.response.content?.mimeType ?? "").toLowerCase();
   const leading = text.trimStart();
   if (
     mime.includes("event-stream") ||
@@ -97,7 +97,7 @@ export function entryToProviderExchange(
   meta?: { provider?: string; dotPath?: string }
 ): ProviderExchange {
   const responseHeaders: Record<string, string> = {};
-  for (const header of entry.response.headers) {
+  for (const header of entry.response.headers ?? []) {
     responseHeaders[header.name.toLowerCase()] = header.value;
   }
   return {

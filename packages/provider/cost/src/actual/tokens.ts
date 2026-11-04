@@ -71,9 +71,10 @@ function first(
 //
 // The two disagree on input. OpenAI-shaped totals include cached tokens, so
 // the details are subsets. Anthropic's input_tokens is the uncached remainder,
-// so the total is the three counts added. Reasoning is inside the output total
-// on every shape but one: an xAI compact call reports total_tokens as input +
-// output + reasoning, so the total itself says when to add it.
+// so the total is the three counts added. Output usually holds reasoning, but
+// not always: an xAI compact call adds it to total_tokens only, and a KIE Gemini
+// route reports thoughts nowhere else. So total_tokens decides: whatever it
+// holds beyond input and output is output.
 export function readTokenUsage(found: FoundUsage, out: Extracted): void {
   const { usage } = found;
   const read = (key: Parameters<typeof setNumber>[1], paths: string[]) => {
@@ -105,14 +106,13 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
         ]
   );
   const input = first(found, ["input_tokens", "prompt_tokens"]);
-  if (input) {
-    const total = anthropicShape
+  const inputTotal =
+    input && anthropicShape
       ? input.value + (cacheRead ?? 0) + (cacheWrite ?? 0)
-      : input.value;
-    setNumber(out, "inputTokens", total, input.evidence);
-  }
+      : input?.value;
+  if (input) setNumber(out, "inputTokens", inputTotal, input.evidence);
 
-  const reasoning = read("reasoningTokens", [
+  read("reasoningTokens", [
     "output_tokens_details.reasoning_tokens",
     "completion_tokens_details.reasoning_tokens",
     "output_tokens_details.thinking_tokens",
@@ -120,15 +120,14 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
   const output = first(found, ["output_tokens", "completion_tokens"]);
   if (output) {
     const statedTotal = asFiniteNumber(usage.total_tokens);
-    const excludesReasoning =
-      input !== undefined &&
-      reasoning !== undefined &&
-      reasoning > 0 &&
-      statedTotal === input.value + output.value + reasoning;
+    const hidden =
+      statedTotal !== undefined && inputTotal !== undefined
+        ? statedTotal - inputTotal - output.value
+        : 0;
     setNumber(
       out,
       "outputTokens",
-      excludesReasoning ? output.value + reasoning : output.value,
+      output.value + Math.max(hidden, 0),
       output.evidence
     );
   }
@@ -155,7 +154,10 @@ export function readTokenUsage(found: FoundUsage, out: Extracted): void {
     out.evidence.push(
       usageEvidence(found, "cache_creation.ephemeral_1h_input_tokens")
     );
-    if (oneHour > 0) out.unpricedCacheWrite = true;
+    if (oneHour > 0) {
+      out.uncoveredCharge =
+        "1-hour cache writes have no bundled rate, so no figure is derived";
+    }
   }
   if (
     numberAt(usage, "cache_creation.ephemeral_5m_input_tokens") !== undefined
@@ -199,4 +201,30 @@ export function readUsageMetadata(body: unknown, out: Extracted): boolean {
     "usageMetadata.cachedContentTokenCount"
   );
   return true;
+}
+
+// Frames that come only once a stream's usage is whole. Anthropic's
+// message_start carries usage too, but its output count is a placeholder.
+const FINAL_FRAME_TYPES: ReadonlySet<string> = new Set([
+  "message_delta",
+  "message_stop",
+  "response.completed",
+  "response.incomplete",
+  "response.failed",
+  "response.done",
+]);
+
+export function streamHasFinalUsage(frames: readonly unknown[]): boolean {
+  return frames.some((frame) => {
+    const type = get(frame, "type");
+    if (typeof type === "string") return FINAL_FRAME_TYPES.has(type);
+    if (isObject(get(frame, "usage"))) return true;
+    if (get(frame, "credits_consumed") !== undefined) return true;
+    const candidates = get(frame, "candidates");
+    return (
+      isObject(get(frame, "usageMetadata")) &&
+      Array.isArray(candidates) &&
+      get(candidates[0], "finishReason") !== undefined
+    );
+  });
 }

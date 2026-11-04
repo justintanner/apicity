@@ -11,9 +11,13 @@ import type {
 import { extractorFor } from "./actual/families";
 import {
   NOTHING_REPORTED,
+  NO_RATE_FOR_USAGE,
+  RESPONSE_NOT_CAPTURED,
   SUBMIT_PENDING,
+  TRUNCATED_STREAM,
   type Extracted,
 } from "./actual/shared";
+import { streamHasFinalUsage } from "./actual/tokens";
 
 // Providers whose reported token usage prices through evaluateDeclaredUsage.
 // KIE prices through its own computeEstimate route, which already reads hints.
@@ -54,27 +58,114 @@ function tokenHints(usage: ActualUsage, serviceTier?: string): CostHints {
   };
 }
 
-function reportedUnits(usage: ActualUsage): number | undefined {
-  return usage.seconds ?? usage.images ?? usage.characters;
-}
-
 function isPriced(provider: string): provider is PricedProviderId {
   return Object.prototype.hasOwnProperty.call(PRICING, provider);
 }
 
-// A usable figure, or the reasons there is none. evaluatePerUnit and the token
-// routes both say why through warnings, so an unpriced model carries its reason
-// into the actual instead of reading as zero.
-function fromEstimate(estimate: CostEstimate): {
+interface Derived {
   usd: number | null;
   rateAsOf: string | null;
   warnings: string[];
-} {
-  if (estimate.warnings.length > 0) {
-    return { usd: null, rateAsOf: null, warnings: estimate.warnings };
+  unitRate?: { usd: number; asOf: string | null };
+}
+
+const NOT_DERIVED: Derived = { usd: null, rateAsOf: null, warnings: [] };
+
+// A usable figure, or the reasons there is none. evaluatePerUnit and the token
+// routes both say why through warnings, so an unpriced model carries its reason
+// into the actual instead of reading as zero.
+function fromEstimate(estimate: CostEstimate): Derived {
+  return estimate.warnings.length > 0
+    ? { ...NOT_DERIVED, warnings: estimate.warnings }
+    : { usd: estimate.usd, rateAsOf: estimate.rateAsOf, warnings: [] };
+}
+
+function deriveFromTokens(
+  provider: PricedProviderId,
+  key: string,
+  exchange: ProviderExchange,
+  extracted: Extracted
+): Derived {
+  const { usage, serviceTier } = extracted;
+  // Anthropic and Kimi call their Standard tier "standard", which OpenAI's
+  // declared usage rightly refuses. The response is the record of what ran, so
+  // only OpenAI also reads the tier its request asked for.
+  const tier =
+    provider !== "openai" && serviceTier === "standard"
+      ? undefined
+      : serviceTier;
+  const hints = tokenHints(usage, tier);
+  if (DECLARED_USAGE_PROVIDERS.has(provider)) {
+    return fromEstimate(
+      evaluateDeclaredUsage(
+        provider,
+        key,
+        provider === "openai" ? (exchange.requestBody ?? {}) : {},
+        hints
+      )
+    );
+  }
+  if (provider !== "kie") return NOT_DERIVED;
+  // KIE's token route ignores a cache count with no published rate, which would
+  // bill those tokens at the input rate.
+  const entry = PRICING.kie[key];
+  if (
+    entry?.kind === "tokens" &&
+    (((usage.cacheReadInputTokens ?? 0) > 0 &&
+      entry.rate.cacheRead === undefined) ||
+      ((usage.cacheWriteInputTokens ?? 0) > 0 &&
+        entry.rate.cacheWrite === undefined))
+  ) {
+    return {
+      ...NOT_DERIVED,
+      warnings: [
+        `kie '${key}' publishes no rate for its cached tokens, so no figure is derived`,
+      ],
+    };
+  }
+  return fromEstimate(
+    computeEstimate({ provider, payload: { model: key }, costHints: hints })
+  );
+}
+
+// A per-unit row prices the units the response reported, at the rate the
+// request selects. A row whose response reports no units derives nothing,
+// because an estimate from the request alone would match itself; it keeps the
+// rate for mergeActuals instead. A band or an input charge depends on the
+// request's own length, so such a row takes the estimate's total.
+function deriveFromUnits(
+  provider: PricedProviderId,
+  key: string,
+  exchange: ProviderExchange,
+  usage: ActualUsage
+): Derived {
+  const units = usage.seconds ?? usage.images ?? usage.characters;
+  const estimate = computeEstimate({
+    provider,
+    payload: exchange.requestBody ?? {},
+    endpoint: PER_UNIT_KEYED_BY_ENDPOINT.has(provider) ? key : undefined,
+    costHints:
+      usage.seconds !== undefined
+        ? { durationSeconds: usage.seconds }
+        : undefined,
+  });
+  const perUnit = estimate.breakdown.perUnitUsd;
+  const extra = estimate.breakdown.extraUsd;
+  if (estimate.warnings.length > 0 || perUnit === undefined) {
+    return units === undefined
+      ? NOT_DERIVED
+      : { ...NOT_DERIVED, warnings: estimate.warnings };
+  }
+  if (units === undefined) {
+    return extra
+      ? NOT_DERIVED
+      : {
+          ...NOT_DERIVED,
+          unitRate: { usd: perUnit, asOf: estimate.rateAsOf },
+        };
   }
   return {
-    usd: estimate.usd,
+    usd: extra ? estimate.usd : perUnit * units,
     rateAsOf: estimate.rateAsOf,
     warnings: [],
   };
@@ -84,85 +175,35 @@ function derive(
   exchange: ProviderExchange,
   model: string | null,
   extracted: Extracted
-): { usd: number | null; rateAsOf: string | null; warnings: string[] } {
-  const none = { usd: null, rateAsOf: null, warnings: [] as string[] };
-  const { usage, unpricedCacheWrite, serviceTier } = extracted;
-  if (!model || !isPriced(exchange.provider)) return none;
-  const provider = exchange.provider;
-  const entry = PRICING[provider][model];
+): Derived {
+  const { usage, uncoveredCharge } = extracted;
+  const { provider } = exchange;
+  // The tables key on what the caller sent; a response may answer with an alias.
+  const requested =
+    exchange.requestBody?.model ?? exchange.requestBody?.model_id;
+  const key = typeof requested === "string" ? requested : model;
+  if (!key || !isPriced(provider)) return NOT_DERIVED;
+  const entry = PRICING[provider][key];
   const hasTokens =
     usage.inputTokens !== undefined || usage.outputTokens !== undefined;
-
   try {
-    if (hasTokens && entry?.kind !== "perUnit") {
-      if (unpricedCacheWrite) {
-        return {
-          ...none,
-          warnings: [
-            "1-hour cache writes have no bundled rate, so no figure is derived",
-          ],
-        };
-      }
-      // Anthropic and Kimi call their Standard tier "standard", which OpenAI's
-      // declared usage rightly refuses. The response is the record of what
-      // ran, so only OpenAI also reads the tier its request asked for.
-      const tier =
-        provider !== "openai" && serviceTier === "standard"
-          ? undefined
-          : serviceTier;
-      const hints = tokenHints(usage, tier);
-      if (DECLARED_USAGE_PROVIDERS.has(provider)) {
-        return fromEstimate(
-          evaluateDeclaredUsage(
-            provider,
-            model,
-            provider === "openai" ? (exchange.requestBody ?? {}) : {},
-            hints
-          )
-        );
-      }
-      if (provider === "kie") {
-        return fromEstimate(
-          computeEstimate({ provider, payload: { model }, costHints: hints })
-        );
-      }
-      return none;
+    if (entry?.kind === "perUnit") {
+      // fal's unit header often differs from the table's unit, so fal reports
+      // billableUnits and no derived figure.
+      if (provider === "fal" || !exchange.requestBody) return NOT_DERIVED;
+      return deriveFromUnits(provider, key, exchange, usage);
     }
-    // A per-unit row prices the units the response reported, at the rate the
-    // request selects. fal is left out: its unit header often differs from the
-    // table's unit, so it reports billableUnits and no derived figure. A row
-    // whose response reports no units has no derived figure either, because an
-    // estimate from the request alone would match itself.
-    const units = reportedUnits(usage);
-    if (
-      entry?.kind === "perUnit" &&
-      exchange.requestBody &&
-      units !== undefined &&
-      provider !== "fal"
-    ) {
-      const estimate = computeEstimate({
-        provider,
-        payload: exchange.requestBody,
-        endpoint: PER_UNIT_KEYED_BY_ENDPOINT.has(provider) ? model : undefined,
-        costHints:
-          usage.seconds !== undefined
-            ? { durationSeconds: usage.seconds }
-            : undefined,
-      });
-      const perUnit = estimate.breakdown.perUnitUsd;
-      if (estimate.warnings.length > 0 || perUnit === undefined) {
-        return { ...none, warnings: estimate.warnings };
-      }
-      return {
-        usd: perUnit * units + (estimate.breakdown.extraUsd ?? 0),
-        rateAsOf: estimate.rateAsOf,
-        warnings: [],
-      };
+    if (!hasTokens) return NOT_DERIVED;
+    if (uncoveredCharge) {
+      return { ...NOT_DERIVED, warnings: [uncoveredCharge] };
     }
+    return deriveFromTokens(provider, key, exchange, extracted);
   } catch (error) {
-    return { ...none, warnings: [`no figure derived: ${String(error)}`] };
+    return {
+      ...NOT_DERIVED,
+      warnings: [`no figure derived: ${String(error)}`],
+    };
   }
-  return none;
 }
 
 // Reads provider data of any shape, so a malformed exchange reports "none"
@@ -198,22 +239,49 @@ function basisOf(
  * statedUsd is the provider's figure or a fixed conversion (xAI ticks, MachGen
  * micros, KIE credits at 0.005 USD). ElevenLabs credits are `usage.credits`,
  * never USD, because their value depends on the plan. settled is false on a
- * submit or an in-flight poll; merge those with mergeActuals.
+ * submit or an in-flight poll; merge those with mergeActuals. A figure on an
+ * unsettled part can still move: a KIE poll may read 0 credits until it ends.
  */
 export function extractActual(exchange: ProviderExchange): CostActual {
   const extracted = safeExtract(exchange);
   const warnings = [...(extracted.warnings ?? [])];
+  let settled = extracted.settled ?? true;
+  // A 4xx ends the call: there is no later read to wait for. A 429 or a 5xx may
+  // pass, so it keeps what the family said.
   if (exchange.status >= 400) {
     warnings.push(`the provider answered HTTP ${exchange.status}`);
+    const failedForGood = exchange.status < 500 && exchange.status !== 429;
+    if (failedForGood && !extracted.stillPending) {
+      settled = true;
+      removeWarning(warnings, SUBMIT_PENDING);
+    }
+  }
+  // The flag also covers a truncated request, so only a stream that visibly
+  // stops short counts as incomplete.
+  const { responseBody, bodyTruncated } = exchange;
+  const cutShort =
+    bodyTruncated === true &&
+    Array.isArray(responseBody) &&
+    !streamHasFinalUsage(responseBody);
+  if (cutShort) {
+    settled = false;
+    warnings.push(TRUNCATED_STREAM);
+  }
+  if (bodyTruncated === true && responseBody === null) {
+    warnings.push(RESPONSE_NOT_CAPTURED);
   }
   const model = extracted.model ?? null;
-  const derived = derive(exchange, model, extracted);
+  const derived = cutShort ? NOT_DERIVED : derive(exchange, model, extracted);
   warnings.push(...derived.warnings);
   const statedUsd = extracted.statedUsd ?? null;
   const statedListUsd = extracted.statedListUsd ?? null;
   const basis = basisOf(extracted.usage, statedUsd, derived.usd);
+  // Every figure-less result says why.
   if (basis === "none" && statedListUsd === null && warnings.length === 0) {
     warnings.push(NOTHING_REPORTED);
+  }
+  if (basis === "usage-only" && warnings.length === 0) {
+    warnings.push(NO_RATE_FOR_USAGE);
   }
   return {
     provider: exchange.provider,
@@ -226,10 +294,16 @@ export function extractActual(exchange: ProviderExchange): CostActual {
     derivedUsd: derived.usd,
     usd: statedUsd ?? derived.usd,
     basis,
-    settled: extracted.settled ?? true,
+    settled,
     rateAsOf: derived.rateAsOf,
     warnings,
+    ...(derived.unitRate ? { unitRate: derived.unitRate } : {}),
   };
+}
+
+function removeWarning(warnings: string[], warning: string): void {
+  const at = warnings.indexOf(warning);
+  if (at >= 0) warnings.splice(at, 1);
 }
 
 function lastNonNull<T>(values: readonly (T | null)[]): T | null {
@@ -240,14 +314,37 @@ function lastNonNull<T>(values: readonly (T | null)[]): T | null {
   return null;
 }
 
+// A finished part with a figure, followed by an unfinished one, means a second
+// call began. Its figure would silently replace the first call's.
+function looksLikeSeveralCalls(parts: readonly CostActual[]): boolean {
+  let finishedWithFigure = false;
+  for (const part of parts) {
+    if (!part.settled && finishedWithFigure) return true;
+    if (
+      part.settled &&
+      (part.statedUsd !== null ||
+        part.statedListUsd !== null ||
+        part.derivedUsd !== null ||
+        part.usage.billableUnits !== undefined)
+    ) {
+      finishedWithFigure = true;
+    }
+  }
+  return false;
+}
+
 /**
- * Combines the exchanges of one call, in the order they happened: a submit, its
+ * Combines the exchanges of ONE call, in the order they happened: a submit, its
  * polls and any receipt. A later figure replaces an earlier one, because the
- * terminal read holds the final bill. The call is settled once any part is.
+ * terminal read holds the final bill, and the last part says whether the call
+ * is settled. Units a poll reports are priced at the rate the submit's request
+ * selected. Parts of more than one call are not summed: split them first. A
+ * merge that looks like several calls says so in `warnings`.
  */
 export function mergeActuals(parts: readonly CostActual[]): CostActual {
   const head = parts[0];
-  if (!head) {
+  const last = parts.at(-1);
+  if (!head || !last) {
     return {
       provider: "",
       dotPath: null,
@@ -268,18 +365,32 @@ export function mergeActuals(parts: readonly CostActual[]): CostActual {
   for (const part of parts) Object.assign(usage, part.usage);
   const statedUsd = lastNonNull(parts.map((part) => part.statedUsd));
   const statedListUsd = lastNonNull(parts.map((part) => part.statedListUsd));
-  const derivedUsd = lastNonNull(parts.map((part) => part.derivedUsd));
-  const settled = parts.some((part) => part.settled);
+  let derivedUsd = lastNonNull(parts.map((part) => part.derivedUsd));
+  let rateAsOf = lastNonNull(parts.map((part) => part.rateAsOf));
+  const unitRate = lastNonNull(parts.map((part) => part.unitRate ?? null));
+  const units = usage.seconds ?? usage.images ?? usage.characters;
+  if (derivedUsd === null && unitRate && units !== undefined) {
+    derivedUsd = unitRate.usd * units;
+    rateAsOf = unitRate.asOf;
+  }
+  const settled = last.settled;
   const basis = basisOf(usage, statedUsd, derivedUsd);
   const warnings = [...new Set(parts.flatMap((part) => part.warnings))].filter(
     (warning) =>
       !(settled && warning === SUBMIT_PENDING) &&
-      !(basis !== "none" && warning === NOTHING_REPORTED)
+      !(basis !== "none" && warning === NOTHING_REPORTED) &&
+      !(basis !== "usage-only" && warning === NO_RATE_FOR_USAGE)
   );
+  if (looksLikeSeveralCalls(parts)) {
+    warnings.push(
+      "these parts look like more than one call; only the last figure is kept"
+    );
+  }
   return {
     provider: head.provider,
     dotPath: head.dotPath,
-    model: lastNonNull(parts.map((part) => part.model)),
+    // The first model is the one the caller sent; a poll may name an alias.
+    model: parts.find((part) => part.model !== null)?.model ?? null,
     usage,
     evidence: [...new Set(parts.flatMap((part) => part.evidence))],
     statedUsd,
@@ -288,7 +399,8 @@ export function mergeActuals(parts: readonly CostActual[]): CostActual {
     usd: statedUsd ?? derivedUsd,
     basis,
     settled,
-    rateAsOf: lastNonNull(parts.map((part) => part.rateAsOf)),
+    rateAsOf,
     warnings,
+    ...(unitRate ? { unitRate } : {}),
   };
 }

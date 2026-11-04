@@ -311,6 +311,10 @@ export interface CostActual {
   settled: boolean;
   rateAsOf: string | null;
   warnings: string[];
+  // The per-unit rate this exchange's request selected, kept so mergeActuals
+  // can price the units a later poll reports: the request is on the submit and
+  // the usage on the poll.
+  unitRate?: { usd: number; asOf: string | null };
 }
 
 export interface CostComparison {

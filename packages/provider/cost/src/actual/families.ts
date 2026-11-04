@@ -30,8 +30,10 @@ function warn(out: Extracted, warning: string): void {
   (out.warnings ??= []).push(warning);
 }
 
-// The final state of a token call: usage present, or nothing to say yet.
-function settleTokens(exchange: ProviderExchange, out: Extracted): void {
+function settleBackgroundResponse(
+  exchange: ProviderExchange,
+  out: Extracted
+): void {
   const status = framesOf(exchange.responseBody)
     .map((frame) => get(frame, "status") ?? get(frame, "response.status"))
     .filter((value) => typeof value === "string")
@@ -40,13 +42,57 @@ function settleTokens(exchange: ProviderExchange, out: Extracted): void {
     out.settled = false;
     warn(out, SUBMIT_PENDING);
   }
-  if (exchange.bodyTruncated && out.usage.outputTokens === undefined) {
-    out.settled = false;
-    warn(
-      out,
-      "the captured body was truncated before the usage frame, so usage is incomplete"
-    );
+}
+
+const BILLED_TOOL_CALLS: ReadonlySet<string> = new Set([
+  "web_search_call",
+  "file_search_call",
+  "code_interpreter_call",
+  "image_generation_call",
+]);
+
+// Charges on top of the token rate, which a usage object does not price. Each
+// one fails the derived figure closed: a token-only figure can understate by
+// orders of magnitude (one web search call is 0.01 USD, far above its tokens).
+function uncoveredChargeOf(
+  exchange: ProviderExchange,
+  usage: Record<string, unknown> | undefined
+): string | undefined {
+  for (const frame of framesOf(exchange.responseBody)) {
+    const output = get(frame, "output") ?? get(frame, "response.output");
+    if (!Array.isArray(output)) continue;
+    for (const item of output) {
+      const type = get(item, "type");
+      if (typeof type === "string" && BILLED_TOOL_CALLS.has(type)) {
+        return `this call used ${type}, whose per-call fee has no bundled rate`;
+      }
+    }
   }
+  if (usage) {
+    const serverTools = get(usage, "server_tool_use");
+    const paidServerTool =
+      numberAt(serverTools, "web_search_requests") ||
+      numberAt(serverTools, "code_execution_requests");
+    if (paidServerTool) {
+      return "this call used a server tool, whose per-call fee has no bundled rate";
+    }
+    if (numberAt(usage, "num_server_side_tools_used")) {
+      return "this call used a server-side tool, whose fee has no bundled rate";
+    }
+    if (usage.inference_geo === "us") {
+      return "US-only inference bills a multiplier that is not bundled";
+    }
+    if (usage.speed === "fast") {
+      return "fast mode bills rates that are not bundled";
+    }
+  }
+  if (exchange.requestBody?.speed === "fast") {
+    return "fast mode bills rates that are not bundled";
+  }
+  if (/^https?:\/\/[a-z]{2}\.api\.(openai\.com|x\.ai)\//.test(exchange.url)) {
+    return "a regional endpoint bills an uplift that is not bundled";
+  }
+  return undefined;
 }
 
 function serviceTierOf(exchange: ProviderExchange): string | undefined {
@@ -66,7 +112,8 @@ const tokenFamily: Extractor = (exchange) => {
   const found = findUsage(exchange.responseBody);
   if (found) readTokenUsage(found, out);
   out.serviceTier = serviceTierOf(exchange);
-  settleTokens(exchange, out);
+  out.uncoveredCharge ??= uncoveredChargeOf(exchange, found?.usage);
+  settleBackgroundResponse(exchange, out);
   return out;
 };
 
@@ -87,8 +134,7 @@ const xai: Extractor = (exchange) => {
       numberAt(body, "video.duration"),
       "video.duration"
     );
-    const status = get(body, "status");
-    if (status !== "done" && status !== "failed") {
+    if (get(body, "status") === "pending") {
       out.settled = false;
       warn(out, SUBMIT_PENDING);
     }
@@ -99,21 +145,29 @@ const xai: Extractor = (exchange) => {
   return out;
 };
 
-// A poll's own answer to "is this task over": the market routes report state,
-// the older Veo and image routes successFlag (0 while generating), and Suno a
-// status. undefined means the response is not a poll.
-function kieTaskFinished(body: unknown): boolean | undefined {
+// Words KIE's poll routes use for a task that is not over. Anything else is
+// final, including a sync route's "成功" and each route's own failure wording.
+const KIE_UNFINISHED =
+  /^(pending|wait.*|queu.*|generating|running|processing|processing_validate|text_success|first_success)$/i;
+
+// A poll's own answer to "is this task over", or undefined when the response is
+// not a poll. Market routes report state. Older routes report successFlag: a
+// number (0 generating, 1 success, 2 and 3 failed), except on Suno cover, where
+// 2 is generating; or a word on the wav, mp4 and vocal-removal routes. Other
+// Suno routes report status.
+function kieTaskFinished(exchange: ProviderExchange): boolean | undefined {
+  const body = exchange.responseBody;
   const state = get(body, "data.state");
   if (typeof state === "string") {
     return state === "success" || state === "fail" || state === "failed";
   }
   const flag = get(body, "data.successFlag");
-  if (typeof flag === "number") return flag !== 0;
-  const status = get(body, "data.status");
-  if (typeof status === "string") {
-    return status === "SUCCESS" || /FAILED|ERROR|EXCEPTION/.test(status);
+  if (typeof flag === "number") {
+    const isCover = /\/suno\/cover\//.test(pathOf(exchange.url));
+    return flag !== 0 && !(isCover && flag === 2);
   }
-  return undefined;
+  const word = flag ?? get(body, "data.status");
+  return typeof word === "string" ? !KIE_UNFINISHED.test(word) : undefined;
 }
 
 const kie: Extractor = (exchange) => {
@@ -153,9 +207,9 @@ const kie: Extractor = (exchange) => {
     out.statedUsd = taskCredits * USD_PER_KIE_CREDIT;
   }
   const taskModel = get(body, "data.model");
-  if (typeof taskModel === "string") out.model = taskModel;
+  if (typeof taskModel === "string") out.model ??= taskModel;
 
-  const finished = kieTaskFinished(body);
+  const finished = kieTaskFinished(exchange);
   if (finished !== undefined) {
     out.settled = finished;
     if (!finished) warn(out, SUBMIT_PENDING);
@@ -175,9 +229,18 @@ const machgen: Extractor = (exchange) => {
   const out = blank(exchange);
   const body = exchange.responseBody;
   const path = pathOf(exchange.url);
+  // A response may name an alias of the model the caller sent, which stays the
+  // pricing key.
   const model = get(body, "metadata.model");
-  if (typeof model === "string") out.model = model;
+  if (typeof model === "string") out.model ??= model;
   if (/\/api\/v0\/tasks\/[^/]+\/billing/.test(path)) {
+    // The receipt answers 409 until the task ends.
+    if (exchange.status >= 400) {
+      out.settled = false;
+      out.stillPending = true;
+      warn(out, SUBMIT_PENDING);
+      return out;
+    }
     const list = numberAt(body, "generation_cost_micros");
     const net = numberAt(body, "net_cost_micros");
     if (list !== undefined) {
@@ -190,12 +253,11 @@ const machgen: Extractor = (exchange) => {
     }
     return out;
   }
-  setNumber(
-    out,
-    "seconds",
-    numberAt(body, "metadata.duration_secs"),
-    "metadata.duration_secs"
-  );
+  // -1 means the length follows the source clip, which this field does not say.
+  const seconds = numberAt(body, "metadata.duration_secs");
+  if (seconds !== undefined && seconds > 0) {
+    setNumber(out, "seconds", seconds, "metadata.duration_secs");
+  }
   if (/\/api\/v0\/upscale\/quote/.test(path)) {
     warn(out, "a quote states a price before the call; it is not a charge");
     return out;
@@ -253,11 +315,13 @@ const fal: Extractor = (exchange) => {
   if (isStatusRead || !finished) {
     out.settled = false;
     warn(out, SUBMIT_PENDING);
-  } else if (
-    out.usage.billableUnits === undefined &&
-    out.statedUsd === undefined
-  ) {
-    warn(out, "no x-fal-billable-units header on this response");
+  } else if (out.statedUsd === undefined) {
+    warn(
+      out,
+      out.usage.billableUnits === undefined
+        ? "no x-fal-billable-units header on this response"
+        : "x-fal-billable-units is in fal's own unit, so no USD figure is derived"
+    );
   }
   return out;
 };
@@ -271,11 +335,14 @@ const elevenlabs: Extractor = (exchange) => {
     headerNumber(exchange, "character-cost"),
     "header:character-cost"
   );
+  // Inside a plan's quota this reads 0, which says no overage was billed, not
+  // that the call was free, so 0 is not a stated charge.
   const fiat = headerNumber(exchange, "fiat-cost-before-overages");
   if (fiat !== undefined) {
-    out.statedUsd = fiat;
     out.evidence.push("header:fiat-cost-before-overages");
-    if (fiat === 0) {
+    if (fiat > 0) {
+      out.statedUsd = fiat;
+    } else {
       warn(out, "fiat-cost-before-overages reads 0 inside a plan's quota");
     }
   }
@@ -302,7 +369,7 @@ const elevenlabs: Extractor = (exchange) => {
       "metadata.charging.tts_usage.total_characters"
     );
   }
-  if (out.usage.credits !== undefined && fiat === undefined) {
+  if (out.usage.credits !== undefined && out.statedUsd === undefined) {
     warn(
       out,
       "character-cost is credits, whose USD value depends on the plan, so it is not a stated charge"
@@ -339,6 +406,14 @@ const alibaba: Extractor = (exchange) => {
   return out;
 };
 
+const FIREWORKS_JOB_DONE: ReadonlySet<string> = new Set([
+  "JOB_STATE_COMPLETED",
+  "JOB_STATE_FAILED",
+  "JOB_STATE_CANCELLED",
+  "JOB_STATE_EXPIRED",
+  "JOB_STATE_EARLY_STOPPED",
+]);
+
 const fireworks: Extractor = (exchange) => {
   const out = tokenFamily(exchange);
   if (out.usage.inputTokens === undefined) {
@@ -366,6 +441,15 @@ const fireworks: Extractor = (exchange) => {
     out.evidence.push("header:fireworks-cached-prompt-tokens");
   }
   const body = exchange.responseBody;
+  const state = get(body, "state");
+  if (
+    typeof state === "string" &&
+    state.startsWith("JOB_STATE_") &&
+    !FIREWORKS_JOB_DONE.has(state)
+  ) {
+    out.settled = false;
+    warn(out, SUBMIT_PENDING);
+  }
   setNumber(
     out,
     "seconds",

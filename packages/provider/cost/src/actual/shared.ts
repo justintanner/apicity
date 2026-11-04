@@ -11,10 +11,12 @@ export interface Extracted {
   settled?: boolean;
   model?: string;
   warnings?: string[];
-  // Billed on a tier the bundled rates do not cover.
+  // The tier the response says billed this call.
   serviceTier?: string;
-  // A 1-hour cache write is billed at a rate no bundled row has.
-  unpricedCacheWrite?: boolean;
+  // A charge the token rates cannot see. The reason, so no figure is derived.
+  uncoveredCharge?: string;
+  // A 4xx that means "not yet" rather than "this call failed for good".
+  stillPending?: boolean;
 }
 
 export type Extractor = (exchange: ProviderExchange) => Extracted;
@@ -23,6 +25,15 @@ export const SUBMIT_PENDING =
   "this response reports no final usage; read the terminal response";
 
 export const NOTHING_REPORTED = "this response reports no usage or charge";
+
+export const NO_RATE_FOR_USAGE =
+  "no USD figure is derived: no bundled rate applies, or the request that selects one is not in this exchange";
+
+export const TRUNCATED_STREAM =
+  "the captured stream stops before its final usage, so usage is incomplete";
+
+export const RESPONSE_NOT_CAPTURED =
+  "the response body was not captured, so any usage in it is lost";
 
 export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

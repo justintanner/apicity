@@ -29,7 +29,7 @@ describe("computeEstimate", () => {
       expect(result.breakdown.inputUsdPerMillion).toBe(1.25);
       expect(result.breakdown.outputUsdPerMillion).toBe(10);
       expect(result.warnings).toEqual([]);
-      expect(result.rateAsOf).toBe(PRICING_AS_OF);
+      expect(result.rateAsOf).toBe("2026-11-04");
     });
 
     it("estimates openai with responses payload (input string)", () => {

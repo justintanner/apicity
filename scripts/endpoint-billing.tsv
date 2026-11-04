@@ -1049,9 +1049,9 @@ openai	v1.responses	GET	followup		Reads a stored or background response; billed 
 openai	v1.responses.inputItems	GET	free		Metadata, list, delete or cancel call; the pricing page bills none of these	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores	GET	free		Metadata, list, delete or cancel call; the pricing page bills none of these	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores.files	GET	free		Metadata, list, delete or cancel call; the pricing page bills none of these	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.audio.speech	POST	unpriced	characters	tts-1 and tts-1-hd bill per 1M characters; gpt-4o-mini-tts bills tokens	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.audio.transcriptions	POST	unpriced	seconds	Page quotes USD per minute; gpt-transcribe responses report usage.seconds	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.audio.translations	POST	unpriced	seconds	Page quotes USD per minute; gpt-transcribe responses report usage.seconds	https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.audio.speech	POST	metered	characters		https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.audio.transcriptions	POST	metered	seconds		https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.audio.translations	POST	metered	seconds		https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.batches	POST	accrual	tokens	Bills batch rates as requests complete; the create body names an input file, not a payload, so no per-call amount exists (record section 8)	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.batches.cancel	POST	free		Metadata, list, delete or cancel call; the pricing page bills none of these	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.chat.completions	POST	metered	tokens		https://developers.openai.com/api/docs/pricing	2026-11-04
@@ -1080,7 +1080,7 @@ openai	v1.responses.inputTokens	POST	free		Token count only; the guide and the p
 openai	v1.uploads	POST	free		The pricing page has no Files row; storage bills only once a file is indexed into a vector store or uploaded to ChatKit	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
 openai	v1.vectorStores.files	POST	accrual	gb-days	File search storage 0.10 USD per GB per day, first 1 GB free; storage accrues with no per-call amount	https://developers.openai.com/api/docs/pricing	2026-11-04
-openai	v1.vectorStores.search	POST	unpriced	requests	File search tool call, 2.50 USD per 1k calls	https://developers.openai.com/api/docs/pricing	2026-11-04
+openai	v1.vectorStores.search	POST	metered	requests		https://developers.openai.com/api/docs/pricing	2026-11-04
 openf1	v1.carData	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipDrivers	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04
 openf1	v1.championshipTeams	GET	free		Docs: OpenF1 is free for everyone for historical data	https://openf1.org/	2026-11-04

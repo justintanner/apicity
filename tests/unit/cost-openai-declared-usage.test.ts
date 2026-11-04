@@ -68,7 +68,7 @@ describe("openai gpt-5.6-sol declared usage", () => {
       const est = sol(usage(input, read, write, output));
       expect(est.usd).toBeCloseTo(usd, 9);
       expect(est.source).toBe("declared-tokens+table");
-      expect(est.rateAsOf).toBe("2026-10-19");
+      expect(est.rateAsOf).toBe("2026-11-04");
       expect(est.warnings).toEqual([]);
     }
   );
@@ -77,7 +77,7 @@ describe("openai gpt-5.6-sol declared usage", () => {
     const est = sol(usage(10_000, 0, 0, 2_000));
     expect(est.usd).toBeCloseTo(0.08, 9);
     expect(est.source).toBe("declared-tokens+table");
-    expect(est.rateAsOf).toBe("2026-10-19");
+    expect(est.rateAsOf).toBe("2026-11-04");
     expect(est.warnings).toEqual([]);
     expect(est.breakdown).toEqual({
       inputTokens: 10_000,
@@ -274,8 +274,8 @@ describe("openai gpt-5.6-sol fails closed", () => {
     ).toBeCloseTo(0.08, 9);
   });
 
-  it("does not price the gpt-5.6 alias or sibling models", () => {
-    for (const model of ["gpt-5.6", "gpt-5.6-terra", "gpt-5.6-luna"]) {
+  it("does not price unknown gpt-5.6 aliases", () => {
+    for (const model of ["gpt-5.6", "gpt-5.6-unknown"]) {
       const est = computeEstimate({
         provider: "openai",
         payload: { model },
@@ -290,24 +290,24 @@ describe("openai declared usage on models without cache rates", () => {
   it("prices declared input and output for a legacy row", () => {
     const est = computeEstimate({
       provider: "openai",
-      payload: { model: "gpt-4o" },
+      payload: { model: "o4-mini" },
       costHints: { inputTokens: 1_000, outputTokens: 500 },
     });
-    expect(est.usd).toBeCloseTo(0.0075, 9);
+    expect(est.usd).toBeCloseTo(0.0033, 9);
     expect(est.source).toBe("declared-tokens+table");
     expect(est.breakdown).toEqual({
       inputTokens: 1_000,
       outputTokens: 500,
       unit: "tokens",
-      inputUsdPerMillion: 2.5,
-      outputUsdPerMillion: 10,
+      inputUsdPerMillion: 1.1,
+      outputUsdPerMillion: 4.4,
     });
   });
 
   it("fails closed on a cache count the row has no rate for", () => {
     const est = computeEstimate({
       provider: "openai",
-      payload: { model: "gpt-4o" },
+      payload: { model: "o4-mini" },
       costHints: {
         inputTokens: 1_000,
         outputTokens: 500,
@@ -318,7 +318,7 @@ describe("openai declared usage on models without cache rates", () => {
     expectUnknown(
       computeEstimate({
         provider: "openai",
-        payload: { model: "gpt-4o" },
+        payload: { model: "o4-mini" },
         costHints: {
           inputTokens: 1_000,
           outputTokens: 500,
@@ -329,14 +329,14 @@ describe("openai declared usage on models without cache rates", () => {
     );
     const zero = computeEstimate({
       provider: "openai",
-      payload: { model: "gpt-4o" },
+      payload: { model: "o4-mini" },
       costHints: {
         inputTokens: 1_000,
         outputTokens: 500,
         cacheReadInputTokens: 0,
       },
     });
-    expect(zero.usd).toBeCloseTo(0.0075, 9);
+    expect(zero.usd).toBeCloseTo(0.0033, 9);
   });
 
   it("keeps the chars/4 heuristic when no usage is declared", () => {
@@ -344,13 +344,13 @@ describe("openai declared usage on models without cache rates", () => {
       model: "gpt-5",
       messages: [{ role: "user", content: "y".repeat(800) }],
       max_completion_tokens: 1000,
-      service_tier: "flex",
+      service_tier: "default",
     };
     const plain = computeEstimate({ provider: "openai", payload });
     const hinted = computeEstimate({
       provider: "openai",
       payload,
-      costHints: { durationSeconds: 5, serviceTier: "priority" },
+      costHints: { durationSeconds: 5, serviceTier: "default" },
     });
     expect(plain.source).toBe("tokens-heuristic+table");
     expect(plain.usd).toBeCloseTo((200 * 1.25 + 1000 * 10) / 1_000_000, 9);

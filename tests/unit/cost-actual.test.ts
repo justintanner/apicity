@@ -432,7 +432,7 @@ describe("extractActual pins", () => {
     // (500 x 4 + 200 x 0.4 + 300 x 5 + 50 x 20) / 1M
     expect(actual.derivedUsd).toBeCloseTo(0.00458, 10);
     expect(actual.basis).toBe("derived");
-    expect(actual.rateAsOf).toBe("2026-10-19");
+    expect(actual.rateAsOf).toBe("2026-11-04");
   });
 
   it("OpenAI bills a non-Standard tier nothing it can derive", () => {
@@ -467,7 +467,8 @@ describe("extractActual pins", () => {
     );
     expect(actual.usage).toEqual({ seconds: 91 });
     expect(actual.evidence).toEqual(["usage.seconds"]);
-    expect(actual.basis).toBe("usage-only");
+    expect(actual.basis).toBe("derived");
+    expect(actual.usd).toBeCloseTo(0.006825, 12);
   });
 
   it("Anthropic cache counts from a recording", () => {

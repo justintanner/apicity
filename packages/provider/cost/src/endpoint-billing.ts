@@ -3340,10 +3340,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "openai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "characters",
-      reason:
-        "tts-1 and tts-1-hd bill per 1M characters; gpt-4o-mini-tts bills tokens",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",
@@ -3354,10 +3352,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "openai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "seconds",
-      reason:
-        "Page quotes USD per minute; gpt-transcribe responses report usage.seconds",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",
@@ -3687,9 +3683,8 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "openai",
     {
-      kind: "unpriced",
+      kind: "metered",
       unit: "requests",
-      reason: "File search tool call, 2.50 USD per 1k calls",
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
         asOf: "2026-11-04",

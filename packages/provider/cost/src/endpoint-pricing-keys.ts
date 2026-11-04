@@ -414,6 +414,7 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "kie POST api.v1.veo.get4kVideo": "veo/get-4k-video",
   "kie POST api.v1.vocalRemoval.generate": "suno/vocal-removal-generate",
   "kie POST api.v1.wav.generate": "suno/wav-generate",
+  "openai POST v1.vectorStores.search": "file-search-tool-call",
   "wavespeed POST api.v3.alibaba.happyhorse1p1.imageToVideo":
     "alibaba/happyhorse-1.1/image-to-video",
   "wavespeed POST api.v3.alibaba.wan3p0.imageToVideo":

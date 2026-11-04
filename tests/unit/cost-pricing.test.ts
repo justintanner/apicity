@@ -303,7 +303,7 @@ describe("PRICING data", () => {
       },
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
-        asOf: "2026-10-19",
+        asOf: "2026-11-04",
       },
     });
   });
@@ -318,7 +318,7 @@ describe("PRICING data", () => {
       },
       source: {
         url: "https://developers.openai.com/api/docs/pricing",
-        asOf: "2026-10-19",
+        asOf: "2026-11-04",
       },
     });
   });
@@ -333,7 +333,12 @@ describe("PRICING data", () => {
         expect(entry.longContext, label).toBeUndefined();
         expect(entry.rate.cacheWrite, label).toBeUndefined();
         expect(entry.rate.cacheWrite5m, label).toBeUndefined();
-        expect(entry.modalityRates.image?.output, label).toBeUndefined();
+        if (
+          provider === "openai" &&
+          ["gpt-image-1-mini", "chatgpt-image-latest"].includes(model)
+        ) {
+          expect(entry.modalityRates.image?.output, label).toBeGreaterThan(0);
+        } else expect(entry.modalityRates.image?.output, label).toBeUndefined();
       }
     }
   });

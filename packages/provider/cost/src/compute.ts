@@ -330,6 +330,7 @@ const DECLARED_USAGE_FIELDS = [
   "cacheReadAudioInputTokens",
   "cacheReadImageInputTokens",
   "audioOutputTokens",
+  "imageOutputTokens",
 ] as const;
 
 type DeclaredUsageField = (typeof DECLARED_USAGE_FIELDS)[number];
@@ -371,6 +372,7 @@ function modalityPartitionProblem(c: {
   audioCached: number;
   imageCached: number;
   audioOut: number;
+  imageOut: number;
 }): string | undefined {
   if (c.audioIn + c.imageIn > c.input) {
     return (
@@ -405,9 +407,11 @@ function modalityPartitionProblem(c: {
       `(${textIn})`
     );
   }
-  if (c.audioOut > c.output) {
+  if (c.audioOut > c.output)
+    return `costHints.audioOutputTokens (${c.audioOut}) exceeds costHints.outputTokens (${c.output})`;
+  if (c.audioOut + c.imageOut > c.output) {
     return (
-      `costHints.audioOutputTokens (${c.audioOut}) exceeds ` +
+      `costHints.audioOutputTokens + costHints.imageOutputTokens (${c.audioOut + c.imageOut}) exceeds ` +
       `costHints.outputTokens (${c.output})`
     );
   }
@@ -439,6 +443,42 @@ function isTokenCount(value: unknown): value is number {
 // calls it directly for xai, anthropic, alibaba, fireworks and kimicoding to
 // price a response's reported usage, which is also why it reads either write
 // field: Anthropic's rows publish cacheWrite5m.
+function openaiPricingProblem(
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): string | undefined {
+  const tier = hints?.serviceTier ?? payload.service_tier;
+  if (
+    tier !== undefined &&
+    tier !== null &&
+    tier !== "default" &&
+    tier !== "auto"
+  ) {
+    return `openai: service tier ${JSON.stringify(tier)} is not bundled; only Standard processing is priced`;
+  }
+  if (payload.speed !== undefined && payload.speed !== "standard")
+    return "openai: non-Standard speed is not bundled";
+  if (
+    hints?.regionalProcessing !== undefined &&
+    hints.regionalProcessing !== false
+  )
+    return "openai: regional processing (data residency) and FedRAMP uplift is not bundled";
+  if (
+    payload.prompt_cache_retention === "12h" ||
+    payload.prompt_cache_retention === "24h"
+  )
+    return "openai: extended cache writes (12h/24h) are not bundled; the table stores the 30m write rate";
+  return undefined;
+}
+
+function openaiWarnings(payload: Record<string, unknown>): string[] {
+  return Array.isArray(payload.tools) && payload.tools.length > 0
+    ? [
+        "openai: tool call fees (web/file search and containers) are not included in this token estimate",
+      ]
+    : [];
+}
+
 export function evaluateDeclaredUsage(
   provider: PricedProviderId,
   model: string,
@@ -446,6 +486,9 @@ export function evaluateDeclaredUsage(
   hints?: CostHints
 ): CostEstimate {
   const source: CostSource = "declared-tokens+table";
+  const problem =
+    provider === "openai" ? openaiPricingProblem(payload, hints) : undefined;
+  if (problem) return failed(source, [problem]);
   const entry = PRICING[provider][model];
   if (!entry) {
     return failed(source, [
@@ -483,6 +526,7 @@ export function evaluateDeclaredUsage(
   }
   if (imageRate) {
     required.push("imageInputTokens");
+    if (imageRate.output !== undefined) required.push("imageOutputTokens");
     if (imageRate.cacheRead !== undefined) {
       required.push("cacheReadImageInputTokens");
     }
@@ -532,6 +576,7 @@ export function evaluateDeclaredUsage(
   const audioCached = hints?.cacheReadAudioInputTokens ?? 0;
   const imageCached = hints?.cacheReadImageInputTokens ?? 0;
   const audioOut = hints?.audioOutputTokens ?? 0;
+  const imageOut = hints?.imageOutputTokens ?? 0;
   const modalityProblem = modalityPartitionProblem({
     input: inputTokens,
     cacheRead,
@@ -541,6 +586,7 @@ export function evaluateDeclaredUsage(
     audioCached,
     imageCached,
     audioOut,
+    imageOut,
   });
   if (modalityProblem) {
     return unknown(
@@ -597,16 +643,17 @@ export function evaluateDeclaredUsage(
         "0. No estimate is quoted."
     );
   }
-  if (imageIn > 0 && !imageRate) {
+  if ((imageIn > 0 || imageOut > 0) && !imageRate) {
     return unknown(
       `${provider} '${model}' has no bundled image-token rate, so ` +
-        "costHints.imageInputTokens must be 0. No estimate is quoted."
+        "costHints.imageInputTokens and costHints.imageOutputTokens must be 0. No estimate is quoted."
     );
   }
   if (
     (audioCached > 0 && audioRate?.cacheRead === undefined) ||
     (imageCached > 0 && imageRate?.cacheRead === undefined) ||
-    (audioOut > 0 && audioRate?.output === undefined)
+    (audioOut > 0 && audioRate?.output === undefined) ||
+    (imageOut > 0 && imageRate?.output === undefined)
   ) {
     return unknown(
       `${provider} '${model}' has no bundled rate for a declared modality ` +
@@ -617,7 +664,7 @@ export function evaluateDeclaredUsage(
   // without modality rates every count stays text.
   const textIn = inputTokens - audioIn - imageIn;
   const textCached = cacheRead - audioCached - imageCached;
-  const textOut = outputTokens - audioOut;
+  const textOut = outputTokens - audioOut - imageOut;
   const uncached = textIn - textCached - cacheWrite;
   const usd =
     (uncached * rate.input +
@@ -628,7 +675,8 @@ export function evaluateDeclaredUsage(
       audioCached * (audioRate?.cacheRead ?? 0) +
       audioOut * (audioRate?.output ?? 0) +
       (imageIn - imageCached) * (imageRate?.input ?? 0) +
-      imageCached * (imageRate?.cacheRead ?? 0)) /
+      imageCached * (imageRate?.cacheRead ?? 0) +
+      imageOut * (imageRate?.output ?? 0)) /
     1_000_000;
   const modality = (
     inputCount: number,
@@ -680,14 +728,14 @@ export function evaluateDeclaredUsage(
                 ? { audio: modality(audioIn, audioCached, audioRate, audioOut) }
                 : {}),
               ...(imageRate
-                ? { image: modality(imageIn, imageCached, imageRate) }
+                ? { image: modality(imageIn, imageCached, imageRate, imageOut) }
                 : {}),
             },
           }
         : {}),
     },
     rateAsOf,
-    warnings: [],
+    warnings: provider === "openai" ? openaiWarnings(payload) : [],
   };
 }
 
@@ -702,7 +750,7 @@ function isFalDynamicEndpoint(endpoint: string): boolean {
   return FAL_DYNAMIC_ENDPOINT_SET.has(endpoint);
 }
 
-export function computeEstimate(req: EstimateRequest): CostEstimate {
+function computeEstimateBase(req: EstimateRequest): CostEstimate {
   switch (req.provider) {
     // xAI bills the Grok Imagine video and image models per second / per
     // generated image and everything else per token. Route on the pricing
@@ -737,7 +785,12 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
     // tier (gpt-5.6-sol) requires it. Without either, the chars/4 path below
     // runs exactly as before.
     case "openai": {
-      const model = asString(req.payload.model);
+      const problem = openaiPricingProblem(req.payload, req.costHints);
+      if (problem) return failed("declared-tokens+table", [problem]);
+      const model =
+        req.endpoint === "file-search-tool-call"
+          ? req.endpoint
+          : asString(req.payload.model);
       const entry = model ? PRICING.openai[model] : undefined;
       // The GPT Image models price per image or per image output token, keyed
       // by model; route on the entry's own `kind`, as xai and alibaba do.
@@ -745,7 +798,7 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         return evaluatePerUnit(
           "openai",
           req.payload,
-          { keyedBy: "model" },
+          { keyedBy: "endpoint", endpoint: model },
           req.costHints
         );
       }
@@ -931,4 +984,16 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       );
     }
   }
+}
+
+export function computeEstimate(req: EstimateRequest): CostEstimate {
+  const estimate = computeEstimateBase(req);
+  if (req.provider !== "openai") return estimate;
+  const warnings = openaiWarnings(req.payload);
+  return warnings.length
+    ? {
+        ...estimate,
+        warnings: [...new Set([...estimate.warnings, ...warnings])],
+      }
+    : estimate;
 }

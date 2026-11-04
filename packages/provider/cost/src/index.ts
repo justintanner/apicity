@@ -77,6 +77,7 @@ export type {
   EndpointEstimate,
   EstimateRequest,
   ProviderExchange,
+  QuotedEstimate,
 } from "./types";
 
 export type { ExtractResult, TextExtract } from "./extract/types";

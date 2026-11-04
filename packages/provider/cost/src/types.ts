@@ -347,6 +347,15 @@ export interface EndpointBilling {
   source?: RateSource;
 }
 
+// What compareCost reads of an estimate. A CostEstimate fits, and so does one read
+// back from a capture's log._apicity.estimate, whose optional fields may be absent.
+export interface QuotedEstimate {
+  usd: number;
+  source?: string;
+  warnings?: string[];
+  status?: string;
+}
+
 export interface EndpointEstimate extends CostEstimate {
   status: "priced" | "zero" | "unavailable";
   billing: EndpointBilling;

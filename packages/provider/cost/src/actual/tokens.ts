@@ -203,11 +203,11 @@ export function readUsageMetadata(body: unknown, out: Extracted): boolean {
   return true;
 }
 
-// Frames that come only once a stream's usage is whole. Anthropic's
-// message_start carries usage too, but its output count is a placeholder.
+// Frames that carry a stream's whole usage. Anthropic's message_start has usage
+// too, but its output count is a placeholder, and message_stop has none: a capture
+// keeping a stream's two ends can hold it without the message_delta before it.
 const FINAL_FRAME_TYPES: ReadonlySet<string> = new Set([
   "message_delta",
-  "message_stop",
   "response.completed",
   "response.incomplete",
   "response.failed",
@@ -218,7 +218,15 @@ export function streamHasFinalUsage(frames: readonly unknown[]): boolean {
   return frames.some((frame) => {
     const type = get(frame, "type");
     if (typeof type === "string") return FINAL_FRAME_TYPES.has(type);
-    if (isObject(get(frame, "usage"))) return true;
+    if (isObject(get(frame, "usage"))) {
+      // A chunk repeating a running count still has an unfinished choice.
+      const choices = get(frame, "choices");
+      return (
+        !Array.isArray(choices) ||
+        choices.length === 0 ||
+        (get(choices[0], "finish_reason") ?? null) !== null
+      );
+    }
     if (get(frame, "credits_consumed") !== undefined) return true;
     const candidates = get(frame, "candidates");
     return (

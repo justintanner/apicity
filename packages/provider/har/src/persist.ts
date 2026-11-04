@@ -56,9 +56,16 @@ const REQUEST_POST_DATA_SECRET_KEYS = new Set([
   "signature",
 ]);
 const RESPONSE_ACCOUNT_METADATA_KEYS = new Set(["create_api_key_id"]);
-const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
+// Each `;` has one way to match: `[^,]` here made a run of them exponential.
+const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^;,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
 const BASE64ISH_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
+const BASE64ISH_BYTES = new Uint8Array(256);
+for (const byte of Buffer.from(
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/_-"
+)) {
+  BASE64ISH_BYTES[byte] = 1;
+}
 function appendMultipartField(
   summary: Record<string, unknown>,
   name: string,
@@ -138,9 +145,10 @@ function redactGenericCredentialText(text: string): string {
     return changed ? JSON.stringify(clean) : text;
   } catch {
     // SSE and truncated JSON cannot be parsed as one document. Match JSON
-    // string fields (including escaped quotes) without rewriting other text.
+    // string fields (including escaped quotes) without rewriting other text. An
+    // escaped quote opens nothing, and trying each one made long strings quadratic.
     return text.replace(
-      /("([^"\\]*(?:\\.[^"\\]*)*)"\s*:\s*")((?:\\.|[^"\\])*)("|$)/g,
+      /(?<!\\)("([^"\\]*(?:\\.[^"\\]*)*)"\s*:\s*")((?:\\.|[^"\\])*)("|$)/g,
       (match, prefix: string, key: string, _value: string, end: string) => {
         try {
           return isCredentialKey(JSON.parse(`"${key}"`) as string)
@@ -154,8 +162,35 @@ function redactGenericCredentialText(text: string): string {
   }
 }
 
+// An SSE body never parses as one document, so the rules that read a whole document
+// run on each frame here. Reading a frame alone also keeps valid JSON such as
+// `{"a":[":"],"api_key":"…"}` from putting the text match out of phase.
+function redactStreamFrames(text: string): string {
+  if (!text.includes("data:")) return text;
+  return text
+    .split("\n")
+    .map((line) => {
+      if (!line.startsWith("data:")) return line;
+      const payload = line.slice("data:".length).trim();
+      if (payload[0] !== "{" && payload[0] !== "[") return line;
+      const frame: PersistedHarRecording = {
+        response: { content: { text: redactGenericCredentialText(payload) } },
+      };
+      redactFalCheckpointResponseBody(frame);
+      redactGuestTokenResponseBody(frame);
+      redactFireworksApiKeyResponseBody(frame);
+      redactResponseAccountMetadataBody(frame);
+      const clean = frame.response!.content!.text!;
+      if (clean === payload) return line;
+      return `data: ${clean}${line.endsWith("\r") ? "\r" : ""}`;
+    })
+    .join("\n");
+}
+
 function redactResponseTextSecrets(text: string): string {
-  const redacted = redactUrlSecrets(redactGenericCredentialText(text));
+  const redacted = redactUrlSecrets(
+    redactGenericCredentialText(redactStreamFrames(text))
+  );
   if (
     !/"upload_host"\s*:/.test(redacted) ||
     !/"oss_access_key_id"\s*:/.test(redacted)
@@ -375,6 +410,22 @@ function summarizeLongBase64(value: string): string | undefined {
   if (!BASE64ISH_RE.test(compact)) return undefined;
 
   return `<inline base64 data; ${base64ByteLength(compact)} bytes>`;
+}
+
+// The bytes summarizing could remove from a JSON body, counted without parsing it.
+// Base64 wrapped across lines goes uncounted, and such a body stays a placeholder.
+export function longBase64Bytes(body: Uint8Array): number {
+  let total = 0;
+  let run = 0;
+  for (let i = 0; i < body.length; i += 1) {
+    if (BASE64ISH_BYTES[body[i]!] === 1) {
+      run += 1;
+      continue;
+    }
+    if (run > LONG_BASE64_CHARS) total += run;
+    run = 0;
+  }
+  return run > LONG_BASE64_CHARS ? total + run : total;
 }
 
 export function summarizeJsonMediaStrings(value: unknown): {

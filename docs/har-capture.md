@@ -36,9 +36,29 @@ URL credentials, known secret body fields and cookies before writing. Non-text
 bodies and bodies larger than `maxBodyBytes` (default 256 KiB) become placeholders
 with SHA-256, byte count and content type. Multipart uploads retain field and
 file summaries, not file bytes. Large base64 and data URL media are summarized.
-SSE retains text up to the cap, with `streamed` and `bodyTruncated` metadata.
 Captures still contain application data: choose a private directory and share
 only the captures you intend to share.
+
+Two kinds of oversized body keep what a cost report needs:
+
+- **A JSON request** up to `maxSummarizeBytes` (default 16 MiB) is held in full and
+  its media summarized. If the result fits `maxBodyBytes` the text is kept, so a
+  video analysis request still shows its model and limits. If it does not, or the
+  body is larger than `maxSummarizeBytes`, it becomes a placeholder. `bodySize` is
+  always the wire byte count.
+- **An SSE response** keeps its first `maxBodyBytes` plus its last `sseTailBytes`
+  (default 64 KiB), because the usage frame comes last. Each part keeps whole lines,
+  and they are joined by an SSE comment, `: apicity-gap <n> bytes dropped`, which no
+  parser reads as a frame. `streamed` and `bodyTruncated` are set, and scrubbing
+  covers all of the retained text. A body with no line ends keeps its head alone.
+  When the frame carrying the final usage is larger than `sseTailBytes` it goes with
+  the gap, and `extractActual` reads the call as unsettled. Raise the limit for a
+  provider that repeats a long output in its final frame. Set `sseTailBytes: 0` to
+  keep the head only.
+
+`bodyTruncated` covers both directions, so it can mean the request was cut while
+the response is whole. Captures from before this behaviour have a placeholder or a
+head-only stream, and read the same way as any other.
 
 Each call writes:
 
@@ -48,14 +68,43 @@ Each call writes:
 ```
 
 Unsafe path characters are escaped. The index contains one JSON line per file:
-`{ts, callId, provider, endpoint, outcome, status, file, context}`. `file` is
-relative to `dir`. `log.creator` identifies apicity and its package version.
-`log._apicity` carries call ID, provider, endpoint, input, outcome, optional error,
+`{ts, callId, provider, endpoint, outcome, status, file, context}`, plus
+`estimateUsd` when the call passed an estimate. `file` is relative to `dir`.
+`log.creator` identifies apicity and its package version. `log._apicity` carries
+call ID, provider, endpoint, input, outcome, optional error, optional estimate,
 context, runtime, version, start time and duration. Entry `_apicity` identifies
 HTTP or local entries, stream/truncation flags and `pollRepeat` (the number of
 additional consecutive identical GET responses collapsed into that entry).
 Submissions are never collapsed. Timings measure fetch response-header latency;
 call duration measures the callback, not the asynchronous disk write.
+
+To keep what was quoted beside what the call then cost, pass the estimate to
+`call`. It is written to `log._apicity.estimate` (`usd`, `source`, `rateAsOf`,
+`warnings`, `breakdown`, `status`), scrubbed like `input`, and it never changes the
+provider call. An estimate with no finite `usd`, or that will not serialize, is
+dropped. `computeEstimate`'s result from `@apicity/cost` fits as is:
+
+```ts
+import { createHarCapture } from "@apicity/har";
+import { computeEstimate } from "@apicity/cost";
+
+declare const capture: ReturnType<typeof createHarCapture>;
+const payload = { model: "gpt-5", input: "hello", max_output_tokens: 500 };
+
+await capture.call(
+  {
+    provider: "openai",
+    endpoint: "v1.responses",
+    input: payload,
+    estimate: computeEstimate({ provider: "openai", payload }),
+  },
+  async () => "the provider call goes here"
+);
+```
+
+A quote the estimator could not make reads `usd: 0` with warnings, and `estimateUsd`
+copies `usd`, so a bare 0 in the index does not tell it from a free call.
+`compareCost` does, from the estimate in the HAR.
 
 `call` determines success from the callback result, not HTTP status. A thrown
 error after HTTP activity is `provider_error`, including KIE's HTTP 200 error

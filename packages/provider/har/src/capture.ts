@@ -6,13 +6,22 @@ import { dirname, join } from "node:path";
 import { exchangeToEntry, serializeExchange } from "./exchange.js";
 import { scrubHar } from "./scrub.js";
 import { providerHosts } from "./provider-hosts.js";
-import type { ApicityCallMetadata, Har, HarEntry } from "./types.js";
+import type {
+  ApicityCallMetadata,
+  Har,
+  HarCallEstimate,
+  HarEntry,
+} from "./types.js";
 
 export interface HarCaptureOptions {
   dir: string;
   mode: "all" | "failures";
   providers?: string[];
   maxBodyBytes?: number;
+  /** An oversized JSON request up to this size is held to summarize its media. */
+  maxSummarizeBytes?: number;
+  /** A stream over maxBodyBytes keeps this many final bytes past its head. */
+  sseTailBytes?: number;
   /** Default context of every call; a call's own `context` merges over it. */
   context?: Record<string, unknown>;
   onError?: (error: unknown) => void;
@@ -25,6 +34,8 @@ export interface HarCallMeta {
   input: unknown;
   /** Merged shallowly over the capture's `context` for this call only. */
   context?: Record<string, unknown>;
+  /** What was quoted before the call, kept beside what it then cost. */
+  estimate?: HarCallEstimate;
 }
 export interface HarFetchHost {
   fetch: typeof globalThis.fetch;
@@ -81,6 +92,21 @@ function errorDetails(
       ? { code: object.code }
       : {}),
   };
+}
+// The fields a report reads, copied now. An estimate with no figure or that will
+// not serialize is dropped here: at write time it would disable the capture.
+function estimateFields(
+  estimate: HarCallEstimate
+): HarCallEstimate | undefined {
+  try {
+    const { usd, source, rateAsOf, warnings, breakdown, status } = estimate;
+    if (!Number.isFinite(usd)) return undefined;
+    return JSON.parse(
+      JSON.stringify({ usd, source, rateAsOf, warnings, breakdown, status })
+    ) as HarCallEstimate;
+  } catch {
+    return undefined;
+  }
 }
 function requestUrl(input: Parameters<typeof fetch>[0]): string {
   return input instanceof Request ? input.url : String(input);
@@ -177,6 +203,7 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
         status: meta.status,
         file,
         context: meta.context,
+        ...(meta.estimate ? { estimateUsd: meta.estimate.usd } : {}),
       }) + "\n";
     writes = writes
       .then(async () => {
@@ -202,10 +229,12 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     let started: number;
     try {
       started = clock();
-      const { context, ...fields } = meta;
+      const { context, estimate, ...fields } = meta;
+      const quoted = estimate ? estimateFields(estimate) : undefined;
       scope = {
         metadata: {
           ...fields,
+          ...(quoted ? { estimate: quoted } : {}),
           callId: idFactory(),
           outcome: "ok",
           context: context
@@ -316,7 +345,11 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
             startedAt: new Date(started),
             durationMs,
           },
-          { maxBodyBytes: options.maxBodyBytes }
+          {
+            maxBodyBytes: options.maxBodyBytes,
+            maxSummarizeBytes: options.maxSummarizeBytes,
+            sseTailBytes: options.sseTailBytes,
+          }
         ).then(
           ({ entry, responseBodySha256 }) => {
             fingerprints.set(

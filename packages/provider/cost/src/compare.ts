@@ -1,9 +1,4 @@
-import type {
-  CostActual,
-  CostComparison,
-  CostEstimate,
-  EndpointEstimate,
-} from "./types";
+import type { CostActual, CostComparison, QuotedEstimate } from "./types";
 
 const DEFAULT_TOLERANCE = 0.02;
 
@@ -27,7 +22,7 @@ const DEFAULT_TOLERANCE = 0.02;
  *   tolerance of, above, or below the actual.
  */
 export function compareCost(
-  estimate: CostEstimate | null,
+  estimate: QuotedEstimate | null,
   actual: CostActual,
   options?: { tolerance?: number }
 ): CostComparison {
@@ -40,7 +35,7 @@ export function compareCost(
     estimate !== null &&
     estimate.usd === 0 &&
     !namesAFreeCall(estimate) &&
-    estimate.warnings.length > 0;
+    (estimate.warnings?.length ?? 0) > 0;
   const estimateUsd = estimate === null || failedClosed ? null : estimate.usd;
   const base = { estimateUsd, actualUsd, basis: actual.basis };
 
@@ -66,9 +61,6 @@ export function compareCost(
 }
 
 // EndpointEstimate marks a free, followup or subscription row with status "zero".
-function namesAFreeCall(estimate: CostEstimate): boolean {
-  return (
-    estimate.source === "free" ||
-    (estimate as Partial<EndpointEstimate>).status === "zero"
-  );
+function namesAFreeCall(estimate: QuotedEstimate): boolean {
+  return estimate.source === "free" || estimate.status === "zero";
 }

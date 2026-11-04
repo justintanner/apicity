@@ -260,12 +260,15 @@ export function extractActual(exchange: ProviderExchange): CostActual {
     }
   }
   // The flag also covers a truncated request, so only a stream that visibly
-  // stops short counts as incomplete.
+  // stops short counts as incomplete. Output with no input is a stream that lost
+  // its opening frame, and pricing that alone would state a low figure as final.
   const { responseBody, bodyTruncated } = exchange;
   const cutShort =
     bodyTruncated === true &&
     Array.isArray(responseBody) &&
-    !streamHasFinalUsage(responseBody);
+    (!streamHasFinalUsage(responseBody) ||
+      (extracted.usage.outputTokens !== undefined &&
+        extracted.usage.inputTokens === undefined));
   if (cutShort) {
     settled = false;
     warnings.push(TRUNCATED_STREAM);

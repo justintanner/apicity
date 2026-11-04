@@ -14,7 +14,7 @@ export interface ProviderExchange {
   responseBody: unknown;
   bodyTruncated?: boolean;
   responseCut?: boolean;
-  /** Wire ended mid-line or a recognized stream lacks complete final usage. */
+  /** Incomplete stream framing/final usage, or an unparseable JSON response. */
   streamIncomplete?: boolean;
 }
 

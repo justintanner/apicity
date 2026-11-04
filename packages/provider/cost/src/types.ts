@@ -321,7 +321,7 @@ export interface ProviderExchange {
   bodyTruncated?: boolean;
   // the response's body failed mid-read, so it holds what arrived
   responseCut?: boolean;
-  /** Wire ended mid-line or a recognized stream lacks complete final usage. */
+  /** Incomplete stream framing/final usage, or an unparseable JSON response. */
   streamIncomplete?: boolean;
 }
 

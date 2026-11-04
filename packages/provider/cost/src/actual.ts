@@ -315,9 +315,9 @@ export function extractActual(exchange: ProviderExchange): CostActual {
       removeWarning(warnings, SUBMIT_PENDING);
     }
   }
-  // The flag also covers a truncated request, so only a stream that visibly
-  // stops short counts as incomplete. Output with no input is a stream that lost
-  // its opening frame, and pricing that alone would state a low figure as final.
+  // Explicitly incomplete response evidence cannot settle, including malformed
+  // JSON. bodyTruncated alone can also describe a request or a retention cap;
+  // legacy streams need visible missing usage before their figure is withheld.
   const { responseBody, bodyTruncated } = exchange;
   const cutShort =
     exchange.streamIncomplete === true ||

@@ -69,7 +69,7 @@ export interface ApicityEntryMetadata {
   bodyTruncated?: boolean;
   /** The response's body failed mid-read, so this holds what arrived. */
   responseCut?: boolean;
-  /** Wire ended mid-line or a recognized stream lacks complete final usage. */
+  /** Incomplete stream framing/final usage, or an unparseable JSON response. */
   streamIncomplete?: boolean;
 }
 /** What a cost estimator quoted before the call. */

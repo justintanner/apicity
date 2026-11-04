@@ -1681,19 +1681,23 @@ export const kie: Record<string, ModelPricing> = {
     "extend",
     false
   ),
+  // The feed read 2026-11-04 prints the shared ladder for reference-to-video
+  // too, in place of September's 4.5-20.7 credits, and the committed HAR billed
+  // 4 credits for 1 s at 360p without audio (cost learning pass 1).
   "pixverse-v6/reference-to-video": pixverseV6(
     {
-      "360p|no-audio": 0.0225,
-      "360p|audio": 0.0315,
-      "540p|no-audio": 0.0315,
-      "540p|audio": 0.0405,
-      "720p|no-audio": 0.0405,
-      "720p|audio": 0.054,
-      "1080p|no-audio": 0.081,
-      "1080p|audio": 0.1035,
+      "360p|no-audio": 0.02,
+      "360p|audio": 0.028,
+      "540p|no-audio": 0.028,
+      "540p|audio": 0.036,
+      "720p|no-audio": 0.036,
+      "720p|audio": 0.048,
+      "1080p|no-audio": 0.072,
+      "1080p|audio": 0.092,
     },
     "reference-to-video",
-    true
+    true,
+    "2026-11-04"
   ),
   // transition: page-sourced (ac-4v9ck1). No feed row in any snapshot; the
   // page's groupData declares the transition tab and its pricingDesc prints

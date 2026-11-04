@@ -1,0 +1,208 @@
+# Cost learning pass 1 — 2026-11-04
+
+Source: ac-dcshsu (L1 of epic ac-0lt830). Model: `docs/har-learning-pass-1.md`, a
+separate loop that this one does not touch.
+
+The pass compares what `@apicity/cost` estimates with what calls actually cost. It
+applied six rate corrections and removed an invented 0.75 USD from the recordings.
+Of the 16 groups beyond tolerance, 14 remain, and none of them is a wrong rate. No
+paid call was made and no recording was re-recorded.
+
+## Reproduce and evidence
+
+The installed CLI lags this repository, so use the one built from a checkout:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run build
+node packages/cli/dist/src/bin.js har cost tests/recordings --json
+node packages/cli/dist/src/bin.js har cost <copy of the captures> --json
+```
+
+Full outputs, which stay out of the repository because the captures are private:
+`/gc/apicity/plans/ac-0lt830/reports/2026-11-04-{recordings,captures}.{md,json}`.
+Evidence and tools: `/gc/apicity/plans/ac-0lt830/evidence/L1/`.
+
+| Corpus               | Files | Calls | Settled | Groups | Beyond tolerance |
+| -------------------- | ----: | ----: | ------: | -----: | ---------------: |
+| `tests/recordings`   | 1,057 | 1,440 |   1,396 |  1,035 |               14 |
+| Captures (videobook) |   459 |   459 |     205 |     21 |                0 |
+
+The captures are videobook's own, from its host. All 459 pass
+`apicity har scrub --check`. They carry no quotes yet and
+their requests predate the kept request text, so they show what calls cost but give
+no estimate to compare. `apicity har cost` proposes no correction on either corpus.
+
+## Method
+
+Tolerance is 2%. Every group beyond it gets one verdict:
+
+- **CORRECTION:** a stated charge or today's published price contradicts the table,
+  the sources agree, and no promotion explains it.
+- **CAPTURE-GAP:** a missing field or truncation.
+- **NO-ACTION:** an old capture, a promotion, a rounding limit, one call with no second
+  witness, or an estimate that cannot know the figure before the call.
+
+A capture older than a rate's `asOf` is a price change, not an error, so today's feed
+decides those rows. A stated charge is treated as a claim until its recording looks
+real: two recordings here were hand-written.
+
+## Verdicts
+
+These are the 16 groups in the first report, with 25 calls over and 7 under. After the
+corrections, 14 groups remain, with 22 calls over and 7 under, which is the saved
+report's summary. The two that left are the first two rows.
+
+| Provider  | Model                            | Over | Under | Ratio | Verdict    | Why                                                                                        |
+| --------- | -------------------------------- | ---: | ----: | ----: | ---------- | ------------------------------------------------------------------------------------------ |
+| kie       | `pixverse-v6/reference-to-video` |    1 |     0 | 1.125 | CORRECTION | Recording billed 4 credits/s, and today's feed agrees. Applied below                       |
+| kie       | `kling/v3-turbo-text-to-video`   |    2 |     0 |   1.8 | NO-ACTION  | Hand-written cassettes. The feed confirms the table, and their charge is gone (see below)  |
+| kie       | `bytedance/seedance-2-mini`      |    0 |     1 |   0.4 | NO-ACTION  | Old capture (06-24). Feed today is 3.8 credits/s, the table's rate                         |
+| kie       | `grok-imagine-video-1-5-preview` |    0 |     1 |  0.16 | NO-ACTION  | Old capture (06-05). The three October recordings match exactly                            |
+| kie       | `happyhorse-1-1/text-to-video`   |    0 |     1 |  0.68 | NO-ACTION  | Old capture (06-24). The page today is 22.5 credits/s, the table's rate                    |
+| machgen   | `MiniMax-H3-Turbo`               |    4 |     0 |   1.5 | NO-ACTION  | Promotion: 0.01/s when recorded. The pricebook today is 0.015/s to 2027-01-01, the table's |
+| machgen   | `Seedance-2.5`                   |    3 |     0 | 1.028 | NO-ACTION  | Old capture (10-22). The pricebook today is 0.1028/s, the table's rate                     |
+| xai       | `grok-4` (`v1.responses`)        |    0 |     1 |  0.28 | NO-ACTION  | Tokens x rates equal the stated bill exactly. The estimate cannot see a vision input       |
+| alibaba   | `wan2.7-videoedit`               |    0 |     1 |  0.50 | NO-ACTION  | No stated charge. The estimate assumes 5 s, and an edit follows its source. `ac-nr7mpd`    |
+| anthropic | `claude-sonnet-4-6`              |    1 |     0 |  3.40 | NO-ACTION  | Usage only: the ratio measures the before-call chars/4 and output limit, not a rate        |
+| fireworks | `llama-v3p3-70b-instruct` (chat) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                       |
+| fireworks | `llama-v3p3-70b-instruct` (text) |    0 |     1 |  0.97 | NO-ACTION  | Usage only, as above                                                                       |
+| fireworks | `llama-v3p3-70b-instruct` (msgs) |    2 |     0 |  1.06 | NO-ACTION  | Usage only, as above                                                                       |
+| fireworks | `nomic-embed-text-v1.5`          |    1 |     0 |   1.5 | NO-ACTION  | Usage only, 2 tokens, as above                                                             |
+| openai    | `gpt-4o-mini`                    |    8 |     1 |  5.55 | NO-ACTION  | Usage only, as above                                                                       |
+| openai    | `o4-mini`                        |    1 |     0 |  3.93 | NO-ACTION  | Usage only, as above                                                                       |
+
+There is no CAPTURE-GAP verdict: nothing beyond tolerance turned on a missing field.
+Reconciling usage-only families against provider cost APIs is RC1 (`ac-q1v7y1`).
+
+### Leads named in the plan
+
+| Lead                                 | Finding                                                                                                                                                                                      |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| kie `kling/v3-turbo-text-to-video`   | Hand-written, not a lead. See below                                                                                                                                                          |
+| kie `grok-imagine-video-1-5-preview` | Old capture                                                                                                                                                                                  |
+| kie `seedance-2-5` draft (0.18x)     | Two tasks in one recording, now apart. The draft matches at 0.56 USD. Its 632-credit render has no estimate, because it needs `costHints` from the draft task, so it is not beyond tolerance |
+| kie `seedance-2-mini`                | Old capture                                                                                                                                                                                  |
+| kie `happyhorse-1-1` t2v             | Old capture                                                                                                                                                                                  |
+| machgen `MiniMax-H3` upscale (0.4x)  | The first step matches. The upscale step has no estimate, as its length follows its source                                                                                                   |
+| machgen `MiniMax-H3-Turbo`           | Promotion                                                                                                                                                                                    |
+| machgen `Seedance-2.5`               | Old capture                                                                                                                                                                                  |
+
+## Corrections applied
+
+Six, under the cap of ten. Each row's `source.asOf` is now 2026-11-04, and
+`tests/unit/cost-learning-pass-1.test.ts` pins each to its recording: the estimate
+must equal the billed units at the price read today.
+
+| Row                                                                                                         | Was                              | Now               | Evidence                                                                                              |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------- |
+| fal `minimax/h3/t2v/trainer`                                                                                | `max(1, steps)`                  | `max(100, steps)` | Card states the floor. `minimax-h3-t2v-trainer_2342852863` billed 100 steps for 1                     |
+| fal `minimax/h3-max/{text,image}-to-video`, `camera-controls`, `minimax/h3-max-turbo/{text,image}-to-video` | 0.0325, 0.05 and 0.01625 at 480P | 0.035 and 0.0175  | October promotion ended. Card and price list today. List from 11-16 (`ac-cukhhs`)                     |
+| fal `heygen/heygen-video/{text,image,reference}-to-video`                                                   | 0.01/0.03                        | 0.02/0.06         | 50% promotion ended 10-31. Card's regular price and the price list                                    |
+| fal `mureka/api/generate/{lyrics,song}`                                                                     | 0.0135; 0.045-0.75               | 0.009; 0.03-0.50  | Card and price list agree, with no promotion stated                                                   |
+| fal `fal-ai/nano-banana`, `/edit`                                                                           | 0.039                            | 0.0398            | Card and price list, 1 unit on each recording                                                         |
+| kie `pixverse-v6/reference-to-video`                                                                        | 0.0225-0.1035                    | 0.02-0.092        | Today's feed prints the shared ladder. `pixverse-v6-reference-to-video_2396754018` billed 4 credits/s |
+
+**The hand-written KIE cassettes.** `kling-v3-turbo-text-to-video_1058703467` and
+`kling-v3-turbo-text-to-video-1080p_717102705` were written by hand in 4467fd2a: their
+task ids end in `_apicity`, their results are on example.com, and the poll is in the
+submit's millisecond. They stated 50 and 100 credits that were never billed. Those
+fields are gone, and each cassette's `log.comment` says why. The paid total over
+`tests/recordings` falls by exactly that invented 0.75 USD, from 32.45 to 31.70, and
+`tests/unit/cli-har-cost.test.ts` pins that they count no charge.
+
+## The 22 fal rows
+
+These are the rows in the survey's `fal-billable-ratio.tsv` where header units x list
+price differ from the estimate, read again today. fal states no USD, so header units x
+price is the witness, and the survey found it sound on 133 of 155 rows.
+
+| Rows                                                 |     Ratio | Verdict    | Why                                                                              |
+| ---------------------------------------------------- | --------: | ---------- | -------------------------------------------------------------------------------- |
+| `minimax/h3/t2v/trainer`                             |       100 | CORRECTION | Applied                                                                          |
+| `minimax/h3-max/*` (3), `minimax/h3-max-turbo/*` (2) | 1.08, 0.7 | CORRECTION | Applied                                                                          |
+| `heygen/heygen-video/*` (3)                          |         2 | CORRECTION | Applied                                                                          |
+| `mureka/api/generate/*` (2)                          |      0.67 | CORRECTION | Applied                                                                          |
+| `fal-ai/nano-banana`, `/edit`                        |      1.02 | CORRECTION | Applied                                                                          |
+| `fal-ai/vidu/q4/*` (2)                               |       0.7 | NO-ACTION  | Promotion to 11-30. The table holds list rates on purpose; see `ac-cukhhs`       |
+| `krea/v3/edit`                                       |      0.88 | NO-ACTION  | The table counts each reference at output size, the card's maximum, and warns    |
+| `xai/grok-imagine-image/edit`                        |       1.1 | NO-ACTION  | Old capture (04-18). The price list today has the flat 0.02 the table uses       |
+| `bytedance/seedance-2.0/us/*` (2)                    |      0.83 | NO-ACTION  | The card and the table say 0.0168, and only the price list says 0.014            |
+| `bytedance/seedance-2.5/us/text-to-video`            |      0.83 | Open       | Card and price list say 0.0214, and the last bill says 0.02568. `ac-1m1poe`      |
+| `xai/grok-imagine-video/extend-video`                |       1.4 | Open       | Card adds 0.01/s of input and a 720p tier, and the table lacks both. `ac-1m1poe` |
+| `fal-ai/gpt-image-1.5`                               |      2.22 | Open       | Card adds text tokens to the image price. One old call. `ac-1m1poe`              |
+
+The usage API would settle the open rows, but the configured key answers 403 on it.
+
+`fal-ai/sora-2/text-to-video` and `image-to-video` answer 404 on the price list while
+videobook's catalog still names them: `ac-jgqanj`.
+
+## MachGen models outside the table
+
+The pricebook lists 51 models and the table prices 28 of them. The 23 others are
+unpriced by policy, since the catalog follows the top-10 rule in `docs/frontier.md`.
+
+- **Through the free quote (5):** `Topaz-Video-Generative`,
+  `Topaz-Video-Generative-Fast`, `Topaz-Video-Precision`,
+  `Topaz-Video-Precision-Animation`, `Vidu-Upscale-Pro`. These use
+  `POST api.v0.upscale.quote` and `resolveMachGenUpscaleEstimate`.
+- **Names the API resolves to a priced row (3):** `MiniMax-H3-MultiMax` is
+  `MiniMax-H3-Turbo`, and `Wan2.2-I2V-A14B` and `Wan2.2-T2V-A14B` are `Wan2.2-A14B`.
+- **Not in the catalog (15):** `Eleven-Music-v2`, `Eleven-SFX-v2`, `Eleven-v3`,
+  `Eleven-v4`, `FLUX.2-dev`, `Grok-Imagine-Image`, `Grok-Imagine-Image-Quality`,
+  `HiDream-O1-Image`, `Kling-v4`, `Nano-Banana-Pro`, `Seedream-5.0-lite`,
+  `Topaz-Image-Generative`, `Topaz-Image-Precision`, `Vidu-S1`, `YuE2-3B`.
+
+An estimate for any of them fails closed rather than guessing.
+
+## What videobook's calls actually used
+
+Totals over the captures, for every model with usage or a charge. The rest of the
+catalog has no capture yet. `derived` is reported usage x the bundled rate, and `stated`
+is the provider's own figure.
+
+| Provider and endpoint            | Model             | Calls (settled) | Input tokens | Cached | Cache write | Output tokens (reasoning) | Other         |      USD | Basis      |
+| -------------------------------- | ----------------- | --------------: | -----------: | -----: | ----------: | ------------------------: | ------------- | -------: | ---------- |
+| openai `v1.responses`            | `gpt-5.6-sol`     |         60 (60) |    1,087,337 | 50,544 |   1,035,912 |           64,927 (22,082) |               | 6.501842 | derived    |
+| openai `v1.responses`            | `gpt-6-astra`     |           5 (5) |       72,739 |      0 |      72,724 |                  383 (27) |               | 0.928350 | derived    |
+| openai `v1.audio.transcriptions` | `gpt-transcribe`  |           6 (6) |              |        |             |                           | 91 s          | 0.006825 | derived    |
+| elevenlabs `v1.speechToText`     | `scribe_v2`       |           5 (5) |              |        |             |                           | 72.8 s, 33 cr | 0.007260 | stated     |
+| machgen `api.v0.tasks`           | `Alibaba-Wan-3.0` |         197 (1) |              |        |             |                           | 13 s          |     none | usage only |
+| machgen `api.v0.tasks`           | `MiniMax-H3`      |          57 (2) |              |        |             |                           | 30 s          |     none | usage only |
+| machgen `api.v0.generate`        | `Alibaba-Wan-3.0` |           1 (0) |              |        |             |                           |               |     none | submit     |
+| machgen `api.v0.generate`        | `MiniMax-H3`      |           2 (0) |              |        |             |                           |               |     none | submit     |
+
+Input tokens include cached and cache-write tokens. MachGen shows no USD because
+videobook never reads the free `api.v0.tasks.billing` receipt that states the charge.
+The other captured calls are free: `v1.responses.inputTokens`, `v1.tokenizeText`,
+`v1.user.subscription`, KIE `chat.credit`, TikTok Creative Center, Endless and the upload
+hosts.
+
+## Follow-up work
+
+| Bead        | Family  | What                                                                 |
+| ----------- | ------- | -------------------------------------------------------------------- |
+| `ac-1m1poe` | fal     | Seedance 2.5 US, Grok video extend, GPT Image 1.5                    |
+| `ac-cukhhs` | fal     | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
+| `ac-eue5ej` | fal     | Timed: FLUX 3 Max's promotion ends 11-07                             |
+| `ac-jgqanj` | fal     | `sora-2` answers 404 while videobook names it                        |
+| `ac-p3e0c6` | kie     | Rows that moved since the frozen pull, and a check for live drift    |
+| `ac-nr7mpd` | alibaba | `wan2.7-videoedit` assumes 5 s                                       |
+| `ac-xk7p41` | cost    | 46 rows have no `source.asOf`, which weakens the capture-date gate   |
+
+Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
+justified it. They do not: no WaveSpeed group is beyond tolerance.
+
+## When to repeat
+
+Repeat the pass when any of these holds:
+
+- a promotion named in a table comment has ended (the next are 2026-11-07 and
+  2026-11-15);
+- `apicity har cost` over the captures shows a group beyond tolerance whose captures are
+  all on or after the rate's `asOf`, or proposes a correction;
+- videobook starts writing quotes, which gives the captures their first estimates;
+- 30 days have passed since the last pass.
+
+Between passes a rate can drift with no recording to show it, as
+`pixverse-v6/reference-to-video` did. `ac-p3e0c6` is about closing that gap.

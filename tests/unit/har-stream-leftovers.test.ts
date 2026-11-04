@@ -1,4 +1,4 @@
-import { createServer, type Server } from "node:http";
+import { createServer, type Server, type RequestListener } from "node:http";
 import type { AddressInfo } from "node:net";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -26,7 +26,7 @@ const meta = {
   endpoint: "v1.messages",
   input: { model: "claude-sonnet-4-6" },
 };
-async function setup(handler: Parameters<typeof createServer>[0]) {
+async function setup(handler: RequestListener) {
   const server = createServer(handler);
   servers.push(server);
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));

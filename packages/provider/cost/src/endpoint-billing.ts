@@ -3098,10 +3098,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "per-model",
       reason:
-        "The docs and the feed publish no price, so P4 fails it closed unless a price appears; follow-up ac-rnclk7",
+        "KIE's catalog lists this model with a null price, and its docs and feed state neither a charge nor that it is free; follow-up ac-27hri6",
       source: {
         url: "https://docs.kie.ai/suno-api/recovery-audio.md",
-        asOf: "2026-11-04",
+        asOf: "2026-11-05",
       },
     },
     ["POST api.v1.suno.recovery"]
@@ -3176,17 +3176,29 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "tokens",
       reason:
-        "No current published rate; product pages redirect to newer models; follow-up ac-rnclk7",
+        "KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl",
       source: {
-        url: "https://api.kie.ai/client/v1/model-pricing/page",
-        asOf: "2026-11-04",
+        url: "https://docs.kie.ai/market/gemini/gemini-3-5-flash.md",
+        asOf: "2026-11-05",
       },
     },
     [
       "POST gemini.v1.models.gemini35Flash.streamGenerateContent",
-      "POST gemini25Pro.v1.chat.completions",
       "POST gemini35FlashOpenai.v1.chat.completions",
     ]
+  ),
+  ...rows(
+    "kie",
+    {
+      kind: "free",
+      reason:
+        "Docs: retired upstream, so requests return an error (code 410) and are not charged",
+      source: {
+        url: "https://docs.kie.ai/market/gemini/gemini-2-5-pro.md",
+        asOf: "2026-11-05",
+      },
+    },
+    ["POST gemini25Pro.v1.chat.completions"]
   ),
   ...rows(
     "kie",

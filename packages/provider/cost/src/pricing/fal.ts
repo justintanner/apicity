@@ -3311,8 +3311,9 @@ export const fal: Record<string, ModelPricing> = {
   // standard rates, $0.0214 (2.0 US: $0.014), and 2.5 US's card agrees, but 2.0
   // US's card still says $0.0168 and fal's FAQ says US hosting is priced
   // separately. This holds the last billed rate, 20% over if the cut is real,
-  // until the usage API reads a bill (ac-cgqsxq): the unit header on a new call
-  // cannot tell, as it reports the same units at either rate.
+  // until the usage API reads a bill after 2026-10-16 (ac-89cvvz; ac-cgqsxq found none
+  // on 2026-11-05): the unit header on a new call cannot tell, as it reports the
+  // same units at either rate.
   // No US 1080p call is recorded; if it carries the same 1.094 factor
   // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
   // draft flag also renders a 480p preview (queue OpenAPI read 2026-10-31).

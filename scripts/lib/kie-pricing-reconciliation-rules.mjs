@@ -104,7 +104,40 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
     "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them.",
 });
 
+// KIE repriced these Kling models on 2026-11-05, when a promotion ended, so their
+// frozen September rows no longer say what KIE bills (ac-6jp17g). The Omni keys
+// have no frozen row and keep their own entries below.
+const KLING_REPRICED_2026_11_05 = Object.freeze({
+  "kling-3.0/video": ["std", "std|sound", "pro", "pro|sound", "4K", "4K|sound"],
+  "kling-3.0/motion-control": ["720p", "1080p"],
+  "kling/v3-turbo-image-to-video": ["720p", "1080p"],
+  "kling/v3-turbo-text-to-video": ["720p", "1080p"],
+  "kling-2.6/text-to-video": ["5|silent", "10|silent", "5|sound", "10|sound"],
+  "kling-2.6/image-to-video": ["5|silent", "10|silent", "5|sound", "10|sound"],
+  "kling-2.6/motion-control": ["720p", "1080p"],
+  "kling/ai-avatar-standard": [""],
+  "kling/ai-avatar-pro": [""],
+  "kling/v2-5-turbo-text-to-video-pro": ["5", "10"],
+  "kling/v2-5-turbo-image-to-video-pro": ["5", "10"],
+  "kling/v2-1-standard": ["5", "10"],
+  "kling/v2-1-pro": ["5", "10"],
+  "kling/v2-1-master-text-to-video": ["5", "10"],
+  "kling/v2-1-master-image-to-video": ["5", "10"],
+});
+const KLING_REPRICE_PROVENANCE =
+  "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures";
+
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...Object.entries(KLING_REPRICED_2026_11_05).flatMap(([key, variants]) =>
+    variants.map((variant) => ({
+      key,
+      variant,
+      status: "pricing-only",
+      provenance: KLING_REPRICE_PROVENANCE,
+      rationale:
+        "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills.",
+    }))
+  ),
   ...[
     "wan/2-6-text-to-video",
     "wan/2-6-image-to-video",
@@ -394,10 +427,9 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     key,
     variant,
     status: "pricing-only",
-    provenance:
-      "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+    provenance: KLING_REPRICE_PROVENANCE,
     rationale:
-      "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20.",
+      "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05.",
   })),
   ...[
     ["qwen2-1/text-to-image", "1K"],
@@ -1451,6 +1483,14 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       key === "bytedance/seedance-2-5" && /1080p/i.test(description),
     message:
       "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions.",
+  },
+  {
+    family: "kling-repriced-2026-11-05",
+    liveComparable: true,
+    matches: (_description, key) =>
+      Object.hasOwn(KLING_REPRICED_2026_11_05, key ?? ""),
+    message:
+      "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
   },
   {
     family: "wan-2-6-1080p-refreshed",

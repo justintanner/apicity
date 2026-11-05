@@ -238,14 +238,14 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.breakdown.units).toBe(5);
-    expect(r.usd).toBeCloseTo(0.07 * 5, 6);
+    expect(r.usd).toBeCloseTo(0.0755 * 5, 6);
   });
 
   it.each([
     {
       model: "kling-3.0-omni/text-to-video",
       input: { prompt: "x", duration: 5, resolution: "1080p", audio: true },
-      rate: 0.115,
+      rate: 0.126,
     },
     {
       model: "kling-3.0-omni/image-to-video",
@@ -256,7 +256,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         resolution: "4k",
         audio: false,
       },
-      rate: 0.335,
+      rate: 0.3775,
     },
     {
       model: "kling-3.0-omni/reference-to-video",
@@ -267,7 +267,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         resolution: "720p",
         audio: false,
       },
-      rate: 0.1,
+      rate: 0.1135,
     },
     {
       model: "kling-3.0-omni/transformation",
@@ -277,7 +277,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         duration: 5,
         resolution: "1080p",
       },
-      rate: 0.135,
+      rate: 0.151,
     },
   ])("kie $model resolves its published tier", ({ model, input, rate }) => {
     const c = createCost();
@@ -288,7 +288,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.units).toBe(5);
     expect(r.breakdown.perUnitUsd).toBe(rate);
     expect(r.usd).toBeCloseTo(rate * 5, 6);
-    expect(r.rateAsOf).toBe("2026-08-20");
+    expect(r.rateAsOf).toBe("2026-11-05");
     expect(r.warnings).toEqual([]);
   });
 
@@ -309,8 +309,8 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.source).toBe("per-unit-table");
     expect(r.breakdown.unit).toBe("seconds");
     expect(r.breakdown.units).toBe(5);
-    expect(r.breakdown.perUnitUsd).toBe(0.1125);
-    expect(r.usd).toBeCloseTo(0.1125 * 5, 6);
+    expect(r.breakdown.perUnitUsd).toBe(0.126);
+    expect(r.usd).toBeCloseTo(0.126 * 5, 6);
   });
 
   it("kie kling/v3-turbo-text-to-video coerces string duration", () => {
@@ -328,8 +328,8 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.breakdown.units).toBe(5);
-    expect(r.breakdown.perUnitUsd).toBe(0.09);
-    expect(r.usd).toBeCloseTo(0.09 * 5, 6);
+    expect(r.breakdown.perUnitUsd).toBe(0.101);
+    expect(r.usd).toBeCloseTo(0.101 * 5, 6);
   });
 
   it("kie unknown model → warning + $0", () => {

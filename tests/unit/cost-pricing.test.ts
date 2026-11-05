@@ -654,12 +654,12 @@ describe("PRICING data", () => {
       kind: "perUnit",
       unit: "seconds",
       rates: {
-        std: 0.07,
-        "std|sound": 0.1,
-        pro: 0.09,
-        "pro|sound": 0.135,
-        "4K": 0.335,
-        "4K|sound": 0.335,
+        std: 0.0755,
+        "std|sound": 0.1135,
+        pro: 0.101,
+        "pro|sound": 0.151,
+        "4K": 0.3775,
+        "4K|sound": 0.3775,
       },
     });
   });
@@ -995,7 +995,7 @@ const HINT_ONLY_KIE = [
       mode: "720p",
     } as Record<string, unknown>,
     seconds: 5,
-    perUnitUsd: 0.1,
+    perUnitUsd: 0.1135,
   },
   {
     label: "kling-3.0/motion-control @1080p",
@@ -1005,7 +1005,7 @@ const HINT_ONLY_KIE = [
       mode: "1080p",
     } as Record<string, unknown>,
     seconds: 5,
-    perUnitUsd: 0.135,
+    perUnitUsd: 0.151,
   },
   {
     label: "omnihuman-1-5",
@@ -1054,7 +1054,7 @@ const HINT_ONLY_KIE = [
       mode: "720p",
     } as Record<string, unknown>,
     seconds: 5,
-    perUnitUsd: 0.055,
+    perUnitUsd: 0.063,
   },
   {
     label: "kling-2.6/motion-control @1080p",
@@ -1066,7 +1066,7 @@ const HINT_ONLY_KIE = [
       mode: "1080p",
     } as Record<string, unknown>,
     seconds: 5,
-    perUnitUsd: 0.09,
+    perUnitUsd: 0.101,
   },
   {
     label: "kling/ai-avatar-standard",
@@ -1077,7 +1077,7 @@ const HINT_ONLY_KIE = [
       prompt: "x",
     } as Record<string, unknown>,
     seconds: 12,
-    perUnitUsd: 0.04,
+    perUnitUsd: 0.0505,
   },
   {
     label: "kling/ai-avatar-pro",
@@ -1088,7 +1088,7 @@ const HINT_ONLY_KIE = [
       prompt: "x",
     } as Record<string, unknown>,
     seconds: 12,
-    perUnitUsd: 0.08,
+    perUnitUsd: 0.101,
   },
   {
     label: "topaz/video-upscale @4x",
@@ -1243,7 +1243,7 @@ describe("kie costHints.durationSeconds", () => {
         },
       });
 
-      expect(result.usd).toBeCloseTo(0.5, 10); // 5 * 0.10
+      expect(result.usd).toBeCloseTo(0.5675, 10); // 5 * 0.1135
       expect(result.breakdown.units).toBe(5);
       expect(result.warnings).toEqual([]);
     }
@@ -2255,22 +2255,22 @@ const VIDEO_PER_VIDEO_RATES = [
   {
     model: "kling-2.6/text-to-video",
     input: { sound: false, aspect_ratio: "16:9", duration: "5" },
-    usd: 0.275,
+    usd: 0.315,
   },
   {
     model: "kling-2.6/text-to-video",
     input: { sound: true, aspect_ratio: "16:9", duration: "5" },
-    usd: 0.55,
+    usd: 0.63,
   },
   {
     model: "kling-2.6/text-to-video",
     input: { sound: false, aspect_ratio: "16:9", duration: "10" },
-    usd: 0.55,
+    usd: 0.63,
   },
   {
     model: "kling-2.6/text-to-video",
     input: { sound: true, aspect_ratio: "16:9", duration: "10" },
-    usd: 1.1,
+    usd: 1.26,
   },
   {
     model: "kling-2.6/image-to-video",
@@ -2279,37 +2279,37 @@ const VIDEO_PER_VIDEO_RATES = [
       sound: true,
       duration: "10",
     },
-    usd: 1.1,
+    usd: 1.26,
   },
   {
     model: "kling/v2-5-turbo-text-to-video-pro",
     input: { duration: "10" },
-    usd: 0.42,
+    usd: 0.63,
   },
   {
     model: "kling/v2-5-turbo-image-to-video-pro",
     input: { image_url: "https://example.com/x.jpg", duration: "5" },
-    usd: 0.21,
+    usd: 0.315,
   },
   {
     model: "kling/v2-1-standard",
     input: { image_url: "https://example.com/x.jpg", duration: "10" },
-    usd: 0.25,
+    usd: 0.505,
   },
   {
     model: "kling/v2-1-pro",
     input: { image_url: "https://example.com/x.jpg", duration: "10" },
-    usd: 0.5,
+    usd: 0.88,
   },
   {
     model: "kling/v2-1-master-text-to-video",
     input: { duration: "10" },
-    usd: 1.6,
+    usd: 2.52,
   },
   {
     model: "kling/v2-1-master-image-to-video",
     input: { image_url: "https://example.com/x.jpg", duration: "5" },
-    usd: 0.8,
+    usd: 1.26,
   },
 ];
 
@@ -2438,11 +2438,11 @@ describe("kie createTask video families (REQ-005)", () => {
       { costHints: { durationSeconds: 10 } }
     );
 
-    expect(result.usd).toBeCloseTo(0.25, 10);
+    expect(result.usd).toBeCloseTo(0.44, 10);
     expect(result.breakdown).toEqual({
       units: 1,
       unit: "generations",
-      perUnitUsd: 0.25,
+      perUnitUsd: 0.44,
     });
   });
 
@@ -2453,25 +2453,25 @@ describe("kie createTask video families (REQ-005)", () => {
       model: "kling/v2-1-standard",
       input: { image_url: "https://example.com/x.jpg" },
       note: "duration 5",
-      usd: 0.125,
+      usd: 0.2525,
     },
     {
       model: "kling/v2-1-pro",
       input: { image_url: "https://example.com/x.jpg" },
       note: "duration 5",
-      usd: 0.25,
+      usd: 0.44,
     },
     {
       model: "kling/v2-1-master-text-to-video",
       input: {},
       note: "duration 5",
-      usd: 0.8,
+      usd: 1.26,
     },
     {
       model: "kling/v2-5-turbo-text-to-video-pro",
       input: {},
       note: "duration 5",
-      usd: 0.21,
+      usd: 0.315,
     },
   ])(
     "falls back to the documented $note default for $model",
@@ -2693,17 +2693,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "recraft/crisp-upscale",
       "recraft/remove-background",
       "topaz/image-upscale",
-      "kling-2.6/text-to-video",
-      "kling-2.6/image-to-video",
-      "kling-2.6/motion-control",
-      "kling/ai-avatar-standard",
-      "kling/ai-avatar-pro",
-      "kling/v2-5-turbo-text-to-video-pro",
-      "kling/v2-5-turbo-image-to-video-pro",
-      "kling/v2-1-standard",
-      "kling/v2-1-pro",
-      "kling/v2-1-master-text-to-video",
-      "kling/v2-1-master-image-to-video",
       "topaz/video-upscale",
       "infinitalk/from-audio",
       "elevenlabs/text-to-speech-multilingual-v2",
@@ -5261,7 +5250,8 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     // recording (kling-30-omni-transformation_2355785254) billed 100 credits
     // = 5 s x 20 credits/s for a 5-second source clip, where the rule would
     // bill 200; the text-to-video fixture that produced that clip billed 70 =
-    // 5 s x 14. A later change here is a deliberate one.
+    // 5 s x 14. Those are the rates before the 2026-11-05 reprice; the shape is
+    // what this pins. A later change here is a deliberate one.
     it.each([
       {
         model: "kling-3.0-omni/reference-to-video",
@@ -5284,13 +5274,13 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
             { model, input: { prompt: "x", ...input } },
             extra
           );
-          expect(result.usd).toBeCloseTo(0.5, 10);
+          expect(result.usd).toBeCloseTo(0.5675, 10);
           expect(result.breakdown).toEqual({
             units: 5,
             unit: "seconds",
-            perUnitUsd: 0.1,
+            perUnitUsd: 0.1135,
           });
-          expect(result.rateAsOf).toBe("2026-08-20");
+          expect(result.rateAsOf).toBe("2026-11-05");
           expect(result.warnings).toEqual([]);
         }
       }
@@ -5816,79 +5806,105 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   });
 });
 
+describe("kie Kling reprice of 2026-11-05 (ac-6jp17g)", () => {
+  it.each([
+    "kling-3.0/video",
+    "kling-3.0/motion-control",
+    "kling-3.0-omni/text-to-video",
+    "kling-3.0-omni/image-to-video",
+    "kling-3.0-omni/reference-to-video",
+    "kling-3.0-omni/transformation",
+    "kling/v3-turbo-image-to-video",
+    "kling/v3-turbo-text-to-video",
+    "kling-2.6/text-to-video",
+    "kling-2.6/image-to-video",
+    "kling-2.6/motion-control",
+    "kling/ai-avatar-standard",
+    "kling/ai-avatar-pro",
+    "kling/v2-5-turbo-text-to-video-pro",
+    "kling/v2-5-turbo-image-to-video-pro",
+    "kling/v2-1-standard",
+    "kling/v2-1-pro",
+    "kling/v2-1-master-text-to-video",
+    "kling/v2-1-master-image-to-video",
+  ])("stamps %s with the date KIE repriced it", (model) => {
+    expect(PRICING.kie[model].source?.asOf).toBe("2026-11-05");
+  });
+});
+
 describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
   it.each([
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "720p",
       audio: false,
-      rate: 0.07,
+      rate: 0.0755,
     },
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "720p",
       audio: true,
-      rate: 0.09,
+      rate: 0.101,
     },
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "1080p",
       audio: false,
-      rate: 0.09,
+      rate: 0.101,
     },
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "1080p",
       audio: true,
-      rate: 0.115,
+      rate: 0.126,
     },
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "4k",
       audio: false,
-      rate: 0.335,
+      rate: 0.3775,
     },
     {
       model: "kling-3.0-omni/text-to-video",
       resolution: "4k",
       audio: true,
-      rate: 0.335,
+      rate: 0.3775,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "720p",
       audio: false,
-      rate: 0.07,
+      rate: 0.0755,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "720p",
       audio: true,
-      rate: 0.09,
+      rate: 0.101,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "1080p",
       audio: false,
-      rate: 0.09,
+      rate: 0.101,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "1080p",
       audio: true,
-      rate: 0.115,
+      rate: 0.126,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "4k",
       audio: false,
-      rate: 0.335,
+      rate: 0.3775,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       resolution: "4k",
       audio: true,
-      rate: 0.335,
+      rate: 0.3775,
     },
   ])(
     "prices $model at $resolution with audio=$audio",
@@ -5909,15 +5925,15 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
   );
 
   it.each([
-    { resolution: "720p", mode: "silent", rate: 0.07 },
-    { resolution: "720p", mode: "audio", rate: 0.09 },
-    { resolution: "720p", mode: "video", rate: 0.1 },
-    { resolution: "1080p", mode: "silent", rate: 0.09 },
-    { resolution: "1080p", mode: "audio", rate: 0.115 },
-    { resolution: "1080p", mode: "video", rate: 0.135 },
-    { resolution: "4k", mode: "silent", rate: 0.335 },
-    { resolution: "4k", mode: "audio", rate: 0.335 },
-    { resolution: "4k", mode: "video", rate: 0.335 },
+    { resolution: "720p", mode: "silent", rate: 0.0755 },
+    { resolution: "720p", mode: "audio", rate: 0.101 },
+    { resolution: "720p", mode: "video", rate: 0.1135 },
+    { resolution: "1080p", mode: "silent", rate: 0.101 },
+    { resolution: "1080p", mode: "audio", rate: 0.126 },
+    { resolution: "1080p", mode: "video", rate: 0.151 },
+    { resolution: "4k", mode: "silent", rate: 0.3775 },
+    { resolution: "4k", mode: "audio", rate: 0.3775 },
+    { resolution: "4k", mode: "video", rate: 0.3775 },
   ])(
     "prices reference-to-video at $resolution in $mode mode",
     ({ resolution, mode, rate }) => {
@@ -5941,9 +5957,9 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
   );
 
   it.each([
-    { resolution: "720p", rate: 0.1 },
-    { resolution: "1080p", rate: 0.135 },
-    { resolution: "4k", rate: 0.335 },
+    { resolution: "720p", rate: 0.1135 },
+    { resolution: "1080p", rate: 0.151 },
+    { resolution: "4k", rate: 0.3775 },
   ])("prices transformation at $resolution", ({ resolution, rate }) => {
     const result = kieEstimate({
       model: "kling-3.0-omni/transformation",
@@ -5995,7 +6011,7 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
     expect(Object.keys(entry.rates).sort()).toEqual(cells);
     expect(entry.source).toEqual({
       url: `https://kie.ai/kling-o3?model=${encodeURIComponent(model)}`,
-      asOf: "2026-08-20",
+      asOf: "2026-11-05",
     });
   });
 
@@ -6003,12 +6019,12 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
     {
       model: "kling-3.0-omni/text-to-video",
       input: { prompt: "x", duration: 5, audio: false },
-      rate: 0.07,
+      rate: 0.0755,
     },
     {
       model: "kling-3.0-omni/image-to-video",
       input: { prompt: "x", duration: 5, audio: true },
-      rate: 0.09,
+      rate: 0.101,
     },
     {
       model: "kling-3.0-omni/reference-to-video",
@@ -6018,7 +6034,7 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
         video_urls: ["https://example.com/reference.mp4"],
         audio: false,
       },
-      rate: 0.1,
+      rate: 0.1135,
     },
     {
       model: "kling-3.0-omni/transformation",
@@ -6027,7 +6043,7 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
         duration: 5,
         video_urls: ["https://example.com/source.mp4"],
       },
-      rate: 0.1,
+      rate: 0.1135,
     },
   ])("uses $model's documented 720p fallback", ({ model, input, rate }) => {
     const result = kieEstimate({ model, input });

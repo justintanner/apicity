@@ -312,8 +312,45 @@ if (run.status !== "completed" || run.conclusion !== "success") {
 If the GitHub run is missing, pending, cancelled, or failed, STOP. Do not sync
 `stable` and do not publish until CI on `main` is green.
 
-**Exit criteria:** Local `test:run` and `ci:local` pass on `main`, and GitHub
-CI reports success for the same `origin/main` commit.
+**4. Compare the KIE price table with KIE's live feed:**
+```bash
+drift_rc=0
+drift_out=$(pnpm run --silent check:kie-feed-drift 2>&1) || drift_rc=$?
+case "$drift_rc" in
+  0)
+    printf '%s\n' "$drift_out" | grep -E '^Compared ' || true
+    ;;
+  2)
+    release_bead="{{release_bead}}"
+    if [ -z "$release_bead" ]; then
+      release_bead=$(bd list --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
+    fi
+    drift_note="KIE feed drift check could not read the feed (exit 2), so PRICING.kie was not compared: $(printf '%s\n' "$drift_out" | tail -n 1)"
+    echo "WARNING: $drift_note"
+    bd update "$release_bead" --append-notes "$drift_note" \
+      || echo "WARNING: could not record that on release bead ${release_bead:-<none>}; put it in the release report."
+    ;;
+  *)
+    echo "ABORT: check:kie-feed-drift exited $drift_rc. PRICING.kie disagrees with KIE's live feed, or the check failed."
+    printf '%s\n' "$drift_out" | grep -E '^DIFFER ' || printf '%s\n' "$drift_out"
+    exit 1
+    ;;
+esac
+```
+
+CI cannot run this check, because it reads the live feed, so the release does.
+It is free and needs no key.
+
+**If the block prints `ABORT`: STOP the release here**, before `stable` moves.
+Each `DIFFER` line names a cell. Either KIE moved that price or the check cannot
+read that row's words. Fix it on `main`, as the `check:kie-feed-drift` paragraph
+in `docs/cost-learning-pass-1.md` describes, then start the release again. A
+`WARNING` is never a stop: the feed could not be read, the block has recorded
+that on the release bead, and the release continues.
+
+**Exit criteria:** Local `test:run` and `ci:local` pass on `main`, GitHub CI
+reports success for the same `origin/main` commit, and the KIE feed drift check
+found no differing cell (or its warning is on the release bead).
 
 # Sub-step 3: Fast-forward stable and run the CI mirror
 

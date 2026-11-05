@@ -278,7 +278,8 @@ Repeat the pass when any of these holds:
 
 Between passes a rate can drift with no recording to show it, as
 `pixverse-v6/reference-to-video` did. For KIE, run `pnpm run check:kie-feed-drift` at
-every pass and before a release. It is free and needs no key, but it reads the live feed,
-so CI cannot run it. It exits 1 and names the cell when one differs. If the row's words
+every pass. The release formula also runs it before the version bump, and a differing cell
+stops the release. It is free and needs no key, but it reads the live feed, so CI cannot
+run it. It exits 1 and names the cell when one differs. If the row's words
 are what it cannot read, add a rule to `SELECTOR_RULES` or `PAYLOAD_RULES`; if the price
 moved, correct the cell as Wan 2.6 was.

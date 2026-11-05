@@ -378,9 +378,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
+- `@apicity/fireworks` audio: `inference.v1.audio.transcriptions` and its
+  `.streaming`, `translations`, and `batch.transcriptions`, `batch.translations`
+  and `batch.get`. Fireworks deprecated audio inference on 2026-06-10 with no
+  shutdown date, and withdrew its rates (last listed 2026-04-29, gone by
+  2026-05-06), so their `@apicity/cost` rows stay unpriced. On 2026-11-05
+  `audio-prod` answered 401 to a valid key, `audio-turbo` and the streaming host
+  answered 503, and `audio-batch` still accepted an empty submission. The methods
+  stay callable and send requests unchanged (ac-8l1x3z).
+
 - `@apicity/xai` `XAI_GROK_IMAGINE_IMAGE_QUALITY` (from `@apicity/xai/zod`). xAI retired the `grok-imagine-image-quality` slug on 2026-11-02 (https://docs.x.ai/developers/migration/imagine-image-quality-nov-2). The slug still resolves: `grok-imagine-image-2.0` serves it with `quality: "low"` and bills it at the 2.0 low rate, so the constant stays exported. Name `grok-imagine-image-2.0` and pass `quality` instead. The xAI README's Imagine Files example now does that (ac-3h5kfe).
 
 ### Removed
+
+- **Breaking:** retired Fireworks image workflows. `@apicity/fireworks` no longer
+  exports `inference.v1.workflows.textToImage`, `kontext` or `getResult`, nor the
+  `FireworksTextToImage*`, `FireworksKontext*` and `FireworksGetResult*` schemas
+  and types. On 2026-11-05 every real FLUX model answered a valid key with the
+  same 404 as a made-up model, and Fireworks deprecated image generation on
+  2026-06-10. The matching `@apicity/cost` billing rows are gone. Ships in 0.27.0
+  (ac-8l1x3z).
 
 - **Breaking:** retired KIE Gemini 2.5 Pro and Gemini 3.5 Flash.
   `@apicity/kie` no longer exports `gemini25Pro.post.v1.chat.completions`,

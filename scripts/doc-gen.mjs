@@ -593,12 +593,58 @@ const KIE_GEMINI_HTTP_200_ERROR_NOTE = [
 ].join(" ");
 
 /**
+ * README note for a Fireworks audio endpoint, deprecated upstream on 2026-06-10
+ * and kept callable because part of the family still answers (ac-8l1x3z).
+ * `state` is what that endpoint's host did with a valid key on 2026-11-05.
+ */
+function fireworksDeprecatedAudioNote(state) {
+  return [
+    "> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave",
+    "no shutdown date, and no longer publishes a rate for it, so a cost",
+    `estimate fails closed. On 2026-11-05 ${state}`,
+    "This method still sends requests unchanged, but Fireworks may stop",
+    "answering them without notice.",
+  ].join(" ");
+}
+
+const FIREWORKS_AUDIO_HOSTS_STATE = [
+  "`audio-prod` answered 401 to a valid key on real and made-up paths alike,",
+  "and `audio-turbo` answered 503 with no healthy upstream.",
+].join(" ");
+
+const FIREWORKS_AUDIO_BATCH_STATE = [
+  "`audio-batch` answered `submitted` to an empty request with",
+  "`endpoint_id=audio-prod` or `audio-turbo`, and the status endpoint answered",
+  "404 for the ids it issued. Whether a real submission runs is unproven.",
+].join(" ");
+
+/**
  * README notes for single endpoints, keyed `provider<TAB>label<TAB>method`:
  * the dot path the endpoint's README heading prints and the method its block
  * renders (`endpointNoteKey`). A key that names no rendered block fails the
  * run (`assertEndpointNotesMatch`) instead of dropping its note.
  */
 export const ENDPOINT_NOTES = new Map([
+  [
+    "fireworks\tinference.v1.audio.transcriptions\tPOST",
+    fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_HOSTS_STATE),
+  ],
+  [
+    "fireworks\tinference.v1.audio.translations\tPOST",
+    fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_HOSTS_STATE),
+  ],
+  [
+    "fireworks\tinference.v1.audio.batch.transcriptions\tPOST",
+    fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_BATCH_STATE),
+  ],
+  [
+    "fireworks\tinference.v1.audio.batch.translations\tPOST",
+    fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_BATCH_STATE),
+  ],
+  [
+    "fireworks\tinference.v1.audio.batch\tGET",
+    fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_BATCH_STATE),
+  ],
   [
     "polymarket\tclob.markets\tGET",
     [

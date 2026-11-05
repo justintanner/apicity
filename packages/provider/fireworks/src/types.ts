@@ -38,15 +38,6 @@ export type {
   FireworksAudioBatchTranslationRequest,
   FireworksAudioBatchTranslationRequestInput,
   FireworksAudioBatchTranslationParsedRequest,
-  FireworksTextToImageRequest,
-  FireworksTextToImageRequestInput,
-  FireworksTextToImageParsedRequest,
-  FireworksKontextRequest,
-  FireworksKontextRequestInput,
-  FireworksKontextParsedRequest,
-  FireworksGetResultRequest,
-  FireworksGetResultRequestInput,
-  FireworksGetResultParsedRequest,
   FireworksCreateModelRequest,
   FireworksCreateModelRequestInput,
   FireworksCreateModelParsedRequest,
@@ -152,9 +143,6 @@ import type {
   FireworksStreamingTranscriptionOptions,
   FireworksAudioBatchTranscriptionRequest,
   FireworksAudioBatchTranslationRequest,
-  FireworksTextToImageRequest,
-  FireworksKontextRequest,
-  FireworksGetResultRequest,
   FireworksCreateModelRequest,
   FireworksPrepareModelRequest,
   FireworksGetUploadEndpointRequest,
@@ -1278,6 +1266,14 @@ interface FireworksTranscriptionsMethod {
     req: FireworksTranscriptionRequest,
     signal?: AbortSignal
   ): Promise<FireworksTranscriptionResponse>;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   streaming: FireworksStreamingTranscriptionsMethod;
   schema: z.ZodType;
 }
@@ -1291,8 +1287,32 @@ interface FireworksTranslationsMethod {
 }
 
 interface FireworksAudioBatchNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   transcriptions: FireworksAudioBatchTranscriptionsMethod;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   translations: FireworksAudioBatchTranslationsMethod;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   get(
     accountId: string,
     batchId: string,
@@ -1301,15 +1321,25 @@ interface FireworksAudioBatchNamespace {
 }
 
 interface FireworksAudioNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   transcriptions: FireworksTranscriptionsMethod;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   translations: FireworksTranslationsMethod;
   batch: FireworksAudioBatchNamespace;
-}
-
-interface FireworksWorkflowsNamespace {
-  textToImage: FireworksTextToImageMethod;
-  kontext: FireworksKontextMethod;
-  getResult: FireworksGetResultMethod;
 }
 
 interface FireworksBatchInferenceJobsNamespace {
@@ -1703,7 +1733,6 @@ interface FireworksV1Namespace {
   embeddings: FireworksEmbeddingsMethod;
   rerank: FireworksRerankMethod;
   messages: FireworksMessagesMethod;
-  workflows: FireworksWorkflowsNamespace;
   audio: FireworksAudioNamespace;
   accounts: FireworksAccountsNamespace;
 }
@@ -1716,68 +1745,6 @@ export interface FireworksProvider {
   patch: FireworksPatchNamespace;
   delete: FireworksDeleteNamespace;
   ws: FireworksWsNamespace;
-}
-
-// Text-to-image request (synchronous FLUX schnell/dev)
-
-// Text-to-image JSON response
-export interface FireworksTextToImageResponse {
-  id: string;
-  base64: string[];
-  finishReason: "SUCCESS" | "CONTENT_FILTERED";
-  seed: number;
-}
-
-// Kontext async request (FLUX Kontext Pro/Max)
-
-// Kontext async create response
-export interface FireworksKontextResponse {
-  request_id: string;
-}
-
-// Kontext get_result request
-
-// Kontext get_result response
-export interface FireworksGetResultResponse {
-  id: string;
-  status:
-    | "Task not found"
-    | "Pending"
-    | "Request Moderated"
-    | "Content Moderated"
-    | "Ready"
-    | "Error";
-  result: unknown;
-  progress: number | null;
-  details: Record<string, unknown> | null;
-}
-
-// Namespace types for workflows
-interface FireworksTextToImageMethod {
-  (
-    model: string,
-    req: FireworksTextToImageRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksTextToImageResponse>;
-  schema: z.ZodType;
-}
-
-interface FireworksKontextMethod {
-  (
-    model: string,
-    req: FireworksKontextRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksKontextResponse>;
-  schema: z.ZodType;
-}
-
-interface FireworksGetResultMethod {
-  (
-    model: string,
-    req: FireworksGetResultRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksGetResultResponse>;
-  schema: z.ZodType;
 }
 
 // Models CRUD types
@@ -2734,12 +2701,6 @@ interface FireworksPostV1ChatNamespace {
   completions: FireworksChatCompletionsMethod;
 }
 
-interface FireworksPostV1WorkflowsNamespace {
-  textToImage: FireworksTextToImageMethod;
-  kontext: FireworksKontextMethod;
-  getResult: FireworksGetResultMethod;
-}
-
 interface FireworksPostV1AudioTranscriptionsMethod {
   (
     req: FireworksTranscriptionRequest,
@@ -2757,12 +2718,44 @@ interface FireworksPostV1AudioTranslationsMethod {
 }
 
 interface FireworksPostV1AudioBatchNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   transcriptions: FireworksAudioBatchTranscriptionsMethod;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   translations: FireworksAudioBatchTranslationsMethod;
 }
 
 interface FireworksPostV1AudioNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   transcriptions: FireworksPostV1AudioTranscriptionsMethod;
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   translations: FireworksPostV1AudioTranslationsMethod;
   batch: FireworksPostV1AudioBatchNamespace;
 }
@@ -2882,7 +2875,6 @@ interface FireworksPostV1Namespace {
   embeddings: FireworksEmbeddingsMethod;
   rerank: FireworksRerankMethod;
   messages: FireworksMessagesMethod;
-  workflows: FireworksPostV1WorkflowsNamespace;
   audio: FireworksPostV1AudioNamespace;
   accounts: FireworksPostV1AccountsNamespace;
 }
@@ -3183,6 +3175,14 @@ interface FireworksGetV1AccountsNamespace {
 }
 
 interface FireworksGetV1AudioBatchNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   get(
     accountId: string,
     batchId: string,
@@ -3371,6 +3371,14 @@ interface FireworksDeleteNamespace {
 
 // WS (WebSocket) v1 namespace types
 interface FireworksWsV1AudioTranscriptionsNamespace {
+  /**
+   * @deprecated Fireworks deprecated audio inference on 2026-06-10, with no
+   * shutdown date, and no longer publishes a rate for it. On 2026-11-05
+   * audio-prod answered 401 to a valid key, audio-turbo and the streaming host
+   * had no healthy upstream, and audio-batch accepted an empty submission whose
+   * status could not be read back. Requests are still sent unchanged, but
+   * Fireworks may stop answering them without notice.
+   */
   streaming: FireworksStreamingTranscriptionsMethod;
 }
 

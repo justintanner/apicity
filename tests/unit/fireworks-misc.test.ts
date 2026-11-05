@@ -2,10 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createFireworks } from "@apicity/fireworks";
 
 // Direct imports for unit-level coverage
-import {
-  FireworksChatRequestSchema,
-  FireworksKontextRequestSchema,
-} from "../../packages/provider/fireworks/src/zod";
+import { FireworksChatRequestSchema } from "../../packages/provider/fireworks/src/zod";
 import { sseToIterable } from "../../packages/provider/fireworks/src/sse";
 
 // Helper to create a mock Response with a ReadableStream
@@ -109,21 +106,6 @@ describe("fireworks schema property on endpoints", () => {
     expect(provider.inference.v1.messages.schema).toBeDefined();
   });
 
-  it("should expose .schema on workflows.textToImage", () => {
-    const provider = createFireworks({ apiKey: "test-key" });
-    expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();
-  });
-
-  it("should expose .schema on workflows.kontext", () => {
-    const provider = createFireworks({ apiKey: "test-key" });
-    expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
-  });
-
-  it("should expose .schema on workflows.getResult", () => {
-    const provider = createFireworks({ apiKey: "test-key" });
-    expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
-  });
-
   it("should validate via safeParse on chat.completions.schema", () => {
     const provider = createFireworks({ apiKey: "test-key" });
     const result = provider.inference.v1.chat.completions.schema.safeParse({
@@ -141,18 +123,22 @@ describe("fireworks schema property on endpoints", () => {
     expect(result.success).toBe(false);
   });
 
-  it("should validate kontext via Zod schema directly", () => {
-    const result = FireworksKontextRequestSchema.safeParse({
-      prompt: "Add warm afternoon lighting",
-      output_format: "jpeg",
-      prompt_upsampling: false,
-    });
-    expect(result.success).toBe(true);
+  // ac-8l1x3z: every real image model answered the same 404 as a made-up one.
+  it("no longer exposes the retired image workflows", () => {
+    const provider = createFireworks({ apiKey: "test-key" });
+    expect("workflows" in provider.inference.v1).toBe(false);
+    expect("workflows" in provider.post.inference.v1).toBe(false);
   });
 
-  it("should reject missing prompt on kontext schema", () => {
-    const result = FireworksKontextRequestSchema.safeParse({});
-    expect(result.success).toBe(false);
+  // ac-8l1x3z: deprecated upstream, but part of the family still answers.
+  it("keeps the deprecated audio methods callable", () => {
+    const { audio } = createFireworks({ apiKey: "test-key" }).inference.v1;
+    expect(audio.transcriptions).toBeTypeOf("function");
+    expect(audio.transcriptions.streaming).toBeTypeOf("function");
+    expect(audio.translations).toBeTypeOf("function");
+    expect(audio.batch.transcriptions).toBeTypeOf("function");
+    expect(audio.batch.translations).toBeTypeOf("function");
+    expect(audio.batch.get).toBeTypeOf("function");
   });
 });
 

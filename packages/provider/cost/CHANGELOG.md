@@ -586,6 +586,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** the Fireworks `inference.v1.workflows.textToImage`, `kontext` and
+  `getResult` billing rows, because those routes left `@apicity/fireworks`.
+  `endpointBilling` now reports them as unpriced with no reviewed record. The four
+  Fireworks audio rows stay unpriced and name the withdrawal in their reason: last
+  listed 2026-04-29, gone by 2026-05-06, deprecated 2026-06-10. The last card's
+  figures appear there as history, never as rates (ac-8l1x3z).
+
 - **Breaking:** the unpriced billing rows for KIE
   `gemini.v1.models.gemini35Flash.streamGenerateContent`,
   `gemini25Pro.v1.chat.completions`, and

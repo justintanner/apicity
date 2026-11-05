@@ -23,7 +23,7 @@ table includes it so the published roster stays in one place.
 | [@apicity/alibaba](../packages/provider/alibaba)                               | Alibaba DashScope/Qwen chat, image, and video workflows            |
 | [@apicity/binance](../packages/provider/binance)                               | Binance Spot REST public/general endpoints                         |
 | [@apicity/openligadb](../packages/provider/openligadb)                         | OpenLigaDB public soccer match data, standings, and scorers        |
-| [@apicity/fireworks](../packages/provider/fireworks)                           | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
+| [@apicity/fireworks](../packages/provider/fireworks)                           | Fireworks chat, embeddings, deployments, fine-tuning               |
 | [@apicity/kimicoding](../packages/provider/kimicoding)                         | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](../packages/provider/elevenlabs)                         | ElevenLabs text-to-speech, sound effects, audio APIs               |
 | [@apicity/s3](../packages/provider/s3)                                         | S3-compatible object storage                                       |

@@ -167,9 +167,6 @@ describe("resolveProviderScope", () => {
     // nested scan, not the flat one (they live one directory deep).
     const fireworks = resolveProviderScope("fireworks");
     expect(fireworks.tests).toContain(
-      `${unitDir}/fireworks/fireworks-kontext.test.ts`
-    );
-    expect(fireworks.tests).toContain(
       `${unitDir}/fireworks/fireworks-model-prep.test.ts`
     );
   });

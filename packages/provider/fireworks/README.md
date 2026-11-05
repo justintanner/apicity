@@ -169,7 +169,7 @@ console.log(
 
 ## API Reference
 
-101 endpoints across 1 group. Each method mirrors an upstream URL path.
+98 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### inference
 
@@ -1644,6 +1644,8 @@ Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
+> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave no shutdown date, and no longer publishes a rate for it, so a cost estimate fails closed. On 2026-11-05 `audio-batch` answered `submitted` to an empty request with `endpoint_id=audio-prod` or `audio-turbo`, and the status endpoint answered 404 for the ids it issued. Whether a real submission runs is unproven. This method still sends requests unchanged, but Fireworks may stop answering them without notice.
+
 ```typescript
 const res = await fireworks.inference.v1.audio.batch.get({ /* ... */ });
 ```
@@ -1660,6 +1662,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
+
+> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave no shutdown date, and no longer publishes a rate for it, so a cost estimate fails closed. On 2026-11-05 `audio-batch` answered `submitted` to an empty request with `endpoint_id=audio-prod` or `audio-turbo`, and the status endpoint answered 404 for the ids it issued. Whether a real submission runs is unproven. This method still sends requests unchanged, but Fireworks may stop answering them without notice.
 
 ```typescript
 const res = await fireworks.inference.v1.audio.batch.transcriptions({ /* ... */ });
@@ -1678,6 +1682,8 @@ Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
+> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave no shutdown date, and no longer publishes a rate for it, so a cost estimate fails closed. On 2026-11-05 `audio-batch` answered `submitted` to an empty request with `endpoint_id=audio-prod` or `audio-turbo`, and the status endpoint answered 404 for the ids it issued. Whether a real submission runs is unproven. This method still sends requests unchanged, but Fireworks may stop answering them without notice.
+
 ```typescript
 const res = await fireworks.inference.v1.audio.batch.translations({ /* ... */ });
 ```
@@ -1695,6 +1701,8 @@ Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
+> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave no shutdown date, and no longer publishes a rate for it, so a cost estimate fails closed. On 2026-11-05 `audio-prod` answered 401 to a valid key on real and made-up paths alike, and `audio-turbo` answered 503 with no healthy upstream. This method still sends requests unchanged, but Fireworks may stop answering them without notice.
+
 ```typescript
 const res = await fireworks.inference.v1.audio.transcriptions({ /* ... */ });
 ```
@@ -1711,6 +1719,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
+
+> **Deprecated:** Fireworks deprecated audio inference on 2026-06-10, gave no shutdown date, and no longer publishes a rate for it, so a cost estimate fails closed. On 2026-11-05 `audio-prod` answered 401 to a valid key on real and made-up paths alike, and `audio-turbo` answered 503 with no healthy upstream. This method still sends requests unchanged, but Fireworks may stop answering them without notice.
 
 ```typescript
 const res = await fireworks.inference.v1.audio.translations({ /* ... */ });
@@ -1816,57 +1826,6 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await fireworks.post.inference.v1.messages({ /* ... */ });
-```
-
-Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.getResult</code></b></summary>
-
-<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.fireworks.ai/api-reference)
-
-```typescript
-const res = await fireworks.post.inference.v1.workflows.getResult({ /* ... */ });
-```
-
-Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.kontext</code></b></summary>
-
-<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.fireworks.ai/api-reference)
-
-```typescript
-const res = await fireworks.post.inference.v1.workflows.kontext({ /* ... */ });
-```
-
-Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.textToImage</code></b></summary>
-
-<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.fireworks.ai/api-reference)
-
-```typescript
-const res = await fireworks.post.inference.v1.workflows.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)

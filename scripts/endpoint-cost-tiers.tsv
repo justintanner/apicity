@@ -874,9 +874,6 @@ fireworks	inference.v1.completions	POST	expensive	Metered LLM/inference provider
 fireworks	inference.v1.embeddings	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 fireworks	inference.v1.messages	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 fireworks	inference.v1.rerank	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
-fireworks	inference.v1.workflows.getResult	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
-fireworks	inference.v1.workflows.kontext	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
-fireworks	inference.v1.workflows.textToImage	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 free-media-upload	catbox.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
 free-media-upload	filebin.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
 free-media-upload	gofile.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost

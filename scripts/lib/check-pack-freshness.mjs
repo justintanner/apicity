@@ -10,9 +10,10 @@
  *
  * The defect this exists to catch: the city installs a pack from a commit and
  * keeps serving that snapshot forever. `gc import check` validates the install
- * against its own lock, so it exits 0 while the city runs a formula the
+ * against its own lock, so it exits 0 while the city serves a pack the
  * repository replaced months ago. Comparing the pin against `main` is the only
- * signal that catches it.
+ * signal that catches it. It says nothing about the rig checkout's copy of the
+ * formula, which is the one a release sling compiles (see RELEASE.md).
  */
 
 /**

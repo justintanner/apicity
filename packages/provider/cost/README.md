@@ -222,7 +222,7 @@ interface CostEstimate {
       image?: CostModalityBreakdown;
     };
   };
-  rateAsOf: string | null; // YYYY-MM-DD — the rate entry's as-of date, falling back to PRICING_AS_OF
+  rateAsOf: string | null; // YYYY-MM-DD — the rate entry's as-of date, or PRICING_AS_OF when no entry applies
   warnings: string[]; // non-empty when fallback fired (unknown model, missing max_tokens, missing duration, etc.)
 }
 ```
@@ -883,17 +883,17 @@ model page embeds (`https://wavespeed.ai/models/<model id>`) and checked
 against WaveSpeed's free price quotes. A running promotion bills less; the
 billing record shows both amounts.
 
-Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual
-entries may carry their own as-of date) and shipped in `src/pricing/` as
-per-provider modules covering each provider's most common models. Unknown
-models return `usd: 0` plus a warning, never throw.
+Every rate carries the date it was last read in `source.asOf`, and ships in
+`src/pricing/` as per-provider modules covering each provider's most common
+models. `PRICING_AS_OF` (currently `2026-04-30`) only dates an estimate with no
+entry to cite. Unknown models return `usd: 0` plus a warning, never throw.
 
 ```ts
 import { PRICING, PRICING_AS_OF } from "@apicity/cost";
 ```
 
 Maintenance is manual: re-fetch the upstream pricing page, edit the provider's
-module in `src/pricing/`, bump `PRICING_AS_OF`.
+module in `src/pricing/`, and set the entry's `source.asOf` to that date.
 
 ## Coverage
 

@@ -226,6 +226,29 @@ describe("PRICING data", () => {
     }
   });
 
+  // apicity har cost reads a capture older than a rate's asOf as a price change,
+  // so a row with no real date of its own would weaken that gate. RateSource makes
+  // the field required, and this holds it to a date at runtime too, for any row the
+  // types cannot see, such as one built with a cast.
+  it("dates every row of every provider's table", () => {
+    const undated: string[] = [];
+    for (const [provider, table] of Object.entries(PRICING)) {
+      for (const [key, row] of Object.entries(table)) {
+        const asOf = (row as { source?: { asOf?: unknown } }).source?.asOf;
+        const date =
+          typeof asOf === "string" ? new Date(`${asOf}T00:00:00Z`) : null;
+        if (
+          !date ||
+          Number.isNaN(date.getTime()) ||
+          date.toISOString().slice(0, 10) !== asOf
+        ) {
+          undated.push(`${provider} ${key}: ${String(asOf)}`);
+        }
+      }
+    }
+    expect(undated).toEqual([]);
+  });
+
   it("stamps the new alibaba media rates with their own asOf", () => {
     const entry = PRICING.alibaba["qwen-image-2.0"];
     expect(entry.source.asOf).toBe("2026-07-20");
@@ -4476,10 +4499,9 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   // any path, no model content: the soft 404 the 2026-09-16 sweep counted,
   // ac-c2n4pa) now cite the 2026-09-11 feed anchors, or the page's own tab
   // where the feed anchor is a docs.kie.ai page that prints no price
-  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2. A
-  // citation-only repair adds no asOf, so rateAsOf stays PRICING_AS_OF.
-  // Pinning the whole `source` object makes a
-  // gallery regression and an asOf drift both fail here.
+  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2. Pinning the
+  // whole `source` object makes a gallery regression and an asOf drift both fail
+  // here.
   it.each([
     {
       model: "qwen2/text-to-image",
@@ -4569,8 +4591,8 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
       url: "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image",
     },
   ])("pins the product-page citation of $model", ({ model, url }) => {
-    expect(PRICING.kie[model].source).toEqual({ url });
-    expect(PRICING.kie[model].source.asOf).toBeUndefined();
+    // Each agreed with the feed read on this date (ac-xk7p41).
+    expect(PRICING.kie[model].source).toEqual({ url, asOf: "2026-11-05" });
   });
 
   // Wan 3.0 bills (input video duration + output video duration) × the

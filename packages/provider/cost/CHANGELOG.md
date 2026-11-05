@@ -388,6 +388,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `RateSource.asOf` is required, so every `PRICING` row states the date its rate
+  was last read, and `rateAsOf` reports that date. The last 29 undated rows, all
+  KIE, carry 2026-11-05, when each agreed with the live price feed. Their
+  `rateAsOf` used to read the fallback 2026-04-30 (ac-xk7p41).
 - **Breaking:** Alibaba `wan2.7-videoedit` bills what its API reference and price
   page say: the source's seconds plus the output's, where the output keeps the
   source's length unless `parameters.duration` truncates it. The request carries

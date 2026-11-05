@@ -3,8 +3,9 @@
 // exactly one file.
 //
 // Refresh procedure: re-fetch the upstream pricing page named in the
-// affected entry's `source.url`, update the rate, set `source.asOf` if
-// you want a per-entry stamp; otherwise the global PRICING_AS_OF applies.
+// affected entry's `source.url`, update the rate, and set `source.asOf` to
+// that date. Every row carries its own; PRICING_AS_OF dates the estimates that
+// have no row to cite, such as an unknown model.
 //
 // fal rates are bundled here like every other provider. @apicity/fal does
 // expose upstream pricing endpoints (`fal.v1.models.pricing()` and

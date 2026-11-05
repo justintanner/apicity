@@ -4,7 +4,7 @@
  * Reads no files and makes no network call. A missing rate is the explicit
  * pricingKey "unpriced", not a guessed number.
  */
-import { PRICING, PRICING_AS_OF } from "../pricing/index";
+import { PRICING } from "../pricing/index";
 import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../pricing/fal";
 import type { CostUnit, ModelPricing } from "../pricing/types";
 
@@ -115,7 +115,7 @@ export function frontierPrice(
     unit: priced.unit,
     min: cleanFrontierRate(Math.min(...values)),
     max: cleanFrontierRate(Math.max(...values)),
-    asOf: priced.source.asOf ?? PRICING_AS_OF,
+    asOf: priced.source.asOf,
     url: priced.source.url,
   };
 }

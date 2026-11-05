@@ -190,7 +190,6 @@ hosts.
 | `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                             |
 | `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it          |
 | `ac-x0qlnu` | kie    | `bytedance/seedance-1.5-pro` has left the feed                       |
-| `ac-xk7p41` | cost   | 46 rows have no `source.asOf`, which weakens the capture-date gate   |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
@@ -236,6 +235,10 @@ the price page's rule above that table. An estimate now takes the source's lengt
 0.15 USD/s, which is the default, so `wan2.7-i2v` and `wan2.7-videoedit` now price it. The
 two recordings ran on the mainland host, whose media rates are not bundled, so neither
 report figure moves.
+
+`ac-xk7p41` gave every row a `source.asOf`, and the type now requires one. The 46 rows this
+pass counted were down to 29 KIE rows by then. All 29 agree with the feed read on 2026-11-05,
+so they carry that date. Calls captured before it now count in `capturedBeforeRate`.
 
 `ac-p3e0c6` closed the two KIE items this pass could not, also with no paid call:
 

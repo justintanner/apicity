@@ -23,10 +23,10 @@ export type CostUnit =
 
 export interface RateSource {
   url: string;
-  // ISO date the rate was last refreshed. Falls back to PRICING_AS_OF when
-  // omitted, so a provider-specific refresh can stamp its own date without
-  // bumping the global default.
-  asOf?: string;
+  // ISO date the rate was last read from `url`. Required: apicity har cost reads
+  // a capture older than this as a price change, not an error, so a row with no
+  // date of its own would weaken that gate.
+  asOf: string;
 }
 
 // USD per million tokens for one pricing tier of a token-billed model.

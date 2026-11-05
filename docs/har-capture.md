@@ -589,8 +589,7 @@ captured on its own is its own call, with its stated charge and no estimate.
   rate.
 - `usage`: totals for tokens, characters, seconds, credits and billable units.
 - `capturedBeforeRate`: calls captured before the rate's `asOf`. Their difference
-  is a price change, not an error. A call with no time counts here too. A table row
-  with no `asOf` of its own uses `PRICING_AS_OF`, so this gate is weaker for it.
+  is a price change, not an error. A call with no time counts here too.
 
 **Corrections.** A proposal needs a stated charge and exactly one unknown rate, and
 solves `(stated - known parts) / count`, using the list price where there is one.

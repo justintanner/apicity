@@ -429,6 +429,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   chars/4 figure. A recorded 2026-06-27 `grok-4-fast` call that xAI billed
   0.0026906 USD now derives exactly that, and bills from before the retirement
   keep their stated charge (ac-t1isrq).
+- **Breaking:** every xAI text model now needs declared token counts: the four
+  above, plus `grok-4.6`, `grok-build-0.1` and the `grok-code-fast` aliases. Pass
+  `costHints.inputTokens`, `outputTokens` and `cacheReadInputTokens`. Without
+  them an estimate returns `usd: 0` with a warning and classifies as
+  `prohibitive`, where 0.25.0 returned a chars/4 figure (ac-rplwok).
+- **Breaking:** Alibaba `qwen3.6-plus` now needs `costHints.inputTokens` to select
+  its tier. Without it an estimate returns `usd: 0` with a warning and classifies
+  as `prohibitive`, where 0.25.0 returned a chars/4 figure. Retired `qwen3.5-0.8b`
+  returned that figure too, and now returns `usd: 0` in every scope, with or
+  without counts (ac-ht1n6b).
+- **Breaking:** Kimi `kimi-k2.5` and `kimi-k2` no longer return a figure, because
+  neither has a current documented list price. An estimate returns `usd: 0` with
+  a warning and classifies as `prohibitive`, where 0.25.0 returned a chars/4
+  figure (ac-r9ivtg).
+- **Breaking:** Fireworks short names are gone: `deepseek-v4-pro`, `deepseek-v3`,
+  `glm-5`, `glm-5.1`, `kimi-k2.6` and `qwen3-vl-30b`. The table now keys on full
+  model and router ids, such as `accounts/fireworks/models/...`. A short name
+  returns `usd: 0` with a warning and classifies as `prohibitive`, where 0.25.0
+  returned a chars/4 figure (ac-kxko3y).
 - xAI `grok-imagine-image-quality` prices as `grok-imagine-image-2.0` at
   low quality: 0.04, 0.05 and 0.06 USD per image at 1k, 1.5k and 2k, plus
   0.01 USD per edit input image, whatever quality the request names. xAI

@@ -393,6 +393,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   3.8 Flash, or the native 3.6 / 3.7 / 3.8 stream. Ships in 0.27.0
   (ac-62hbwl).
 
+- **Breaking:** retired KIE Seedance 1.5 Pro. `@apicity/kie` no longer has a
+  schema or guard for `bytedance/seedance-1.5-pro`, nor the `Seedance15Pro*`
+  schemas and types, and `@apicity/cost` no longer prices it. On 2026-11-05 a
+  `createTask` with no prompt answered `code: 410` "retired upstream and is no
+  longer available on Kie.ai". ByteDance deprecated the model on 2026-09-15 and
+  shuts it down on 2026-11-11. Use Seedance 2.5, as KIE suggests, or Seedance 2.0
+  Mini, ByteDance's named replacement. Ships in 0.27.0 (ac-x0qlnu).
+
 - **Breaking:** retired fal Sora 2: `@apicity/fal` `run.sora2.textToVideo` and
   `run.sora2.imageToVideo` with their `FalSora2*` exports, and the matching
   `@apicity/cost` pricing, slug and display entries. OpenAI removed Sora 2 from

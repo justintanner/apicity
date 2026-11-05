@@ -189,7 +189,6 @@ hosts.
 | `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
 | `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                             |
 | `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it          |
-| `ac-x0qlnu` | kie    | `bytedance/seedance-1.5-pro` has left the feed                       |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
@@ -254,8 +253,8 @@ so they carry that date. Calls captured before it now count in `capturedBeforeRa
   feed and runs each row through the reconciliation's own mapping, so a multi-axis row
   reaches its own cell. Its first run, after the Wan 2.6 correction, compared 603 cells and
   all agree. It lists 14 rows with no comparable cell, each with its reason, and 16 table
-  keys with no feed row. One of those keys is `bytedance/seedance-1.5-pro`, which has left
-  the feed: `ac-x0qlnu`.
+  keys with no feed row. One of those keys was `bytedance/seedance-1.5-pro`. KIE has since
+  retired it, so `ac-x0qlnu` removed it here.
 
 ## What keeps this honest
 

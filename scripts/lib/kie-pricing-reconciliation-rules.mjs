@@ -929,13 +929,6 @@ const SELECTOR_RULES = Object.freeze([
     },
   },
   {
-    family: "seedance-audio",
-    matches: (key) => key === "bytedance/seedance-1.5-pro",
-    apply: (_key, text, candidates) => {
-      candidates.generate_audio = /with audio/i.test(text);
-    },
-  },
-  {
     family: "suno-vocal-type",
     matches: (key) => key === "suno/vocal-removal-generate",
     apply: (_key, text, candidates) => {
@@ -1127,13 +1120,6 @@ const PAYLOAD_RULES = Object.freeze([
     apply: (input) => {
       input.image_url = "https://example.com/a.png";
       input.audio_url = "https://example.com/a.mp3";
-    },
-  },
-  {
-    family: "seedance-aspect-ratio",
-    matches: (key) => key === "bytedance/seedance-1.5-pro",
-    apply: (input) => {
-      input.aspect_ratio = "1:1";
     },
   },
   {

@@ -73,7 +73,6 @@ import {
   Seedance2RequestSchema,
   Seedance25RequestSchema,
   Seedance25DraftRequestSchema,
-  Seedance15ProRequestSchema,
   BytedanceSeedreamRequestSchema,
   BytedanceSeedreamV4EditRequestSchema,
   BytedanceSeedreamV4TextToImageRequestSchema,
@@ -370,7 +369,6 @@ export const CREATE_TASK_GUARDS = {
   "bytedance/seedance-2-5": Seedance25RequestSchema,
   "bytedance/seedance-2-5-draft": Seedance25DraftRequestSchema,
   "bytedance/seedance-2-mini": Seedance2MiniRequestSchema,
-  "bytedance/seedance-1.5-pro": Seedance15ProRequestSchema,
   "bytedance/seedream": BytedanceSeedreamRequestSchema,
   "bytedance/seedream-v4-edit": BytedanceSeedreamV4EditRequestSchema,
   "bytedance/seedream-v4-text-to-image":

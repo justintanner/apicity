@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 163,
-      "pricingKeys": 228,
-      "slugKeys": 230,
-      "displayKeys": 230,
+      "models": 162,
+      "pricingKeys": 227,
+      "slugKeys": 229,
+      "displayKeys": 229,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:155dd4f4e3a927692f377856e28432c5f8dffdb7188bce486c3177f17a06348c",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:04c34dcb2a8ae3afc7eade88456ccb107df6db8e7aebeeb6c0cc7595b4c9c5b9",
-      "packages/provider/kie/src/kie.ts": "sha256:09b32f489501733d594452149a59afe0cd8690e4ab12c40aa338e10889547ff0",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:abb45b84aecde6c55ae5aa396c89de647db820161dc25c6889ea188e83489534",
-      "packages/provider/cost/src/slugs.ts": "sha256:38151ad56379381a11c6807615dd043197a5569c31d493e9f30d3f5ece3883c2",
+      "packages/provider/kie/src/zod.ts": "sha256:7ee92ee67e020d9a9417a8612138c23cbbce7179aaabea339c4aaf6541a7b12d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:70c3769692b449af1792666ddb00decfff11b6ff0ef8c86fc44526a85a96b566",
+      "packages/provider/kie/src/kie.ts": "sha256:01181e9e89032da31e5d5813c2aebb69f2aaaf7e7d416497e5e3bad256e98de9",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:19674f21597b062ee25497137e963782380feaeaf769f37c2e1d426defe97d3f",
+      "packages/provider/cost/src/slugs.ts": "sha256:8b2577966699dd8156fb87d7ee5637713cae68860cd9b986921123ebb2697709",
       "scripts/endpoint-docs.tsv": "sha256:9c00e669182af444a75b63d7c2dad843c35febc4f2e431b0c7305a22e532d05c"
     }
   },
@@ -8256,41 +8256,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "3.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.0175",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "720p",
-        "generate_audio": false
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "720p",
-          "generate_audio": false,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, without audio-720p (video)."
     },
     {
       "occurrenceId": "sha256:2c9ca961c0e3ddcaf48b5e8ac3e32e51fb6fc73584d55c6ad6d65d0f58e1986c#1",
@@ -8308,41 +8281,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "15",
-        "creditUnit": "per second",
-        "usdPrice": "0.075",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "generate_audio": true
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "1080p",
-          "generate_audio": true,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, with audio-1080p (video)."
     },
     {
       "occurrenceId": "sha256:e1f6a1c3328ac6651cf225d5c7e3e801ba19c99a4ddfc7fbb0d726f48f6fd71e#1",
@@ -8360,41 +8306,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "7.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.0375",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "generate_audio": false
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "1080p",
-          "generate_audio": false,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, without audio-1080p (video)."
     },
     {
       "occurrenceId": "sha256:d0a7d1b1cb6cf5fe353d039ce354efd4aa441bf753a46f689e9222a40910e444#1",
@@ -8412,41 +8331,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "7",
-        "creditUnit": "per second",
-        "usdPrice": "0.035",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "720p",
-        "generate_audio": true
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "720p",
-          "generate_audio": true,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, with audio-720p (video)."
     },
     {
       "occurrenceId": "sha256:093049e3bc61338a8218f83df97912d91d41bfcc3584c4e4b81b5513b1d928df#1",
@@ -8516,41 +8408,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "3.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.0175",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "480p",
-        "generate_audio": true
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "480p",
-          "generate_audio": true,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, with audio-480p (video)."
     },
     {
       "occurrenceId": "sha256:cf3d1d6885c50b13ccdec9466ca4a5dfb222536d02072c13fc69c9777e4ddf13#1",
@@ -8568,41 +8433,14 @@
         "anchor": "https://kie.ai/seedance-1-5-pro",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-1.5-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-1-5-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "1.75",
-        "creditUnit": "per second",
-        "usdPrice": "0.00875",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "480p",
-        "generate_audio": false
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-1.5-pro",
-        "generate_audio": "modelInputSchemas:bytedance/seedance-1.5-pro"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-1.5-pro",
-        "input": {
-          "resolution": "480p",
-          "generate_audio": false,
-          "duration": 5,
-          "aspect_ratio": "1:1",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
+      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for bytedance/seedance-1.5-pro, without audio-480p (video)."
     },
     {
       "occurrenceId": "sha256:6d02ded92b2ac43445e40b03c06639de472601391a1005a8dd6e776a89b80bff#1",
@@ -23222,22 +23060,6 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
-        "id": "bytedance/seedance-1.5-pro",
-        "descriptor": true,
-        "guard": true,
-        "pricingKey": "bytedance/seedance-1.5-pro",
-        "linkedRows": [
-          "sha256:fc39bd2c8b8190b7f230bc690c355d3ddd5acdc7cd0b43a1f92782555d6a8133#1",
-          "sha256:2c9ca961c0e3ddcaf48b5e8ac3e32e51fb6fc73584d55c6ad6d65d0f58e1986c#1",
-          "sha256:e1f6a1c3328ac6651cf225d5c7e3e801ba19c99a4ddfc7fbb0d726f48f6fd71e#1",
-          "sha256:d0a7d1b1cb6cf5fe353d039ce354efd4aa441bf753a46f689e9222a40910e444#1",
-          "sha256:25984d4d79d4fc09f4bc65bce8abe285630d6f9a564a6614704015c59540e46c#1",
-          "sha256:cf3d1d6885c50b13ccdec9466ca4a5dfb222536d02072c13fc69c9777e4ddf13#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
-      },
-      {
         "id": "bytedance/seedream",
         "descriptor": true,
         "guard": true,
@@ -25912,19 +25734,6 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
-        "key": "bytedance/seedance-1.5-pro",
-        "linkedRows": [
-          "sha256:fc39bd2c8b8190b7f230bc690c355d3ddd5acdc7cd0b43a1f92782555d6a8133#1",
-          "sha256:2c9ca961c0e3ddcaf48b5e8ac3e32e51fb6fc73584d55c6ad6d65d0f58e1986c#1",
-          "sha256:e1f6a1c3328ac6651cf225d5c7e3e801ba19c99a4ddfc7fbb0d726f48f6fd71e#1",
-          "sha256:d0a7d1b1cb6cf5fe353d039ce354efd4aa441bf753a46f689e9222a40910e444#1",
-          "sha256:25984d4d79d4fc09f4bc65bce8abe285630d6f9a564a6614704015c59540e46c#1",
-          "sha256:cf3d1d6885c50b13ccdec9466ca4a5dfb222536d02072c13fc69c9777e4ddf13#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
-      },
-      {
         "key": "bytedance/v1-lite-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -27330,10 +27139,6 @@
         "disposition": "supported"
       },
       {
-        "key": "bytedance/seedance-1.5-pro",
-        "disposition": "supported"
-      },
-      {
         "key": "bytedance/v1-lite-image-to-video",
         "disposition": "supported"
       },
@@ -28249,10 +28054,6 @@
       },
       {
         "key": "kling/v2-1-master-image-to-video",
-        "disposition": "supported"
-      },
-      {
-        "key": "bytedance/seedance-1.5-pro",
         "disposition": "supported"
       },
       {
@@ -29528,13 +29329,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 233,
+        "implemented": 227,
         "canonical-alias": 122,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 42
+        "upstream-unmappable": 48
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -29554,12 +29355,12 @@
     },
     "apiCity": {
       "models": {
-        "count": 163,
-        "descriptors": 163,
-        "guards": 163,
+        "count": 162,
+        "descriptors": 162,
+        "guards": 162,
         "withoutPricing": 4,
         "dispositionCounts": {
-          "supported": 115,
+          "supported": 114,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29581,9 +29382,9 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 228,
+        "count": 227,
         "dispositionCounts": {
-          "supported": 166,
+          "supported": 165,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29592,9 +29393,9 @@
         "unclassified": 0
       },
       "slugs": {
-        "count": 230,
+        "count": 229,
         "dispositionCounts": {
-          "supported": 230,
+          "supported": 229,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29603,9 +29404,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 230,
+        "count": 229,
         "dispositionCounts": {
-          "supported": 230,
+          "supported": 229,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,

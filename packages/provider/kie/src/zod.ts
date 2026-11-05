@@ -296,7 +296,6 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/seedance-2-5",
   "bytedance/seedance-2-5-draft",
   "bytedance/seedance-2-mini",
-  "bytedance/seedance-1.5-pro",
   // ByteDance non-Seedance createTask models — enum-only (Seedance alias is
   // product-anchored; seedream/v1-* ids do not match it).
   "bytedance/seedream",
@@ -3605,39 +3604,6 @@ export const Seedance2MiniRequestSchema = z.object({
   model: z.literal("bytedance/seedance-2-mini"),
   callBackUrl: z.string().url().optional(),
   input: Seedance2MiniInputSchema,
-});
-
-// Docs: https://docs.kie.ai/market/bytedance/seedance-1-5-pro
-// Distinct input shape from seedance-2*: `input_urls` (0-2) instead of
-// first/last/reference frames, plus `fixed_lens`. Duration range is 4-12.
-export const Seedance15ProAspectRatioSchema = z.enum([
-  "1:1",
-  "4:3",
-  "3:4",
-  "16:9",
-  "9:16",
-  "21:9",
-]);
-
-export const Seedance15ProResolutionSchema = z.enum(["480p", "720p", "1080p"]);
-
-export const Seedance15ProInputSchema = z.object({
-  prompt: z.string().min(3).max(20000),
-  input_urls: z.array(z.string()).max(2).optional(),
-  // Required by the OpenAPI `required` list (documented default "1:1").
-  aspect_ratio: Seedance15ProAspectRatioSchema,
-  resolution: Seedance15ProResolutionSchema.default("720p"),
-  // Required; documented range 4-12 seconds.
-  duration: z.number().int().min(4).max(12),
-  fixed_lens: z.boolean().default(false),
-  generate_audio: z.boolean().default(false),
-  nsfw_checker: z.boolean().default(false),
-});
-
-export const Seedance15ProRequestSchema = z.object({
-  model: z.literal("bytedance/seedance-1.5-pro"),
-  callBackUrl: z.string().optional(),
-  input: Seedance15ProInputSchema,
 });
 
 // ---------------------------------------------------------------------------
@@ -8905,7 +8871,6 @@ export const MediaGenerationRequestSchema = z.union([
   Seedance25RequestSchema,
   Seedance25DraftRequestSchema,
   Seedance2MiniRequestSchema,
-  Seedance15ProRequestSchema,
   BytedanceSeedreamRequestSchema,
   BytedanceSeedreamV4EditRequestSchema,
   BytedanceSeedreamV4TextToImageRequestSchema,
@@ -9588,18 +9553,6 @@ export type Seedance2MiniRequest = z.input<typeof Seedance2MiniRequestSchema>;
 export type Seedance2MiniRequestInput = Seedance2MiniRequest;
 export type Seedance2MiniParsedRequest = z.output<
   typeof Seedance2MiniRequestSchema
->;
-export type Seedance15ProAspectRatio = z.infer<
-  typeof Seedance15ProAspectRatioSchema
->;
-export type Seedance15ProResolution = z.infer<
-  typeof Seedance15ProResolutionSchema
->;
-export type Seedance15ProInput = z.infer<typeof Seedance15ProInputSchema>;
-export type Seedance15ProRequest = z.input<typeof Seedance15ProRequestSchema>;
-export type Seedance15ProRequestInput = Seedance15ProRequest;
-export type Seedance15ProParsedRequest = z.output<
-  typeof Seedance15ProRequestSchema
 >;
 export type BytedanceSeedreamImageSize = z.infer<
   typeof BytedanceSeedreamImageSizeSchema

@@ -586,6 +586,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `PRICING.kie` rate to remove. An estimate for one of these dot paths fails
   closed (ac-62hbwl).
 
+- **Breaking:** KIE `bytedance/seedance-1.5-pro` leaves `PRICING.kie`,
+  `MODEL_SLUGS.kie` and `MODEL_DISPLAY.kie`, because KIE retired it (`code: 410`
+  on 2026-11-05). `modelSlug` and `modelDisplay` are type errors for it and throw
+  on an untyped id. An estimate fails closed where it used to quote 0.00875 to
+  0.075 USD/s (ac-x0qlnu).
+
 - **Breaking:** the `fal-ai/sora-2/text-to-video` and
   `fal-ai/sora-2/image-to-video` rows, with their `MODEL_SLUGS.fal` and
   `MODEL_DISPLAY.fal` keys, because fal has retired them (see `@apicity/fal`).

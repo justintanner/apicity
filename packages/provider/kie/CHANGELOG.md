@@ -134,6 +134,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `gemini.post.v1.models.gemini36Flash.streamGenerateContent` (or 3.7 / 3.8)
   for the native stream. This removal ships in 0.27.0 (ac-62hbwl).
 
+- **Breaking:** the `bytedance/seedance-1.5-pro` `createTask` model, because KIE
+  retired Seedance 1.5 Pro. On 2026-11-05 a valid-key `createTask` with an empty
+  prompt answered `code: 410` "has been retired upstream and is no longer
+  available on Kie.ai", where live `bytedance/seedance-2` answered 422 for the
+  missing prompt and a made-up model 422 "not supported". Nothing was billed. The
+  feed rows and docs page are gone, and the product page redirects to Seedance
+  2.5. ByteDance deprecated the model on 2026-09-15 and shuts it down on
+  2026-11-11. Its `CREATE_TASK_GUARDS` and `modelInputSchemas` entries and every
+  `Seedance15Pro*` schema and type go with it. The id still parses through the
+  open Seedance alias, as any future Seedance id would, so a call reaches KIE and
+  gets that 410. Migration: KIE suggests `bytedance/seedance-2-5`, and ByteDance
+  names Seedance 2.0 Mini (`bytedance/seedance-2-mini`). Neither takes
+  `input_urls`: 2.5 takes first and last frames or references, and Mini takes
+  references. This removal ships in 0.27.0 (ac-x0qlnu).
+
 - **Breaking:** `gemini25Flash.post.v1.chat.completions`,
   `gemini3Flash.post.v1.chat.completions` and
   `gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent`,

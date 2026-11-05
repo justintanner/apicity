@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  Seedance15ProRequestSchema,
   GptImage15TextToImageRequestSchema,
   NanoBanana2LiteRequestSchema,
   KieMediaModelSchema,
@@ -9,59 +8,24 @@ import {
 import { CREATE_TASK_GUARDS } from "../../packages/provider/kie/src/kie";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 
+describe("retired bytedance/seedance-1.5-pro (ac-x0qlnu)", () => {
+  const retired = "bytedance/seedance-1.5-pro";
+
+  it("has no per-model schema or guard", () => {
+    expect(Object.hasOwn(CREATE_TASK_GUARDS, retired)).toBe(false);
+    expect(Object.hasOwn(modelInputSchemas, retired)).toBe(false);
+  });
+
+  it("parses only through the open Seedance alias, so KIE answers the call", () => {
+    expect(KieMediaModelSchema.safeParse(retired).success).toBe(true);
+  });
+});
+
 describe("Assorted single-model createTask schemas (ac-qn3r5n)", () => {
-  const models = [
-    "bytedance/seedance-1.5-pro",
-    "gpt-image/1.5-text-to-image",
-    "nano-banana-2-lite",
-  ] as const;
+  const models = ["gpt-image/1.5-text-to-image", "nano-banana-2-lite"] as const;
 
   it.each(models)("lists %s on KieMediaModelSchema", (model) => {
     expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
-  });
-
-  it("validates bytedance/seedance-1.5-pro request via schema and guard", () => {
-    const req = {
-      model: "bytedance/seedance-1.5-pro" as const,
-      callBackUrl: "https://example.com/cb",
-      input: {
-        prompt:
-          "A serene beach at sunset with waves gently crashing on the shore",
-        aspect_ratio: "16:9" as const,
-        duration: 8,
-        resolution: "720p" as const,
-        fixed_lens: false,
-        generate_audio: false,
-      },
-    };
-    expect(Seedance15ProRequestSchema.safeParse(req).success).toBe(true);
-    expect(CREATE_TASK_GUARDS[req.model].safeParse(req).success).toBe(true);
-    expect(CreateTaskRequestSchema.safeParse(req).success).toBe(true);
-  });
-
-  it("rejects seedance-1.5-pro without duration", () => {
-    expect(
-      Seedance15ProRequestSchema.safeParse({
-        model: "bytedance/seedance-1.5-pro",
-        input: {
-          prompt: "A quiet forest path in morning light",
-          aspect_ratio: "1:1",
-        },
-      }).success
-    ).toBe(false);
-  });
-
-  it("rejects seedance-1.5-pro duration outside 4-12", () => {
-    expect(
-      Seedance15ProRequestSchema.safeParse({
-        model: "bytedance/seedance-1.5-pro",
-        input: {
-          prompt: "A quiet forest path in morning light",
-          aspect_ratio: "1:1",
-          duration: 15,
-        },
-      }).success
-    ).toBe(false);
   });
 
   it("validates gpt-image/1.5-text-to-image request via schema and guard", () => {
@@ -128,12 +92,7 @@ describe("Assorted single-model createTask schemas (ac-qn3r5n)", () => {
     ).toBe(false);
   });
 
-  it("exposes modelInputSchemas for all three models", () => {
-    expect(modelInputSchemas["bytedance/seedance-1.5-pro"].type).toBe("video");
-    expect(
-      modelInputSchemas["bytedance/seedance-1.5-pro"].fields.duration?.required
-    ).toBe(true);
-
+  it("exposes modelInputSchemas for both models", () => {
     expect(modelInputSchemas["gpt-image/1.5-text-to-image"].type).toBe("image");
     expect(
       modelInputSchemas["gpt-image/1.5-text-to-image"].fields.quality?.required

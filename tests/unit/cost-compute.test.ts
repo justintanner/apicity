@@ -1552,7 +1552,10 @@ describe("computeEstimate", () => {
         // The empty key represents a real lower-dimensional rate. Without the
         // required-selector guard, an omitted quality would incorrectly use it.
         rates: { "": 0.1, high: 0.2 },
-        source: { url: "https://example.com/required-selector-test" },
+        source: {
+          url: "https://example.com/required-selector-test",
+          asOf: "2026-11-05",
+        },
       };
 
       try {
@@ -1585,7 +1588,10 @@ describe("computeEstimate", () => {
         select: [],
         rates: { "": 0.1 },
         extra: () => 0.04,
-        source: { url: "https://example.com/exact-extra-charge-test" },
+        source: {
+          url: "https://example.com/exact-extra-charge-test",
+          asOf: "2026-11-05",
+        },
       };
 
       try {
@@ -1621,7 +1627,10 @@ describe("computeEstimate", () => {
         select: [],
         rates: { "": 0.1 },
         extra: () => undefined,
-        source: { url: "https://example.com/undefined-extra-charge-test" },
+        source: {
+          url: "https://example.com/undefined-extra-charge-test",
+          asOf: "2026-11-05",
+        },
       };
 
       try {

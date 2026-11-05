@@ -93,7 +93,7 @@ function applyTokenRate(
       inputUsdPerMillion: rate.input,
       outputUsdPerMillion: rate.output,
     },
-    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    rateAsOf: entry.source.asOf,
     warnings,
   };
 }
@@ -217,7 +217,7 @@ function evaluatePerUnit(
       perUnitUsd: perUnit,
       ...(resolvedExtraUsd > 0 ? { extraUsd: resolvedExtraUsd } : {}),
     },
-    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    rateAsOf: entry.source.asOf,
     // Cost-only warnings from the entry's optional `warn` hook (e.g. googleflow
     // unknown-plan-tier fallback). Inert for every entry that omits `warn`.
     warnings: entry.warn?.(payload, hints) ?? [],
@@ -272,7 +272,7 @@ function evaluateDeclaredTokens(
     currency: "USD",
     source: "declared-tokens+table",
     breakdown: { unit: "tokens" },
-    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    rateAsOf: entry.source.asOf,
     warnings,
   });
   if (missing.length > 0 || invalid.length > 0) {
@@ -335,7 +335,7 @@ function evaluateDeclaredTokens(
           }
         : {}),
     },
-    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    rateAsOf: entry.source.asOf,
     warnings: [],
   };
 }
@@ -572,7 +572,7 @@ export function evaluateDeclaredUsage(
       `${provider} '${model}' is per-unit billed, not token-billed`,
     ]);
   }
-  const rateAsOf = entry.source.asOf ?? PRICING_AS_OF;
+  const rateAsOf = entry.source.asOf;
   const unknown = (warning: string): CostEstimate => ({
     usd: 0,
     currency: "USD",

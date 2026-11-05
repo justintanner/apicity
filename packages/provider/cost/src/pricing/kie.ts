@@ -12,14 +12,11 @@ import {
 // Source URL is the kie.ai product page for the model (the anchor the kie
 // pricing feed carries for its rows) or, where an entry says so, a docs.kie.ai
 // page or a web.archive.org capture of a kie.ai page kie has since removed;
-// it prints or documents the cited rate. Entries refreshed from a dated
-// pull cite it through pricePage with an asOf; a citation-only repair adds no
-// asOf, because the stamp records the pull a rate was priced from, not the
-// page a URL points at, so rateAsOf keeps falling back to PRICING_AS_OF for
-// entries never re-priced (ac-48rps2). No entry cites the kie.ai/market
-// gallery, which answers HTTP 200 with no model content for any path (a
-// soft 404). Rates verified 2026-04-30 unless an entry notes a newer
-// date. Rate keys mirror the upstream payload values verbatim
+// it prints or documents the cited rate. Every entry cites it through
+// pricePage with the date its rate was last read, not the date a citation was
+// repaired. No entry cites the kie.ai/market gallery, which answers HTTP 200
+// with no model content for any path (a soft 404). Rate keys mirror the
+// upstream payload values verbatim
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
 // resolution is "480p"|"720p"|"1080p"|"4k"; etc.) — there is no internal
 // translation layer between the caller's payload and the rate selector.
@@ -49,12 +46,14 @@ import {
 // subject-detection pair (declared on https://kie.ai/omnihuman-1-5 with an
 // empty pricingDesc, unpriced). The rule is comment text; nothing enforces it.
 
-const page = (url: string) => ({ url });
-
 // Source stamp for entries refreshed from the dated KIE pricing pulls. REQ-008
 // wants a page URL plus an asOf on each touched entry, so the date lives in one
 // place rather than being retyped per entry.
 const pricePage = (url: string, asOf = "2026-08-06") => ({ url, asOf });
+
+// Rows that carried no date of their own until this read: every cell agrees with
+// the feed pulled on this date (pnpm run check:kie-feed-drift, ac-xk7p41).
+const FEED_REREAD_AS_OF = "2026-11-05";
 
 // The page read behind the eight ByteDance entries priced from their kie.ai
 // product pages under the rule above (Seedream 3.0 / 4.0, Seedance 1.0;
@@ -486,7 +485,7 @@ const flatImage = (perUnit: number, url: string): ModelPricing => ({
   units: imageCount,
   select: [],
   rates: { "": perUnit },
-  source: page(url),
+  source: pricePage(url, FEED_REREAD_AS_OF),
 });
 
 // Flat per-call rate for endpoints that bill once per request regardless
@@ -497,7 +496,7 @@ const flatGen = (perUnit: number, url: string): ModelPricing => ({
   units: () => 1,
   select: [],
   rates: { "": perUnit },
-  source: page(url),
+  source: pricePage(url, FEED_REREAD_AS_OF),
 });
 
 // flatGen / flatImage variants for the non-createTask endpoints; they stamp
@@ -651,7 +650,7 @@ const tieredImage = (
     },
   ],
   rates,
-  source: page(url),
+  source: pricePage(url, FEED_REREAD_AS_OF),
 });
 
 const happyHorse11Video = (variant: string): ModelPricing => ({
@@ -1130,7 +1129,7 @@ export const kie: Record<string, ModelPricing> = {
       "4K": 0.335,
       "4K|sound": 0.335,
     },
-    source: page("https://kie.ai/kling-3-0"),
+    source: pricePage("https://kie.ai/kling-3-0", FEED_REREAD_AS_OF),
   },
 
   // Kling 3.0 motion-control: 2 tiers by mode ("720p"|"1080p"). Audio is
@@ -1142,7 +1141,10 @@ export const kie: Record<string, ModelPricing> = {
     units: seconds,
     select: [{ name: "mode", pick: inputMode, required: true }],
     rates: { "720p": 0.1, "1080p": 0.135 },
-    source: page("https://kie.ai/kling-3-motion-control"),
+    source: pricePage(
+      "https://kie.ai/kling-3-motion-control",
+      FEED_REREAD_AS_OF
+    ),
   },
 
   // Kling O3 / Kling 3.0 Omni: all four tasks bill per output second. Text
@@ -1307,7 +1309,7 @@ export const kie: Record<string, ModelPricing> = {
     units: seconds,
     select: [{ name: "resolution", pick: inputResolution, required: true }],
     rates: { "720p": 0.09, "1080p": 0.1125 },
-    source: page("https://kie.ai/kling-3-0-turbo"),
+    source: pricePage("https://kie.ai/kling-3-0-turbo", FEED_REREAD_AS_OF),
   },
   "kling/v3-turbo-text-to-video": {
     kind: "perUnit",
@@ -1315,7 +1317,7 @@ export const kie: Record<string, ModelPricing> = {
     units: seconds,
     select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
     rates: { "720p": 0.09, "1080p": 0.1125 },
-    source: page("https://kie.ai/kling-3-0-turbo"),
+    source: pricePage("https://kie.ai/kling-3-0-turbo", FEED_REREAD_AS_OF),
   },
 
   // wan/2.2 A14B Turbo text/image-to-video — per VIDEO, not per second. kie
@@ -1456,10 +1458,10 @@ export const kie: Record<string, ModelPricing> = {
       "5",
       "1080p"
     ),
-    source: {
-      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video"),
-      asOf: "2026-11-04",
-    },
+    source: pricePage(
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+      "2026-11-04"
+    ),
   },
   "wan/2-6-image-to-video": {
     ...perVideoByDurationAndResolution(
@@ -1475,10 +1477,10 @@ export const kie: Record<string, ModelPricing> = {
       "5",
       "1080p"
     ),
-    source: {
-      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video"),
-      asOf: "2026-11-04",
-    },
+    source: pricePage(
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+      "2026-11-04"
+    ),
   },
   "wan/2-6-video-to-video": {
     ...perVideoByDurationAndResolution(
@@ -1492,10 +1494,10 @@ export const kie: Record<string, ModelPricing> = {
       "5",
       "1080p"
     ),
-    source: {
-      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video"),
-      asOf: "2026-11-04",
-    },
+    source: pricePage(
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+      "2026-11-04"
+    ),
   },
 
   // wan/3.0 video — resolution-tiered per second, from the 2026-09-11 catalog
@@ -1823,8 +1825,9 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: { "": 0.02, pro: 0.025 },
-    source: page(
-      "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-image"
+    source: pricePage(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-image",
+      FEED_REREAD_AS_OF
     ),
   },
   "grok-imagine/image-to-image": {
@@ -1833,8 +1836,9 @@ export const kie: Record<string, ModelPricing> = {
     units: () => 1,
     select: [],
     rates: { "": 0.02 },
-    source: page(
-      "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image"
+    source: pricePage(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image",
+      FEED_REREAD_AS_OF
     ),
   },
 
@@ -2104,7 +2108,7 @@ export const kie: Record<string, ModelPricing> = {
     units: seconds,
     select: [],
     rates: { "": 0.135 },
-    source: { ...page("https://kie.ai/omnihuman-1-5"), asOf: "2026-07-20" },
+    source: pricePage("https://kie.ai/omnihuman-1-5", "2026-07-20"),
   },
 
   // OmniHuman 1.5's registered human-identification and subject-detection
@@ -2154,10 +2158,10 @@ export const kie: Record<string, ModelPricing> = {
     units: seconds,
     select: [],
     rates: { "": 0.04 },
-    source: {
-      ...page("https://kie.ai/volcengine-video-to-video-lip-sync"),
-      asOf: "2026-07-20",
-    },
+    source: pricePage(
+      "https://kie.ai/volcengine-video-to-video-lip-sync",
+      "2026-07-20"
+    ),
   },
 
   // bytedance/seedance-2: 8 rates, resolution × videoInput. The page's two
@@ -2644,7 +2648,7 @@ export const kie: Record<string, ModelPricing> = {
   // KIE's dedicated Nano Banana page lists 4 credits (~$0.02) per image.
   "nano-banana": {
     ...flatImage(0.02, "https://kie.ai/nano-banana"),
-    source: { ...page("https://kie.ai/nano-banana"), asOf: "2026-07-22" },
+    source: pricePage("https://kie.ai/nano-banana", "2026-07-22"),
   },
   "nano-banana-2": tieredImage(
     { "1K": 0.04, "2K": 0.06, "4K": 0.09 },

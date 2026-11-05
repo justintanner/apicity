@@ -975,7 +975,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-71 endpoints across 34 groups. Each method mirrors an upstream URL path.
+68 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -1094,25 +1094,6 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### gemini
 
 <details>
-<summary><code>POST</code> <b><code>kie.gemini.post.v1.models.gemini35Flash.streamGenerateContent</code></b></summary>
-
-<code>POST https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-5-flash)
-
-> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
-
-```typescript
-const res = await kie.gemini.post.v1.models.gemini35Flash.streamGenerateContent({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
-
-</details>
-
-<details>
 <summary><code>POST</code> <b><code>kie.gemini.post.v1.models.gemini36Flash.streamGenerateContent</code></b></summary>
 
 <code>POST https://api.kie.ai/gemini/v1/models/gemini-3-6-flash:streamGenerateContent</code>
@@ -1169,25 +1150,6 @@ Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
 
 </details>
 
-### gemini25Pro
-
-<details>
-<summary><code>POST</code> <b><code>kie.gemini25Pro.post.v1.chat.completions</code></b></summary>
-
-<code>POST https://api.kie.ai/gemini-2.5-pro/v1/chat/completions</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-2-5-pro)
-
-```typescript
-const res = await kie.gemini25Pro.post.v1.chat.completions({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/gemini-25-pro.ts`](src/gemini-25-pro.ts)
-
-</details>
-
 ### gemini31Pro
 
 <details>
@@ -1204,25 +1166,6 @@ const res = await kie.gemini31Pro.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini-31-pro.ts`](src/gemini-31-pro.ts)
-
-</details>
-
-### gemini35FlashOpenai
-
-<details>
-<summary><code>POST</code> <b><code>kie.gemini35FlashOpenai.post.v1.chat.completions</code></b></summary>
-
-<code>POST https://api.kie.ai/gemini-3-5-flash-openai/v1/chat/completions</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-5-flash-openai)
-
-```typescript
-const res = await kie.gemini35FlashOpenai.post.v1.chat.completions({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/gemini-35-flash-openai.ts`](src/gemini-35-flash-openai.ts)
 
 </details>
 

@@ -3173,36 +3173,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "kie",
     {
-      kind: "unpriced",
-      unit: "tokens",
-      reason:
-        "KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl",
-      source: {
-        url: "https://docs.kie.ai/market/gemini/gemini-3-5-flash.md",
-        asOf: "2026-11-05",
-      },
-    },
-    [
-      "POST gemini.v1.models.gemini35Flash.streamGenerateContent",
-      "POST gemini35FlashOpenai.v1.chat.completions",
-    ]
-  ),
-  ...rows(
-    "kie",
-    {
-      kind: "free",
-      reason:
-        "Docs: retired upstream, so requests return an error (code 410) and are not charged",
-      source: {
-        url: "https://docs.kie.ai/market/gemini/gemini-2-5-pro.md",
-        asOf: "2026-11-05",
-      },
-    },
-    ["POST gemini25Pro.v1.chat.completions"]
-  ),
-  ...rows(
-    "kie",
-    {
       kind: "metered",
       unit: "tokens",
       reason:

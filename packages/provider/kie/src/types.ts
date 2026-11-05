@@ -754,8 +754,6 @@ export type {
   KieGeminiTool,
   KieGeminiThinkingConfig,
   KieGeminiGenerationConfig,
-  KieGemini35FlashStreamGenerateContentRequest,
-  KieGemini35FlashStreamGenerateContentParsedRequest,
   KieGemini36FlashStreamGenerateContentRequest,
   KieGemini36FlashStreamGenerateContentParsedRequest,
   KieGemini37FlashStreamGenerateContentRequest,
@@ -1410,13 +1408,11 @@ export interface KieProvider {
   gemini: import("./gemini").KieGeminiProvider["gemini"];
   gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
   gpt52: import("./gpt-52").KieGpt52Provider["gpt52"];
-  gemini35FlashOpenai: import("./gemini-35-flash-openai").KieGemini35FlashOpenaiProvider["gemini35FlashOpenai"];
   gemini36FlashOpenai: import("./gemini-36-flash-openai").KieGemini36FlashOpenaiProvider["gemini36FlashOpenai"];
   gemini37FlashOpenai: import("./gemini-37-flash-openai").KieGemini37FlashOpenaiProvider["gemini37FlashOpenai"];
   gemini38FlashOpenai: import("./gemini-38-flash-openai").KieGemini38FlashOpenaiProvider["gemini38FlashOpenai"];
   gemini4ArgonOpenai: import("./gemini-4-argon-openai").KieGemini4ArgonOpenaiProvider["gemini4ArgonOpenai"];
   gemini3Pro: import("./gemini-3-pro").KieGemini3ProProvider["gemini3Pro"];
-  gemini25Pro: import("./gemini-25-pro").KieGemini25ProProvider["gemini25Pro"];
 }
 
 // Error class

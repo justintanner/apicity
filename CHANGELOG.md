@@ -382,6 +382,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** retired KIE Gemini 2.5 Pro and Gemini 3.5 Flash.
+  `@apicity/kie` no longer exports `gemini25Pro.post.v1.chat.completions`,
+  `gemini35FlashOpenai.post.v1.chat.completions`, or
+  `gemini.post.v1.models.gemini35Flash.streamGenerateContent`, nor
+  `createGemini25ProProvider`, `createGemini35FlashOpenaiProvider`, or the
+  `KieGemini25Pro*` and `KieGemini35Flash*` schemas and types. On 2026-11-05
+  each route answered HTTP 410 and KIE's docs mark them deprecated. The
+  matching `@apicity/cost` billing rows are gone. Use Gemini 3 Pro, Gemini
+  3.8 Flash, or the native 3.6 / 3.7 / 3.8 stream. Ships in 0.27.0
+  (ac-62hbwl).
+
 - **Breaking:** retired fal Sora 2: `@apicity/fal` `run.sora2.textToVideo` and
   `run.sora2.imageToVideo` with their `FalSora2*` exports, and the matching
   `@apicity/cost` pricing, slug and display entries. OpenAI removed Sora 2 from

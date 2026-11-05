@@ -8,8 +8,6 @@
   "googleflow POST v1.videos.concatenate": "Neither Google's credit table nor useapi's docs price concatenation on 2026-11-05, and no receipt exists; follow-up ac-3y6egd",
   "googleflow POST v1.videos.gif": "Neither Google's credit table nor useapi's docs price GIF rendering on 2026-11-05, and no receipt exists; follow-up ac-3y6egd",
   "kie POST api.v1.suno.recovery": "KIE's catalog lists this model with a null price, and its docs and feed state neither a charge nor that it is free; follow-up ac-27hri6",
-  "kie POST gemini.v1.models.gemini35Flash.streamGenerateContent": "KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl",
-  "kie POST gemini35FlashOpenai.v1.chat.completions": "KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl",
   "openai POST v1.images.variations": "The page no longer lists the DALL-E models this endpoint serves, so P1 fails it closed; ruling ac-stu9mv, no follow-up",
   "openai POST v1.vectorStores.search": "No published per-call price for direct vector store search; file search tool call fees apply to the Responses API only; storage is billed separately per GB-day; ruling ac-4pxiai, no follow-up",
   "s3 GET buckets.createSession": "Express session has no independently pinned per-call rate; ruling ac-5r6k06, no follow-up",

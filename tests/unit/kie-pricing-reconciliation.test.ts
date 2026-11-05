@@ -286,10 +286,10 @@ describe("Kie pricing reconciliation", () => {
     expect(inventory.pricingKeys).toHaveLength(228);
     expect(inventory.slugKeys).toHaveLength(230);
     expect(inventory.displayKeys).toHaveLength(230);
-    expect(inventory.endpoints).toHaveLength(84);
+    expect(inventory.endpoints).toHaveLength(81);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
-    ).toHaveLength(59);
+    ).toHaveLength(56);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "GET")
     ).toHaveLength(25);
@@ -409,7 +409,7 @@ describe("Kie pricing reconciliation", () => {
       status: "ok",
       rows: 483,
       models: 163,
-      endpoints: 84,
+      endpoints: 81,
       pricingKeys: 228,
       slugs: 230,
       displays: 230,
@@ -444,7 +444,7 @@ describe("Kie pricing reconciliation", () => {
       displayKeys: 230,
       schemaWithoutPricing: 4,
       pricingOnly: 69,
-      endpoints: 84,
+      endpoints: 81,
     });
     expect(implemented.length).toBeGreaterThan(0);
     expect(implemented.every((row) => row.mappedApiCityKeys.length === 1)).toBe(
@@ -1276,7 +1276,7 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
     expect(markdown).toContain("| Schema model IDs | 127 | 163 |");
-    expect(markdown).toContain("| Documented endpoints | 71 | 84 |");
+    expect(markdown).toContain("| Documented endpoints | 71 | 81 |");
     expect(markdown).toContain("| Runtime pricing keys | 135 | 228 |");
     expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 4 |");
     expect(markdown).toContain("| Pricing-only inventory | 31 | 69 |");

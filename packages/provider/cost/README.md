@@ -1370,6 +1370,7 @@ base rate. Non-GSM text and destinations outside a single US/Canada number
 carry warnings because encoding or country rates can change the charge.
 Flow extensions resolve the Veo model (default `veo-3.1-fast`); video upscale
 prices 720p/1080p at zero credits and 4K at 50 credits on Ultra plans. GIF and
-concatenate remain unavailable pending documented prices (`ac-6nez46`).
+concatenate remain unavailable: neither Google nor useapi prices them, and no
+receipt exists (read 2026-11-05, `ac-3y6egd`).
 Every retained endpoint-billing exception records a reason and an open
 follow-up or mayor ruling in the registry and its guard allowlist.

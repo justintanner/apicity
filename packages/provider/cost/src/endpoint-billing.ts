@@ -2832,10 +2832,11 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "googleflow",
     {
       kind: "unpriced",
-      reason: "No published credit cost for concatenation; follow-up ac-6nez46",
+      reason:
+        "Neither Google's credit table nor useapi's docs price concatenation on 2026-11-05, and no receipt exists; follow-up ac-3y6egd",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate",
-        asOf: "2026-11-04",
+        asOf: "2026-11-05",
       },
     },
     ["POST v1.videos.concatenate"]
@@ -2858,10 +2859,11 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "googleflow",
     {
       kind: "unpriced",
-      reason: "No published credit cost for GIF rendering; follow-up ac-6nez46",
+      reason:
+        "Neither Google's credit table nor useapi's docs price GIF rendering on 2026-11-05, and no receipt exists; follow-up ac-3y6egd",
       source: {
         url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif",
-        asOf: "2026-11-04",
+        asOf: "2026-11-05",
       },
     },
     ["POST v1.videos.gif"]

@@ -910,9 +910,9 @@ googleflow	v1.characters	POST	free		Account, asset, character or voice managemen
 googleflow	v1.images	POST	free		Image generation draws no credits on any plan (bundled rows are 0, read 2026-10-17 and again today); a configured captcha provider bills its own solves	https://useapi.net/docs/api-google-flow-v1/post-google-flow-images	2026-11-04
 googleflow	v1.images.upscale	POST	free		Docs: both resolutions are free of Google Flow credits	https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale	2026-11-04
 googleflow	v1.videos	POST	metered	credits	Credits times the plan's credit value; Lite low priority is 0 credits on Ultra 199	https://useapi.net/docs/api-google-flow-v1	2026-11-04
-googleflow	v1.videos.concatenate	POST	unpriced		No published credit cost for concatenation; follow-up ac-6nez46	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate	2026-11-04
+googleflow	v1.videos.concatenate	POST	unpriced		Neither Google's credit table nor useapi's docs price concatenation on 2026-11-05, and no receipt exists; follow-up ac-3y6egd	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate	2026-11-05
 googleflow	v1.videos.extend	POST	metered	credits	Uses the same Veo models and credit table as a generation; model defaults to veo-3.1-fast	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend	2026-11-04
-googleflow	v1.videos.gif	POST	unpriced		No published credit cost for GIF rendering; follow-up ac-6nez46	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif	2026-11-04
+googleflow	v1.videos.gif	POST	unpriced		Neither Google's credit table nor useapi's docs price GIF rendering on 2026-11-05, and no receipt exists; follow-up ac-3y6egd	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif	2026-11-05
 googleflow	v1.videos.upscale	POST	metered	credits	720p and 1080p are free; 4K costs 50 credits on Ultra plans	https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale	2026-11-04
 googleflow	v1.voices	POST	free		Account, asset, character or voice management; no credit cost published; a captcha provider bills its own solves	https://useapi.net/docs/api-google-flow-v1	2026-11-04
 kie	anthropic.v1.models	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04

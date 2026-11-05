@@ -981,13 +981,10 @@ kie	api.v1.wav.generate	POST	prohibitive	Media-generation provider (video/image/
 kie	api.v1.wav.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	claude.v1.messages	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	codex.v1.responses	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini38Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini25Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini31Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini35FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini36FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini37FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini38FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1

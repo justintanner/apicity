@@ -425,30 +425,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST gemini.v1.models.gemini35Flash.streamGenerateContent": {
-    "source": "kie/gemini-35-flash",
-    "payload": {
-      "stream": false,
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "Reply with the single word: pong"
-            }
-          ]
-        }
-      ],
-      "generationConfig": {
-        "thinkingConfig": {
-          "thinkingLevel": "low",
-          "includeThoughts": false
-        }
-      }
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
     "source": "static:kie-gemini-36-flash-minimal",
     "payload": {
@@ -503,27 +479,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST gemini25Pro.v1.chat.completions": {
-    "source": "static:kie-gemini-25-pro-chat-minimal",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false,
-      "reasoning_effort": "low"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST gemini31Pro.v1.chat.completions": {
     "source": "kie/gemini-31-pro-chat",
     "payload": {
@@ -536,26 +491,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "stream": false,
       "include_thoughts": false,
       "reasoning_effort": "low"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini35FlashOpenai.v1.chat.completions": {
-    "source": "static:kie-gemini-35-flash-openai-chat-minimal",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
     },
     "tier": "prohibitive",
     "runByDefault": false

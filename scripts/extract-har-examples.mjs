@@ -95,45 +95,8 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
         ],
       },
     },
-    "POST gemini25Pro.v1.chat.completions": {
-      source: "static:kie-gemini-25-pro-chat-minimal",
-      payload: {
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "ping",
-              },
-            ],
-          },
-        ],
-        stream: false,
-        include_thoughts: false,
-        reasoning_effort: "low",
-      },
-    },
     "POST gemini3Pro.v1.chat.completions": {
       source: "static:kie-gemini-3-pro-chat-minimal",
-      payload: {
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "ping",
-              },
-            ],
-          },
-        ],
-        stream: false,
-        include_thoughts: false,
-      },
-    },
-    "POST gemini35FlashOpenai.v1.chat.completions": {
-      source: "static:kie-gemini-35-flash-openai-chat-minimal",
       payload: {
         messages: [
           {

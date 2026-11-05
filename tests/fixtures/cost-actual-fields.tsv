@@ -61,9 +61,6 @@ kie	codex.v1.responses	tool_usage.image_gen.output_tokens_details.image_tokens	i
 kie	codex.v1.responses	usage.input_tokens_details.cache_write_tokens	cacheWriteInputTokens	kie_2079838932/gpt-6-1-sol-responses_3022736641/recording.har
 kie	codex.v1.responses	usage.input_tokens_details.cached_tokens	cacheReadInputTokens	kie_2079838932/gpt-6-1-sol-responses_3022736641/recording.har
 kie	codex.v1.responses	usage.output_tokens_details.reasoning_tokens	reasoningTokens	kie_2079838932/gpt-6-1-sol-responses_3022736641/recording.har
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	usageMetadata.candidatesTokenCount	outputTokens	kie_2079838932/gemini-35-flash_1784720358/recording.har
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	usageMetadata.promptTokenCount	inputTokens	kie_2079838932/gemini-35-flash_1784720358/recording.har
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	usageMetadata.thinkingTokenCount	reasoningTokens	kie_2079838932/gemini-35-flash_1784720358/recording.har
 kie	gemini31Pro.v1.chat.completions	usage.completion_tokens	outputTokens	kie_2079838932/gemini-31-pro-chat_166868540/recording.har
 kie	gemini31Pro.v1.chat.completions	usage.completion_tokens_details.reasoning_tokens	reasoningTokens	kie_2079838932/gemini-31-pro-chat_166868540/recording.har
 kie	gemini31Pro.v1.chat.completions	usage.prompt_tokens	inputTokens	kie_2079838932/gemini-31-pro-chat_166868540/recording.har

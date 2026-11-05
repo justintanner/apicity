@@ -239,13 +239,11 @@ import { createGeminiProvider } from "./gemini";
 import { createResponsesProvider } from "./responses";
 import { createGemini31ProProvider } from "./gemini-31-pro";
 import { createGpt52Provider } from "./gpt-52";
-import { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 import { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
 import { createGemini37FlashOpenaiProvider } from "./gemini-37-flash-openai";
 import { createGemini38FlashOpenaiProvider } from "./gemini-38-flash-openai";
 import { createGemini4ArgonOpenaiProvider } from "./gemini-4-argon-openai";
 import { createGemini3ProProvider } from "./gemini-3-pro";
-import { createGemini25ProProvider } from "./gemini-25-pro";
 import { attachExamples } from "./example";
 import { createReplayStore } from "./paygate";
 import { withPaidGate } from "./with-paid-gate";
@@ -974,12 +972,6 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGeminiProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini31ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGpt52Provider(baseURL, opts.apiKey, doFetch, timeout),
-        ...createGemini35FlashOpenaiProvider(
-          baseURL,
-          opts.apiKey,
-          doFetch,
-          timeout
-        ),
         ...createGemini36FlashOpenaiProvider(
           baseURL,
           opts.apiKey,
@@ -1005,7 +997,6 @@ export function createKie(opts: KieOptions): KieProvider {
           timeout
         ),
         ...createGemini3ProProvider(baseURL, opts.apiKey, doFetch, timeout),
-        ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: (() => {
           // codex / grok / openai / xai / api.v1.responses share

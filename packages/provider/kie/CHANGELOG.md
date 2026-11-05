@@ -95,13 +95,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that default ("Set this field explicitly", read 2026-10-16). The field stays
   optional with the same six presets, so parsing no longer adds it; set it
   explicitly.
-- **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini25Pro`,
-  `gemini35FlashOpenai`, `gemini36FlashOpenai`, `gemini37FlashOpenai`, and
-  `gemini38FlashOpenai` chat request schemas now follow KIE's current docs:
-  `stream` defaults to `false`, and the undocumented `model` field is no longer
-  declared. For `gemini31Pro`, `gemini3Pro`, and `gemini25Pro`,
-  `include_thoughts` defaults to `false` and `reasoning_effort` still defaults
-  to `"high"`. For `gemini35FlashOpenai`, `gemini36FlashOpenai`,
+- **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini36FlashOpenai`,
+  `gemini37FlashOpenai`, and `gemini38FlashOpenai` chat request schemas now
+  follow KIE's current docs: `stream` defaults to `false`, and the
+  undocumented `model` field is no longer declared. For `gemini31Pro` and
+  `gemini3Pro`, `include_thoughts` defaults to `false` and `reasoning_effort`
+  still defaults to `"high"`. For `gemini36FlashOpenai`,
   `gemini37FlashOpenai`, and `gemini38FlashOpenai`, `include_thoughts` and
   `reasoning_effort` have no default and are optional in the
   `...ChatCompletionsParsedRequest` types; treat them as possibly `undefined`.
@@ -119,6 +118,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   paid calls failing closed by default, pass `paygate: { secret }`.
 
 ### Removed
+
+- **Breaking:** `gemini25Pro.post.v1.chat.completions`,
+  `gemini35FlashOpenai.post.v1.chat.completions`, and
+  `gemini.post.v1.models.gemini35Flash.streamGenerateContent`, because KIE
+  retired Gemini 2.5 Pro and Gemini 3.5 Flash. On 2026-11-05 a valid-key
+  request with an empty `messages` or `contents` array answered HTTP 410
+  "no longer available on Kie.ai" on all three. Each docs page says
+  `deprecated: true`, the models are gone from the catalog and the pricing
+  feed, and the product pages redirect. Nothing was billed. The
+  `createGemini25ProProvider` and `createGemini35FlashOpenaiProvider`
+  factories and every `KieGemini25Pro*` and `KieGemini35Flash*` schema and
+  type go with them. Migration: use `gemini3Pro.post.v1.chat.completions`
+  or `gemini38FlashOpenai.post.v1.chat.completions` for chat, and
+  `gemini.post.v1.models.gemini36Flash.streamGenerateContent` (or 3.7 / 3.8)
+  for the native stream. This removal ships in 0.27.0 (ac-62hbwl).
 
 - **Breaking:** `gemini25Flash.post.v1.chat.completions`,
   `gemini3Flash.post.v1.chat.completions` and

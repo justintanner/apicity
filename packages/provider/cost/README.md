@@ -1372,10 +1372,10 @@ Flow extensions resolve the Veo model (default `veo-3.1-fast`); video upscale
 prices 720p/1080p at zero credits and 4K at 50 credits on Ultra plans. GIF and
 concatenate remain unavailable: neither Google nor useapi prices them, and no
 receipt exists (read 2026-11-05, `ac-3y6egd`).
-KIE retired Gemini 2.5 Pro and 3.5 Flash, and their routes answer 410 (read
-2026-11-05, `ac-62hbwl`). KIE's docs say the 2.5 Pro error is not charged, so
-that route is free; they do not say so for 3.5 Flash, so its two routes remain
-unavailable. Suno recovery also remains unavailable: KIE's catalog lists it with
-a null price, and no receipt exists (`ac-27hri6`).
+KIE retired Gemini 2.5 Pro and 3.5 Flash (read 2026-11-05). Those three
+routes are removed from `@apicity/kie` and from this billing table
+(`ac-62hbwl`), so an estimate for one of those dot paths fails closed.
+Suno recovery remains unavailable: KIE's catalog lists it with a null price,
+and no receipt exists (`ac-27hri6`).
 Every retained endpoint-billing exception records a reason and an open
 follow-up or mayor ruling in the registry and its guard allowlist.

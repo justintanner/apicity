@@ -620,10 +620,6 @@ export const ENDPOINT_NOTES = new Map([
     ].join(" "),
   ],
   [
-    "kie\tgemini.post.v1.models.gemini35Flash.streamGenerateContent\tPOST",
-    KIE_GEMINI_HTTP_200_ERROR_NOTE,
-  ],
-  [
     "kie\tgemini.post.v1.models.gemini36Flash.streamGenerateContent\tPOST",
     KIE_GEMINI_HTTP_200_ERROR_NOTE,
   ],

@@ -4499,10 +4499,9 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   // any path, no model content: the soft 404 the 2026-09-16 sweep counted,
   // ac-c2n4pa) now cite the 2026-09-11 feed anchors, or the page's own tab
   // where the feed anchor is a docs.kie.ai page that prints no price
-  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2. A
-  // citation-only repair adds no asOf, so rateAsOf stays PRICING_AS_OF.
-  // Pinning the whole `source` object makes a
-  // gallery regression and an asOf drift both fail here.
+  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2. Pinning the
+  // whole `source` object makes a gallery regression and an asOf drift both fail
+  // here.
   it.each([
     {
       model: "qwen2/text-to-image",

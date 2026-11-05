@@ -388,6 +388,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** Alibaba `wan2.7-videoedit` bills what its API reference and price
+  page say: the source's seconds plus the output's, where the output keeps the
+  source's length unless `parameters.duration` truncates it. The request carries
+  no length for the source, so an estimate now needs
+  `costHints.inputDurationSeconds`. Without it, an estimate is `unavailable` and
+  classifies as `prohibitive`, where it used to assume 5 s and count the output
+  alone. A recorded edit of a 5.02 s clip reported 10.04 billed seconds, 1.004 USD
+  at the 720P rate, against the old 0.50 (ac-nr7mpd).
+- Alibaba `wan2.7-i2v` and `wan2.7-videoedit` price 1080P at its own 0.15 USD/s
+  beside 720P's 0.10, as the page now prints, and an omitted `resolution` selects
+  1080P, the API's default. It used to price every request at 0.10 (ac-nr7mpd).
 - KIE `wan/2-6-text-to-video`, `wan/2-6-image-to-video` and
   `wan/2-6-video-to-video` price 5 s and 10 s at 1080p at 0.525 and 1.05 USD
   (105 and 210 credits), as the 2026-11-04 feed and page print them. They were

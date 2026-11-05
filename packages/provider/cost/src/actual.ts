@@ -190,10 +190,17 @@ function deriveFromUnits(
     payload: exchange.requestBody ?? {},
     baseURL: exchange.url,
     endpoint: PER_UNIT_KEYED_BY_ENDPOINT.has(provider) ? key : undefined,
-    costHints:
-      usage.seconds !== undefined
+    // Only the rate is read here, unless the row has an extra. An Alibaba edit
+    // quotes only with its source's length, which usage.duration already counts
+    // and a submit does not know, so any positive length serves.
+    costHints: {
+      ...(usage.seconds !== undefined
         ? { durationSeconds: usage.seconds }
-        : undefined,
+        : {}),
+      ...(provider === "alibaba"
+        ? { inputDurationSeconds: usage.seconds ?? 1 }
+        : {}),
+    },
   });
   const perUnit = estimate.breakdown.perUnitUsd;
   const extra = estimate.breakdown.extraUsd;

@@ -183,15 +183,14 @@ hosts.
 
 ## Follow-up work
 
-| Bead        | Family  | What                                                                 |
-| ----------- | ------- | -------------------------------------------------------------------- |
-| `ac-cgqsxq` | fal     | Read the usage API once its scope returns. Settles Seedance US       |
-| `ac-cukhhs` | fal     | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
-| `ac-eue5ej` | fal     | Timed: FLUX 3 Max's promotion ends 11-07                             |
-| `vb-olmxr`  | fal     | `sora-2` is retired, and videobook's catalog still names it          |
-| `ac-x0qlnu` | kie     | `bytedance/seedance-1.5-pro` has left the feed                       |
-| `ac-nr7mpd` | alibaba | `wan2.7-videoedit` assumes 5 s                                       |
-| `ac-xk7p41` | cost    | 46 rows have no `source.asOf`, which weakens the capture-date gate   |
+| Bead        | Family | What                                                                 |
+| ----------- | ------ | -------------------------------------------------------------------- |
+| `ac-cgqsxq` | fal    | Read the usage API once its scope returns. Settles Seedance US       |
+| `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
+| `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                             |
+| `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it          |
+| `ac-x0qlnu` | kie    | `bytedance/seedance-1.5-pro` has left the feed                       |
+| `ac-xk7p41` | cost   | 46 rows have no `source.asOf`, which weakens the capture-date gate   |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
@@ -228,6 +227,15 @@ Those April calls now read `no-estimate`, so `grok-4` left the guard's list belo
   and only a bill can say. A new call would not: its header reports the same units at
   either rate. So `ac-cgqsxq`'s usage read decides, and until then the estimate runs 20%
   over if the cut is real, which is the safe direction.
+
+`ac-nr7mpd` closed Alibaba's `wan2.7-videoedit`, also with no paid call. This pass read
+its ratio as the output following its source, but the recording's 10.04 s is 5.02 s in and
+5.02 s out, and Alibaba bills both: the API reference's billing formula says so, and so does
+the price page's rule above that table. An estimate now takes the source's length from
+`costHints.inputDurationSeconds` and fails closed without it. The same read found 1080P at
+0.15 USD/s, which is the default, so `wan2.7-i2v` and `wan2.7-videoedit` now price it. The
+two recordings ran on the mainland host, whose media rates are not bundled, so neither
+report figure moves.
 
 `ac-p3e0c6` closed the two KIE items this pass could not, also with no paid call:
 

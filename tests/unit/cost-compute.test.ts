@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import type { CostHints } from "../../packages/provider/cost/src/types";
 import { canonicalHash } from "../../packages/provider/cost/src/paygate";
 import {
   PRICING,
@@ -225,66 +226,102 @@ describe("computeEstimate", () => {
         perUnitUsd: 0.1,
       });
       expect(result.usd).toBeCloseTo(0.5, 10);
-      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.rateAsOf).toBe("2026-11-05");
       expect(result.warnings).toEqual([]);
     });
 
-    it("estimates alibaba wan2.7-videoedit at the same per-second rate", () => {
-      const result = computeEstimate({
-        provider: "alibaba" as const,
-        baseURL: "https://dashscope-intl.aliyuncs.com",
-        payload: {
-          model: "wan2.7-videoedit",
-          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
-          parameters: { duration: 10 },
-        },
-      });
-      expect(result.usd).toBeCloseTo(1, 10);
-      expect(result.breakdown.perUnitUsd).toBe(0.1);
-      expect(result.warnings).toEqual([]);
+    it("estimates alibaba wan2.7-videoedit on its source plus its output", () => {
+      const estimate = (
+        parameters: Record<string, unknown>,
+        costHints?: CostHints
+      ) =>
+        computeEstimate({
+          provider: "alibaba" as const,
+          baseURL: "https://dashscope-intl.aliyuncs.com",
+          payload: {
+            model: "wan2.7-videoedit",
+            input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+            parameters,
+          },
+          ...(costHints ? { costHints } : {}),
+        });
+      const declared = { inputDurationSeconds: 10 };
+
+      // The output keeps the source's length: omitted, or the 0 that asks for it.
+      for (const parameters of [
+        { resolution: "720P" },
+        { resolution: "720P", duration: 0 },
+      ]) {
+        const result = estimate(parameters, declared);
+        expect(result.usd).toBeCloseTo(2, 10);
+        expect(result.breakdown).toMatchObject({ units: 20, perUnitUsd: 0.1 });
+        expect(result.warnings).toEqual([]);
+      }
+      // A duration truncates the output, and cannot lengthen it.
+      expect(
+        estimate({ resolution: "720P", duration: 4 }, declared).breakdown.units
+      ).toBe(14);
+      expect(
+        estimate(
+          { resolution: "720P", duration: 8 },
+          { inputDurationSeconds: 5 }
+        ).breakdown.units
+      ).toBe(10);
+      // 1080P is the default, at its own rate.
+      expect(estimate({}, declared).usd).toBeCloseTo(3, 10);
+      expect(
+        estimate({ resolution: "1080P" }, declared).breakdown.perUnitUsd
+      ).toBe(0.15);
     });
 
-    // The request schema accepts 1080P but the pricing page publishes only a
-    // 720P row, so the flat entry must still estimate rather than warn.
-    it("estimates alibaba video at 1080P and when parameters are omitted", () => {
-      const hd = computeEstimate({
-        provider: "alibaba" as const,
-        baseURL: "https://dashscope-intl.aliyuncs.com",
-        payload: {
-          model: "wan2.7-i2v",
-          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
-          parameters: { resolution: "1080P", duration: 4 },
-        },
-      });
-      expect(hd.usd).toBeCloseTo(0.4, 10);
+    it.each([
+      ["no duration", {}, undefined],
+      ["duration 0", { duration: 0 }, undefined],
+      ["a duration", { duration: 4 }, undefined],
+      ["a zero source", {}, { inputDurationSeconds: 0 }],
+      ["a negative source", {}, { inputDurationSeconds: -5 }],
+      ["only a total", {}, { durationSeconds: 10 }],
+    ])(
+      "fails alibaba wan2.7-videoedit closed on %s",
+      (_name, parameters, costHints) => {
+        const result = computeEstimate({
+          provider: "alibaba" as const,
+          baseURL: "https://dashscope-intl.aliyuncs.com",
+          payload: {
+            model: "wan2.7-videoedit",
+            input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+            parameters,
+          },
+          ...(costHints ? { costHints } : {}),
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([
+          "alibaba 'wan2.7-videoedit': an edit bills its source's seconds beside its output's, and the request carries no length for the source; pass costHints.inputDurationSeconds",
+        ]);
+      }
+    );
+
+    it("estimates alibaba wan2.7-i2v by resolution, defaulting to 1080P for 5 s", () => {
+      const estimate = (parameters?: Record<string, unknown>) =>
+        computeEstimate({
+          provider: "alibaba" as const,
+          baseURL: "https://dashscope-intl.aliyuncs.com",
+          payload: {
+            model: "wan2.7-i2v",
+            input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+            ...(parameters ? { parameters } : {}),
+          },
+        });
+      const hd = estimate({ resolution: "1080P", duration: 4 });
+      expect(hd.usd).toBeCloseTo(0.6, 10);
       expect(hd.warnings).toEqual([]);
 
-      const bare = computeEstimate({
-        provider: "alibaba" as const,
-        baseURL: "https://dashscope-intl.aliyuncs.com",
-        payload: {
-          model: "wan2.7-i2v",
-          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
-        },
-      });
-      expect(bare.breakdown).toMatchObject({ units: 5, perUnitUsd: 0.1 });
-      expect(bare.usd).toBeCloseTo(0.5, 10);
-    });
+      const bare = estimate();
+      expect(bare.breakdown).toMatchObject({ units: 5, perUnitUsd: 0.15 });
+      expect(bare.usd).toBeCloseTo(0.75, 10);
 
-    // duration: 0 is legal and means "match the source clip"; the length is
-    // only known upstream, so the estimate falls back to the 5s default.
-    it("falls back to the 5s default for alibaba duration 0", () => {
-      const result = computeEstimate({
-        provider: "alibaba" as const,
-        baseURL: "https://dashscope-intl.aliyuncs.com",
-        payload: {
-          model: "wan2.7-videoedit",
-          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
-          parameters: { duration: 0 },
-        },
-      });
-      expect(result.breakdown.units).toBe(5);
-      expect(result.usd).toBeCloseTo(0.5, 10);
+      // A resolution with no published rate fails closed.
+      expect(estimate({ resolution: "4K" }).usd).toBe(0);
     });
 
     it("estimates alibaba image models per image, scaling with parameters.n", () => {
@@ -341,7 +378,7 @@ describe("computeEstimate", () => {
         endpoint: "api.v1.services.aigc.video-generation.video-synthesis",
         payload,
       });
-      expect(withEndpoint.usd).toBeCloseTo(0.5, 10);
+      expect(withEndpoint.usd).toBeCloseTo(0.75, 10);
       expect(withEndpoint.source).toBe("per-unit-table");
       expect(withEndpoint.warnings).toEqual([]);
 

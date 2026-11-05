@@ -81,9 +81,6 @@ import {
   FireworksEmbeddingRequestSchema,
   FireworksRerankRequestSchema,
   AnthropicMessagesRequestSchema as FwAnthropicMessagesRequestSchema,
-  FireworksTextToImageRequestSchema,
-  FireworksKontextRequestSchema,
-  FireworksGetResultRequestSchema,
   FireworksSFTCreateRequestSchema,
   FireworksDpoJobCreateRequestSchema,
   FireworksRFTCreateRequestSchema,
@@ -210,12 +207,6 @@ describe("schema structure", () => {
       name: "fireworks/messages",
       schema: FwAnthropicMessagesRequestSchema,
     },
-    {
-      name: "fireworks/textToImage",
-      schema: FireworksTextToImageRequestSchema,
-    },
-    { name: "fireworks/kontext", schema: FireworksKontextRequestSchema },
-    { name: "fireworks/getResult", schema: FireworksGetResultRequestSchema },
     { name: "fireworks/sftCreate", schema: FireworksSFTCreateRequestSchema },
     {
       name: "fireworks/dpoJobCreate",
@@ -925,13 +916,6 @@ describe("schema + validatePayload integration", () => {
       model: "fireworks/qwen3-reranker-8b",
       query: "test",
       documents: ["doc1"],
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("fireworks textToImage: accepts valid request", () => {
-    const result = FireworksTextToImageRequestSchema.safeParse({
-      prompt: "A cat",
     });
     expect(result.success).toBe(true);
   });

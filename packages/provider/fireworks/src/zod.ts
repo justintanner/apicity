@@ -337,49 +337,6 @@ export const FireworksAudioBatchTranslationRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// Workflows (text-to-image, kontext, getResult)
-// ---------------------------------------------------------------------------
-
-export const FireworksTextToImageRequestSchema = z.object({
-  prompt: z.string(),
-  aspect_ratio: z
-    .enum([
-      "1:1",
-      "21:9",
-      "16:9",
-      "3:2",
-      "5:4",
-      "4:5",
-      "2:3",
-      "9:16",
-      "9:21",
-      "4:3",
-      "3:4",
-    ])
-    .optional(),
-  guidance_scale: z.number().optional(),
-  num_inference_steps: z.number().optional(),
-  seed: z.number().optional(),
-});
-
-export const FireworksKontextRequestSchema = z.object({
-  prompt: z.string(),
-  input_image: z.string().nullable().optional(),
-  seed: z.number().nullable().optional(),
-  aspect_ratio: z.string().nullable().optional(),
-  output_format: z.enum(["png", "jpeg"]).optional(),
-  webhook_url: z.string().nullable().optional(),
-  webhook_secret: z.string().nullable().optional(),
-  prompt_upsampling: z.boolean().optional(),
-  safety_tolerance: z.number().optional(),
-  stream: z.boolean().optional(),
-});
-
-export const FireworksGetResultRequestSchema = z.object({
-  id: z.string(),
-});
-
-// ---------------------------------------------------------------------------
 // Models CRUD
 // ---------------------------------------------------------------------------
 
@@ -913,27 +870,6 @@ export type FireworksAudioBatchTranslationRequestInput =
   FireworksAudioBatchTranslationRequest;
 export type FireworksAudioBatchTranslationParsedRequest = z.output<
   typeof FireworksAudioBatchTranslationRequestSchema
->;
-export type FireworksTextToImageRequest = z.input<
-  typeof FireworksTextToImageRequestSchema
->;
-export type FireworksTextToImageRequestInput = FireworksTextToImageRequest;
-export type FireworksTextToImageParsedRequest = z.output<
-  typeof FireworksTextToImageRequestSchema
->;
-export type FireworksKontextRequest = z.input<
-  typeof FireworksKontextRequestSchema
->;
-export type FireworksKontextRequestInput = FireworksKontextRequest;
-export type FireworksKontextParsedRequest = z.output<
-  typeof FireworksKontextRequestSchema
->;
-export type FireworksGetResultRequest = z.input<
-  typeof FireworksGetResultRequestSchema
->;
-export type FireworksGetResultRequestInput = FireworksGetResultRequest;
-export type FireworksGetResultParsedRequest = z.output<
-  typeof FireworksGetResultRequestSchema
 >;
 export type FireworksCreateModelRequest = z.input<
   typeof FireworksCreateModelRequestSchema

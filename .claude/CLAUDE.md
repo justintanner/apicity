@@ -166,7 +166,7 @@ packages/provider/<name>/
 **kimicoding** — Messages, streaming, models, embeddings, countTokens
 **kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat, claude)
 **anthropic** — Messages, streaming, batches, files, models, skills, admin/org APIs
-**fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
+**fireworks** — Chat, completions, embeddings, rerank, messages, audio (deprecated upstream), models, deployments, training
 **alibaba** — Chat (Qwen3), streaming, models
 **binance** — Spot REST public/general endpoints
 **openligadb** — Public soccer match data, standings, and scorers

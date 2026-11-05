@@ -280,8 +280,6 @@ describe("Fireworks recorded usage and unpriced families", () => {
     "inference.v1.audio.batch.translations",
     "inference.v1.audio.transcriptions",
     "inference.v1.audio.translations",
-    "inference.v1.workflows.kontext",
-    "inference.v1.workflows.textToImage",
   ])("keeps unpublished %s unavailable", (path) => {
     const result = estimate(
       { model: "accounts/fireworks/models/ember-1" },
@@ -290,6 +288,35 @@ describe("Fireworks recorded usage and unpriced families", () => {
     );
     expect(result.status).toBe("unavailable");
     expect(result.billing.kind).toBe("unpriced");
+  });
+  it.each(["kontext", "textToImage", "getResult"])(
+    "has no billing record for the removed workflows.%s",
+    (leaf) => {
+      const billing = endpointBilling(
+        "fireworks",
+        "POST",
+        `inference.v1.workflows.${leaf}`
+      );
+      expect(billing.kind).toBe("unpriced");
+      expect(billing.reason).toBe(
+        "No reviewed billing record for this endpoint"
+      );
+    }
+  );
+  it.each([
+    "inference.v1.audio.batch.transcriptions",
+    "inference.v1.audio.batch.translations",
+    "inference.v1.audio.transcriptions",
+    "inference.v1.audio.translations",
+  ])("records why %s stays unpriced, with no rate", (path) => {
+    const billing = endpointBilling("fireworks", "POST", path);
+    expect(billing.kind).toBe("unpriced");
+    expect(billing.reason).toContain("last listed 2026-04-29");
+    expect(billing.reason).toContain("gone by 2026-05-06");
+    expect(billing.reason).toContain(
+      "deprecated audio inference on 2026-06-10"
+    );
+    expect(billing.reason).toContain("ruling ac-8l1x3z, no follow-up");
   });
   it.each([
     "inference.v1.accounts.batchInferenceJobs.create",

@@ -137,31 +137,6 @@ describe("Fireworks Zod schema .schema property coverage", () => {
           }),
         expectSuccess: true,
       },
-      // Workflows
-      {
-        name: "workflows.textToImage",
-        fn: () =>
-          client.inference.v1.workflows.textToImage.schema.safeParse({
-            prompt: "A cat",
-          }),
-        expectSuccess: true,
-      },
-      {
-        name: "workflows.kontext",
-        fn: () =>
-          client.inference.v1.workflows.kontext.schema.safeParse({
-            prompt: "Hello",
-          }),
-        expectSuccess: true,
-      },
-      {
-        name: "workflows.getResult",
-        fn: () =>
-          client.inference.v1.workflows.getResult.schema.safeParse({
-            id: "req-123",
-          }),
-        expectSuccess: true,
-      },
       // Account endpoints
       {
         name: "accounts.models.create",

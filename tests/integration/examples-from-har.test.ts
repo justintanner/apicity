@@ -189,47 +189,6 @@ describe("HAR-derived examples on endpoints", () => {
     );
   });
 
-  test("fireworks kontext HAR maps workflow calls to endpoint doc rows", () => {
-    const entries = loadHarEntries(
-      "tests/recordings/fireworks_626462085/" +
-        "kontext-async-job_2497757731/recording.har"
-    );
-    const rows = entries
-      .map((entry) =>
-        findMatchingRow(entry, loadEndpointDocRows(), {
-          provider: "fireworks",
-        })
-      )
-      .filter((row): row is EndpointDocRow => Boolean(row));
-
-    expect(rows.map((row) => row.dotPath)).toContain(
-      "inference.v1.workflows.kontext"
-    );
-    expect(rows.map((row) => row.dotPath)).toContain(
-      "inference.v1.workflows.getResult"
-    );
-  });
-
-  test("fireworks kontext workflow examples validate against schemas", () => {
-    const client = createFireworks({ apiKey: "test-key" });
-
-    const kontext = client.inference.v1.workflows.kontext;
-    const kontextExample = exampleOf(kontext);
-    expect(kontextExample).toBeDefined();
-    expect(kontextExample?.source).toBe("fireworks/kontext-async-job");
-    expect(kontext.schema.safeParse(kontextExample?.payload).success).toBe(
-      true
-    );
-
-    const getResult = client.inference.v1.workflows.getResult;
-    const getResultExample = exampleOf(getResult);
-    expect(getResultExample).toBeDefined();
-    expect(getResultExample?.source).toBe("fireworks/kontext-async-job");
-    expect(getResult.schema.safeParse(getResultExample?.payload).success).toBe(
-      true
-    );
-  });
-
   test("fireworks RFT jobs list uses its bodyless HAR as coverage", () => {
     const client = createFireworks({ apiKey: "test-key" });
     const ex = exampleOf(

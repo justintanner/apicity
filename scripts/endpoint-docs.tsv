@@ -1051,9 +1051,6 @@ fireworks	inference.v1.completions	POST	https://api.fireworks.ai/inference/v1/co
 fireworks	inference.v1.embeddings	POST	https://api.fireworks.ai/inference/v1/embeddings	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.messages	POST	https://api.fireworks.ai/inference/v1/messages	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.rerank	POST	https://api.fireworks.ai/inference/v1/rerank	https://docs.fireworks.ai/api-reference
-fireworks	inference.v1.workflows.getResult	POST	https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result	https://docs.fireworks.ai/api-reference
-fireworks	inference.v1.workflows.kontext	POST	https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}	https://docs.fireworks.ai/api-reference
-fireworks	inference.v1.workflows.textToImage	POST	https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image	https://docs.fireworks.ai/api-reference
 google	v1.publishers.google.models.countTokens	POST	https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:countTokens	https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/express-mode/rest/v1/publishers.models/countTokens
 google	v1.publishers.google.models.generateContent	POST	https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent	https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent
 googleflow	v1.accounts	DELETE	https://api.useapi.net/v1/google-flow/accounts/{email}	https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email

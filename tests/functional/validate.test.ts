@@ -36,7 +36,6 @@ import {
   FireworksEmbeddingRequestSchema,
   FireworksRerankRequestSchema,
   AnthropicMessagesRequestSchema as FwMessagesSchema,
-  FireworksTextToImageRequestSchema,
   FireworksSFTCreateRequestSchema,
   FireworksBatchJobCreateRequestSchema,
 } from "../../packages/provider/fireworks/src/zod";
@@ -231,13 +230,6 @@ describe("validatePayload", () => {
       const result = FwMessagesSchema.safeParse({
         model: "accounts/fireworks/models/llama-v3p1-70b-instruct",
         messages: [{ role: "user", content: "Hello" }],
-      });
-      expect(result.success).toBe(true);
-    });
-
-    it("should validate valid text-to-image payload", () => {
-      const result = FireworksTextToImageRequestSchema.safeParse({
-        prompt: "A sunset over mountains",
       });
       expect(result.success).toBe(true);
     });

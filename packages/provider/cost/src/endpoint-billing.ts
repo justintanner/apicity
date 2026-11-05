@@ -2609,7 +2609,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       reason: "Result poll; billed on the submit it follows",
       source: { url: "https://fireworks.ai/pricing", asOf: "2026-11-04" },
     },
-    ["GET inference.v1.audio.batch", "POST inference.v1.workflows.getResult"]
+    ["GET inference.v1.audio.batch"]
   ),
   ...rows(
     "fireworks",
@@ -2617,7 +2617,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "seconds",
       reason:
-        "Fireworks deprecated audio inference on 2026-06-10 and publishes no rate on 2026-11-05, so it fails closed; follow-up ac-8l1x3z",
+        "Fireworks withdrew its audio rates (last listed 2026-04-29, gone by 2026-05-06) and deprecated audio inference on 2026-06-10, so this fails closed; history, not a rate: the last card read 0.0015 USD per audio minute for Whisper-v3-large and 0.0009 for turbo, batch 40% less; ruling ac-8l1x3z, no follow-up",
       source: {
         url: "https://docs.fireworks.ai/updates/changelog",
         asOf: "2026-11-05",
@@ -2626,6 +2626,21 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     [
       "POST inference.v1.audio.batch.transcriptions",
       "POST inference.v1.audio.batch.translations",
+    ]
+  ),
+  ...rows(
+    "fireworks",
+    {
+      kind: "unpriced",
+      unit: "seconds",
+      reason:
+        "Fireworks withdrew its audio rates (last listed 2026-04-29, gone by 2026-05-06) and deprecated audio inference on 2026-06-10, so this fails closed; history, not a rate: the last card read 0.0015 USD per audio minute for Whisper-v3-large and 0.0009 for turbo; ruling ac-8l1x3z, no follow-up",
+      source: {
+        url: "https://docs.fireworks.ai/updates/changelog",
+        asOf: "2026-11-05",
+      },
+    },
+    [
       "POST inference.v1.audio.transcriptions",
       "POST inference.v1.audio.translations",
     ]
@@ -2675,23 +2690,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["POST inference.v1.rerank"]
-  ),
-  ...rows(
-    "fireworks",
-    {
-      kind: "unpriced",
-      unit: "images",
-      reason:
-        "Fireworks deprecated image generation on 2026-06-10 and publishes no rate on 2026-11-05, so it fails closed; follow-up ac-8l1x3z",
-      source: {
-        url: "https://docs.fireworks.ai/updates/changelog",
-        asOf: "2026-11-05",
-      },
-    },
-    [
-      "POST inference.v1.workflows.kontext",
-      "POST inference.v1.workflows.textToImage",
-    ]
   ),
   ...rows(
     "free-media-upload",

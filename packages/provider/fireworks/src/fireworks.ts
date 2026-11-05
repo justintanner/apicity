@@ -13,12 +13,6 @@ import {
   AnthropicMessagesRequest,
   AnthropicMessagesResponse,
   AnthropicStreamEvent,
-  FireworksTextToImageRequest,
-  FireworksTextToImageResponse,
-  FireworksKontextRequest,
-  FireworksKontextResponse,
-  FireworksGetResultRequest,
-  FireworksGetResultResponse,
   FireworksTranscriptionRequest,
   FireworksTranscriptionResponse,
   FireworksTranslationRequest,
@@ -153,9 +147,6 @@ import {
   FireworksEmbeddingRequestSchema,
   FireworksRerankRequestSchema,
   AnthropicMessagesRequestSchema,
-  FireworksTextToImageRequestSchema,
-  FireworksKontextRequestSchema,
-  FireworksGetResultRequestSchema,
   FireworksTranscriptionRequestSchema,
   FireworksTranslationRequestSchema,
   FireworksStreamingTranscriptionOptionsSchema,
@@ -208,19 +199,6 @@ function parseFireworksErrorBody(
   }
 
   return { message: `Fireworks API error: ${status}` };
-}
-
-function parseFireworksWorkflowErrorBody(
-  status: number,
-  body: unknown
-): { message: string } {
-  if (typeof body === "object" && body !== null && "error_message" in body) {
-    return {
-      message: `Fireworks API error ${status}: ${(body as { error_message: unknown }).error_message}`,
-    };
-  }
-
-  return parseFireworksErrorBody(status, body);
 }
 
 async function wrapFireworksTransportFailure<T>(
@@ -291,15 +269,6 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     fetchImpl: opts.fetch,
     defaultHeaders: () => ({ Authorization: `Bearer ${opts.apiKey}` }),
     parseErrorBody: parseFireworksErrorBody,
-    errorClass: FireworksError,
-    requestFailedPrefix: "Fireworks request failed",
-  });
-  const workflowTransport = createTransport({
-    baseUrl: baseURL,
-    timeoutMs: timeout,
-    fetchImpl: opts.fetch,
-    defaultHeaders: () => ({ Authorization: `Bearer ${opts.apiKey}` }),
-    parseErrorBody: parseFireworksWorkflowErrorBody,
     errorClass: FireworksError,
     requestFailedPrefix: "Fireworks request failed",
   });
@@ -402,19 +371,6 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       "/messages",
       req,
       { signal }
-    );
-  }
-
-  async function makeWorkflowRequest<T>(
-    model: string,
-    suffix: string,
-    body: unknown,
-    signal?: AbortSignal
-  ): Promise<T> {
-    return await workflowTransport.postJson<T>(
-      `/workflows/accounts/fireworks/models/${model}${suffix}`,
-      body,
-      { headers: { Accept: "application/json" }, signal }
     );
   }
 
@@ -546,65 +502,6 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     messages: Object.assign(messagesImpl, {
       schema: AnthropicMessagesRequestSchema,
     }),
-    workflows: {
-      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image
-      // Docs: https://docs.fireworks.ai/api-reference
-      textToImage: Object.assign(
-        async (
-          model: string,
-          req: FireworksTextToImageRequest,
-          signal?: AbortSignal
-        ): Promise<FireworksTextToImageResponse> => {
-          return await makeWorkflowRequest<FireworksTextToImageResponse>(
-            model,
-            "/text_to_image",
-            req,
-            signal
-          );
-        },
-        {
-          schema: FireworksTextToImageRequestSchema,
-        }
-      ),
-      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}
-      // Docs: https://docs.fireworks.ai/api-reference
-      kontext: Object.assign(
-        async (
-          model: string,
-          req: FireworksKontextRequest,
-          signal?: AbortSignal
-        ): Promise<FireworksKontextResponse> => {
-          return await makeWorkflowRequest<FireworksKontextResponse>(
-            model,
-            "",
-            { safety_tolerance: 6, ...req },
-            signal
-          );
-        },
-        {
-          schema: FireworksKontextRequestSchema,
-        }
-      ),
-      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result
-      // Docs: https://docs.fireworks.ai/api-reference
-      getResult: Object.assign(
-        async (
-          model: string,
-          req: FireworksGetResultRequest,
-          signal?: AbortSignal
-        ): Promise<FireworksGetResultResponse> => {
-          return await makeWorkflowRequest<FireworksGetResultResponse>(
-            model,
-            "/get_result",
-            req,
-            signal
-          );
-        },
-        {
-          schema: FireworksGetResultRequestSchema,
-        }
-      ),
-    },
     audio: {
       // sig-ok: audio batch endpoints stay under the batch namespace.
       // POST https://api.fireworks.ai/inference/v1/audio/transcriptions
@@ -2881,7 +2778,6 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
         embeddings: postV1.embeddings,
         rerank: postV1.rerank,
         messages: postV1.messages,
-        workflows: postV1.workflows,
         audio: {
           transcriptions: Object.assign(postV1.audio.transcriptions, {
             streaming: wsV1.audio.transcriptions.streaming,

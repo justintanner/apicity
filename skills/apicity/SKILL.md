@@ -276,12 +276,11 @@ apicity googleflow v1.jobs.retrieve --jobId <jobId> --json
 apicity googleflow v1.images --data '{"prompt":"a cat wearing sunglasses"}'
 ```
 
-### fireworks — open-model inference, audio, deployments, training
+### fireworks — open-model inference, deployments, training
 
 ```bash
 apicity fireworks inference.v1.chat.completions --data '{"model":"accounts/fireworks/models/kimi-k2-instruct","messages":[{"role":"user","content":"hi"}]}'
 apicity fireworks inference.v1.embeddings --data '{"model":"nomic-ai/nomic-embed-text-v1.5","input":"hello"}'
-apicity fireworks inference.v1.audio.transcriptions --data-file ./audio.json
 ```
 
 ### alibaba — Qwen chat, image and video generation

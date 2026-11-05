@@ -1727,7 +1727,6 @@ const MEDIA_MODEL_FAMILIES = [
       "bytedance/seedance-2-fast",
       "bytedance/seedance-2",
       "bytedance/seedance-2-mini",
-      "bytedance/seedance-1.5-pro",
     ],
     aliases: ["bytedance/seedance-3", "bytedance/seedance-2-pro"],
     rejected: [

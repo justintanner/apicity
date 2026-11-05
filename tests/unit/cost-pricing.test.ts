@@ -2388,62 +2388,6 @@ const VIDEO_PER_SECOND_RATES = [
     seconds: 3,
     perUnitUsd: 0.312,
   },
-
-  {
-    label: "seedance-1.5-pro 480p silent",
-    model: "bytedance/seedance-1.5-pro",
-    input: { aspect_ratio: "16:9", resolution: "480p", duration: 4 },
-    seconds: 4,
-    perUnitUsd: 0.00875,
-  },
-  {
-    label: "seedance-1.5-pro 480p audio",
-    model: "bytedance/seedance-1.5-pro",
-    input: {
-      aspect_ratio: "16:9",
-      resolution: "480p",
-      generate_audio: true,
-      duration: 4,
-    },
-    seconds: 4,
-    perUnitUsd: 0.0175,
-  },
-  {
-    label: "seedance-1.5-pro 720p audio",
-    model: "bytedance/seedance-1.5-pro",
-    input: {
-      aspect_ratio: "16:9",
-      resolution: "720p",
-      generate_audio: true,
-      duration: 8,
-    },
-    seconds: 8,
-    perUnitUsd: 0.035,
-  },
-  {
-    label: "seedance-1.5-pro 1080p silent",
-    model: "bytedance/seedance-1.5-pro",
-    input: {
-      aspect_ratio: "16:9",
-      resolution: "1080p",
-      generate_audio: false,
-      duration: 12,
-    },
-    seconds: 12,
-    perUnitUsd: 0.0375,
-  },
-  {
-    label: "seedance-1.5-pro 1080p audio",
-    model: "bytedance/seedance-1.5-pro",
-    input: {
-      aspect_ratio: "16:9",
-      resolution: "1080p",
-      generate_audio: true,
-      duration: 12,
-    },
-    seconds: 12,
-    perUnitUsd: 0.075,
-  },
 ];
 
 describe("kie createTask video families (REQ-005)", () => {
@@ -2539,21 +2483,14 @@ describe("kie createTask video families (REQ-005)", () => {
     }
   );
 
-  // Seedance 1.5 Pro declares both price selectors with defaults, so an
-  // omitted resolution and audio flag price the documented 720p no-audio row.
-  it("applies the seedance-1.5-pro 720p no-audio defaults", () => {
+  it("fails closed on retired seedance-1.5-pro instead of quoting its old rate", () => {
     const result = kieEstimate({
       model: "bytedance/seedance-1.5-pro",
       input: { prompt: "xxx", aspect_ratio: "16:9", duration: 6 },
     });
 
-    expect(result.usd).toBeCloseTo(0.105, 10); // 6 × 0.0175
-    expect(result.breakdown).toEqual({
-      units: 6,
-      unit: "seconds",
-      perUnitUsd: 0.0175,
-    });
-    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join()).toContain("bytedance/seedance-1.5-pro");
   });
 
   // The no-duration-field models still take their tier from the payload; the
@@ -2767,7 +2704,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "kling/v2-1-pro",
       "kling/v2-1-master-text-to-video",
       "kling/v2-1-master-image-to-video",
-      "bytedance/seedance-1.5-pro",
       "topaz/video-upscale",
       "infinitalk/from-audio",
       "elevenlabs/text-to-speech-multilingual-v2",

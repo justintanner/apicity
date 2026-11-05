@@ -2480,33 +2480,6 @@ export const kie: Record<string, ModelPricing> = {
     "5"
   ),
 
-  // Seedance 1.5 Pro — per second, 6 rates by resolution × generate_audio.
-  // Both selectors carry the schema's documented defaults (720p, audio off),
-  // so a payload that omits them prices the page's documented no-audio 720p
-  // row. `duration` is a required int (4-12), so no hint channel is needed.
-  "bytedance/seedance-1.5-pro": {
-    kind: "perUnit",
-    unit: "seconds",
-    units: seconds,
-    select: [
-      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
-      {
-        name: "generate_audio",
-        pick: (p) =>
-          asObject(p.input)?.generate_audio === true ? "audio" : undefined,
-      },
-    ],
-    rates: {
-      "480p": 0.00875,
-      "480p|audio": 0.0175,
-      "720p": 0.0175,
-      "720p|audio": 0.035,
-      "1080p": 0.0375,
-      "1080p|audio": 0.075,
-    },
-    source: pricePage("https://kie.ai/seedance-1-5-pro"),
-  },
-
   // Seedance 1.0 — the five bytedance/v1-* ids, priced from the product page
   // https://kie.ai/bytedance/seedance-v1 as read on 2026-09-26 (ac-egs1ww).
   // Neither the 2026-08-22 441-row KIE catalog nor the 2026-09-11 feed has a

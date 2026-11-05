@@ -113,9 +113,6 @@ export const MODEL_SLUGS = {
     "kling/v2-1-master-text-to-video": "kling2p1m",
     "kling/v2-1-master-image-to-video": "kling2p1m",
 
-    // Video — Bytedance Seedance 1.5
-    "bytedance/seedance-1.5-pro": "sd1p5p",
-
     // Video — Bytedance Seedance 1.0 (priced from its kie.ai product page,
     // ac-egs1ww). Lite, Pro and Pro Fast are three price ladders, so three
     // slugs; text- and image-to-video are modalities and share one.
@@ -1175,7 +1172,6 @@ export const MODEL_DISPLAY = {
     "kling/v2-1-master-text-to-video": "Kling 2.1 Master",
     "kling/v2-1-master-image-to-video": "Kling 2.1 Master",
 
-    "bytedance/seedance-1.5-pro": "Seedance 1.5 Pro",
     "bytedance/v1-lite-image-to-video": "Seedance 1 Lite",
     "bytedance/v1-lite-text-to-video": "Seedance 1 Lite",
     "bytedance/v1-pro-image-to-video": "Seedance 1 Pro",

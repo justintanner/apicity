@@ -120,13 +120,17 @@ one. What was rejected, and why:
 
 ### Release preflight
 
-Run both checks before slinging a release. Each is cheap here and expensive
+Run these checks before slinging a release. Each is cheap here and expensive
 later:
 
 ```bash
 pnpm run check:npm-auth        # the publish credential
 pnpm run check:pack-freshness  # the formula the city will actually run
+pnpm run check:kie-feed-drift  # the KIE price table against KIE's live feed
 ```
+
+The formula runs the feed check itself, but it runs after the slow gates, so
+running it here first can save a stopped release.
 
 The freshness check finds the enclosing `city.toml` from the repository, so
 a rig's own `pack.toml` does not hide city imports. For a checkout outside the
@@ -180,7 +184,11 @@ here. Identify a step by name, never by number.
    any gate spends time — see [Rotating the npm publish
    token](#rotating-the-npm-publish-token)
 3. `verify-main-gates` — on `main`, run `pnpm run ci:local` (builds before
-   tests), then `pnpm run test:run`, and verify GitHub CI is green for `origin/main`
+   tests), then `pnpm run test:run`, and verify GitHub CI is green for
+   `origin/main`. Then run `pnpm run check:kie-feed-drift`, which CI cannot run
+   because it reads the live feed. Exit 1 (a cell differs) stops the release and
+   names the cell. Exit 2 (the feed cannot be read) is a warning recorded on the
+   release bead, never a stop
 4. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
    then run `pnpm run ci:local` (build + lint + tests)
 5. `prepare-release-commit` — verify every package has

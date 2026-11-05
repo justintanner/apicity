@@ -185,7 +185,7 @@ hosts.
 
 | Bead        | Family | What                                                                 |
 | ----------- | ------ | -------------------------------------------------------------------- |
-| `ac-cgqsxq` | fal    | Read the usage API once its scope returns. Settles Seedance US       |
+| `ac-89cvvz` | fal    | Settle Seedance US with one billed US call. Needs a spend ruling     |
 | `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
 | `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                             |
 | `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it          |
@@ -223,8 +223,16 @@ Those April calls now read `no-estimate`, so `grok-4` left the guard's list belo
   0.0214, and 2.5 US's card agrees. Against that, 2.0 US's card still says 0.0168, and
   fal's FAQ says US hosting is priced separately. That may be a real cut or a data error,
   and only a bill can say. A new call would not: its header reports the same units at
-  either rate. So `ac-cgqsxq`'s usage read decides, and until then the estimate runs 20%
-  over if the cut is real, which is the safe direction.
+  either rate. The usage API can, once a US call is billed. `ac-cgqsxq` read it on 2026-11-05
+  and every US bill is from 2026-10-16, so `ac-89cvvz` waits for one. Until then the estimate
+  runs 20% over if the cut is real, which is the safe direction.
+
+  That read also checked the table against fal's bill, per UTC day and endpoint. Recorded
+  units agree on 253 pairs, with none above the bill. Where the traffic is the same,
+  estimates agree within 1% on 121 of 134 pairs, 45.79 of 46.18 USD. The other 13 are older
+  rates that today's list has moved past, and Vidu Q4's promotion, so there is nothing to
+  correct. Another 96 pairs (30.14 USD) carry no per-call estimate, so they are not checked
+  in dollars.
 
 `ac-nr7mpd` closed Alibaba's `wan2.7-videoedit`, also with no paid call. This pass read
 its ratio as the output following its source, but the recording's 10.04 s is 5.02 s in and

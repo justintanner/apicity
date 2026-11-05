@@ -577,6 +577,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** the unpriced billing rows for KIE
+  `gemini.v1.models.gemini35Flash.streamGenerateContent`,
+  `gemini25Pro.v1.chat.completions`, and
+  `gemini35FlashOpenai.v1.chat.completions`. KIE retired those routes
+  (HTTP 410 on 2026-11-05), so `@apicity/kie` no longer exposes them and
+  `@apicity/cost` no longer keeps a billing record. There was no slug or
+  `PRICING.kie` rate to remove. An estimate for one of these dot paths fails
+  closed (ac-62hbwl).
+
 - **Breaking:** the `fal-ai/sora-2/text-to-video` and
   `fal-ai/sora-2/image-to-video` rows, with their `MODEL_SLUGS.fal` and
   `MODEL_DISPLAY.fal` keys, because fal has retired them (see `@apicity/fal`).

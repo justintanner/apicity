@@ -229,7 +229,6 @@ export {
   FluxKontextRecordInfoDataSchema,
   FluxKontextRecordInfoResponseSchema,
   FluxKontextSuccessFlagSchema,
-  KieGemini35FlashStreamGenerateContentRequestSchema,
   KieGemini36FlashStreamGenerateContentRequestSchema,
   KieGemini37FlashStreamGenerateContentRequestSchema,
   KieGemini38FlashStreamGenerateContentRequestSchema,
@@ -267,19 +266,6 @@ export {
   KieGpt52ToolFunctionSchema,
   KieGpt52ToolSchema,
   KieGpt52ToolTypeSchema,
-  KieGemini35FlashOpenaiChatCompletionsRequestSchema,
-  KieGemini35FlashOpenaiContentItemSchema,
-  KieGemini35FlashOpenaiContentItemTypeSchema,
-  KieGemini35FlashOpenaiMediaContentItemSchema,
-  KieGemini35FlashOpenaiMessageRoleSchema,
-  KieGemini35FlashOpenaiMessageSchema,
-  KieGemini35FlashOpenaiReasoningEffortSchema,
-  KieGemini35FlashOpenaiResponseFormatSchema,
-  KieGemini35FlashOpenaiTextContentItemSchema,
-  KieGemini35FlashOpenaiToolFunctionParametersSchema,
-  KieGemini35FlashOpenaiToolFunctionSchema,
-  KieGemini35FlashOpenaiToolSchema,
-  KieGemini35FlashOpenaiToolTypeSchema,
   KieGemini36FlashOpenaiChatCompletionsRequestSchema,
   KieGemini36FlashOpenaiContentItemSchema,
   KieGemini36FlashOpenaiContentItemTypeSchema,
@@ -345,19 +331,6 @@ export {
   KieGemini3ProToolFunctionSchema,
   KieGemini3ProToolSchema,
   KieGemini3ProToolTypeSchema,
-  KieGemini25ProChatCompletionsRequestSchema,
-  KieGemini25ProContentItemSchema,
-  KieGemini25ProContentItemTypeSchema,
-  KieGemini25ProMediaContentItemSchema,
-  KieGemini25ProMessageRoleSchema,
-  KieGemini25ProMessageSchema,
-  KieGemini25ProReasoningEffortSchema,
-  KieGemini25ProResponseFormatSchema,
-  KieGemini25ProTextContentItemSchema,
-  KieGemini25ProToolFunctionParametersSchema,
-  KieGemini25ProToolFunctionSchema,
-  KieGemini25ProToolSchema,
-  KieGemini25ProToolTypeSchema,
   KieGeminiInlineDataSchema,
   KieGeminiPartSchema,
   KieGeminiRoleSchema,
@@ -464,13 +437,11 @@ export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 export { createGpt52Provider } from "./gpt-52";
-export { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 export { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
 export { createGemini37FlashOpenaiProvider } from "./gemini-37-flash-openai";
 export { createGemini38FlashOpenaiProvider } from "./gemini-38-flash-openai";
 export { createGemini4ArgonOpenaiProvider } from "./gemini-4-argon-openai";
 export { createGemini3ProProvider } from "./gemini-3-pro";
-export { createGemini25ProProvider } from "./gemini-25-pro";
 
 // Export SSE utility
 export { sseDataToIterable as sseToIterable } from "./sse";
@@ -1216,8 +1187,6 @@ export type {
   KieGeminiTool,
   KieGeminiThinkingConfig,
   KieGeminiGenerationConfig,
-  KieGemini35FlashStreamGenerateContentRequest,
-  KieGemini35FlashStreamGenerateContentParsedRequest,
   KieGemini36FlashStreamGenerateContentRequest,
   KieGemini36FlashStreamGenerateContentParsedRequest,
   KieGemini37FlashStreamGenerateContentRequest,
@@ -1518,21 +1487,6 @@ export type {
   KieGpt52ToolFunctionName,
   KieGpt52ToolFunctionParameters,
   KieGpt52ToolType,
-  KieGemini35FlashOpenaiChatCompletionsRequest,
-  KieGemini35FlashOpenaiChatCompletionsRequestInput,
-  KieGemini35FlashOpenaiChatCompletionsParsedRequest,
-  KieGemini35FlashOpenaiContentItem,
-  KieGemini35FlashOpenaiContentItemType,
-  KieGemini35FlashOpenaiMediaContentItem,
-  KieGemini35FlashOpenaiMessage,
-  KieGemini35FlashOpenaiMessageRole,
-  KieGemini35FlashOpenaiReasoningEffort,
-  KieGemini35FlashOpenaiResponseFormat,
-  KieGemini35FlashOpenaiTextContentItem,
-  KieGemini35FlashOpenaiTool,
-  KieGemini35FlashOpenaiToolFunction,
-  KieGemini35FlashOpenaiToolFunctionParameters,
-  KieGemini35FlashOpenaiToolType,
   KieGemini36FlashOpenaiChatCompletionsRequest,
   KieGemini36FlashOpenaiChatCompletionsRequestInput,
   KieGemini36FlashOpenaiChatCompletionsParsedRequest,
@@ -1608,21 +1562,6 @@ export type {
   KieGemini3ProToolFunction,
   KieGemini3ProToolFunctionParameters,
   KieGemini3ProToolType,
-  KieGemini25ProChatCompletionsRequest,
-  KieGemini25ProChatCompletionsRequestInput,
-  KieGemini25ProChatCompletionsParsedRequest,
-  KieGemini25ProContentItem,
-  KieGemini25ProContentItemType,
-  KieGemini25ProMediaContentItem,
-  KieGemini25ProMessage,
-  KieGemini25ProMessageRole,
-  KieGemini25ProReasoningEffort,
-  KieGemini25ProResponseFormat,
-  KieGemini25ProTextContentItem,
-  KieGemini25ProTool,
-  KieGemini25ProToolFunction,
-  KieGemini25ProToolFunctionParameters,
-  KieGemini25ProToolType,
 } from "./zod";
 
 export type {
@@ -1631,9 +1570,6 @@ export type {
   KieGeminiResponseContent,
   KieGeminiCandidate,
   KieGeminiUsageMetadata,
-  KieGemini35FlashGenerateContentResponse,
-  KieGemini35FlashStreamGenerateContentChunk,
-  KieGemini35FlashStreamGenerateContentResult,
   KieGemini36FlashGenerateContentResponse,
   KieGemini36FlashStreamGenerateContentChunk,
   KieGemini36FlashStreamGenerateContentResult,
@@ -1669,18 +1605,6 @@ export type {
   KieGpt52CompletionTokensDetails,
   KieGpt52Provider,
 } from "./gpt-52";
-
-export type {
-  KieGemini35FlashOpenaiChatChoice,
-  KieGemini35FlashOpenaiChatCompletionChunk,
-  KieGemini35FlashOpenaiChatCompletionResponse,
-  KieGemini35FlashOpenaiChatCompletionsResult,
-  KieGemini35FlashOpenaiChatDelta,
-  KieGemini35FlashOpenaiChatMessage,
-  KieGemini35FlashOpenaiChatUsage,
-  KieGemini35FlashOpenaiCompletionTokensDetails,
-  KieGemini35FlashOpenaiProvider,
-} from "./gemini-35-flash-openai";
 
 export type {
   KieGemini36FlashOpenaiChatChoice,
@@ -1741,15 +1665,3 @@ export type {
   KieGemini3ProCompletionTokensDetails,
   KieGemini3ProProvider,
 } from "./gemini-3-pro";
-
-export type {
-  KieGemini25ProChatChoice,
-  KieGemini25ProChatCompletionChunk,
-  KieGemini25ProChatCompletionResponse,
-  KieGemini25ProChatCompletionsResult,
-  KieGemini25ProChatDelta,
-  KieGemini25ProChatMessage,
-  KieGemini25ProChatUsage,
-  KieGemini25ProCompletionTokensDetails,
-  KieGemini25ProProvider,
-} from "./gemini-25-pro";

@@ -2617,8 +2617,11 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "seconds",
       reason:
-        "Neither the pricing page nor the docs price audio on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw",
-      source: { url: "https://fireworks.ai/pricing", asOf: "2026-11-04" },
+        "Fireworks deprecated audio inference on 2026-06-10 and publishes no rate on 2026-11-05, so it fails closed; follow-up ac-8l1x3z",
+      source: {
+        url: "https://docs.fireworks.ai/updates/changelog",
+        asOf: "2026-11-05",
+      },
     },
     [
       "POST inference.v1.audio.batch.transcriptions",
@@ -2679,8 +2682,11 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "images",
       reason:
-        "Neither the pricing page nor the docs price image workflows on 2026-11-04, so P7 fails it closed; follow-up ac-nworgw",
-      source: { url: "https://fireworks.ai/pricing", asOf: "2026-11-04" },
+        "Fireworks deprecated image generation on 2026-06-10 and publishes no rate on 2026-11-05, so it fails closed; follow-up ac-8l1x3z",
+      source: {
+        url: "https://docs.fireworks.ai/updates/changelog",
+        asOf: "2026-11-05",
+      },
     },
     [
       "POST inference.v1.workflows.kontext",

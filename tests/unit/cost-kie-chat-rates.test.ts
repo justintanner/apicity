@@ -100,7 +100,6 @@ describe("KIE published chat rates", () => {
 
   it.each([
     "gemini.v1.models.gemini35Flash.streamGenerateContent",
-    "gemini25Pro.v1.chat.completions",
     "gemini35FlashOpenai.v1.chat.completions",
     "api.v1.suno.recovery",
   ])("keeps unpublished route %s unavailable", (dotPath) => {
@@ -112,6 +111,17 @@ describe("KIE published chat rates", () => {
     });
     expect(result.status).toBe("unavailable");
     expect(result.billing.kind).toBe("unpriced");
+  });
+
+  it("quotes zero for retired Gemini 2.5 Pro, because the docs say it is not charged", () => {
+    const result = estimateEndpoint({
+      provider: "kie",
+      method: "POST",
+      dotPath: "gemini25Pro.v1.chat.completions",
+      costHints: counts,
+    });
+    expect(result).toMatchObject({ usd: 0, status: "zero", source: "free" });
+    expect(result.billing.kind).toBe("free");
   });
 
   it("does not borrow a newer model rate or invent a missing media rate", () => {

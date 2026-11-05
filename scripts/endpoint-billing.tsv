@@ -971,7 +971,7 @@ kie	api.v1.runway.extend	POST	metered	per-model		https://api.kie.ai/client/v1/mo
 kie	api.v1.runway.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.style.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.suno.cover.generate	POST	metered	per-model	The feed lists 0 credits for this call today.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	api.v1.suno.recovery	POST	unpriced	per-model	The docs and the feed publish no price, so P4 fails it closed unless a price appears; follow-up ac-rnclk7	https://docs.kie.ai/suno-api/recovery-audio.md	2026-11-04
+kie	api.v1.suno.recovery	POST	unpriced	per-model	KIE's catalog lists this model with a null price, and its docs and feed state neither a charge nor that it is free; follow-up ac-27hri6	https://docs.kie.ai/suno-api/recovery-audio.md	2026-11-05
 kie	api.v1.veo.extend	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.veo.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.veo.get4kVideo	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -983,13 +983,13 @@ kie	api.v1.voice.validate	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS
 kie	api.v1.wav.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	claude.v1.messages	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	codex.v1.responses	POST	metered	tokens	Published chat models have token rows; unknown models remain unpriced. credits_consumed states the reported charge.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	unpriced	tokens	KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl	https://docs.kie.ai/market/gemini/gemini-3-5-flash.md	2026-11-05
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini.v1.models.gemini38Flash.streamGenerateContent	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini25Pro.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini25Pro.v1.chat.completions	POST	free		Docs: retired upstream, so requests return an error (code 410) and are not charged	https://docs.kie.ai/market/gemini/gemini-2-5-pro.md	2026-11-05
 kie	gemini31Pro.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	No current published rate; product pages redirect to newer models; follow-up ac-rnclk7	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
+kie	gemini35FlashOpenai.v1.chat.completions	POST	unpriced	tokens	KIE retired Gemini 3.5 Flash and requests answer 410, but its docs do not say a failed request is free; follow-up ac-62hbwl	https://docs.kie.ai/market/gemini/gemini-3-5-flash.md	2026-11-05
 kie	gemini36FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini37FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	gemini38FlashOpenai.v1.chat.completions	POST	metered	tokens	credits_consumed states the charge in every response; the feed lists this model's rates	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04

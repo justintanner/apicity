@@ -1,6 +1,7 @@
 import { ALIBABA_CHAT } from "./alibaba-chat";
-import type { ModelPricing } from "./types";
-import { asNumber, asObject } from "./helpers";
+import type { CostHints } from "../types";
+import type { ModelPricing, PerUnitPricing } from "./types";
+import { asNumber, asObject, asString, hintInputSeconds } from "./helpers";
 
 const source = {
   url: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
@@ -13,6 +14,7 @@ const source = {
 // for wan2.7-i2v against $0.10/s international) — do not mix the two.
 const mediaSource = { ...source, asOf: "2026-07-20" };
 const wan27ImageSource = { ...source, asOf: "2026-07-22" };
+const wan27VideoSource = { ...source, asOf: "2026-11-05" };
 
 // DashScope image endpoints carry the batch count in `parameters.n`
 // (1-12 for wan2.7-image*, 1-6 for the qwen-image* family). Absent means a
@@ -33,28 +35,44 @@ const flatImage = (
   source: rateSource,
 });
 
-// `parameters.duration` is the requested output length in seconds. The
-// schema also accepts the literal 0, which asks the model to match the
-// source clip — that length is only known upstream, so both the 0 case and
-// the omitted case fall back to the upstream 5s default.
+// wan2.7 video bills per second by resolution: the International rows of the
+// pricing page print $0.10 at 720P and $0.15 at 1080P for both models (read
+// 2026-11-05), and both API references default `parameters.resolution` to 1080P.
+const WAN_27_VIDEO_RATES: Record<string, number> = {
+  "720P": 0.1,
+  "1080P": 0.15,
+};
+const wan27Resolution: PerUnitPricing["select"][number] = {
+  name: "resolution",
+  pick: (p) => asString(asObject(p.parameters)?.resolution) ?? "1080P",
+};
+
+// `parameters.duration` is the requested output length in seconds, with an
+// upstream default of 5.
 const videoSeconds = (p: Record<string, unknown>): number => {
   const duration = asNumber(asObject(p.parameters)?.duration);
   return duration !== undefined && duration > 0 ? duration : 5;
 };
 
-// wan2.7 video bills per second of generated output. There is deliberately
-// no resolution selector: the pricing table publishes a single 720P row per
-// wan2.7 video model, so a 1080P request — which the request schema accepts
-// — has no separately published rate. A flat entry keeps every payload the
-// schema allows estimable; add a selector if Alibaba publishes a 1080P tier.
-const flatVideo = (perUnit: number): ModelPricing => ({
-  kind: "perUnit",
-  unit: "seconds",
-  units: videoSeconds,
-  select: [],
-  rates: { "": perUnit },
-  source: mediaSource,
-});
+// wan2.7-videoedit bills both videos: usage.duration, "used for billing", is
+// input_video_duration + output_video_duration in the API reference, and the
+// pricing page's rule for this table says the same. The output keeps its source's
+// length, and `parameters.duration` only truncates it (omitted or 0 does not). The
+// request carries no length for the source, so an edit prices only through
+// costHints.inputDurationSeconds. alibaba_1329897167/wan-videoedit_1470878067 kept
+// a 5.02 s source and reported 5.02 + 5.02 = 10.04.
+const videoEditSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const input = hintInputSeconds(hints);
+  if (input === undefined) return undefined;
+  const duration = asNumber(asObject(p.parameters)?.duration);
+  return (
+    input +
+    (duration !== undefined && duration > 0 ? Math.min(duration, input) : input)
+  );
+};
 
 export const alibaba: Record<string, ModelPricing> = {
   // Historical catalog identity retained for consumers. The scoped selector
@@ -92,6 +110,26 @@ export const alibaba: Record<string, ModelPricing> = {
   "wan2.7-image-pro": flatImage(0.075, wan27ImageSource),
 
   // Video — Wan 2.7 image-to-video and instruction-based video editing.
-  "wan2.7-i2v": flatVideo(0.1),
-  "wan2.7-videoedit": flatVideo(0.1),
+  "wan2.7-i2v": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: videoSeconds,
+    select: [wan27Resolution],
+    rates: WAN_27_VIDEO_RATES,
+    source: wan27VideoSource,
+  },
+  "wan2.7-videoedit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: videoEditSeconds,
+    select: [wan27Resolution],
+    rates: WAN_27_VIDEO_RATES,
+    warn: (_p, hints) =>
+      hintInputSeconds(hints) === undefined
+        ? [
+            "alibaba 'wan2.7-videoedit': an edit bills its source's seconds beside its output's, and the request carries no length for the source; pass costHints.inputDurationSeconds",
+          ]
+        : [],
+    source: wan27VideoSource,
+  },
 };

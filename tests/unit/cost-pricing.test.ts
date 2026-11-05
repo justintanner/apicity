@@ -215,19 +215,19 @@ describe("PRICING data", () => {
     }
   });
 
-  it("alibaba prices wan2.7 video at a flat per-second rate", () => {
+  it("alibaba prices wan2.7 video per second by resolution", () => {
     for (const model of ["wan2.7-i2v", "wan2.7-videoedit"]) {
       expect(PRICING.alibaba[model]).toMatchObject({
         kind: "perUnit",
         unit: "seconds",
-        select: [],
-        rates: { "": 0.1 },
+        rates: { "720P": 0.1, "1080P": 0.15 },
+        source: { asOf: "2026-11-05" },
       });
     }
   });
 
   it("stamps the new alibaba media rates with their own asOf", () => {
-    const entry = PRICING.alibaba["wan2.7-i2v"];
+    const entry = PRICING.alibaba["qwen-image-2.0"];
     expect(entry.source.asOf).toBe("2026-07-20");
     expect(entry.source.asOf).not.toBe(PRICING_AS_OF);
   });

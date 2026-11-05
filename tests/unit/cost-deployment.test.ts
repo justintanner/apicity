@@ -164,7 +164,10 @@ describe("deployment-aware pricing", () => {
   it("does not use International media rates for mainland traffic", () => {
     const req = {
       provider: "alibaba" as const,
-      payload: { model: "wan2.7-i2v", parameters: { duration: 5 } },
+      payload: {
+        model: "wan2.7-i2v",
+        parameters: { resolution: "720P", duration: 5 },
+      },
     };
     expect(computeEstimate(req).warnings.join()).toContain("Chinese mainland");
     expect(

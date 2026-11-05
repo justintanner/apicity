@@ -271,6 +271,56 @@ describe("fal rows the pass left open", () => {
   );
 });
 
+// An edit bills both videos, and usage.duration, "used for billing", says so.
+describe("Alibaba wan2.7-videoedit", () => {
+  const har = read("alibaba_1329897167/wan-videoedit_1470878067");
+  const payload = payloadOf(har, /video-synthesis/);
+  const { usage } = JSON.parse(
+    har.log.entries.at(-1)!.response.content!.text!
+  ) as {
+    usage: {
+      duration: number;
+      input_video_duration: number;
+      output_video_duration: number;
+    };
+  };
+  const estimate = (costHints?: Record<string, unknown>) =>
+    estimateEndpoint({
+      provider: "alibaba",
+      method: "POST",
+      dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+      payload,
+      costHints: { alibabaDeploymentScope: "International", ...costHints },
+    });
+
+  it("prices its recording's source and output at the seconds it reported", () => {
+    expect(payload.parameters).toMatchObject({ resolution: "720P" });
+    expect(payload.parameters).not.toHaveProperty("duration");
+    expect(usage).toMatchObject({
+      duration: 10.04,
+      input_video_duration: 5.02,
+      output_video_duration: 5.02,
+    });
+    const priced = estimate({
+      inputDurationSeconds: usage.input_video_duration,
+    });
+    expect(priced.status).toBe("priced");
+    expect(priced.breakdown).toMatchObject({
+      units: usage.duration,
+      perUnitUsd: 0.1,
+    });
+    expect(priced.usd).toBeCloseTo(1.004, 10);
+  });
+
+  it("gives no figure without its source's length, where it once assumed 5 s", () => {
+    const bare = estimate();
+    expect(bare.usd).toBe(0);
+    expect(bare.status).toBe("unavailable");
+    expect(classifyEstimate(bare)).toBe("prohibitive");
+    expect(bare.warnings[0]).toContain("costHints.inputDurationSeconds");
+  });
+});
+
 describe("KIE corrections", () => {
   it("prices pixverse-v6/reference-to-video at the 4 credits its recording billed", () => {
     const har = read(

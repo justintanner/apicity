@@ -141,7 +141,8 @@ export interface CostHints {
   // no valid value fails closed with a warning that names this field.
   // Fal `xai/grok-imagine-video/extend-video` reads it as the length of its
   // required source `video_url`, billed beside the output, with
-  // `inputResolution`.
+  // `inputResolution`. Alibaba `wan2.7-videoedit` reads it as the length of its
+  // source video, billed beside the output that keeps that length.
   // Cost-only, like the rest of CostHints: never merged into payload, never
   // canonicalHash'd, never signed.
   inputDurationSeconds?: number;

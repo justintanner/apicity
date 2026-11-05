@@ -453,20 +453,21 @@ Like every `costHints` field it is cost-only: never merged into `payload`, never
 sent upstream, never canonicalized or signed — see [Hash and OTP
 guarantee](#hash-and-otp-guarantee) below.
 
-| Provider | Pricing key                                    | Input side follows                                                                            |
-| -------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `kie`    | `wan/3-0-video`                                | `reference_video_urls` clip length                                                            |
-| `kie`    | `wan/3-0-video-prime`                          | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2`                         | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-fast`                    | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-mini`                    | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-5`                       | `reference_video_urls` clip length (the "with video" column; audio selects no rate)           |
-| `kie`    | `minimax-h3/reference-to-video`                | `reference_video_urls` clip length, plus the image surcharge                                  |
-| `kie`    | `happyhorse/video-edit`                        | source `video_url`: the declared `durationSeconds` unless `inputDurationSeconds` overrides it |
-| `fal`    | `bytedance/seedance-2.0/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
-| `fal`    | `bytedance/seedance-2.5/reference-to-video`    | `video_urls` clip length, at least 4 s                                                        |
-| `fal`    | `bytedance/seedance-2.5/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
-| `fal`    | `xai/grok-imagine-video/extend-video`          | source `video_url` length, with `inputResolution`                                             |
+| Provider  | Pricing key                                    | Input side follows                                                                            |
+| --------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `kie`     | `wan/3-0-video`                                | `reference_video_urls` clip length                                                            |
+| `kie`     | `wan/3-0-video-prime`                          | `reference_video_urls` clip length                                                            |
+| `kie`     | `bytedance/seedance-2`                         | `reference_video_urls` clip length                                                            |
+| `kie`     | `bytedance/seedance-2-fast`                    | `reference_video_urls` clip length                                                            |
+| `kie`     | `bytedance/seedance-2-mini`                    | `reference_video_urls` clip length                                                            |
+| `kie`     | `bytedance/seedance-2-5`                       | `reference_video_urls` clip length (the "with video" column; audio selects no rate)           |
+| `kie`     | `minimax-h3/reference-to-video`                | `reference_video_urls` clip length, plus the image surcharge                                  |
+| `kie`     | `happyhorse/video-edit`                        | source `video_url`: the declared `durationSeconds` unless `inputDurationSeconds` overrides it |
+| `fal`     | `bytedance/seedance-2.0/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
+| `fal`     | `bytedance/seedance-2.5/reference-to-video`    | `video_urls` clip length, at least 4 s                                                        |
+| `fal`     | `bytedance/seedance-2.5/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
+| `fal`     | `xai/grok-imagine-video/extend-video`          | source `video_url` length, with `inputResolution`                                             |
+| `alibaba` | `wan2.7-videoedit`                             | source video length                                                                           |
 
 `xai/grok-imagine-video/extend-video` bills the new `duration` seconds at 0.05
 USD/s (480p) or 0.07 USD/s (720p), plus 0.01 USD per source second. The output
@@ -474,6 +475,11 @@ keeps the source's resolution, at most 720p, and the request has no resolution
 field, so an estimate needs both `inputDurationSeconds` and `inputResolution`
 (`"480p"` or `"720p"`; a larger source declares `"720p"`), and fails closed
 without them.
+
+`wan2.7-videoedit` bills its source's seconds beside its output's, at 0.10 USD/s
+(720P) or 0.15 USD/s (1080P, the default). The output keeps the source's length,
+and `parameters.duration` only truncates it, so an estimate fails closed without
+`inputDurationSeconds`, with or without a `duration`.
 
 The fal Seedance entries bill the clips' frames (24 per declared second) at
 the output's size, then multiply the whole count by 0.6. A clip length under

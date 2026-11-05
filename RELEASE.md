@@ -43,15 +43,48 @@ The workflow has one executable step that carries
 `gc.run_target=apicity/gc.run-operator` by default. The whole release stays in
 one run-operator turn so it cannot strand itself between release phases.
 
-### Register or refresh the release pack
+### Which copy of the formula runs
 
-The city runs the release formula from a **pack import pinned to one commit of
-this repository**, not from the working tree. That pin never moves on its own,
-so a city registered once keeps serving the formula as it stood that day. This
-went wrong in `ac-1yyttm`: the installed copy was ten days and one merged PR
-behind `main` — missing the `check:npm-auth` gate entirely — while
-`gc import check` reported `Import state OK` throughout, because it validates
-the install against its own lock and never against upstream.
+`mol-apicity-release` exists in two places, and the scope decides which one you
+get. `gc formula show mol-apicity-release --json` lists the layers in
+`search_paths`, lowest priority first, and the last layer holding the formula
+wins:
+
+| Scope | You are in it with                                                                                                | `search_paths` ends at                           | The copy you get                          |
+| ----- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------- |
+| City  | `--city /gc`, or a working directory of `/gc` with no `GC_RIG` set                                                | `/gc/formulas`                                   | the pack import pinned in `/gc/pack.toml` |
+| Rig   | `--rig apicity`, `GC_RIG=apicity` (set in every rig agent's session), or a working directory inside `/gc/apicity` | `/gc/apicity/formulas`, the rig's `formulas_dir` | the rig checkout's working tree           |
+
+**A release pour compiles in rig scope**, wherever you run the sling from.
+`gc sling apicity/core.control-dispatcher` targets a rig agent, and sling
+resolves the formula through that agent's rig layers (`SlingFormulaSearchPaths`
+in the gc 1.5.1 source). So `gc formula show` in city scope does not show the
+copy a sling would pour.
+
+The two copies move separately:
+
+- **The rig copy** moves with the rig checkout. Fast-forwarding `/gc/apicity`
+  changes rig scope at once and leaves city scope alone.
+- **The pinned copy** moves only with the pin, and the pin never moves on its
+  own, so a city registered once keeps serving that day's formula in city scope.
+  This went wrong in `ac-1yyttm`: the installed copy was ten days and one merged
+  PR behind `main` — missing the `check:npm-auth` gate entirely — while
+  `gc import check` reported `Import state OK` throughout, because it validates
+  the install against its own lock and never against upstream.
+
+**A formula change ships to the city with the next pin move.** The mayor's pour
+runs `move-pin.sh` first, at the pour-time `main` commit. It fast-forwards the
+rig checkout, moves the pin to that commit and runs `gc import install`, so both
+scopes resolve the same bytes for that pour. If the fast-forward is refused, it
+stops with the pin unedited. A sling you run by hand skips all of this and pours
+whatever the rig checkout holds.
+
+The pin still matters even though a pour compiles from the rig. It governs the
+city-scope formula, the `apicity-release.apicity` skill agents load, and the
+commit the city's `tests/test_image_versions.sh` expects in `pack.toml` and
+`packs.lock`.
+
+### Register or refresh the release pack
 
 **First registration**, once per city:
 
@@ -70,9 +103,13 @@ city on 2026-08-31:
 | `gc import upgrade apicity-release`                | prints `Upgraded import` and exits **0** while moving only `pin.fetched`. A `sha:` constraint pins exactly, so there is nothing to upgrade within it. The reassuring output is the trap. |
 | `gc import add /gc/apicity --name apicity-release` | exits **1** with `import already exists`, with or without `--version`.                                                                                                                   |
 
-What moves the pin is editing the declared version and reinstalling:
+What moves the pin is editing the declared version and reinstalling. The mayor's
+`move-pin.sh` does this at pour time. By hand, fast-forward the rig too, so that
+both scopes land on the same commit:
 
 ```bash
+git -C /gc/apicity fetch origin main
+git -C /gc/apicity merge --ff-only origin/main   # the copy a pour compiles
 git -C /gc/apicity rev-parse main    # the commit you want the city to serve
 
 # In /gc/pack.toml, under [imports.apicity-release], set:
@@ -87,13 +124,15 @@ formula loads; it does not prove it is the current one, and `gc import check`
 exits 0 against a pin years out of date:
 
 ```bash
-gc formula show mol-apicity-release   # loads, 2 steps: release, workflow-finalize
+gc formula show mol-apicity-release --city /gc    # the pinned copy loads
+gc formula show mol-apicity-release --rig apicity # the rig copy loads
 pnpm run check:pack-freshness         # exit 0 = the pin equals main
 
 # Byte-level proof. The installed copy is content-addressed, so its directory
-# changes every time the pin moves and stale copies linger beside it; the
-# digest the city serves must equal the checkout's.
+# changes every time the pin moves and stale copies linger beside it; after a
+# refresh, the rig's digest and the installed digest must equal the checkout's.
 sha256sum .beads/formulas/mol-apicity-release.formula.toml
+sha256sum /gc/apicity/formulas/mol-apicity-release.formula.toml
 find /root/.gc/cache/repos -path '*/.beads/formulas/mol-apicity-release.formula.toml' -exec sha256sum {} +
 ```
 
@@ -102,8 +141,9 @@ find /root/.gc/cache/repos -path '*/.beads/formulas/mol-apicity-release.formula.
 
 ### Why the refresh is manual
 
-Refreshing stays a manual step with a loud check, rather than an automatic
-one. What was rejected, and why:
+Nothing in this repository refreshes the pin. The mayor's pour does it from the
+city side, and anything else is the manual step above, with a loud check. What
+was rejected, and why:
 
 - **A post-merge CI job that re-pins and reloads.** GitHub-hosted runners have
   neither the `gc` binary nor access to `/gc`, and giving CI authority to mutate
@@ -125,7 +165,7 @@ later:
 
 ```bash
 pnpm run check:npm-auth        # the publish credential
-pnpm run check:pack-freshness  # the formula the city will actually run
+pnpm run check:pack-freshness  # the pack pin against main
 pnpm run check:kie-feed-drift  # the KIE price table against KIE's live feed
 ```
 
@@ -136,13 +176,19 @@ The freshness check finds the enclosing `city.toml` from the repository, so
 a rig's own `pack.toml` does not hide city imports. For a checkout outside the
 city, pass `pnpm run check:pack-freshness -- --city /path/to/city`.
 
+It compares the pin with the local `main` ref, which in the city is the rig
+checkout's branch, so a rig that has not fast-forwarded can report `fresh`
+against an old `main`. It never reads the rig's copy of the formula. Before a
+sling you run by hand, also compare `git -C /gc/apicity rev-parse HEAD` with
+`origin/main`, because that checkout is what the pour compiles.
+
 `check:pack-freshness` exit codes:
 
 | Exit | Verdict           | Meaning                                                                                                                                            |
 | ---- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0    | `fresh`           | the pin equals `main`. Verifies the _pin_, not the installed bytes — pair it with `gc import check`, which covers the other half                   |
 | 0    | `skipped`         | `gc` is not on `PATH`, so freshness was **not verified**. This is not a pass                                                                       |
-| 1    | `stale-content`   | the pin is behind `main` and watched pack content differs: the city is serving behavior this repository has replaced                               |
+| 1    | `stale-content`   | the pin is behind `main` and watched pack content differs: the pinned copy carries behavior this repository has replaced                           |
 | 1    | `stale-pin`       | the pin is behind `main` but served content is identical. Re-pin anyway, so the next content change is not withheld                                |
 | 1    | `pin-unreachable` | the pinned commit is not in this checkout's history, so freshness could not be decided                                                             |
 | 1    | `head-unknown`    | `main` could not be resolved in this checkout, so freshness could not be decided. Prints no `sha:` repair line — there is no commit to re-pin onto |
@@ -222,12 +268,12 @@ here. Identify a step by name, never by number.
 - **Decide divergence resolution.** If `stable` has diverged from `main` before
   release, or if `main` has moved before the post-release fast-forward, the
   formula stops and you decide whether to rebase, cherry-pick, or abort.
-- **Refresh its own pack pin.** The formula the city runs is the copy installed
-  at the pinned commit, so a formula that has fallen behind cannot notice it has
-  — that is exactly how a release ran without the `check:npm-auth` gate that
-  `main` already carried. `pnpm run check:pack-freshness` is the outside
-  observer; run it at preflight. See [Register or refresh the release
-  pack](#register-or-refresh-the-release-pack).
+- **Refresh its own copy.** A poured release runs the copy the sling compiled,
+  so a copy that has fallen behind cannot notice it has — that is how the v0.11.1
+  release ran without the `check:npm-auth` gate that `main` already carried
+  (`ac-1yyttm`). `pnpm run check:pack-freshness` watches the pin from outside;
+  run it at preflight. See [Which copy of the formula
+  runs](#which-copy-of-the-formula-runs).
 
 ## Rotating the npm publish token
 

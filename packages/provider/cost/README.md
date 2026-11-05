@@ -501,8 +501,8 @@ and not modelled.
 per-second tier and no input-duration rule (re-read 2026-09-16 and
 2026-09-17), and the committed transformation recording
 (`kling-30-omni-transformation_2355785254`: a 5-second source clip, 720p)
-billed 100 credits = 5 s × 20 credits/s — the output seconds alone, where the
-rule would bill 200. Both entries keep billing output seconds at the
+billed 100 credits = 5 s × 20 credits/s, the rate before KIE's 2026-11-05 reprice
+— the output seconds alone, where the rule would bill 200. Both entries keep billing output seconds at the
 video-input tier, and `inputDurationSeconds` is ignored for them.
 
 ### Output size (fal Seedance)

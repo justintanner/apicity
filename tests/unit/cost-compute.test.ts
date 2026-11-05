@@ -524,7 +524,7 @@ describe("computeEstimate", () => {
         },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBeCloseTo(0.35, 10); // 5 * 0.07
+      expect(result.usd).toBeCloseTo(0.3775, 10); // 5 * 0.0755
       expect(result.source).toBe("per-unit-table");
       expect(result.warnings).toEqual([]);
     });
@@ -556,7 +556,7 @@ describe("computeEstimate", () => {
         },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBe(0.5); // 5 * 0.1
+      expect(result.usd).toBeCloseTo(0.5675, 10); // 5 * 0.1135
       expect(result.warnings).toEqual([]);
     });
 
@@ -575,8 +575,8 @@ describe("computeEstimate", () => {
           },
         });
 
-      expect(estimate().usd).toBe(0.5);
-      expect(estimate(false).usd).toBeCloseTo(0.35, 10);
+      expect(estimate().usd).toBeCloseTo(0.5675, 10);
+      expect(estimate(false).usd).toBeCloseTo(0.3775, 10);
     });
 
     it("fails kie when no rate matches variant", () => {

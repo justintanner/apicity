@@ -55,6 +55,12 @@ const pricePage = (url: string, asOf = "2026-08-06") => ({ url, asOf });
 // the feed pulled on this date (pnpm run check:kie-feed-drift, ac-xk7p41).
 const FEED_REREAD_AS_OF = "2026-11-05";
 
+// KIE repriced these Kling models on 2026-11-05, when a promotion ended: the
+// feed's discountRate fell, 42.86 to 10 on Kling 2.1 Master, and every rate rose,
+// 1.08x to 2.02x. Credits are what KIE bills, at 0.005 USD each. Dated pull:
+// tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json (ac-6jp17g).
+const KLING_REPRICED_AS_OF = "2026-11-05";
+
 // The page read behind the eight ByteDance entries priced from their kie.ai
 // product pages under the rule above (Seedream 3.0 / 4.0, Seedance 1.0;
 // ac-egs1ww): the UTC date of the archived read those entries cite. One
@@ -725,7 +731,8 @@ const inputDurationKey = (
 const perVideoByDuration = (
   rates: Record<string, number>,
   url: string,
-  defaultDuration?: string
+  defaultDuration?: string,
+  asOf?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
@@ -738,7 +745,7 @@ const perVideoByDuration = (
     },
   ],
   rates,
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
 // Per-video entry keyed by duration × resolution (Hailuo 02 image-to-video
@@ -863,12 +870,12 @@ const kling26Video = (url: string): ModelPricing => ({
     },
   ],
   rates: {
-    "5|silent": 0.275,
-    "10|silent": 0.55,
-    "5|sound": 0.55,
-    "10|sound": 1.1,
+    "5|silent": 0.315,
+    "10|silent": 0.63,
+    "5|sound": 0.63,
+    "10|sound": 1.26,
   },
-  source: pricePage(url),
+  source: pricePage(url, KLING_REPRICED_AS_OF),
 });
 
 // Per-second video entry tiered by ONE nested `input` field, sourced from a
@@ -902,13 +909,17 @@ const tieredVideoPage = (
 
 // Flat per-second video rate for the families whose evidence is a kie pricing
 // page URL rather than a /market/ slug.
-const flatVideoPage = (perUnit: number, url: string): ModelPricing => ({
+const flatVideoPage = (
+  perUnit: number,
+  url: string,
+  asOf?: string
+): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
   select: [],
   rates: { "": perUnit },
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
 // kie resells ElevenLabs TTS through createTask and publishes those rates per
@@ -1122,14 +1133,14 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: {
-      std: 0.07,
-      "std|sound": 0.1,
-      pro: 0.09,
-      "pro|sound": 0.135,
-      "4K": 0.335,
-      "4K|sound": 0.335,
+      std: 0.0755,
+      "std|sound": 0.1135,
+      pro: 0.101,
+      "pro|sound": 0.151,
+      "4K": 0.3775,
+      "4K|sound": 0.3775,
     },
-    source: pricePage("https://kie.ai/kling-3-0", FEED_REREAD_AS_OF),
+    source: pricePage("https://kie.ai/kling-3-0", KLING_REPRICED_AS_OF),
   },
 
   // Kling 3.0 motion-control: 2 tiers by mode ("720p"|"1080p"). Audio is
@@ -1140,10 +1151,10 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: seconds,
     select: [{ name: "mode", pick: inputMode, required: true }],
-    rates: { "720p": 0.1, "1080p": 0.135 },
+    rates: { "720p": 0.1135, "1080p": 0.151 },
     source: pricePage(
       "https://kie.ai/kling-3-motion-control",
-      FEED_REREAD_AS_OF
+      KLING_REPRICED_AS_OF
     ),
   },
 
@@ -1156,9 +1167,10 @@ export const kie: Record<string, ModelPricing> = {
   // Output seconds only, on purpose (ac-u8y5xg): the family's four page tabs
   // print the "with video input" tier and no "(input video duration + output
   // video duration)" rule (kie.ai/kling-o3, re-read 2026-09-16 and
-  // 2026-09-17), and the committed recordings agree. The text-to-video
-  // fixture (kling-30-omni-text-to-video_899269928: 720p, duration 5, audio
-  // off) billed 70 credits = 5 s x 14, and its 5-second result clip is the
+  // 2026-09-17), and the committed recordings agree. At the rates before the
+  // 2026-11-05 reprice, the text-to-video fixture
+  // (kling-30-omni-text-to-video_899269928: 720p, duration 5, audio off)
+  // billed 70 credits = 5 s x 14, and its 5-second result clip is the
   // single video_urls entry of the transformation fixture
   // (kling-30-omni-transformation_2355785254: 720p, duration omitted), which
   // billed 100 credits = 5 s x 20 — the video-input cell for the output
@@ -1177,16 +1189,16 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: {
-      "720p": 0.07,
-      "720p|audio": 0.09,
-      "1080p": 0.09,
-      "1080p|audio": 0.115,
-      "4k": 0.335,
-      "4k|audio": 0.335,
+      "720p": 0.0755,
+      "720p|audio": 0.101,
+      "1080p": 0.101,
+      "1080p|audio": 0.126,
+      "4k": 0.3775,
+      "4k|audio": 0.3775,
     },
     source: pricePage(
       "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
-      "2026-08-20"
+      KLING_REPRICED_AS_OF
     ),
   },
   "kling-3.0-omni/image-to-video": {
@@ -1201,16 +1213,16 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: {
-      "720p": 0.07,
-      "720p|audio": 0.09,
-      "1080p": 0.09,
-      "1080p|audio": 0.115,
-      "4k": 0.335,
-      "4k|audio": 0.335,
+      "720p": 0.0755,
+      "720p|audio": 0.101,
+      "1080p": 0.101,
+      "1080p|audio": 0.126,
+      "4k": 0.3775,
+      "4k|audio": 0.3775,
     },
     source: pricePage(
       "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
-      "2026-08-20"
+      KLING_REPRICED_AS_OF
     ),
   },
   "kling-3.0-omni/reference-to-video": {
@@ -1230,19 +1242,19 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: {
-      "720p": 0.07,
-      "720p|audio": 0.09,
-      "720p|video": 0.1,
-      "1080p": 0.09,
-      "1080p|audio": 0.115,
-      "1080p|video": 0.135,
-      "4k": 0.335,
-      "4k|audio": 0.335,
-      "4k|video": 0.335,
+      "720p": 0.0755,
+      "720p|audio": 0.101,
+      "720p|video": 0.1135,
+      "1080p": 0.101,
+      "1080p|audio": 0.126,
+      "1080p|video": 0.151,
+      "4k": 0.3775,
+      "4k|audio": 0.3775,
+      "4k|video": 0.3775,
     },
     source: pricePage(
       "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
-      "2026-08-20"
+      KLING_REPRICED_AS_OF
     ),
   },
   "kling-3.0-omni/transformation": {
@@ -1250,10 +1262,10 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: seconds,
     select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
-    rates: { "720p": 0.1, "1080p": 0.135, "4k": 0.335 },
+    rates: { "720p": 0.1135, "1080p": 0.151, "4k": 0.3775 },
     source: pricePage(
       "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
-      "2026-08-20"
+      KLING_REPRICED_AS_OF
     ),
   },
 
@@ -1300,24 +1312,23 @@ export const kie: Record<string, ModelPricing> = {
     ),
   },
 
-  // Kling 3.0 Turbo: 2 tiers by resolution. Rates verified 2026-06-21 from
-  // KIE's pricing page: 720p = 18 credits/s ($0.09), 1080p = 22.5 credits/s
-  // ($0.1125).
+  // Kling 3.0 Turbo: 2 tiers by resolution. The 2026-11-05 feed prints 720p =
+  // 20.2 credits/s ($0.101) and 1080p = 25.2 credits/s ($0.126).
   "kling/v3-turbo-image-to-video": {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
     select: [{ name: "resolution", pick: inputResolution, required: true }],
-    rates: { "720p": 0.09, "1080p": 0.1125 },
-    source: pricePage("https://kie.ai/kling-3-0-turbo", FEED_REREAD_AS_OF),
+    rates: { "720p": 0.101, "1080p": 0.126 },
+    source: pricePage("https://kie.ai/kling-3-0-turbo", KLING_REPRICED_AS_OF),
   },
   "kling/v3-turbo-text-to-video": {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
     select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
-    rates: { "720p": 0.09, "1080p": 0.1125 },
-    source: pricePage("https://kie.ai/kling-3-0-turbo", FEED_REREAD_AS_OF),
+    rates: { "720p": 0.101, "1080p": 0.126 },
+    source: pricePage("https://kie.ai/kling-3-0-turbo", KLING_REPRICED_AS_OF),
   },
 
   // wan/2.2 A14B Turbo text/image-to-video — per VIDEO, not per second. kie
@@ -2419,12 +2430,14 @@ export const kie: Record<string, ModelPricing> = {
   // callers must declare that length as costHints.durationSeconds.
   "kling-2.6/motion-control": tieredVideoPage(
     "mode",
-    { "720p": 0.055, "1080p": 0.09 },
-    "https://kie.ai/kling-2.6-motion-control"
+    { "720p": 0.063, "1080p": 0.101 },
+    "https://kie.ai/kling-2.6-motion-control",
+    undefined,
+    KLING_REPRICED_AS_OF
   ),
 
   // Kling AI Avatar — flat per second, one rate per tier (Standard 720p
-  // $0.04, Pro 1080p $0.08). Neither schema carries a resolution knob: the
+  // $0.0505, Pro 1080p $0.101). Neither schema carries a resolution knob: the
   // tier IS the model id, and the page's resolution column is fixed per tier.
   // No duration field either (length follows the driving audio, page-capped at
   // 15s), so the seconds come from costHints.durationSeconds.
@@ -2434,50 +2447,58 @@ export const kie: Record<string, ModelPricing> = {
   // kling/ai-avatar-{standard,pro}; the keys here are the ids callers actually
   // put in `payload.model`, and the anchor URLs are kept as the rate evidence.
   "kling/ai-avatar-standard": flatVideoPage(
-    0.04,
-    "https://kie.ai/kling-ai-avatar?model=kling%2Fv1-avatar-standard"
+    0.0505,
+    "https://kie.ai/kling-ai-avatar?model=kling%2Fv1-avatar-standard",
+    KLING_REPRICED_AS_OF
   ),
   "kling/ai-avatar-pro": flatVideoPage(
-    0.08,
-    "https://kie.ai/kling-ai-avatar?model=kling%2Fai-avatar-v1-pro"
+    0.101,
+    "https://kie.ai/kling-ai-avatar?model=kling%2Fai-avatar-v1-pro",
+    KLING_REPRICED_AS_OF
   ),
 
-  // Kling 2.5 Turbo Pro — per video: 5s $0.21, 10s $0.42. `duration` is
+  // Kling 2.5 Turbo Pro — per video: 5s $0.315, 10s $0.63. `duration` is
   // optional in the schema and documents an upstream default of 5, applied as
   // the absent-field fallback.
   "kling/v2-5-turbo-text-to-video-pro": perVideoByDuration(
-    { "5": 0.21, "10": 0.42 },
+    { "5": 0.315, "10": 0.63 },
     "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
   "kling/v2-5-turbo-image-to-video-pro": perVideoByDuration(
-    { "5": 0.21, "10": 0.42 },
+    { "5": 0.315, "10": 0.63 },
     "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
 
-  // Kling 2.1 — per video, three tiers on one page: Standard $0.125/$0.25,
-  // Pro $0.25/$0.50, Master $0.80/$1.60 (5s/10s). Same optional `duration`
+  // Kling 2.1 — per video, three tiers on one page: Standard $0.2525/$0.505,
+  // Pro $0.44/$0.88, Master $1.26/$2.52 (5s/10s). Same optional `duration`
   // with a documented default of 5 as the 2.5 turbo pair above.
   "kling/v2-1-standard": perVideoByDuration(
-    { "5": 0.125, "10": 0.25 },
+    { "5": 0.2525, "10": 0.505 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
   "kling/v2-1-pro": perVideoByDuration(
-    { "5": 0.25, "10": 0.5 },
+    { "5": 0.44, "10": 0.88 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
   "kling/v2-1-master-text-to-video": perVideoByDuration(
-    { "5": 0.8, "10": 1.6 },
+    { "5": 1.26, "10": 2.52 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
   "kling/v2-1-master-image-to-video": perVideoByDuration(
-    { "5": 0.8, "10": 1.6 },
+    { "5": 1.26, "10": 2.52 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
-    "5"
+    "5",
+    KLING_REPRICED_AS_OF
   ),
 
   // Seedance 1.0 — the five bytedance/v1-* ids, priced from the product page

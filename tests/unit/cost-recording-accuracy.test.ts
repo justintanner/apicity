@@ -37,6 +37,10 @@ interface Allowed {
 
 const MINIMAX_PROMOTION =
   "Promotion: 0.01/s when recorded. The pricebook today is 0.015/s to 2027-01-01, the table's";
+const KLING_OMNI_CAPTURE =
+  "Old capture (08-20), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate";
+const KLING_JUNE_CAPTURE =
+  "Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate";
 const SEEDANCE_CAPTURE =
   "Old capture (10-22). The pricebook today is 0.1028/s, the table's rate";
 
@@ -44,6 +48,31 @@ const SEEDANCE_CAPTURE =
 // docs/cost-learning-pass-1.md, and "quotes each listed call's reason" below
 // holds it to that row.
 const ALLOWED: readonly Allowed[] = [
+  {
+    recording: "kie_2079838932/kling-30-omni-image-to-video_1124253828",
+    model: "kling-3.0-omni/image-to-video",
+    reason: KLING_OMNI_CAPTURE,
+  },
+  {
+    recording: "kie_2079838932/kling-30-omni-reference-to-video_4128185796",
+    model: "kling-3.0-omni/reference-to-video",
+    reason: KLING_OMNI_CAPTURE,
+  },
+  {
+    recording: "kie_2079838932/kling-30-omni-text-to-video_899269928",
+    model: "kling-3.0-omni/text-to-video",
+    reason: KLING_OMNI_CAPTURE,
+  },
+  {
+    recording: "kie_2079838932/kling-30-turbo-upload-cat-man_2027303031",
+    model: "kling-3.0/video",
+    reason: KLING_JUNE_CAPTURE,
+  },
+  {
+    recording: "kie_2079838932/kling-v3-turbo-image-to-video_2365992705",
+    model: "kling/v3-turbo-image-to-video",
+    reason: KLING_JUNE_CAPTURE,
+  },
   {
     recording: "kie_2079838932/bytedance-seedance-2-mini-i2v_84052838",
     model: "bytedance/seedance-2-mini",

@@ -92,8 +92,8 @@ Prices as of 2026-08-06, 2026-08-25, 2026-09-11, 2026-10-08, 2026-10-17,
 [AA-Video-Editing v1.1](https://artificialanalysis.ai/video/leaderboard/video-editing),
 captured 2026-10-22. Ranks video models on editing a video from a text
 instruction, audio kept, by Elo from pairwise human preference votes. Prices as
-of 2026-08-06, 2026-08-20, 2026-10-17, 2026-10-29, 2026-10-30, 2026-10-31,
-2026-11-02 and 2026-11-05.
+of 2026-08-06, 2026-10-17, 2026-10-29, 2026-10-30, 2026-10-31, 2026-11-02 and
+2026-11-05.
 
 | Rank | Model                      | Creator        | Elo  | Price                                                                             | apicity endpoints                                                                                                                                                                                                                                                                                       |
 | ---- | -------------------------- | -------------- | ---- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -105,7 +105,7 @@ of 2026-08-06, 2026-08-20, 2026-10-17, 2026-10-29, 2026-10-30, 2026-10-31,
 | 6    | Dreamina Seedance 2.0      | ByteDance Seed | 1082 | -                                                                                 | not yet in apicity                                                                                                                                                                                                                                                                                      |
 | 7    | Wan 2.7                    | Alibaba        | 1077 | 0.1-0.15 USD/s, 0.08-0.12 USD/s, 0.1-0.15 USD/s                                   | [fal `wan.v2p7.editVideo`](../packages/provider/fal/README.md#wan), [kie `wan/2-7-videoedit`](../packages/provider/kie/README.md#jobs), [alibaba `wan2.7-videoedit`](../packages/provider/alibaba/README.md#services)                                                                                   |
 | 8    | Aleph 2.0                  | Runway         | 1012 | -                                                                                 | not yet in apicity                                                                                                                                                                                                                                                                                      |
-| 9    | Kling 3.0 Omni 1080p (Pro) | KlingAI        | 1000 | 0.168 USD/s, 0.168 USD/s, 0.1-0.335 USD/s                                         | [fal `klingVideo.o3.pro.videoToVideo.edit`](../packages/provider/fal/README.md#klingvideo), [fal `klingVideo.o3.pro.videoToVideo.reference`](../packages/provider/fal/README.md#klingvideo), [kie `kling-3.0-omni/transformation`](../packages/provider/kie/README.md#jobs)                             |
+| 9    | Kling 3.0 Omni 1080p (Pro) | KlingAI        | 1000 | 0.168 USD/s, 0.168 USD/s, 0.1135-0.3775 USD/s                                     | [fal `klingVideo.o3.pro.videoToVideo.edit`](../packages/provider/fal/README.md#klingvideo), [fal `klingVideo.o3.pro.videoToVideo.reference`](../packages/provider/fal/README.md#klingvideo), [kie `kling-3.0-omni/transformation`](../packages/provider/kie/README.md#jobs)                             |
 
 ## reference-to-video (`r2v`)
 

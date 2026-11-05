@@ -1823,7 +1823,7 @@
       "packages/provider/kie/src/zod.ts": "sha256:7ee92ee67e020d9a9417a8612138c23cbbce7179aaabea339c4aaf6541a7b12d",
       "packages/provider/kie/src/model-schemas.ts": "sha256:70c3769692b449af1792666ddb00decfff11b6ff0ef8c86fc44526a85a96b566",
       "packages/provider/kie/src/kie.ts": "sha256:01181e9e89032da31e5d5813c2aebb69f2aaaf7e7d416497e5e3bad256e98de9",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:19674f21597b062ee25497137e963782380feaeaf769f37c2e1d426defe97d3f",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:01cf3d58d0ba6efba7b09155c52fc224016152861950e2f927fa45ac0e7e8329",
       "packages/provider/cost/src/slugs.ts": "sha256:8b2577966699dd8156fb87d7ee5637713cae68860cd9b986921123ebb2697709",
       "scripts/endpoint-docs.tsv": "sha256:9c00e669182af444a75b63d7c2dad843c35febc4f2e431b0c7305a22e532d05c"
     }
@@ -7959,39 +7959,14 @@
         "anchor": "https://kie.ai/kling-3-0-turbo",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v3-turbo-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0-turbo",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v3-turbo-image-to-video",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "22.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.1125",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:kling/v3-turbo-image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v3-turbo-image-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "5",
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:f3e8e63688eebd172257e85a13d854c7318829d9f974c87f9e8aa37ad4874c3d#1",
@@ -8009,39 +7984,14 @@
         "anchor": "https://kie.ai/kling-3-0-turbo",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v3-turbo-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0-turbo",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v3-turbo-image-to-video",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "18",
-        "creditUnit": "per second",
-        "usdPrice": "0.09",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "720p"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:kling/v3-turbo-image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v3-turbo-image-to-video",
-        "input": {
-          "resolution": "720p",
-          "duration": "5",
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:3f2fd17afb2ba369419a107ebd7a04effcfd5336ac11bbe28e5d20bb6bb70a45#1",
@@ -8059,38 +8009,14 @@
         "anchor": "https://kie.ai/kling-3-0-turbo",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v3-turbo-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0-turbo",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v3-turbo-text-to-video",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "22.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.1125",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:kling/v3-turbo-text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v3-turbo-text-to-video",
-        "input": {
-          "resolution": "1080p",
-          "duration": "5",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e9a0b32f5fd203ec27e57facd122393a5e48a3f4b88c764c8b6c5701b6082e7c#1",
@@ -8108,38 +8034,14 @@
         "anchor": "https://kie.ai/kling-3-0-turbo",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v3-turbo-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0-turbo",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v3-turbo-text-to-video",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "18",
-        "creditUnit": "per second",
-        "usdPrice": "0.09",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "720p"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:kling/v3-turbo-text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v3-turbo-text-to-video",
-        "input": {
-          "resolution": "720p",
-          "duration": "5",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:6080920ee30905505569257ddde8ceeb668e47c86eeb844047419d3378ff4520#1",
@@ -8356,41 +8258,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "67",
-        "creditUnit": "per second",
-        "usdPrice": "0.335",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "4K",
-        "sound": true
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video",
-        "sound": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "4K",
-          "sound": true,
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:25984d4d79d4fc09f4bc65bce8abe285630d6f9a564a6614704015c59540e46c#1",
@@ -12136,43 +12011,14 @@
         "anchor": "https://kie.ai/kling-3-motion-control",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/motion-control"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-motion-control",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "27",
-        "creditUnit": "per second",
-        "usdPrice": "0.135",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "1080p"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/motion-control"
-      },
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling-3.0/motion-control",
-        "input": {
-          "mode": "1080p",
-          "input_urls": ["https://example.com/a.png"],
-          "video_urls": ["https://example.com/a.mp4"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:3ff3b8e5ddedbdc80ec5f03fb7f557c18a01befb8c301bdc1a86532731e4c4ff#1",
@@ -12190,43 +12036,14 @@
         "anchor": "https://kie.ai/kling-3-motion-control",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/motion-control"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-motion-control",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "20",
-        "creditUnit": "per second",
-        "usdPrice": "0.1",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "720p"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/motion-control"
-      },
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling-3.0/motion-control",
-        "input": {
-          "mode": "720p",
-          "input_urls": ["https://example.com/a.png"],
-          "video_urls": ["https://example.com/a.mp4"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:fc3db095cf4e9809b1416bd5807475fd4604ac62924805e0ba236ee1d7dfd4ce#1",
@@ -12714,38 +12531,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "67",
-        "creditUnit": "per second",
-        "usdPrice": "0.335",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "4K"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "4K",
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:6e0e1edad537f011ae76e7cf0c436b8c5a7accb63d73088a4f18ba57e081266a#1",
@@ -12763,41 +12556,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "27",
-        "creditUnit": "per second",
-        "usdPrice": "0.135",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "pro",
-        "sound": true
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video",
-        "sound": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "pro",
-          "sound": true,
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:ccecf77c65e52e34beaca511196edf394e817307d094a341b0a34d0a1eb626ee#1",
@@ -12815,38 +12581,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "18",
-        "creditUnit": "per second",
-        "usdPrice": "0.09",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "pro"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "pro",
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:dd67e895c0b05af1453bec77171d164f4f53935619f947ef3f8187485c422820#1",
@@ -12864,41 +12606,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "20",
-        "creditUnit": "per second",
-        "usdPrice": "0.1",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "std",
-        "sound": true
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video",
-        "sound": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "std",
-          "sound": true,
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:791fa93b4a9b9da59795c4116264b86742e2539f2c2f121ff739a8f4385eed6f#1",
@@ -12916,38 +12631,14 @@
         "anchor": "https://kie.ai/kling-3-0",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-3.0/video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-3-0",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "14",
-        "creditUnit": "per second",
-        "usdPrice": "0.07",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "std"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-3.0/video"
-      },
-      "representativePayload": {
-        "model": "kling-3.0/video",
-        "input": {
-          "mode": "std",
-          "duration": "5",
-          "multi_shots": false,
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:342616e1342ac704884eb999da0beaad5f834be2a40deb461ab73bf520e15b0e#1",
@@ -13191,40 +12882,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "220.0",
-        "creditUnit": "per video",
-        "usdPrice": "1.1",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10",
-        "sound": true
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/text-to-video",
-        "sound": "modelInputSchemas:kling-2.6/text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/text-to-video",
-        "input": {
-          "duration": "10",
-          "sound": true,
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:2b04d3e8a06d5cd5ceeaab629a4a4fc3dc5e46f2296fb48ae7ada242c53d58a0#1",
@@ -13242,40 +12907,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "110.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.55",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10",
-        "sound": false
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/text-to-video",
-        "sound": "modelInputSchemas:kling-2.6/text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/text-to-video",
-        "input": {
-          "duration": "10",
-          "sound": false,
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:200cc92c8191f4d70034fb69c3bfab45edfcebfa3a2891078b88744cbd2ccbb2#1",
@@ -13293,40 +12932,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "55.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.275",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5",
-        "sound": false
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/text-to-video",
-        "sound": "modelInputSchemas:kling-2.6/text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/text-to-video",
-        "input": {
-          "duration": "5",
-          "sound": false,
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e50981d7baf45da48b5cf56f17d7e9423043b13e1753d8cac8d8a74f8b8b937a#1",
@@ -13344,40 +12957,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "110.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.55",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5",
-        "sound": true
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/text-to-video",
-        "sound": "modelInputSchemas:kling-2.6/text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/text-to-video",
-        "input": {
-          "duration": "5",
-          "sound": true,
-          "prompt": "audit",
-          "aspect_ratio": "16:9"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:26dc3102137f1ba1e556fe8f1a15e6d80d530a95997773b643fad936f03a3cb1#1",
@@ -13395,40 +12982,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "110.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.55",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10",
-        "sound": false
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/image-to-video",
-        "sound": "modelInputSchemas:kling-2.6/image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/image-to-video",
-        "input": {
-          "duration": "10",
-          "sound": false,
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:3cf7eee5f50a53f3e3190498a8bf38b30cfcb281746467837a2a0f5c6d2cbc0b#1",
@@ -13446,40 +13007,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "220.0",
-        "creditUnit": "per video",
-        "usdPrice": "1.1",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10",
-        "sound": true
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/image-to-video",
-        "sound": "modelInputSchemas:kling-2.6/image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/image-to-video",
-        "input": {
-          "duration": "10",
-          "sound": true,
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e84525e82c70bd5f719b14030ea3cf3971930c540e3aac0cb0c95bc11e7a2119#1",
@@ -13497,40 +13032,14 @@
         "anchor": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "110.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.55",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5",
-        "sound": true
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/image-to-video",
-        "sound": "modelInputSchemas:kling-2.6/image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/image-to-video",
-        "input": {
-          "duration": "5",
-          "sound": true,
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:f88db62e73eabd3225efe8114cbab9f27e8e6a94b4ec70be623af71bb1ac1288#1",
@@ -13548,40 +13057,14 @@
         "anchor": "https://kie.ai/kling-2-6",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-6",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "55.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.275",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5",
-        "sound": false
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling-2.6/image-to-video",
-        "sound": "modelInputSchemas:kling-2.6/image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling-2.6/image-to-video",
-        "input": {
-          "duration": "5",
-          "sound": false,
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:c7e6ab1aa3e3bbcea2a376e4329c7187af894dce4ed23d680bcab3b2ab0543bd#1",
@@ -16981,37 +16464,14 @@
         "anchor": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-5-turbo-text-to-video-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-5-turbo-text-to-video-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "84.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.42",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-5-turbo-text-to-video-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-5-turbo-text-to-video-pro",
-        "input": {
-          "duration": "10",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:51fb9d8a500635aefd22f86dc95e47849e4d78ec1eab06665d4cb97b60c2ca79#1",
@@ -17029,38 +16489,14 @@
         "anchor": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-5-turbo-image-to-video-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-5-turbo-image-to-video-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "42.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.21",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-5-turbo-image-to-video-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-5-turbo-image-to-video-pro",
-        "input": {
-          "duration": "5",
-          "image_url": "https://example.com/a.png",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:b4b18574e9841ce0e073941b7a07fcab303658de3e3938b7f45fbf9ecf9f671f#1",
@@ -17078,38 +16514,14 @@
         "anchor": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-5-turbo-image-to-video-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-5-turbo-image-to-video-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "84.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.42",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-5-turbo-image-to-video-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-5-turbo-image-to-video-pro",
-        "input": {
-          "duration": "10",
-          "image_url": "https://example.com/a.png",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e126ca4738fe733ec65f3f66265a9aaadb66a5315671ef8e639a27b9bee047da#1",
@@ -17127,37 +16539,14 @@
         "anchor": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-5-turbo-text-to-video-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-5-turbo-text-to-video-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "42.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.21",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-5-turbo-text-to-video-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-5-turbo-text-to-video-pro",
-        "input": {
-          "duration": "5",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:dc3a12a9e66db3a7b6f82058c6368a95635416c4352da22ccaef3482e8771341#1",
@@ -18592,39 +17981,14 @@
         "anchor": "https://kie.ai/kling-ai-avatar?model=kling%2Fv1-avatar-standard",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/ai-avatar-standard"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-ai-avatar?model=kling%2Fv1-avatar-standard",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/ai-avatar-standard",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "8.0",
-        "creditUnit": "per second",
-        "usdPrice": "0.04",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {},
-      "selectorSources": {},
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling/ai-avatar-standard",
-        "input": {
-          "image_url": "https://example.com/a.png",
-          "audio_url": "https://example.com/a.mp3",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:ca3fb228251d3db545888e143241e16884d4d300807cb5cc7a105a24f9feb056#1",
@@ -18642,39 +18006,14 @@
         "anchor": "https://kie.ai/kling-ai-avatar?model=kling%2Fai-avatar-v1-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/ai-avatar-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-ai-avatar?model=kling%2Fai-avatar-v1-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/ai-avatar-pro",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "16.0",
-        "creditUnit": "per second",
-        "usdPrice": "0.08",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {},
-      "selectorSources": {},
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling/ai-avatar-pro",
-        "input": {
-          "image_url": "https://example.com/a.png",
-          "audio_url": "https://example.com/a.mp3",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:ab4022701eece304e1b6c8b8ede830be43dd8db29168282451b1cde8cbb54a2b#1",
@@ -21230,38 +20569,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "100.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.5",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-pro",
-        "input": {
-          "duration": "10",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:9552920db13a798f23b25d302a9dcc85797e671180391ecad6ca9a81a97eb28f#1",
@@ -21279,37 +20594,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-master-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-master-text-to-video",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "160.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.8",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-master-text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-master-text-to-video",
-        "input": {
-          "duration": "5",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:0951631cd1f6886cd28abde449a55358d75ea94e8b873fbc68c4a7ce2edd8640#1",
@@ -21327,37 +20619,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-master-text-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-master-text-to-video",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "320.0",
-        "creditUnit": "per video",
-        "usdPrice": "1.6",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-master-text-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-master-text-to-video",
-        "input": {
-          "duration": "10",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:90acc6525951aa2ee1e45caa2b6529c2653d03f4027909dd6b2c88938ddeb97e#1",
@@ -21375,38 +20644,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-standard"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-standard",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "25.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.125",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-standard"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-standard",
-        "input": {
-          "duration": "5",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e97eb417684ce0388a5db813aa4e4ecc5ab3fb3fbb7f9f5873625f9bfceddafd#1",
@@ -21424,38 +20669,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-standard"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-standard",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "50.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.25",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-standard"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-standard",
-        "input": {
-          "duration": "10",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:b7e4a41979bcb4ff7abba1aa1d34028d71122e2fddcb6cfb9f40db5740967571#1",
@@ -21473,38 +20694,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-pro"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-pro",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "50.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.25",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-pro"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-pro",
-        "input": {
-          "duration": "5",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:df032cd12e28325ae806f5308324c2b28c9519461ea7c04bb18af8c8ef2b1f37#1",
@@ -21522,38 +20719,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-master-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-master-image-to-video",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "160.0",
-        "creditUnit": "per video",
-        "usdPrice": "0.8",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "5"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-master-image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-master-image-to-video",
-        "input": {
-          "duration": "5",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:c9694905d47792507c61afac920214456f0292a909eb783bfaa9b544dfa4aa45#1",
@@ -21571,38 +20744,14 @@
         "anchor": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["kling/v2-1-master-image-to-video"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "kling/v2-1-master-image-to-video",
-      "unit": "generations",
-      "officialUnit": "generations",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "320.0",
-        "creditUnit": "per video",
-        "usdPrice": "1.6",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "duration": "10"
-      },
-      "selectorSources": {
-        "duration": "modelInputSchemas:kling/v2-1-master-image-to-video"
-      },
-      "representativePayload": {
-        "model": "kling/v2-1-master-image-to-video",
-        "input": {
-          "duration": "10",
-          "prompt": "audit",
-          "image_url": "https://example.com/a.png"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:4855fe9827b113479c111acdafa31d669f039420131080f301271dd1c326ed0e#1",
@@ -21932,44 +21081,14 @@
         "anchor": "https://kie.ai/kling-2.6-motion-control",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/motion-control"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2.6-motion-control",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "18",
-        "creditUnit": "per second",
-        "usdPrice": "0.09",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "1080p"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-2.6/motion-control"
-      },
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling-2.6/motion-control",
-        "input": {
-          "mode": "1080p",
-          "input_urls": ["https://example.com/a.png"],
-          "video_urls": ["https://example.com/a.png"],
-          "character_orientation": "image",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:e44efee9b7b0f31e9ad550575bcfef09fca9acc588db74c60efdf8141b15c492#1",
@@ -21987,44 +21106,14 @@
         "anchor": "https://kie.ai/kling-2.6-motion-control",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["kling-2.6/motion-control"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/kling-2.6-motion-control",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "11",
-        "creditUnit": "per second",
-        "usdPrice": "0.055",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "mode": "720p"
-      },
-      "selectorSources": {
-        "mode": "modelInputSchemas:kling-2.6/motion-control"
-      },
-      "representativePricingMetadata": {
-        "costHints": {
-          "durationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "kling-2.6/motion-control",
-        "input": {
-          "mode": "720p",
-          "input_urls": ["https://example.com/a.png"],
-          "video_urls": ["https://example.com/a.png"],
-          "character_orientation": "image",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json.",
+      "technicalBlocker": "The frozen September Kling rates are superseded by the 2026-11-05 feed and product pages, after a promotion ended; see tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json."
     },
     {
       "occurrenceId": "sha256:af97aaab71d63618ddbbba17d4c87a15f0de5df551831121095afaa88c0027e0#1",
@@ -22259,186 +21348,135 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling-3.0/video",
-        "linkedRows": [
-          "sha256:093049e3bc61338a8218f83df97912d91d41bfcc3584c4e4b81b5513b1d928df#1",
-          "sha256:47b195c5346ffa50bef245e17e1e712a501421adf9c4bf100b2e533542ce6117#1",
-          "sha256:6e0e1edad537f011ae76e7cf0c436b8c5a7accb63d73088a4f18ba57e081266a#1",
-          "sha256:ccecf77c65e52e34beaca511196edf394e817307d094a341b0a34d0a1eb626ee#1",
-          "sha256:dd67e895c0b05af1453bec77171d164f4f53935619f947ef3f8187485c422820#1",
-          "sha256:791fa93b4a9b9da59795c4116264b86742e2539f2c2f121ff739a8f4385eed6f#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling-3.0/motion-control",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling-3.0/motion-control",
-        "linkedRows": [
-          "sha256:3f4ff081142c7f8c6db226f4d2ffa097cef3002d0ae432ded7c4701b0c82c3e4#1",
-          "sha256:3ff3b8e5ddedbdc80ec5f03fb7f557c18a01befb8c301bdc1a86532731e4c4ff#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v3-turbo-image-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v3-turbo-image-to-video",
-        "linkedRows": [
-          "sha256:e8ab0b4ad355cab09e038c71a4c50518fe8d5ca80c2f7b041b51ebcdb7add8a7#1",
-          "sha256:f3e8e63688eebd172257e85a13d854c7318829d9f974c87f9e8aa37ad4874c3d#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v3-turbo-text-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v3-turbo-text-to-video",
-        "linkedRows": [
-          "sha256:3f2fd17afb2ba369419a107ebd7a04effcfd5336ac11bbe28e5d20bb6bb70a45#1",
-          "sha256:e9a0b32f5fd203ec27e57facd122393a5e48a3f4b88c764c8b6c5701b6082e7c#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling-2.6/image-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling-2.6/image-to-video",
-        "linkedRows": [
-          "sha256:26dc3102137f1ba1e556fe8f1a15e6d80d530a95997773b643fad936f03a3cb1#1",
-          "sha256:3cf7eee5f50a53f3e3190498a8bf38b30cfcb281746467837a2a0f5c6d2cbc0b#1",
-          "sha256:e84525e82c70bd5f719b14030ea3cf3971930c540e3aac0cb0c95bc11e7a2119#1",
-          "sha256:f88db62e73eabd3225efe8114cbab9f27e8e6a94b4ec70be623af71bb1ac1288#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling-2.6/motion-control",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling-2.6/motion-control",
-        "linkedRows": [
-          "sha256:6346939fedaef1a63f5b33709fb960e0a4c2ce2ae99e70b077fef53607b41f5a#1",
-          "sha256:e44efee9b7b0f31e9ad550575bcfef09fca9acc588db74c60efdf8141b15c492#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling-2.6/text-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling-2.6/text-to-video",
-        "linkedRows": [
-          "sha256:c4db184128d4bfffdc47c7369647da10e4a2cd33cf5f0e3ff0e2a26531358cde#1",
-          "sha256:2b04d3e8a06d5cd5ceeaab629a4a4fc3dc5e46f2296fb48ae7ada242c53d58a0#1",
-          "sha256:200cc92c8191f4d70034fb69c3bfab45edfcebfa3a2891078b88744cbd2ccbb2#1",
-          "sha256:e50981d7baf45da48b5cf56f17d7e9423043b13e1753d8cac8d8a74f8b8b937a#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/ai-avatar-pro",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/ai-avatar-pro",
-        "linkedRows": [
-          "sha256:ca3fb228251d3db545888e143241e16884d4d300807cb5cc7a105a24f9feb056#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/ai-avatar-standard",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/ai-avatar-standard",
-        "linkedRows": [
-          "sha256:e3c208c1b605b08a54c29b6fe12ba108b58205fdcef780c1a1f94e4afe434a99#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-1-master-image-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-1-master-image-to-video",
-        "linkedRows": [
-          "sha256:df032cd12e28325ae806f5308324c2b28c9519461ea7c04bb18af8c8ef2b1f37#1",
-          "sha256:c9694905d47792507c61afac920214456f0292a909eb783bfaa9b544dfa4aa45#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-1-master-text-to-video",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-1-master-text-to-video",
-        "linkedRows": [
-          "sha256:9552920db13a798f23b25d302a9dcc85797e671180391ecad6ca9a81a97eb28f#1",
-          "sha256:0951631cd1f6886cd28abde449a55358d75ea94e8b873fbc68c4a7ce2edd8640#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-1-pro",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-1-pro",
-        "linkedRows": [
-          "sha256:22f152ee8738b04012b352f88b5e635c0caf894eb64830cdb1a219b95deebf17#1",
-          "sha256:b7e4a41979bcb4ff7abba1aa1d34028d71122e2fddcb6cfb9f40db5740967571#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-1-standard",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-1-standard",
-        "linkedRows": [
-          "sha256:90acc6525951aa2ee1e45caa2b6529c2653d03f4027909dd6b2c88938ddeb97e#1",
-          "sha256:e97eb417684ce0388a5db813aa4e4ecc5ab3fb3fbb7f9f5873625f9bfceddafd#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-5-turbo-image-to-video-pro",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-5-turbo-image-to-video-pro",
-        "linkedRows": [
-          "sha256:51fb9d8a500635aefd22f86dc95e47849e4d78ec1eab06665d4cb97b60c2ca79#1",
-          "sha256:b4b18574e9841ce0e073941b7a07fcab303658de3e3938b7f45fbf9ecf9f671f#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling/v2-5-turbo-text-to-video-pro",
         "descriptor": true,
         "guard": true,
         "pricingKey": "kling/v2-5-turbo-text-to-video-pro",
-        "linkedRows": [
-          "sha256:d84283fe974b5960acfb13f69e84a7d4f03cd072a7b47015b840c8a5cc7dd083#1",
-          "sha256:e126ca4738fe733ec65f3f66265a9aaadb66a5315671ef8e639a27b9bee047da#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "kling-3.0-omni/text-to-video",
@@ -25021,25 +24059,15 @@
       },
       {
         "key": "kling-3.0/video",
-        "linkedRows": [
-          "sha256:093049e3bc61338a8218f83df97912d91d41bfcc3584c4e4b81b5513b1d928df#1",
-          "sha256:47b195c5346ffa50bef245e17e1e712a501421adf9c4bf100b2e533542ce6117#1",
-          "sha256:6e0e1edad537f011ae76e7cf0c436b8c5a7accb63d73088a4f18ba57e081266a#1",
-          "sha256:ccecf77c65e52e34beaca511196edf394e817307d094a341b0a34d0a1eb626ee#1",
-          "sha256:dd67e895c0b05af1453bec77171d164f4f53935619f947ef3f8187485c422820#1",
-          "sha256:791fa93b4a9b9da59795c4116264b86742e2539f2c2f121ff739a8f4385eed6f#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling-3.0/motion-control",
-        "linkedRows": [
-          "sha256:3f4ff081142c7f8c6db226f4d2ffa097cef3002d0ae432ded7c4701b0c82c3e4#1",
-          "sha256:3ff3b8e5ddedbdc80ec5f03fb7f557c18a01befb8c301bdc1a86532731e4c4ff#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
@@ -25079,21 +24107,15 @@
       },
       {
         "key": "kling/v3-turbo-image-to-video",
-        "linkedRows": [
-          "sha256:e8ab0b4ad355cab09e038c71a4c50518fe8d5ca80c2f7b041b51ebcdb7add8a7#1",
-          "sha256:f3e8e63688eebd172257e85a13d854c7318829d9f974c87f9e8aa37ad4874c3d#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v3-turbo-text-to-video",
-        "linkedRows": [
-          "sha256:3f2fd17afb2ba369419a107ebd7a04effcfd5336ac11bbe28e5d20bb6bb70a45#1",
-          "sha256:e9a0b32f5fd203ec27e57facd122393a5e48a3f4b88c764c8b6c5701b6082e7c#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "wan/2-2-a14b-text-to-video-turbo",
@@ -25634,104 +24656,69 @@
       },
       {
         "key": "kling-2.6/text-to-video",
-        "linkedRows": [
-          "sha256:c4db184128d4bfffdc47c7369647da10e4a2cd33cf5f0e3ff0e2a26531358cde#1",
-          "sha256:2b04d3e8a06d5cd5ceeaab629a4a4fc3dc5e46f2296fb48ae7ada242c53d58a0#1",
-          "sha256:200cc92c8191f4d70034fb69c3bfab45edfcebfa3a2891078b88744cbd2ccbb2#1",
-          "sha256:e50981d7baf45da48b5cf56f17d7e9423043b13e1753d8cac8d8a74f8b8b937a#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling-2.6/image-to-video",
-        "linkedRows": [
-          "sha256:26dc3102137f1ba1e556fe8f1a15e6d80d530a95997773b643fad936f03a3cb1#1",
-          "sha256:3cf7eee5f50a53f3e3190498a8bf38b30cfcb281746467837a2a0f5c6d2cbc0b#1",
-          "sha256:e84525e82c70bd5f719b14030ea3cf3971930c540e3aac0cb0c95bc11e7a2119#1",
-          "sha256:f88db62e73eabd3225efe8114cbab9f27e8e6a94b4ec70be623af71bb1ac1288#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling-2.6/motion-control",
-        "linkedRows": [
-          "sha256:6346939fedaef1a63f5b33709fb960e0a4c2ce2ae99e70b077fef53607b41f5a#1",
-          "sha256:e44efee9b7b0f31e9ad550575bcfef09fca9acc588db74c60efdf8141b15c492#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/ai-avatar-standard",
-        "linkedRows": [
-          "sha256:e3c208c1b605b08a54c29b6fe12ba108b58205fdcef780c1a1f94e4afe434a99#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/ai-avatar-pro",
-        "linkedRows": [
-          "sha256:ca3fb228251d3db545888e143241e16884d4d300807cb5cc7a105a24f9feb056#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-5-turbo-text-to-video-pro",
-        "linkedRows": [
-          "sha256:d84283fe974b5960acfb13f69e84a7d4f03cd072a7b47015b840c8a5cc7dd083#1",
-          "sha256:e126ca4738fe733ec65f3f66265a9aaadb66a5315671ef8e639a27b9bee047da#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-5-turbo-image-to-video-pro",
-        "linkedRows": [
-          "sha256:51fb9d8a500635aefd22f86dc95e47849e4d78ec1eab06665d4cb97b60c2ca79#1",
-          "sha256:b4b18574e9841ce0e073941b7a07fcab303658de3e3938b7f45fbf9ecf9f671f#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-1-standard",
-        "linkedRows": [
-          "sha256:90acc6525951aa2ee1e45caa2b6529c2653d03f4027909dd6b2c88938ddeb97e#1",
-          "sha256:e97eb417684ce0388a5db813aa4e4ecc5ab3fb3fbb7f9f5873625f9bfceddafd#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-1-pro",
-        "linkedRows": [
-          "sha256:22f152ee8738b04012b352f88b5e635c0caf894eb64830cdb1a219b95deebf17#1",
-          "sha256:b7e4a41979bcb4ff7abba1aa1d34028d71122e2fddcb6cfb9f40db5740967571#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-1-master-text-to-video",
-        "linkedRows": [
-          "sha256:9552920db13a798f23b25d302a9dcc85797e671180391ecad6ca9a81a97eb28f#1",
-          "sha256:0951631cd1f6886cd28abde449a55358d75ea94e8b873fbc68c4a7ce2edd8640#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "kling/v2-1-master-image-to-video",
-        "linkedRows": [
-          "sha256:df032cd12e28325ae806f5308324c2b28c9519461ea7c04bb18af8c8ef2b1f37#1",
-          "sha256:c9694905d47792507c61afac920214456f0292a909eb783bfaa9b544dfa4aa45#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "bytedance/v1-lite-image-to-video",
@@ -29329,13 +28316,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 227,
-        "canonical-alias": 122,
+        "implemented": 209,
+        "canonical-alias": 104,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 48
+        "upstream-unmappable": 84
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -29360,11 +28347,11 @@
         "guards": 162,
         "withoutPricing": 4,
         "dispositionCounts": {
-          "supported": 114,
+          "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 48
+          "upstream-unmappable": 63
         },
         "unclassified": 0
       },
@@ -29384,11 +28371,11 @@
       "pricingKeys": {
         "count": 227,
         "dispositionCounts": {
-          "supported": 165,
+          "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 62
+          "upstream-unmappable": 77
         },
         "unclassified": 0
       },
@@ -29445,6 +28432,258 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "kling-3.0/video",
+        "variant": "std",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/video",
+        "variant": "std|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/video",
+        "variant": "pro",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/video",
+        "variant": "pro|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/video",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/video",
+        "variant": "4K|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/motion-control",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-3.0/motion-control",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v3-turbo-image-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v3-turbo-image-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v3-turbo-text-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v3-turbo-text-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/text-to-video",
+        "variant": "5|silent",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/text-to-video",
+        "variant": "10|silent",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/text-to-video",
+        "variant": "5|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/text-to-video",
+        "variant": "10|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/image-to-video",
+        "variant": "5|silent",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/image-to-video",
+        "variant": "10|silent",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/image-to-video",
+        "variant": "5|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/image-to-video",
+        "variant": "10|sound",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/motion-control",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling-2.6/motion-control",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/ai-avatar-standard",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/ai-avatar-pro",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-5-turbo-text-to-video-pro",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-5-turbo-text-to-video-pro",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-5-turbo-image-to-video-pro",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-5-turbo-image-to-video-pro",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-standard",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-standard",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-pro",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-pro",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-master-text-to-video",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-master-text-to-video",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-master-image-to-video",
+        "variant": "5",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
+      {
+        "key": "kling/v2-1-master-image-to-video",
+        "variant": "10",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "The frozen September feed predates the 2026-11-05 reprice, so the dated feed and the page are the witnesses. Recordings from before that date still show the old bills."
+      },
       {
         "key": "wan/2-6-text-to-video",
         "variant": "5|1080p",
@@ -30191,169 +29430,169 @@
         "key": "kling-3.0-omni/image-to-video",
         "variant": "720p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/image-to-video",
         "variant": "720p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/image-to-video",
         "variant": "1080p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/image-to-video",
         "variant": "1080p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/image-to-video",
         "variant": "4k",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/image-to-video",
         "variant": "4k|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "720p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "720p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "720p|video",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "1080p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "1080p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "1080p|video",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "4k",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "4k|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/reference-to-video",
         "variant": "4k|video",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "720p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "720p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "1080p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "1080p|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "4k",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/text-to-video",
         "variant": "4k|audio",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/transformation",
         "variant": "720p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/transformation",
         "variant": "1080p",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "kling-3.0-omni/transformation",
         "variant": "4k",
         "status": "pricing-only",
-        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
-        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+        "provenance": "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json: the feed and page read 2026-11-05 print the new credit figures",
+        "rationale": "This runtime variant was added after the frozen snapshot, first verified on 2026-08-20 (plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json), and re-read when KIE repriced it on 2026-11-05."
       },
       {
         "key": "qwen2-1/text-to-image",

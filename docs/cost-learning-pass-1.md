@@ -256,6 +256,21 @@ so they carry that date. Calls captured before it now count in `capturedBeforeRa
   keys with no feed row. One of those keys was `bytedance/seedance-1.5-pro`. KIE has since
   retired it, so `ac-x0qlnu` removed it here.
 
+- **KIE repriced the whole Kling family on 2026-11-05.** `check:kie-feed-drift` went
+  from clean at 07:43Z to 60 differing cells at 08:41Z, across 19 keys, all up, 1.08x to
+  2.02x. `discountRate` fell on those rows, 42.86 to 10 on Kling 2.1 Master, so this looks
+  like a promotion ending. `ac-6jp17g` re-pinned all 60 from the dated pull,
+  `tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json`. Five recordings billed
+  at the old rates, and those bills were right on their day:
+
+| Provider | Model                               | Verdict   | Why                                                                                                         |
+| -------- | ----------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------- |
+| kie      | `kling-3.0-omni/text-to-video`      | NO-ACTION | Old capture (08-20), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
+| kie      | `kling-3.0-omni/image-to-video`     | NO-ACTION | Old capture (08-20), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
+| kie      | `kling-3.0-omni/reference-to-video` | NO-ACTION | Old capture (08-20), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
+| kie      | `kling-3.0/video`                   | NO-ACTION | Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
+| kie      | `kling/v3-turbo-image-to-video`     | NO-ACTION | Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
+
 ## What keeps this honest
 
 `tests/unit/cost-recording-accuracy.test.ts` holds every committed call with a stated

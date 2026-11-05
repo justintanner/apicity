@@ -388,6 +388,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- KIE repriced the whole Kling family on 2026-11-05, when a promotion ended, and
+  the table now follows its credits: 60 cells across 19 keys, all up, 1.08x to
+  2.02x. `kling/v2-1-standard` goes from 0.125 and 0.25 USD per video to 0.2525
+  and 0.505, `kling/v2-1-pro` from 0.25 and 0.5 to 0.44 and 0.88, and
+  `kling/v2-1-master-*` from 0.8 and 1.6 to 1.26 and 2.52. `kling-3.0/video` std
+  goes from 0.07 to 0.0755 USD/s, and `kling-3.0-omni`, `kling-2.6`,
+  `kling/v2-5-turbo`, `kling/v3-turbo` and `kling/ai-avatar` move too. Each entry's
+  `asOf` is 2026-11-05. Recordings billed before that date keep their stated
+  charge (ac-6jp17g).
 - `RateSource.asOf` is required, so every `PRICING` row states the date its rate
   was last read, and `rateAsOf` reports that date. The last 29 undated rows, all
   KIE, carry 2026-11-05, when each agreed with the live price feed. Their

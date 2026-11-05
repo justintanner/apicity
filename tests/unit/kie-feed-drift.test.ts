@@ -14,10 +14,10 @@ import { feedDrift } from "../../scripts/lib/kie-feed-drift.mjs";
 
 // scripts/kie-feed-drift.mjs compares the table with a live pull, which CI cannot
 // make. These hold its comparator to the frozen pull and to the rows one live pull
-// printed, tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json, so a
+// printed, tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json, so a
 // table edit that contradicts that dated reading fails here too.
 const FIXTURE =
-  "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-04.json";
+  "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json";
 
 interface Row {
   official: { modelDescription: string; usdPrice: string; creditPrice: string };
@@ -90,12 +90,12 @@ describe("KIE feed drift", () => {
     });
   });
 
-  it("finds the table agreeing with every row of the 2026-11-04 pull", () => {
+  it("finds the table agreeing with every row of the 2026-11-05 pull", () => {
     const result = report(live);
     expect(result.differ).toEqual([]);
     expect(result.compared).toBe(result.same);
-    // 98 rows, and the 8 pixverse-v6-max rows each price two tabs.
-    expect(result.compared).toBe(106);
+    // 134 rows, and the 8 pixverse-v6-max rows each price two tabs.
+    expect(result.compared).toBe(142);
     expect(result.notCompared).toEqual([]);
   });
 
@@ -148,7 +148,7 @@ describe("KIE feed drift", () => {
       "30",
       "kling-3.0-omni/reference-to-video",
       "1080p|video",
-      0.135,
+      0.151,
     ],
     [
       "kling 3.0 omni, text-to-video, 720p with native audio",
@@ -156,7 +156,7 @@ describe("KIE feed drift", () => {
       "20",
       "kling-3.0-omni/text-to-video",
       "720p|audio",
-      0.09,
+      0.101,
     ],
     [
       "kling 4.0, reference-to-video, 1080P with video input",
@@ -250,6 +250,21 @@ describe("KIE feed drift", () => {
     }
   });
 
+  it("prices the Kling cells KIE repriced at this pull's figures", () => {
+    expect(PRICING.kie["kling/v2-1-standard"]).toMatchObject({
+      rates: { "5": 0.2525, "10": 0.505 },
+      source: { asOf: "2026-11-05" },
+    });
+    expect(PRICING.kie["kling/v2-1-master-text-to-video"]).toMatchObject({
+      rates: { "5": 1.26, "10": 2.52 },
+      source: { asOf: "2026-11-05" },
+    });
+    expect(PRICING.kie["kling-3.0/video"]).toMatchObject({
+      rates: { std: 0.0755, pro: 0.101, "4K": 0.3775 },
+      source: { asOf: "2026-11-05" },
+    });
+  });
+
   it("keeps the first five MiniMax H3 images free, as the page and feed say", () => {
     // Never halved here: the frozen pull already printed the 4 credits per image
     // that the 2026-11-04 feed prints. ac-p3e0c6 read an older before-value as a
@@ -290,7 +305,7 @@ describe("KIE feed drift", () => {
         "--metadata",
         FIXTURE,
       ]);
-      expect(stdout).toContain("106 agree, 0 differ");
+      expect(stdout).toContain("142 agree, 0 differ");
       expect(code).toBe(0);
     }, 30_000);
 

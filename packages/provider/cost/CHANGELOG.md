@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Gemini Omni 1.1 Flash reference-to-video
+  (`google/gemini-omni-1.1-flash/reference-to-video`) bills the output's seconds
+  (8 by default) at 0.03, 0.10, 0.15 and 0.30 USD/s for 360p, 720p, 1080p and 4k
+  (720p by default), from the formula on the model page (list price, read
+  2026-11-02 and 2026-11-06). Reference images and videos add nothing, so it
+  needs no hint. A recorded 3 s 360p render billed 0.09 USD.
+  `MODEL_SLUGS.wavespeed` shares the family slug `geminiomni1p1f` (ac-rt31ij).
 - WaveSpeed Wan 2.7 video edit (`alibaba/wan-2.7/video-edit`) bills the output
   alone, at 0.20 and 0.30 USD/s for 720p and 1080p (720p by default), from the
   formula on the model page (list price, read 2026-11-02 and 2026-11-06). A set

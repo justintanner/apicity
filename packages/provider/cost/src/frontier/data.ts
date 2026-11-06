@@ -1105,6 +1105,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "happyhorse/video-edit",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.alibaba.happyhorse1p0.videoEdit",
+            pricingKey: "alibaba/happyhorse-1.0/video-edit",
+          },
         ],
       },
       {

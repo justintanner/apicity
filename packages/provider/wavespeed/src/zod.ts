@@ -914,3 +914,24 @@ export const WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema =
         "Generate native audio synchronized with the video. WaveSpeed default: true."
       ),
   });
+
+// alibaba/happyhorse-1.0/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema = z.object({
+  prompt: z.string().describe("Text description of the desired edits."),
+  video: z.string().describe("URL of the source video to edit."),
+  images: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe("Public URLs of up to 5 reference images for the edit."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed for reproducibility."),
+});

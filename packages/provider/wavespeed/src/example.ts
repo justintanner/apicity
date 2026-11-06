@@ -15,6 +15,16 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v3.alibaba.happyhorse1p0.videoEdit": {
+    "source": "wavespeed/alibaba-happyhorse-1-0-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.alibaba.happyhorse1p1.imageToVideo": {
     "source": "wavespeed/alibaba-happyhorse-1-1-image-to-video",
     "payload": {

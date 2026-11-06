@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Happy Horse 1.0 video edit (`alibaba/happyhorse-1.0/video-edit`)
+  bills only the source clip's seconds, rounded up, at least 3 and at most 60,
+  at 0.28 and 0.48 USD/s for 720p and 1080p (720p by default), from the formula
+  on the model page (list price, read 2026-11-02 and 2026-11-06). Reference
+  images add nothing. The source's length comes from
+  `costHints.inputDurationSeconds`; without it the estimate fails closed with a
+  warning naming the hint. A recorded 720p edit of a 3 s clip billed 0.84 USD.
+  `MODEL_SLUGS.wavespeed` uses the family slug `hh`, display
+  "Happy Horse Edit" (ac-zm0fih).
 - WaveSpeed Seedance 2.5 reference-to-video
   (`bytedance/seedance-2.5/reference-to-video`) bills exactly as its
   text-to-video sibling, from the same formula on the model page (list price,

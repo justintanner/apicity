@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
+  WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
@@ -943,6 +944,7 @@ describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
     expect(Object.keys(wavespeed.api.v3.alibaba)).toEqual([
       "wan3p0",
       "happyhorse1p1",
+      "happyhorse1p0",
     ]);
     expect(wavespeed.api.v3.alibaba.happyhorse1p1.imageToVideo.schema).toBe(
       WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema
@@ -1373,6 +1375,63 @@ describe("wavespeed bytedance/seedance-2.5/reference-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed alibaba/happyhorse-1.0/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-alibaba-happyhorse-1-0-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    resolution: "720p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.alibaba.happyhorse1p0)).toEqual([
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.alibaba.happyhorse1p0.videoEdit.schema).toBe(
+      WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes up to 5 reference images", () => {
+    const url = "https://example.com/ref.jpg";
+
+    expect(
+      WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema.safeParse({
+        ...RECORDED,
+        images: Array(5).fill(url),
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["images", Array(6).fill(url)],
+      ["seed", 1.5],
+      ["prompt", undefined],
+      ["video", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

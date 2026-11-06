@@ -1,6 +1,7 @@
 import { attachExamples } from "./example";
 import { WaveSpeedError } from "./types";
 import type {
+  WaveSpeedAlibabaHappyhorse1p0VideoEditRequest,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0ImageToVideoRequest,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequest,
@@ -29,6 +30,7 @@ import type {
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
 } from "./types";
 import {
+  WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
@@ -243,6 +245,25 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema }
+            ),
+          },
+          happyhorse1p0: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.0/video-edit
+            // Docs: https://wavespeed.ai/models/alibaba/happyhorse-1.0/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedAlibabaHappyhorse1p0VideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/alibaba/happyhorse-1.0/video-edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema }
             ),
           },
         },

@@ -567,4 +567,24 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: referenceVideosWarn("bytedance/seedance-2.5/reference-to-video"),
     source: source("bytedance/seedance-2.5/reference-to-video"),
   },
+  // base_price 280000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": (resolution = "1080p" ? 480000 : base_price) *
+  //   $min([$max([$ceil(get_duration(video)), 3]), 60])}
+  // The edit bills only the source clip's seconds, rounded up, at least 3 and
+  // at most 60. Reference images add nothing.
+  "alibaba/happyhorse-1.0/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(60)(hints);
+      return input === undefined ? undefined : Math.max(input, 3);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "720p": 0.28, "1080p": 0.48 },
+    warn: editedVideoWarn("alibaba/happyhorse-1.0/video-edit"),
+    source: source("alibaba/happyhorse-1.0/video-edit"),
+  },
 };

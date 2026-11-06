@@ -537,6 +537,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "s3 PUT objects.updateEncryption": "standard-write",
   "s3 PUT objects.uploadPart": "standard-write",
   "s3 PUT objects.uploadPartCopy": "standard-write",
+  "wavespeed POST api.v3.alibaba.happyhorse1p0.videoEdit":
+    "alibaba/happyhorse-1.0/video-edit",
   "wavespeed POST api.v3.alibaba.happyhorse1p1.imageToVideo":
     "alibaba/happyhorse-1.1/image-to-video",
   "wavespeed POST api.v3.alibaba.wan3p0.imageToVideo":

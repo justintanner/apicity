@@ -284,6 +284,65 @@ describe("KIE feed drift", () => {
     expect(entry.extra?.(images(6))).toBe(0.02);
   });
 
+  // KIE added Kimi K3.1 Pro as its own row after the 2026-11-05 pull. With its
+  // separators gone it contains `kimi-k3`, so it read as a move on that key, and
+  // the drift gate stopped the v0.27.0 release over a price that never changed.
+  it("does not read a later version's row as a move on the key it contains", async () => {
+    const chatRow = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "chat",
+        provider: "Moonshot",
+        creditPrice,
+        creditUnit: "per million tokens",
+        usdPrice,
+        anchor,
+      },
+    });
+    const k3 = "https://kie.ai/kimi-k3";
+    const k31 = "https://kie.ai/kimi-k3-1-pro";
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const file = path.join(dir, "snapshot.json");
+      await writeFile(
+        file,
+        JSON.stringify({
+          ...JSON.parse(await readFile(FIXTURE, "utf8")),
+          records: [
+            chatRow("Kimi K3, Chat, Input", "480", "2.40", k3),
+            chatRow("Kimi K3, Chat, Cached Input", "48", "0.24", k3),
+            chatRow("Kimi K3, Chat, Output", "2400", "12.00", k3),
+            chatRow("Kimi K3.1 Pro, Chat, Input", "160", "0.80", k31),
+            chatRow("Kimi K3.1 Pro, Chat, Cached Input", "16", "0.08", k31),
+            chatRow("Kimi K3.1 Pro, Chat, Output", "800", "4.00", k31),
+          ],
+        })
+      );
+      const result = report(
+        await build({ snapshotPath: file, metadataPath: file, live: true })
+      );
+      expect(result.differ).toEqual([]);
+      // Kimi K3's own three cells are still compared, so the gate still watches them.
+      expect(result.same).toBe(3);
+      expect(result.compared).toBe(3);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "Kimi K3.1 Pro, Chat, Input",
+        "Kimi K3.1 Pro, Chat, Cached Input",
+        "Kimi K3.1 Pro, Chat, Output",
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

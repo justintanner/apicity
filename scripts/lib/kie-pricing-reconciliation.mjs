@@ -612,17 +612,27 @@ function queryDescriptionConflict(raw, inventories) {
   };
 }
 
+// normalize() strips separators, so a key ending in a version number also reads
+// as a substring of a later version: `kimi-k3` is inside `Kimi K3.1 Pro`, as
+// `kimik31pro...`. Such a row is a different model, not this key.
+function descriptionNamesKey(description, key) {
+  const needle = normalize(key);
+  if (!normalize(description).includes(needle)) return false;
+  if (!/\d$/.test(needle)) return true;
+  const spelled = [...needle].join("[^a-z0-9]*");
+  return new RegExp(`${spelled}(?![.-]?\\d)`, "i").test(description);
+}
+
 function currentKeyCandidates(raw, inventories) {
   const description = String(raw.modelDescription ?? "");
   const anchor = String(raw.anchor ?? "");
   const query = queryModel(anchor);
   const pricing = new Set(inventories.pricingKeys);
-  const normalizedDescription = normalize(description);
   const explicitKey = explicitOperationKey(description, pricing);
   if (explicitKey) return [explicitKey];
   if (query && pricing.has(query)) return [query];
   const exactDescriptionKeys = inventories.pricingKeys
-    .filter((key) => normalizedDescription.includes(normalize(key)))
+    .filter((key) => descriptionNamesKey(description, key))
     .sort((left, right) => {
       const lengthDifference = normalize(right).length - normalize(left).length;
       return lengthDifference || left.localeCompare(right);

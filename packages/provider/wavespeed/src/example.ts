@@ -284,6 +284,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit": {
+    "source": "wavespeed/kwaivgi-kling-video-o3-pro-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "keep_original_sound": true
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.minimax.h3.imageToVideo": {
     "source": "wavespeed/minimax-h3-image-to-video",
     "payload": {

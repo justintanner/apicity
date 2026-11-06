@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Kling o3 Pro video edit (`kwaivgi/kling-video-o3-pro/video-edit`)
+  bills only the source clip's seconds, rounded up, at least 3 and at most 15,
+  at 0.168 USD/s, from the formula on the model page (list price, read 2026-11-02
+  and 2026-11-06). Sound, reference images and elements add nothing. The source's
+  length comes from `costHints.inputDurationSeconds`; without it the estimate
+  fails closed with a warning naming the hint. A recorded edit of a 3 s clip
+  billed 0.504 USD. `MODEL_SLUGS.wavespeed` shares the family slug `klingo3`,
+  display "Kling o3 Pro Edit" (ac-124he8).
 - WaveSpeed Grok Imagine Video 1.5 reference-to-video
   (`x-ai/grok-imagine-video-v1.5/reference-to-video`) bills the seconds (6 by
   default, at most 15) at 0.08 and 0.14 USD/s for 480p and 720p (720p by

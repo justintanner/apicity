@@ -1814,6 +1814,7 @@ wavespeed	api.v3.google.geminiOmni1p1Flash.textToVideo	POST	metered	seconds		htt
 wavespeed	api.v3.google.geminiOmni1p1Flash.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/google/gemini-omni-1.1-flash/video-edit	2026-11-04
 wavespeed	api.v3.heygen.video1p0.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/heygen/video-1.0/reference-to-video	2026-11-04
 wavespeed	api.v3.heygen.video1p0.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/heygen/video-1.0/text-to-video	2026-11-04
+wavespeed	api.v3.kwaivgi.klingVideoO3Pro.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit	2026-11-06
 wavespeed	api.v3.minimax.h3.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/image-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/reference-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/text-to-video	2026-11-04

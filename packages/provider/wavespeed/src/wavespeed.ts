@@ -24,6 +24,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
+  WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
@@ -59,6 +60,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -736,6 +738,26 @@ export function createWaveSpeed(
             },
             { schema: WaveSpeedRunwaymlAleph2RequestSchema }
           ),
+        },
+        kwaivgi: {
+          klingVideoO3Pro: {
+            // POST https://api.wavespeed.ai/api/v3/kwaivgi/kling-video-o3-pro/video-edit
+            // Docs: https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/kwaivgi/kling-video-o3-pro/video-edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema }
+            ),
+          },
         },
       },
     },

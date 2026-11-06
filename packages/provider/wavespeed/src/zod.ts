@@ -991,3 +991,62 @@ export const WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema = z.object({
       "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
     ),
 });
+
+// bytedance/seedance-2.0/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Describe the scene, action, camera movement, and mood for the video. Refer to the references as @Image 1, @Video 1, @Audio 1, in upload order, and say what each is for."
+      ),
+    reference_images: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "Public URLs of up to 9 images that keep characters, products, or scenes consistent. Provide at least one reference; with none, the request runs as text-to-video."
+      ),
+    reference_videos: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Public URLs of up to 3 reference videos, at most 15 s in all. They bill by their length."
+      ),
+    reference_audios: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Public URLs of up to 3 reference audio clips, at most 15 s in all."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["480p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(4)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 4-15. WaveSpeed default: 5."),
+    enable_web_search: z
+      .boolean()
+      .optional()
+      .describe(
+        "Enable web search for real-time information. WaveSpeed default: false."
+      ),
+    generate_audio: z
+      .boolean()
+      .optional()
+      .describe(
+        "Generate native audio synchronized with the video. WaveSpeed default: true."
+      ),
+  });

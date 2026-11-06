@@ -9,6 +9,7 @@ import type {
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
@@ -354,10 +355,23 @@ export interface WaveSpeedBytedanceSeedance2p0VideoEditMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema;
 }
+export type WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequest = z.input<
+  typeof WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedBytedanceSeedance2p0ReferenceToVideoMethod {
+  (
+    request: WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema;
+}
 export interface WaveSpeedBytedanceSeedance2p0Namespace {
   textToVideo: WaveSpeedBytedanceSeedance2p0TextToVideoMethod;
   imageToVideo: WaveSpeedBytedanceSeedance2p0ImageToVideoMethod;
   videoEdit: WaveSpeedBytedanceSeedance2p0VideoEditMethod;
+  referenceToVideo: WaveSpeedBytedanceSeedance2p0ReferenceToVideoMethod;
 }
 export interface WaveSpeedBytedanceNamespace {
   seedance2p5: WaveSpeedBytedanceSeedance2p5Namespace;

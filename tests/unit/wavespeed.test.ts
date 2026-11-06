@@ -11,6 +11,7 @@ import {
   WaveSpeedBlackForestLabsFlux3ImageToVideoRequestSchema,
   WaveSpeedBlackForestLabsFlux3TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
@@ -811,6 +812,7 @@ describe("wavespeed bytedance/seedance-2.0/image-to-video", () => {
       "textToVideo",
       "imageToVideo",
       "videoEdit",
+      "referenceToVideo",
     ]);
     expect(wavespeed.api.v3.bytedance.seedance2p0.imageToVideo.schema).toBe(
       WaveSpeedBytedanceSeedance2p0ImageToVideoRequestSchema
@@ -1482,6 +1484,57 @@ describe("wavespeed bytedance/seedance-2.0/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.0/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-bytedance-seedance-2-0-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.bytedance.seedance2p0.referenceToVideo.schema).toBe(
+      WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "360p"],
+      ["aspect_ratio", "9:21"],
+      ["duration", 3],
+      ["duration", 16],
+      ["reference_images", Array(10).fill(url)],
+      ["reference_videos", Array(4).fill(url)],
+      ["reference_audios", Array(4).fill(url)],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

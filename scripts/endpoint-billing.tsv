@@ -1800,6 +1800,7 @@ wavespeed	api.v3.alibaba.wan3p0.videoEdit	POST	metered	seconds		https://wavespee
 wavespeed	api.v3.blackForestLabs.flux3.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/black-forest-labs/flux-3/image-to-video	2026-11-04
 wavespeed	api.v3.blackForestLabs.flux3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/black-forest-labs/flux-3/text-to-video	2026-11-04
 wavespeed	api.v3.bytedance.seedance2p0.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.0/image-to-video	2026-11-04
+wavespeed	api.v3.bytedance.seedance2p0.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.0/reference-to-video	2026-11-06
 wavespeed	api.v3.bytedance.seedance2p0.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.0/text-to-video	2026-11-04
 wavespeed	api.v3.bytedance.seedance2p0.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.0/video-edit	2026-11-06
 wavespeed	api.v3.bytedance.seedance2p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.5/image-to-video	2026-11-04

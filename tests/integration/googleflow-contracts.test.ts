@@ -316,12 +316,7 @@ describe("google flow request contracts", () => {
       "POST",
       "/videos/concatenate"
     );
-    expectRequest(
-      await googleFlow.get.v1.jobs({ options: "history" }),
-      "GET",
-      "/jobs",
-      { options: "history" }
-    );
+    // Jobs list queries are covered against the live router in googleflow-jobs.
     expectRequest(
       await googleFlow.get.v1.jobs.retrieve({ jobId: "job-1" }),
       "GET",

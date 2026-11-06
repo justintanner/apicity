@@ -488,10 +488,11 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       // GET https://api.useapi.net/v1/google-flow/jobs{query}
       // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs
       jobs: Object.assign(
-        jsonGet<GoogleFlowJobsRequest>(
-          GoogleFlowJobsRequestSchema,
-          (req) => `/jobs${queryFromRequest(req)}`
-        ),
+        jsonGet<GoogleFlowJobsRequest>(GoogleFlowJobsRequestSchema, (req) => {
+          const query = queryFromRequest(req);
+          // The upstream router requires a slash before jobs query parameters.
+          return query ? `/jobs/${query}` : "/jobs";
+        }),
         {
           // GET https://api.useapi.net/v1/google-flow/jobs/{jobId}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid

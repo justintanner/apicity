@@ -935,3 +935,59 @@ export const WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema = z.object({
     .optional()
     .describe("Random seed for reproducibility."),
 });
+
+// bytedance/seedance-2.0/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("Describe the edit you want applied to the input video."),
+  video: z
+    .string()
+    .describe(
+      "URL of the input video to edit. Videos longer than 15 s are trimmed to 15 s."
+    ),
+  reference_images: z
+    .array(z.string())
+    .max(9)
+    .optional()
+    .describe(
+      "Public URLs of up to 9 images that guide the edit (subject identity, style)."
+    ),
+  reference_audios: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe("Public URLs of up to 3 audio clips that guide the audio."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"])
+    .optional()
+    .describe(
+      "Aspect ratio of the video. Omitted, WaveSpeed follows the input video."
+    ),
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .optional()
+    .describe(
+      "Output length in seconds, 4-15. Omitted, WaveSpeed follows the input video. Hidden in WaveSpeed's playground, accepted by its API."
+    ),
+  enable_web_search: z
+    .boolean()
+    .optional()
+    .describe(
+      "Enable web search for real-time information. WaveSpeed default: false."
+    ),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate native audio for the edit; false keeps the input's audio track. WaveSpeed default: true."
+    ),
+});

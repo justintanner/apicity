@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Seedance 2 video edit (`bytedance/seedance-2.0/video-edit`) bills
+  the source clip's seconds (read between 2 and 15, rounded up) plus the
+  output's, which follow the source (at least 4) unless `duration` is set, at
+  0.075, 0.15, 0.375 and 0.75 USD/s for 480p, 720p, 1080p and 4k (720p by
+  default), from the formula on the model page (list price, read 2026-11-02 and
+  2026-11-06). Reference images and audio add nothing. The source's length
+  comes from `costHints.inputDurationSeconds`; without it the estimate fails
+  closed with a warning naming the hint. A recorded 4 s 480p edit of a 3 s clip
+  billed 0.4725 USD against the 0.525 list under a 90% promotion.
+  `MODEL_SLUGS.wavespeed` shares the family slug `sd2`, display
+  "Seedance 2 Edit" (ac-batizj).
 - WaveSpeed Happy Horse 1.0 video edit (`alibaba/happyhorse-1.0/video-edit`)
   bills only the source clip's seconds, rounded up, at least 3 and at most 60,
   at 0.28 and 0.48 USD/s for 720p and 1080p (720p by default), from the formula

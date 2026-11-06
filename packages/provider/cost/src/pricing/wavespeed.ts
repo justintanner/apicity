@@ -587,4 +587,30 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("alibaba/happyhorse-1.0/video-edit"),
     source: source("alibaba/happyhorse-1.0/video-edit"),
   },
+  // base_price 150000 micros, discount_rate 90 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": ($scale := (resolution = "4k" ? 5 : resolution = "1080p" ?
+  //   2.5 : resolution = "720p" ? 1 : 0.5); $source :=
+  //   $min([$ceil(get_duration(video, min=2, max=15, total=15)), 15]);
+  //   base_price * $scale * ($max([2, $source]) + (duration ? duration :
+  //   $max([4, $source]))))}
+  // The edit bills the source, read between 2 and 15 s and rounded up, and the
+  // output, which follows the source (at least 4 s) unless duration is set.
+  "bytedance/seedance-2.0/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const input = hintInputSeconds(hints);
+      if (input === undefined) return undefined;
+      const read = Math.ceil(Math.min(Math.max(input, 2), 15));
+      const output = requestedSeconds(Math.max(read, 4))(p);
+      return output === undefined ? undefined : read + output;
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.075, "720p": 0.15, "1080p": 0.375, "4k": 0.75 },
+    warn: editedVideoWarn("bytedance/seedance-2.0/video-edit"),
+    source: source("bytedance/seedance-2.0/video-edit"),
+  },
 };

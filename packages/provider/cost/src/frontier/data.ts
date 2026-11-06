@@ -1117,7 +1117,13 @@ export const FRONTIER = {
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
         elo: 1082,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedance2p0.videoEdit",
+            pricingKey: "bytedance/seedance-2.0/video-edit",
+          },
+        ],
       },
       {
         rank: 7,

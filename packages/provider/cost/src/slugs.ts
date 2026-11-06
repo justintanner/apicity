@@ -1060,6 +1060,7 @@ export const MODEL_SLUGS = {
     "wavespeed-ai/minimax-h3/video-edit": "mmh3",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
     "alibaba/happyhorse-1.0/video-edit": "hh",
+    "bytedance/seedance-2.0/video-edit": "sd2",
   },
 } as const;
 
@@ -2127,6 +2128,7 @@ export const MODEL_DISPLAY = {
     "wavespeed-ai/minimax-h3/video-edit": "MiniMax H3 Edit",
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
     "alibaba/happyhorse-1.0/video-edit": "Happy Horse Edit",
+    "bytedance/seedance-2.0/video-edit": "Seedance 2 Edit",
   },
 } as const;
 

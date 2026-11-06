@@ -4687,6 +4687,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/alibaba/wan-2.7/video-edit",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.alibaba.wan2p7.videoEdit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/alibaba/wan-3.0/image-to-video",
         asOf: "2026-11-04",
       },

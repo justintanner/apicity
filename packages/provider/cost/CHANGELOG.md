@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Wan 2.7 video edit (`alibaba/wan-2.7/video-edit`) bills the output
+  alone, at 0.20 and 0.30 USD/s for 720p and 1080p (720p by default), from the
+  formula on the model page (list price, read 2026-11-02 and 2026-11-06). A set
+  `duration` bills 2 to 10 s and needs no hint. With `duration` 0 or omitted the
+  output follows the source's seconds, rounded up, 2 to 10; the source's length
+  comes from `costHints.inputDurationSeconds`, and without it the estimate fails
+  closed with a warning naming the hint. Reference images add nothing. A
+  recorded 2 s 720p edit billed 0.40 USD. `MODEL_SLUGS.wavespeed` uses the family
+  slug `wan2p7`, display "Wan 2.7 Edit" (ac-szxfdn).
 - WaveSpeed Seedance 2 reference-to-video
   (`bytedance/seedance-2.0/reference-to-video`) bills exactly as its
   text-to-video sibling, from the same formula on the model page (list price,

@@ -4,6 +4,7 @@ import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
+  WaveSpeedAlibabaWan2p7VideoEditRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0TextToVideoRequestSchema,
@@ -949,6 +950,7 @@ describe("wavespeed alibaba/happyhorse-1.1/image-to-video", () => {
       "wan3p0",
       "happyhorse1p1",
       "happyhorse1p0",
+      "wan2p7",
     ]);
     expect(wavespeed.api.v3.alibaba.happyhorse1p1.imageToVideo.schema).toBe(
       WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema
@@ -1535,6 +1537,52 @@ describe("wavespeed bytedance/seedance-2.0/reference-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed alibaba/wan-2.7/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-alibaba-wan-2-7-video-edit.test.ts recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    resolution: "720p",
+    duration: 2,
+    audio_setting: "origin",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.alibaba.wan2p7)).toEqual(["videoEdit"]);
+    expect(wavespeed.api.v3.alibaba.wan2p7.videoEdit.schema).toBe(
+      WaveSpeedAlibabaWan2p7VideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaWan2p7VideoEditRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["duration", -1],
+      ["duration", 11],
+      ["audio_setting", "mute"],
+      ["reference_images", Array(4).fill(url)],
+      ["prompt", undefined],
+      ["video", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaWan2p7VideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

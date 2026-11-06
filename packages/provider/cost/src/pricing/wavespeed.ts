@@ -698,4 +698,24 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("runwayml/aleph-2"),
     source: source("runwayml/aleph-2"),
   },
+  // base_price 140000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": (resolution = "480p" ? 80000 : base_price) *
+  //   $min([duration, 15]) + 10000 * $max([1, $count(reference_images)])}
+  // Each reference image adds 0.01 USD, at least one per request.
+  "x-ai/grok-imagine-video-v1.5/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: cappedSeconds(6, 15),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.08, "720p": 0.14 },
+    extra: (p) => {
+      const images = p.reference_images ?? [];
+      if (!Array.isArray(images)) return undefined;
+      return 0.01 * Math.max(1, images.length);
+    },
+    source: source("x-ai/grok-imagine-video-v1.5/reference-to-video"),
+  },
 };

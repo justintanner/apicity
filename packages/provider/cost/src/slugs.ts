@@ -1065,6 +1065,7 @@ export const MODEL_SLUGS = {
     "alibaba/wan-2.7/video-edit": "wan2p7",
     "google/gemini-omni-1.1-flash/reference-to-video": "geminiomni1p1f",
     "runwayml/aleph-2": "aleph2",
+    "x-ai/grok-imagine-video-v1.5/reference-to-video": "grokimgv1p5",
   },
 } as const;
 
@@ -2137,6 +2138,7 @@ export const MODEL_DISPLAY = {
     "alibaba/wan-2.7/video-edit": "Wan 2.7 Edit",
     "google/gemini-omni-1.1-flash/reference-to-video": "Gemini Omni 1.1 Flash",
     "runwayml/aleph-2": "Runway Aleph 2",
+    "x-ai/grok-imagine-video-v1.5/reference-to-video": "Grok Imagine Video 1.5",
   },
 } as const;
 

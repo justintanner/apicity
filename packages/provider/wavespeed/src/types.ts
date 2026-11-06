@@ -30,6 +30,7 @@ import type {
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";
 
 /**
@@ -499,8 +500,21 @@ export interface WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema;
 }
+export type WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequest = z.input<
+  typeof WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoMethod {
+  (
+    request: WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema;
+}
 export interface WaveSpeedXAiGrokImagineVideoV1p5Namespace {
   imageToVideo: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod;
+  referenceToVideo: WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoMethod;
 }
 export interface WaveSpeedXAiNamespace {
   grokImagineVideoV1p5: WaveSpeedXAiGrokImagineVideoV1p5Namespace;

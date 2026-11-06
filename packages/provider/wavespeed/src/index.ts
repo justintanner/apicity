@@ -89,6 +89,8 @@ export type {
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
   WaveSpeedXAiGrokImagineVideoV1p5Namespace,
+  WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoMethod,
+  WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequest,
   WaveSpeedXAiNamespace,
 } from "./types";
 export {
@@ -122,4 +124,5 @@ export {
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";

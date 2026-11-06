@@ -592,6 +592,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "wavespeed-ai/minimax-h3/video-edit",
   "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo":
     "x-ai/grok-imagine-video-v1.5/image-to-video",
+  "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.referenceToVideo":
+    "x-ai/grok-imagine-video-v1.5/reference-to-video",
   "x GET v2.media.upload": "media-upload",
   "x GET v2.tweets": "posts-read",
   "x GET v2.users.me": "users-read",

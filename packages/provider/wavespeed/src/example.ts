@@ -349,6 +349,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST api.v3.xAi.grokImagineVideoV1p5.referenceToVideo": {
+    "source": "wavespeed/x-ai-grok-imagine-video-v1-5-reference-to-video",
+    "payload": {
+      "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+      "reference_images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "duration": 1,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

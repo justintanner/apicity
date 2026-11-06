@@ -1158,3 +1158,33 @@ export const WaveSpeedRunwaymlAleph2RequestSchema = z.object({
     .optional()
     .describe("Random seed for reproducible generation."),
 });
+
+// x-ai/grok-imagine-video-v1.5/reference-to-video, from WaveSpeed's model
+// catalog (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Text description of the desired motion and scene. Refer to the reference images as <IMAGE_0>, <IMAGE_1>, ..., numbered from 0 in array order."
+      ),
+    reference_images: z
+      .array(z.string())
+      .max(7)
+      .describe("Public URLs of up to 7 reference images guiding the video."),
+    duration: z
+      .number()
+      .int()
+      .min(1)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 1-15. WaveSpeed default: 6."),
+    aspect_ratio: z
+      .enum(["16:9", "1:1", "9:16", "3:2", "2:3"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["480p", "720p"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  });

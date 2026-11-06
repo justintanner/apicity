@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Grok Imagine Video 1.5 reference-to-video at `api.v3.xAi.grokImagineVideoV1p5.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-video-v1.5/reference-to-video`): up to 7 reference images guide a 1-15 s video at 480p or 720p. WaveSpeed bills the seconds (6 by default) at the list 0.08 and 0.14 USD/s, plus 0.01 USD per reference image. A recorded 1 s 480p render billed 0.09 USD (ac-7885m6).
+
 - `@apicity/wavespeed` adds Runway Aleph 2 video edit at `api.v3.runwayml.aleph2` (`POST https://api.wavespeed.ai/api/v3/runwayml/aleph-2`), apicity's first endpoint for the video-to-video board's Aleph 2.0, which leaves that board fully mapped: edits a 2-30 s video from a text instruction, with up to 5 keyframes. WaveSpeed bills only the source clip's length, rounded up, from 2 to 30 s, at the list 0.37 USD/s; the estimate needs `costHints.inputDurationSeconds` and fails closed without it. A recorded edit of a 3 s clip billed 1.11 USD (ac-jogzs9).
 
 - `@apicity/wavespeed` adds Gemini Omni 1.1 Flash reference-to-video at `api.v3.google.geminiOmni1p1Flash.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/reference-to-video`): up to 10 reference images and 3 reference videos guide a 3-10 s video at 360p, 720p, 1080p or 4k. WaveSpeed bills the output's seconds (8 by default) at the list 0.03, 0.10, 0.15 and 0.30 USD/s; references add nothing. A recorded 3 s 360p render billed 0.09 USD (ac-rt31ij).

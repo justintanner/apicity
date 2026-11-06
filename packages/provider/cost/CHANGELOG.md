@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Happy Horse 1.1 reference-to-video
+  (`alibaba/happyhorse-1.1/reference-to-video`) bills the output's seconds (5 by
+  default) at 0.07, 0.14 and 0.18 USD/s for 480p, 720p and 1080p (720p by
+  default), from the formula on the model page (list price, read 2026-11-02 and
+  2026-11-06). Reference images add nothing. A recorded 3 s 480p render billed
+  0.21 USD. `MODEL_SLUGS.wavespeed` shares the family slug `hh11` (ac-98rlld).
 - WaveSpeed Kling o3 Pro video edit (`kwaivgi/kling-video-o3-pro/video-edit`)
   bills only the source clip's seconds, rounded up, at least 3 and at most 15,
   at 0.168 USD/s, from the formula on the model page (list price, read 2026-11-02

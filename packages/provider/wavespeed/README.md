@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-29 endpoints across 9 groups. Each method mirrors an upstream URL path.
+30 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -500,6 +500,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const prediction = await wavespeed.api.v3.predictions.result("prediction_id");
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+### runwayml
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.runwayml.aleph2</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/runwayml/aleph-2</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/runwayml/aleph-2)
+
+```typescript
+const res = await wavespeed.api.v3.runwayml.aleph2({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

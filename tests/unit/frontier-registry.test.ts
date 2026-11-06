@@ -164,7 +164,6 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
-const V2V_UNMAPPED = ["Aleph 2.0"];
 
 /** t2v and i2v top-10 models with no reference-to-video endpoint. */
 const R2V_LEFT_OUT = ["Utopai X", "FLUX 3 Max (720p)", "FLUX 3"];
@@ -1274,8 +1273,8 @@ describe("frontier video snapshots", () => {
     );
     expect(seedRows(v2v.snapshot)).toEqual(V2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(v2v.snapshot)).toEqual([]);
-    expect(unmappedNames(v2v.endpointMap)).toEqual(V2V_UNMAPPED);
-    expect(mappedCount(v2v.endpointMap)).toBe(8);
+    expect(unmappedNames(v2v.endpointMap)).toEqual([]);
+    expect(mappedCount(v2v.endpointMap)).toBe(9);
     expect(Object.keys(v2v.endpointMap)).toHaveLength(9);
   });
 

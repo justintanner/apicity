@@ -4985,6 +4985,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/runwayml/aleph-2",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.runwayml.aleph2"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit",
         asOf: "2026-11-04",
       },

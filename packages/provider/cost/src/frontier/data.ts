@@ -1158,7 +1158,13 @@ export const FRONTIER = {
         model: "Aleph 2.0",
         creator: "Runway",
         elo: 1012,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.runwayml.aleph2",
+            pricingKey: "runwayml/aleph-2",
+          },
+        ],
       },
       {
         rank: 9,

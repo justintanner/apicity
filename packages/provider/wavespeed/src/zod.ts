@@ -1132,3 +1132,29 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema =
       .optional()
       .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
   });
+
+// runwayml/aleph-2, from WaveSpeed's model catalog (GET /api/v3/models, read
+// 2026-11-02 and 2026-11-06).
+export const WaveSpeedRunwaymlAleph2RequestSchema = z.object({
+  prompt: z.string().describe("Text prompt describing the edit to apply."),
+  video: z
+    .string()
+    .describe("URL of the input video to edit, 2-30 s long and under 16 MB."),
+  keyframe_images: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe("Public URLs of up to 5 keyframe images."),
+  keyframe_positions: z
+    .array(z.string())
+    .max(5)
+    .optional()
+    .describe(
+      "Position of each keyframe: `first`, `last`, or a timestamp in seconds."
+    ),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed for reproducible generation."),
+});

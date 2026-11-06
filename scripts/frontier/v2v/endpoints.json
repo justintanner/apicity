@@ -93,7 +93,13 @@
       "pricingKey": "alibaba/wan-2.7/video-edit"
     }
   ],
-  "Aleph 2.0": [],
+  "Aleph 2.0": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.runwayml.aleph2",
+      "pricingKey": "runwayml/aleph-2"
+    }
+  ],
   "Kling 3.0 Omni 1080p (Pro)": [
     {
       "provider": "fal",

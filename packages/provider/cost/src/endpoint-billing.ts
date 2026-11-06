@@ -4879,6 +4879,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/google/gemini-omni-1.1-flash/reference-to-video",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.google.geminiOmni1p1Flash.referenceToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/google/gemini-omni-1.1-flash/text-to-video",
         asOf: "2026-11-04",
       },

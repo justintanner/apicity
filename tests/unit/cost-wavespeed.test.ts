@@ -1206,3 +1206,47 @@ describe("wavespeed alibaba/wan-2.7/video-edit", () => {
     }
   });
 });
+
+describe("wavespeed google/gemini-omni-1.1-flash/reference-to-video", () => {
+  const model = "google/gemini-omni-1.1-flash/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.09 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      images: [image],
+      resolution: "360p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.09, 9);
+  });
+
+  it("bills 8 s at the 720p default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.8, 9);
+  });
+
+  it("bills 1080p and 4k at their rates", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "1080p", duration: 4 }).usd
+    ).toBeCloseTo(0.6, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "4k", duration: 10 }).usd
+    ).toBeCloseTo(3, 9);
+  });
+
+  it("adds nothing for references, and needs no hint for them", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image, image, image],
+      reference_videos: ["https://example.com/ref.mp4"],
+      resolution: "720p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.3, 9);
+  });
+});

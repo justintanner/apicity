@@ -228,6 +228,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.geminiOmni1p1Flash.referenceToVideo": {
+    "source": "wavespeed/google-gemini-omni-1-1-flash-reference-to-video",
+    "payload": {
+      "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.geminiOmni1p1Flash.textToVideo": {
     "source": "wavespeed/google-gemini-omni-1-1-flash-text-to-video",
     "payload": {

@@ -664,4 +664,20 @@ export const wavespeed: Record<string, ModelPricing> = {
         : [],
     source: source("alibaba/wan-2.7/video-edit"),
   },
+  // base_price 100000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": base_price * (duration ? duration : 8) *
+  //   (resolution = "360p" ? 0.3 : resolution = "1080p" ? 1.5 :
+  //   resolution = "4k" ? 3 : 1)}
+  // Reference images and videos add nothing.
+  "google/gemini-omni-1.1-flash/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
+    source: source("google/gemini-omni-1.1-flash/reference-to-video"),
+  },
 };

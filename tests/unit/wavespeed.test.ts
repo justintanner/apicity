@@ -20,6 +20,7 @@ import {
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
@@ -1200,6 +1201,7 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
       "textToVideo",
       "imageToVideo",
       "videoEdit",
+      "referenceToVideo",
     ]);
     expect(wavespeed.api.v3.google.geminiOmni1p1Flash.videoEdit.schema).toBe(
       WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema
@@ -1586,6 +1588,57 @@ describe("wavespeed alibaba/wan-2.7/video-edit", () => {
           ...RECORDED,
           [field]: value,
         }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.1-flash/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-google-gemini-omni-1-1-flash-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "360p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(
+      wavespeed.api.v3.google.geminiOmni1p1Flash.referenceToVideo.schema
+    ).toBe(WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema);
+    expect(
+      WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "1:1"],
+      ["duration", 2],
+      ["duration", 11],
+      ["images", Array(11).fill(url)],
+      ["reference_videos", Array(4).fill(url)],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema.safeParse(
+          {
+            ...RECORDED,
+            [field]: value,
+          }
+        ).success,
         field
       ).toBe(false);
     }

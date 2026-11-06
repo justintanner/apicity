@@ -32,6 +32,7 @@ import {
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
+  WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "@apicity/wavespeed/zod";
 
 interface CapturedRequest {
@@ -1681,6 +1682,61 @@ describe("wavespeed runwayml/aleph-2", () => {
           ...RECORDED,
           [field]: value,
         }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed x-ai/grok-imagine-video-v1.5/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-x-ai-grok-imagine-video-v1-5-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    duration: 1,
+    resolution: "480p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.xAi.grokImagineVideoV1p5)).toEqual([
+      "imageToVideo",
+      "referenceToVideo",
+    ]);
+    expect(
+      wavespeed.api.v3.xAi.grokImagineVideoV1p5.referenceToVideo.schema
+    ).toBe(WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema);
+    expect(
+      WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "1080p"],
+      ["aspect_ratio", "4:3"],
+      ["duration", 0],
+      ["duration", 16],
+      ["reference_images", Array(8).fill(url)],
+      ["reference_images", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema.safeParse(
+          {
+            ...RECORDED,
+            [field]: value,
+          }
+        ).success,
         field
       ).toBe(false);
     }

@@ -1312,3 +1312,60 @@ describe("wavespeed runwayml/aleph-2", () => {
     );
   });
 });
+
+describe("wavespeed x-ai/grok-imagine-video-v1.5/reference-to-video", () => {
+  const model = "x-ai/grok-imagine-video-v1.5/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.09 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      reference_images: [image],
+      duration: 1,
+      resolution: "480p",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.09, 9);
+  });
+
+  it("bills 6 s at the 720p default, plus the image", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, reference_images: [image] }).usd
+    ).toBeCloseTo(0.85, 9);
+  });
+
+  it("bills the rate per second up to 15 s", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: [image],
+        resolution: "720p",
+        duration: 15,
+      }).usd
+    ).toBeCloseTo(2.11, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: [image],
+        resolution: "480p",
+        duration: 20,
+      }).usd
+    ).toBeCloseTo(1.21, 9);
+  });
+
+  it("adds 0.01 USD per reference image, at least one", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: [image, image, image],
+        resolution: "480p",
+        duration: 1,
+      }).usd
+    ).toBeCloseTo(0.11, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "480p", duration: 1 }).usd
+    ).toBeCloseTo(0.09, 9);
+  });
+});

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Grok Imagine Video 1.5 reference-to-video
+  (`x-ai/grok-imagine-video-v1.5/reference-to-video`) bills the seconds (6 by
+  default, at most 15) at 0.08 and 0.14 USD/s for 480p and 720p (720p by
+  default), plus 0.01 USD per reference image, at least one, from the formula on
+  the model page (list price, read 2026-11-02 and 2026-11-06). A recorded 1 s
+  480p render billed 0.09 USD. `MODEL_SLUGS.wavespeed` shares the family slug
+  `grokimgv1p5` (ac-7885m6).
 - WaveSpeed Runway Aleph 2 video edit (`runwayml/aleph-2`) bills only the source
   clip's seconds, rounded up, at least 2 and at most 30, at 0.37 USD/s, from the
   formula on the model page (list price, read 2026-11-02 and 2026-11-06).

@@ -1410,6 +1410,11 @@ export const FRONTIER = {
             dotPath: "v1.videos.generations",
             modelId: "grok-imagine-video-1.5",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.xAi.grokImagineVideoV1p5.referenceToVideo",
+            pricingKey: "x-ai/grok-imagine-video-v1.5/reference-to-video",
+          },
         ],
       },
       {

@@ -1820,6 +1820,7 @@ wavespeed	api.v3.predictions.result	GET	prohibitive	Per-model media-generation m
 wavespeed	api.v3.runwayml.aleph2	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
+wavespeed	api.v3.xAi.grokImagineVideoV1p5.referenceToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 x	v2.media.upload	GET	prohibitive	X media upload needs a console rate; no public price class is published
 x	v2.media.upload.append	POST	prohibitive	X media upload needs a console rate; no public price class is published
 x	v2.media.upload.finalize	POST	prohibitive	X media upload needs a console rate; no public price class is published

@@ -5016,6 +5016,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/reference-to-video",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.xAi.grokImagineVideoV1p5.referenceToVideo"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

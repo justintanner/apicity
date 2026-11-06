@@ -1820,6 +1820,7 @@ wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.
 wavespeed	api.v3.runwayml.aleph2	POST	metered	seconds		https://wavespeed.ai/models/runwayml/aleph-2	2026-11-06
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04
+wavespeed	api.v3.xAi.grokImagineVideoV1p5.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/reference-to-video	2026-11-06
 x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 x	v2.tweets	GET	metered	resources	Posts: Read 0.005 USD per returned resource; same resource free again within a UTC day	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04
 x	v2.users.me	GET	metered	resources	User: Read 0.010 USD per returned resource; /2/users/me is not on the Owned Reads list	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04

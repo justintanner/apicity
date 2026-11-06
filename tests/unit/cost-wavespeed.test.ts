@@ -925,3 +925,107 @@ describe("wavespeed alibaba/happyhorse-1.0/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed bytedance/seedance-2.0/video-edit", () => {
+  const model = "bytedance/seedance-2.0/video-edit";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.525 USD list quote", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: "Make the cat's fur bright orange.",
+        video,
+        resolution: "480p",
+        duration: 4,
+        generate_audio: false,
+      },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo((3 + 4) * 0.075, 9);
+  });
+
+  it("follows the source, at least 4 s of output, at the 720p default", () => {
+    expect(estimate(model, { prompt: PROMPT, video }, clip).usd).toBeCloseTo(
+      (3 + 4) * 0.15,
+      9
+    );
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, resolution: "1080p" },
+        { inputDurationSeconds: 4 }
+      ).usd
+    ).toBeCloseTo((4 + 4) * 0.375, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, video }, { inputDurationSeconds: 10 })
+        .usd
+    ).toBeCloseTo((10 + 10) * 0.15, 9);
+  });
+
+  it("bills a set duration on top of the source", () => {
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, resolution: "480p", duration: 15 },
+        clip
+      ).usd
+    ).toBeCloseTo((3 + 15) * 0.075, 9);
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, resolution: "4k", duration: 15 },
+        { inputDurationSeconds: 4 }
+      ).usd
+    ).toBeCloseTo((4 + 15) * 0.75, 9);
+  });
+
+  it("reads the source between 2 and 15 s, rounded up", () => {
+    for (const [seconds, read] of [
+      [1, 2],
+      [3.2, 4],
+      [40, 15],
+    ] as const) {
+      expect(
+        estimate(
+          model,
+          { prompt: PROMPT, video, duration: 4 },
+          { inputDurationSeconds: seconds }
+        ).usd,
+        String(seconds)
+      ).toBeCloseTo((read + 4) * 0.15, 9);
+    }
+  });
+
+  it("adds nothing for reference images and audio", () => {
+    const url = "https://example.com/ref.jpg";
+
+    expect(
+      estimate(
+        model,
+        {
+          prompt: PROMPT,
+          video,
+          resolution: "480p",
+          duration: 4,
+          reference_images: [url, url],
+          reference_audios: [url],
+        },
+        clip
+      ).usd
+    ).toBeCloseTo((3 + 4) * 0.075, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

@@ -4783,6 +4783,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/bytedance/seedance-2.0/video-edit",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.bytedance.seedance2p0.videoEdit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/bytedance/seedance-2.5/image-to-video",
         asOf: "2026-11-04",
       },

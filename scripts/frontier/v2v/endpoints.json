@@ -64,7 +64,13 @@
       "pricingKey": "alibaba/happyhorse-1.0/video-edit"
     }
   ],
-  "Dreamina Seedance 2.0": [],
+  "Dreamina Seedance 2.0": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.bytedance.seedance2p0.videoEdit",
+      "pricingKey": "bytedance/seedance-2.0/video-edit"
+    }
+  ],
   "Wan 2.7": [
     {
       "provider": "fal",

@@ -1061,6 +1061,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
     "alibaba/happyhorse-1.0/video-edit": "hh",
     "bytedance/seedance-2.0/video-edit": "sd2",
+    "bytedance/seedance-2.0/reference-to-video": "sd2",
   },
 } as const;
 
@@ -2129,6 +2130,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
     "alibaba/happyhorse-1.0/video-edit": "Happy Horse Edit",
     "bytedance/seedance-2.0/video-edit": "Seedance 2 Edit",
+    "bytedance/seedance-2.0/reference-to-video": "Seedance 2",
   },
 } as const;
 

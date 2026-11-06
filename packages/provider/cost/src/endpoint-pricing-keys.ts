@@ -555,6 +555,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "black-forest-labs/flux-3/text-to-video",
   "wavespeed POST api.v3.bytedance.seedance2p0.imageToVideo":
     "bytedance/seedance-2.0/image-to-video",
+  "wavespeed POST api.v3.bytedance.seedance2p0.referenceToVideo":
+    "bytedance/seedance-2.0/reference-to-video",
   "wavespeed POST api.v3.bytedance.seedance2p0.textToVideo":
     "bytedance/seedance-2.0/text-to-video",
   "wavespeed POST api.v3.bytedance.seedance2p0.videoEdit":

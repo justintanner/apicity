@@ -44,9 +44,11 @@ const hasItems = (p: Record<string, unknown>, key: string) =>
   Array.isArray(p[key]) && (p[key] as unknown[]).length > 0;
 
 // Seedance bills reference videos by their measured length, clamped to 2 s
-// and the model's total, on top of the output seconds, whose default then
-// follows the references. Only costHints.inputDurationSeconds can carry that
-// length, so a request with reference videos and no hint fails closed.
+// and the model's total, on top of the output seconds. Only
+// costHints.inputDurationSeconds can carry that length, so a request with
+// reference videos and no hint fails closed. The formula's output fallback,
+// $max([4, $ref]), never fires: WaveSpeed fills in the catalog's default
+// duration, 5 s, before pricing (free quotes, 2026-11-06).
 const seedanceUnits =
   (maxReference: number) =>
   (p: Record<string, unknown>, hints?: CostHints): number | undefined => {
@@ -57,7 +59,7 @@ const seedanceUnits =
       Math.ceil(Math.min(Math.max(input, 2), maxReference)),
       maxReference
     );
-    const output = requestedSeconds(Math.max(4, reference))(p);
+    const output = requestedSeconds(5)(p);
     return output === undefined ? undefined : Math.max(2, reference) + output;
   };
 
@@ -612,5 +614,26 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.075, "720p": 0.15, "1080p": 0.375, "4k": 0.75 },
     warn: editedVideoWarn("bytedance/seedance-2.0/video-edit"),
     source: source("bytedance/seedance-2.0/video-edit"),
+  },
+  // base_price 240000 micros, discount_rate 100 on 2026-11-02 and 90 on
+  // 2026-11-06. WaveSpeed publishes the same formula as
+  // bytedance/seedance-2.0/text-to-video.
+  "bytedance/seedance-2.0/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seedanceUnits(15),
+    select: seedanceSelect,
+    rates: {
+      "no-video|480p": 0.12,
+      "no-video|720p": 0.24,
+      "no-video|1080p": 0.6,
+      "no-video|4k": 1.2,
+      "video|480p": 0.075,
+      "video|720p": 0.15,
+      "video|1080p": 0.375,
+      "video|4k": 0.75,
+    },
+    warn: referenceVideosWarn("bytedance/seedance-2.0/reference-to-video"),
+    source: source("bytedance/seedance-2.0/reference-to-video"),
   },
 };

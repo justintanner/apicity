@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Seedance 2 reference-to-video
+  (`bytedance/seedance-2.0/reference-to-video`) bills exactly as its
+  text-to-video sibling, from the same formula on the model page (list price,
+  read 2026-11-02 and 2026-11-06): 0.12, 0.24, 0.60 and 1.20 USD/s at 480p,
+  720p, 1080p and 4k, or, with reference videos, 0.075, 0.15, 0.375 and 0.75
+  USD/s for the output plus their length. Reference images and audio add
+  nothing. Reference videos without `costHints.inputDurationSeconds` fail closed
+  with a warning naming the hint. A recorded 4 s 480p render billed 0.432 USD
+  against the 0.48 list under a 90% promotion. `MODEL_SLUGS.wavespeed` shares
+  the family slug `sd2` (ac-hgtlgj).
 - WaveSpeed Seedance 2 video edit (`bytedance/seedance-2.0/video-edit`) bills
   the source clip's seconds (read between 2 and 15, rounded up) plus the
   output's, which follow the source (at least 4) unless `duration` is set, at
@@ -637,6 +647,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- WaveSpeed Seedance 2 and 2.5 text-to-video and reference-to-video estimates
+  with reference videos and no `duration` now price the output at the catalog's
+  default 5 s, as WaveSpeed's free quotes do. They followed the references (at
+  least 4 s), the published formula's fallback, which never fires, so a 3 s
+  reference read 1 s short and a 7 s reference 2 s long (ac-hgtlgj).
 - The xAI video entries price every resolution and the input images from recorded 1 s bills (`tests/integration/xai-imagine-billing.test.ts`, V2 to V9, 0.762 USD):
   - `grok-imagine-video`: 0.05 and 0.07 USD/s at 480p and 720p.
   - `grok-imagine-video-1.5` and its preview id: 0.08, 0.14 and 0.25 at 480p, 720p and 1080p.

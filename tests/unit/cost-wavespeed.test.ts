@@ -1029,3 +1029,82 @@ describe("wavespeed bytedance/seedance-2.0/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed bytedance/seedance-2.0/reference-to-video", () => {
+  const model = "bytedance/seedance-2.0/reference-to-video";
+  const video = "https://example.com/ref.mp4";
+
+  it("prices the recorded payload at the 0.48 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      reference_images: ["https://example.com/cat.jpg"],
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills 5 s at the 720p default and 4k at ten times 480p", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(1.2, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "4k", duration: 5 }).usd
+    ).toBeCloseTo(6, 9);
+  });
+
+  it("bills a reference video's length on top of the output", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: PROMPT,
+        resolution: "720p",
+        duration: 5,
+        reference_videos: [video],
+      },
+      { inputDurationSeconds: 4 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(1.35, 9);
+  });
+
+  it("fails closed on reference videos without their length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});
+
+// WaveSpeed prices an omitted duration at the catalog's default, 5 s, so the
+// output does not follow the references. Free quotes, 2026-11-06: the 3 s cat
+// clip and the same clip plus the 4 s colour bars, at 480p.
+describe("wavespeed Seedance reference videos without a duration", () => {
+  it.each([
+    ["bytedance/seedance-2.0/text-to-video", 0.6, 0.9],
+    ["bytedance/seedance-2.0/reference-to-video", 0.6, 0.9],
+    ["bytedance/seedance-2.5/text-to-video", 0.88, 1.32],
+    ["bytedance/seedance-2.5/reference-to-video", 0.88, 1.32],
+  ])("%s matches the quotes", (model, threeSeconds, sevenSeconds) => {
+    const payload = {
+      prompt: PROMPT,
+      resolution: "480p",
+      reference_videos: ["https://example.com/ref.mp4"],
+    };
+
+    expect(
+      estimate(model, payload, { inputDurationSeconds: 3 }).usd
+    ).toBeCloseTo(threeSeconds, 9);
+    expect(
+      estimate(model, payload, { inputDurationSeconds: 7 }).usd
+    ).toBeCloseTo(sevenSeconds, 9);
+  });
+});

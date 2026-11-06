@@ -1791,6 +1791,7 @@ thesportsdb	v2.search.venue	GET	free		Free Sports API at 0 USD; premium tiers ar
 tiktok-creative-center	ads.creativeOne.report.creativeCenterGetTopContentsList	GET	free		Unofficial public page data with no key; no price	https://ads.tiktok.com/business/creativecenter/inspiration/popular/hashtag/pc/en	2026-11-04
 tiktok-creative-center	ads.creativeOne.report.getTopContentsOverview	GET	free		Unofficial public page data with no key; no price	https://ads.tiktok.com/business/creativecenter/inspiration/popular/hashtag/pc/en	2026-11-04
 wavespeed	api.v3.predictions.result	GET	followup		Result poll; billed on the submit it follows. Free POST /api/v3/billings/search states the charge but has no apicity endpoint.	https://wavespeed.ai/pricing	2026-11-04
+wavespeed	api.v3.alibaba.happyhorse1p0.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/alibaba/happyhorse-1.0/video-edit	2026-11-06
 wavespeed	api.v3.alibaba.happyhorse1p1.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/alibaba/happyhorse-1.1/image-to-video	2026-11-04
 wavespeed	api.v3.alibaba.wan3p0.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/alibaba/wan-3.0/image-to-video	2026-11-04
 wavespeed	api.v3.alibaba.wan3p0.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/alibaba/wan-3.0/reference-to-video	2026-11-04

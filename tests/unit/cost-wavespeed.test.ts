@@ -857,3 +857,71 @@ describe("wavespeed bytedance/seedance-2.5/reference-to-video", () => {
     );
   });
 });
+
+describe("wavespeed alibaba/happyhorse-1.0/video-edit", () => {
+  const model = "alibaba/happyhorse-1.0/video-edit";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.84 USD list quote", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: "Make the cat's fur bright orange.",
+        video,
+        resolution: "720p",
+      },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.84, 9);
+  });
+
+  it("bills 1080p at 0.48 USD/s and defaults to 720p", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, video, resolution: "1080p" }, clip).usd
+    ).toBeCloseTo(1.44, 9);
+    expect(estimate(model, { prompt: PROMPT, video }, clip).usd).toBeCloseTo(
+      0.84,
+      9
+    );
+  });
+
+  it("rounds the source up, from a 3 s floor to a 60 s cap", () => {
+    for (const [seconds, billed] of [
+      [1, 3],
+      [3.2, 4],
+      [4, 4],
+      [90, 60],
+    ] as const) {
+      expect(
+        estimate(
+          model,
+          { prompt: PROMPT, video },
+          { inputDurationSeconds: seconds }
+        ).usd,
+        String(seconds)
+      ).toBeCloseTo(billed * 0.28, 9);
+    }
+  });
+
+  it("adds nothing for reference images", () => {
+    const image = "https://example.com/ref.jpg";
+
+    expect(
+      estimate(model, { prompt: PROMPT, video, images: [image, image] }, clip)
+        .usd
+    ).toBeCloseTo(0.84, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

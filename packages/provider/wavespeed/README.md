@@ -31,9 +31,26 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-24 endpoints across 9 groups. Each method mirrors an upstream URL path.
+25 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.alibaba.happyhorse1p0.videoEdit</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.0/video-edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/alibaba/happyhorse-1.0/video-edit)
+
+```typescript
+const res = await wavespeed.api.v3.alibaba.happyhorse1p0.videoEdit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.alibaba.happyhorse1p1.imageToVideo</code></b></summary>

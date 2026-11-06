@@ -1188,3 +1188,45 @@ export const WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema =
       .optional()
       .describe("Resolution of the video. WaveSpeed default: `720p`."),
   });
+
+// kwaivgi/kling-video-o3-pro/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "The positive prompt for the edit. Refer to images as <<<image_1>>>, <<<image_2>>>, ... in array order, the input video as <<<video_1>>> and elements as <<<element_1>>>, <<<element_2>>>, etc."
+    ),
+  video: z
+    .string()
+    .describe(
+      "URL of the video to edit: .mp4 or .mov, up to 200 MB, 3-15 s (longer videos are trimmed to 15 s), width and height between 700 and 3840 px. The output's length follows it."
+    ),
+  images: z
+    .array(z.string())
+    .max(4)
+    .optional()
+    .describe(
+      "Public URLs of up to 4 reference images of the element, scene or style."
+    ),
+  keep_original_sound: z
+    .boolean()
+    .optional()
+    .describe(
+      "Keep the original sound from the video. WaveSpeed default: true."
+    ),
+  element_list: z
+    .array(
+      z.object({
+        element_id: z
+          .string()
+          .optional()
+          .describe(
+            "Element ID returned by kwaivgi/kling-elements or kwaivgi/kling-elements-advanced."
+          ),
+      })
+    )
+    .max(3)
+    .optional()
+    .describe("Up to 3 element references."),
+});

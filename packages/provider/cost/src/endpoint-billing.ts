@@ -4939,6 +4939,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit",
+        asOf: "2026-11-06",
+      },
+    },
+    ["POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/minimax/h3/image-to-video",
         asOf: "2026-11-04",
       },

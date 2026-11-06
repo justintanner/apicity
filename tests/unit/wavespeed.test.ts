@@ -25,6 +25,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -105,6 +106,7 @@ describe("wavespeed provider", () => {
       "xAi",
       "wavespeedAi",
       "runwayml",
+      "kwaivgi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -1737,6 +1739,62 @@ describe("wavespeed x-ai/grok-imagine-video-v1.5/reference-to-video", () => {
             [field]: value,
           }
         ).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed kwaivgi/kling-video-o3-pro/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-kwaivgi-kling-video-o3-pro-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Make the cat's fur bright orange.",
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    keep_original_sound: true,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.kwaivgi)).toEqual(["klingVideoO3Pro"]);
+    expect(Object.keys(wavespeed.api.v3.kwaivgi.klingVideoO3Pro)).toEqual([
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.kwaivgi.klingVideoO3Pro.videoEdit.schema).toBe(
+      WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes element references", () => {
+    expect(
+      WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema.safeParse({
+        ...RECORDED,
+        element_list: [{ element_id: "element-1" }],
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["images", Array(5).fill(url)],
+      ["element_list", Array(4).fill({ element_id: "element-1" })],
+      ["keep_original_sound", "yes"],
+      ["prompt", undefined],
+      ["video", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
         field
       ).toBe(false);
     }

@@ -1187,6 +1187,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "kling-3.0-omni/transformation",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.kwaivgi.klingVideoO3Pro.videoEdit",
+            pricingKey: "kwaivgi/kling-video-o3-pro/video-edit",
+          },
         ],
       },
     ],

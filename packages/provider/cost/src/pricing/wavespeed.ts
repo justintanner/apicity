@@ -718,4 +718,23 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     source: source("x-ai/grok-imagine-video-v1.5/reference-to-video"),
   },
+  // base_price 168000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": $max([3, $min([$ceil(get_duration(video)), 15])]) *
+  //   base_price}
+  // The edit bills only the source clip's seconds, rounded up, at least 3 and
+  // at most 15; the output follows the source. Sound, reference images and
+  // elements add nothing.
+  "kwaivgi/kling-video-o3-pro/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(15)(hints);
+      return input === undefined ? undefined : Math.max(input, 3);
+    },
+    select: [],
+    rates: { "": 0.168 },
+    warn: editedVideoWarn("kwaivgi/kling-video-o3-pro/video-edit"),
+    source: source("kwaivgi/kling-video-o3-pro/video-edit"),
+  },
 };

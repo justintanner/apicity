@@ -1066,6 +1066,7 @@ export const MODEL_SLUGS = {
     "google/gemini-omni-1.1-flash/reference-to-video": "geminiomni1p1f",
     "runwayml/aleph-2": "aleph2",
     "x-ai/grok-imagine-video-v1.5/reference-to-video": "grokimgv1p5",
+    "kwaivgi/kling-video-o3-pro/video-edit": "klingo3",
   },
 } as const;
 
@@ -2139,6 +2140,7 @@ export const MODEL_DISPLAY = {
     "google/gemini-omni-1.1-flash/reference-to-video": "Gemini Omni 1.1 Flash",
     "runwayml/aleph-2": "Runway Aleph 2",
     "x-ai/grok-imagine-video-v1.5/reference-to-video": "Grok Imagine Video 1.5",
+    "kwaivgi/kling-video-o3-pro/video-edit": "Kling o3 Pro Edit",
   },
 } as const;
 

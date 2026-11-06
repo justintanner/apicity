@@ -1369,3 +1369,68 @@ describe("wavespeed x-ai/grok-imagine-video-v1.5/reference-to-video", () => {
     ).toBeCloseTo(0.09, 9);
   });
 });
+
+describe("wavespeed kwaivgi/kling-video-o3-pro/video-edit", () => {
+  const model = "kwaivgi/kling-video-o3-pro/video-edit";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.504 USD list quote", () => {
+    const result = estimate(
+      model,
+      {
+        prompt: "Make the cat's fur bright orange.",
+        video,
+        keep_original_sound: true,
+      },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.504, 9);
+  });
+
+  it("rounds the source up, from a 3 s floor to a 15 s cap", () => {
+    for (const [seconds, billed] of [
+      [1, 3],
+      [3.2, 4],
+      [4, 4],
+      [40, 15],
+    ] as const) {
+      expect(
+        estimate(
+          model,
+          { prompt: PROMPT, video },
+          { inputDurationSeconds: seconds }
+        ).usd,
+        String(seconds)
+      ).toBeCloseTo(billed * 0.168, 9);
+    }
+  });
+
+  it("adds nothing for sound, reference images or elements", () => {
+    expect(
+      estimate(
+        model,
+        {
+          prompt: PROMPT,
+          video,
+          keep_original_sound: false,
+          images: ["https://example.com/ref.jpg"],
+          element_list: [{ element_id: "element-1" }],
+        },
+        clip
+      ).usd
+    ).toBeCloseTo(0.504, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

@@ -36,6 +36,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.alibaba.wan2p7.videoEdit": {
+    "source": "wavespeed/alibaba-wan-2-7-video-edit",
+    "payload": {
+      "prompt": "Make the cat's fur bright orange.",
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "resolution": "720p",
+      "duration": 2,
+      "audio_setting": "origin"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.alibaba.wan3p0.imageToVideo": {
     "source": "wavespeed/alibaba-wan-3-0-image-to-video",
     "payload": {

@@ -1108,3 +1108,101 @@ describe("wavespeed Seedance reference videos without a duration", () => {
     ).toBeCloseTo(sevenSeconds, 9);
   });
 });
+
+describe("wavespeed alibaba/wan-2.7/video-edit", () => {
+  const model = "alibaba/wan-2.7/video-edit";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 0.40 USD list quote, with no hint", () => {
+    const result = estimate(model, {
+      prompt: "Make the cat's fur bright orange.",
+      video,
+      resolution: "720p",
+      duration: 2,
+      audio_setting: "origin",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.4, 9);
+  });
+
+  it("follows the source when duration is 0 or omitted", () => {
+    for (const payload of [
+      { prompt: PROMPT, video, duration: 0 },
+      { prompt: PROMPT, video },
+    ]) {
+      const result = estimate(model, payload, clip);
+
+      expect(result.warnings).toEqual([]);
+      expect(result.usd).toBeCloseTo(0.6, 9);
+    }
+    expect(
+      estimate(
+        model,
+        { prompt: PROMPT, video, resolution: "1080p" },
+        { inputDurationSeconds: 4 }
+      ).usd
+    ).toBeCloseTo(1.2, 9);
+  });
+
+  it("bills a set duration, 2 to 10 s, whatever the source's length", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, video, duration: 1 }).usd
+    ).toBeCloseTo(0.4, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, video, duration: 10 }).usd
+    ).toBeCloseTo(2, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        video,
+        resolution: "1080p",
+        duration: 5,
+      }).usd
+    ).toBeCloseTo(1.5, 9);
+  });
+
+  it("rounds a following source up, from a 2 s floor to a 10 s cap", () => {
+    for (const [seconds, billed] of [
+      [1, 2],
+      [3.2, 4],
+      [40, 10],
+    ] as const) {
+      expect(
+        estimate(
+          model,
+          { prompt: PROMPT, video },
+          { inputDurationSeconds: seconds }
+        ).usd,
+        String(seconds)
+      ).toBeCloseTo(billed * 0.2, 9);
+    }
+  });
+
+  it("adds nothing for reference images", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        video,
+        duration: 2,
+        reference_images: ["https://example.com/ref.jpg"],
+      }).usd
+    ).toBeCloseTo(0.4, 9);
+  });
+
+  it("fails closed when it must follow a source of unknown length", () => {
+    for (const payload of [
+      { prompt: PROMPT, video },
+      { prompt: PROMPT, video, duration: 0 },
+    ]) {
+      const result = estimate(model, payload);
+
+      expect(result.usd).toBe(0);
+      expect(result.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+  });
+});

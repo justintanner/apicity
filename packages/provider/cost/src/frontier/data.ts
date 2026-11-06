@@ -1146,6 +1146,11 @@ export const FRONTIER = {
             dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
             modelId: "wan2.7-videoedit",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.alibaba.wan2p7.videoEdit",
+            pricingKey: "alibaba/wan-2.7/video-edit",
+          },
         ],
       },
       {

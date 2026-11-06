@@ -1050,3 +1050,47 @@ export const WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema =
         "Generate native audio synchronized with the video. WaveSpeed default: true."
       ),
   });
+
+// alibaba/wan-2.7/video-edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedAlibabaWan2p7VideoEditRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the edit."),
+  video: z.string().describe("URL of the source video to edit."),
+  reference_images: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe("Public URLs of up to 3 reference images for the edit."),
+  negative_prompt: z
+    .string()
+    .optional()
+    .describe("The negative prompt for the edit."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `720p`."),
+  duration: z
+    .number()
+    .int()
+    .min(0)
+    .max(10)
+    .optional()
+    .describe(
+      "Output length in seconds: 0 uses the input video's length, up to 10 s; 2-10 trims it from 0 s. WaveSpeed default: 0."
+    ),
+  audio_setting: z
+    .enum(["auto", "origin"])
+    .optional()
+    .describe(
+      "`auto` lets the model decide from the prompt; `origin` keeps the input video's audio. WaveSpeed default: `auto`."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .optional()
+    .describe("Enable the prompt optimizer. WaveSpeed default: false."),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed; -1 picks a random one."),
+});

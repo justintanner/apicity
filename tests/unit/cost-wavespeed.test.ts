@@ -1434,3 +1434,57 @@ describe("wavespeed kwaivgi/kling-video-o3-pro/video-edit", () => {
     );
   });
 });
+
+describe("wavespeed alibaba/happyhorse-1.1/reference-to-video", () => {
+  const model = "alibaba/happyhorse-1.1/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.21 USD list quote", () => {
+    const result = estimate(model, {
+      prompt:
+        "The cat from the reference image walks across a sunlit wooden floor.",
+      images: [image],
+      resolution: "480p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.21, 9);
+  });
+
+  it("bills 5 s at the 720p default", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, images: [image] }).usd
+    ).toBeCloseTo(0.7, 9);
+  });
+
+  it("bills 720p and 1080p at their rates", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        resolution: "720p",
+        duration: 15,
+      }).usd
+    ).toBeCloseTo(2.1, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        resolution: "1080p",
+        duration: 4,
+      }).usd
+    ).toBeCloseTo(0.72, 9);
+  });
+
+  it("adds nothing for more reference images", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image, image, image],
+        resolution: "480p",
+        duration: 3,
+      }).usd
+    ).toBeCloseTo(0.21, 9);
+  });
+});

@@ -1443,6 +1443,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "HappyHorse-1.1",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.alibaba.happyhorse1p1.referenceToVideo",
+            pricingKey: "alibaba/happyhorse-1.1/reference-to-video",
+          },
         ],
       },
     ],

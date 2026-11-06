@@ -4,6 +4,7 @@ import { createWaveSpeed, WaveSpeedError } from "@apicity/wavespeed";
 import {
   WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
+  WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema,
   WaveSpeedAlibabaWan2p7VideoEditRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
@@ -1792,6 +1793,59 @@ describe("wavespeed kwaivgi/kling-video-o3-pro/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed alibaba/happyhorse-1.1/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-alibaba-happyhorse-1-1-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt:
+      "The cat from the reference image walks across a sunlit wooden floor.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "480p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.alibaba.happyhorse1p1)).toEqual([
+      "imageToVideo",
+      "referenceToVideo",
+    ]);
+    expect(wavespeed.api.v3.alibaba.happyhorse1p1.referenceToVideo.schema).toBe(
+      WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.jpg";
+    for (const [field, value] of [
+      ["resolution", "4k"],
+      ["aspect_ratio", "2:1"],
+      ["duration", 2],
+      ["duration", 16],
+      ["images", Array(10).fill(url)],
+      ["images", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

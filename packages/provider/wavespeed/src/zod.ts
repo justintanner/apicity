@@ -1230,3 +1230,38 @@ export const WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema = z.object({
     .optional()
     .describe("Up to 3 element references."),
 });
+
+// alibaba/happyhorse-1.1/reference-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
+export const WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Text description of the desired scene. Refer to the reference images as [Image 1], [Image 2], ... in array order."
+      ),
+    images: z
+      .array(z.string())
+      .max(9)
+      .describe("Public URLs of 1-9 reference images."),
+    resolution: z
+      .enum(["480p", "720p", "1080p"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "4:5", "5:4", "9:21", "21:9"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
+    seed: z
+      .number()
+      .int()
+      .optional()
+      .describe("Random seed for reproducibility."),
+  });

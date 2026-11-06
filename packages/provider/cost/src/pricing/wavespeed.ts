@@ -737,4 +737,19 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("kwaivgi/kling-video-o3-pro/video-edit"),
     source: source("kwaivgi/kling-video-o3-pro/video-edit"),
   },
+  // base_price 140000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": (resolution = "1080p" ? 180000 : (resolution = "480p"
+  //   ? 70000 : base_price)) * duration}
+  // Reference images add nothing.
+  "alibaba/happyhorse-1.1/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.07, "720p": 0.14, "1080p": 0.18 },
+    source: source("alibaba/happyhorse-1.1/reference-to-video"),
+  },
 };

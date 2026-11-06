@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type {
   WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema,
   WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema,
+  WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema,
   WaveSpeedAlibabaWan2p7VideoEditRequestSchema,
   WaveSpeedAlibabaWan3p0ImageToVideoRequestSchema,
   WaveSpeedAlibabaWan3p0ReferenceToVideoRequestSchema,
@@ -169,8 +170,21 @@ export interface WaveSpeedAlibabaHappyhorse1p1ImageToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedAlibabaHappyhorse1p1ImageToVideoRequestSchema;
 }
+export type WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequest = z.input<
+  typeof WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoMethod {
+  (
+    request: WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema;
+}
 export interface WaveSpeedAlibabaHappyhorse1p1Namespace {
   imageToVideo: WaveSpeedAlibabaHappyhorse1p1ImageToVideoMethod;
+  referenceToVideo: WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoMethod;
 }
 export type WaveSpeedAlibabaHappyhorse1p0VideoEditRequest = z.input<
   typeof WaveSpeedAlibabaHappyhorse1p0VideoEditRequestSchema

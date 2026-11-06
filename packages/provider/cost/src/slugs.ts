@@ -1067,6 +1067,7 @@ export const MODEL_SLUGS = {
     "runwayml/aleph-2": "aleph2",
     "x-ai/grok-imagine-video-v1.5/reference-to-video": "grokimgv1p5",
     "kwaivgi/kling-video-o3-pro/video-edit": "klingo3",
+    "alibaba/happyhorse-1.1/reference-to-video": "hh11",
   },
 } as const;
 
@@ -2141,6 +2142,7 @@ export const MODEL_DISPLAY = {
     "runwayml/aleph-2": "Runway Aleph 2",
     "x-ai/grok-imagine-video-v1.5/reference-to-video": "Grok Imagine Video 1.5",
     "kwaivgi/kling-video-o3-pro/video-edit": "Kling o3 Pro Edit",
+    "alibaba/happyhorse-1.1/reference-to-video": "Happy Horse 1.1",
   },
 } as const;
 

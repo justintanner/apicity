@@ -40,7 +40,6 @@ describe("apicity frontier", () => {
     expect(table).toContain("10/10");
     expect(table).toContain("2026-10-22");
     expect(table).toContain("derived");
-    expect(table).toContain("8/9");
     expect(table).toContain("9/9");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
@@ -74,7 +73,7 @@ describe("apicity frontier", () => {
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "9/10", captured: "2026-10-22" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "8/9", captured: "2026-10-22" });
+    expect(v2v).toMatchObject({ models: "9/9", captured: "2026-10-22" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
@@ -238,7 +237,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("api.v3.alibaba.wan3p0.videoEdit");
     expect(table).toContain("api.v3.wavespeedAi.minimaxH3.videoEdit");
     expect(table).toContain("api.v3.bytedance.seedance2p0.videoEdit");
-    expect(table).toContain("not yet in apicity: Aleph 2.0");
+    expect(table).toContain("api.v3.runwayml.aleph2");
+    expect(table).not.toContain("not yet in apicity");
   });
 
   it("prints the derived r2v rows with no gaps", async () => {

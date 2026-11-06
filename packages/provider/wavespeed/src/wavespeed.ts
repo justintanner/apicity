@@ -30,6 +30,7 @@ import type {
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
   WaveSpeedProvider,
+  WaveSpeedRunwaymlAleph2Request,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
 } from "./types";
@@ -60,6 +61,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
@@ -694,6 +696,24 @@ export function createWaveSpeed(
               { schema: WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema }
             ),
           },
+        },
+        runwayml: {
+          // POST https://api.wavespeed.ai/api/v3/runwayml/aleph-2
+          // Docs: https://wavespeed.ai/models/runwayml/aleph-2
+          aleph2: Object.assign(
+            async (
+              body: WaveSpeedRunwaymlAleph2Request,
+              signal?: AbortSignal
+            ) => {
+              return request<WaveSpeedPredictionResponse>(
+                "POST",
+                "/api/v3/runwayml/aleph-2",
+                body,
+                signal
+              );
+            },
+            { schema: WaveSpeedRunwaymlAleph2RequestSchema }
+          ),
         },
       },
     },

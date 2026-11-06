@@ -27,6 +27,7 @@ import type {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";
@@ -534,6 +535,21 @@ export interface WaveSpeedPredictionsNamespace {
     signal?: AbortSignal
   ): Promise<WaveSpeedPredictionResponse>;
 }
+export type WaveSpeedRunwaymlAleph2Request = z.input<
+  typeof WaveSpeedRunwaymlAleph2RequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedRunwaymlAleph2Method {
+  (
+    request: WaveSpeedRunwaymlAleph2Request,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedRunwaymlAleph2RequestSchema;
+}
+export interface WaveSpeedRunwaymlNamespace {
+  aleph2: WaveSpeedRunwaymlAleph2Method;
+}
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
   alibaba: WaveSpeedAlibabaNamespace;
@@ -544,6 +560,7 @@ export interface WaveSpeedV3Namespace {
   google: WaveSpeedGoogleNamespace;
   xAi: WaveSpeedXAiNamespace;
   wavespeedAi: WaveSpeedWavespeedAiNamespace;
+  runwayml: WaveSpeedRunwaymlNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

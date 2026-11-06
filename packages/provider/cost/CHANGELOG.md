@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Runway Aleph 2 video edit (`runwayml/aleph-2`) bills only the source
+  clip's seconds, rounded up, at least 2 and at most 30, at 0.37 USD/s, from the
+  formula on the model page (list price, read 2026-11-02 and 2026-11-06).
+  Keyframes add nothing. The source's length comes from
+  `costHints.inputDurationSeconds`; without it the estimate fails closed with a
+  warning naming the hint. A recorded edit of a 3 s clip billed 1.11 USD. Slug
+  `aleph2`, display "Runway Aleph 2" (ac-jogzs9).
 - WaveSpeed Gemini Omni 1.1 Flash reference-to-video
   (`google/gemini-omni-1.1-flash/reference-to-video`) bills the output's seconds
   (8 by default) at 0.03, 0.10, 0.15 and 0.30 USD/s for 360p, 720p, 1080p and 4k

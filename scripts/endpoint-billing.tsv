@@ -1817,6 +1817,7 @@ wavespeed	api.v3.heygen.video1p0.textToVideo	POST	metered	seconds		https://waves
 wavespeed	api.v3.minimax.h3.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/image-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/reference-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/text-to-video	2026-11-04
+wavespeed	api.v3.runwayml.aleph2	POST	metered	seconds		https://wavespeed.ai/models/runwayml/aleph-2	2026-11-06
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04
 x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04

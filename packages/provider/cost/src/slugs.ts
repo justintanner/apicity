@@ -1064,6 +1064,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.0/reference-to-video": "sd2",
     "alibaba/wan-2.7/video-edit": "wan2p7",
     "google/gemini-omni-1.1-flash/reference-to-video": "geminiomni1p1f",
+    "runwayml/aleph-2": "aleph2",
   },
 } as const;
 
@@ -2135,6 +2136,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.0/reference-to-video": "Seedance 2",
     "alibaba/wan-2.7/video-edit": "Wan 2.7 Edit",
     "google/gemini-omni-1.1-flash/reference-to-video": "Gemini Omni 1.1 Flash",
+    "runwayml/aleph-2": "Runway Aleph 2",
   },
 } as const;
 

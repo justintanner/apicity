@@ -680,4 +680,22 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
     source: source("google/gemini-omni-1.1-flash/reference-to-video"),
   },
+  // base_price 370000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
+  // Formula:
+  //   {"total_price": $max([2, $min([$ceil(get_duration(video)), 30])]) *
+  //   base_price}
+  // The edit bills only the source clip's seconds, rounded up, at least 2 and
+  // at most 30. Keyframes add nothing.
+  "runwayml/aleph-2": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(30)(hints);
+      return input === undefined ? undefined : Math.max(input, 2);
+    },
+    select: [],
+    rates: { "": 0.37 },
+    warn: editedVideoWarn("runwayml/aleph-2"),
+    source: source("runwayml/aleph-2"),
+  },
 };

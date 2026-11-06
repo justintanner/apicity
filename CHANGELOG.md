@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/wavespeed` adds Runway Aleph 2 video edit at `api.v3.runwayml.aleph2` (`POST https://api.wavespeed.ai/api/v3/runwayml/aleph-2`), apicity's first endpoint for the video-to-video board's Aleph 2.0, which leaves that board fully mapped: edits a 2-30 s video from a text instruction, with up to 5 keyframes. WaveSpeed bills only the source clip's length, rounded up, from 2 to 30 s, at the list 0.37 USD/s; the estimate needs `costHints.inputDurationSeconds` and fails closed without it. A recorded edit of a 3 s clip billed 1.11 USD (ac-jogzs9).
+
 - `@apicity/wavespeed` adds Gemini Omni 1.1 Flash reference-to-video at `api.v3.google.geminiOmni1p1Flash.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.1-flash/reference-to-video`): up to 10 reference images and 3 reference videos guide a 3-10 s video at 360p, 720p, 1080p or 4k. WaveSpeed bills the output's seconds (8 by default) at the list 0.03, 0.10, 0.15 and 0.30 USD/s; references add nothing. A recorded 3 s 360p render billed 0.09 USD (ac-rt31ij).
 
 - `@apicity/wavespeed` adds Wan 2.7 video edit at `api.v3.alibaba.wan2p7.videoEdit` (`POST https://api.wavespeed.ai/api/v3/alibaba/wan-2.7/video-edit`): edits a video from a text instruction, with up to 3 reference images and a negative prompt, at 720p or 1080p for 2-10 s or the input's length. WaveSpeed bills the output alone, 2-10 s, at the list 0.20 USD/s (720p) and 0.30 USD/s (1080p). A set `duration` needs no hint; with `duration` 0 or omitted the output follows the source, so the estimate needs `costHints.inputDurationSeconds` and fails closed without it. A recorded 2 s 720p edit billed 0.40 USD (ac-szxfdn).

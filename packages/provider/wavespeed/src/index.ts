@@ -78,6 +78,9 @@ export type {
   WaveSpeedPredictionUrls,
   WaveSpeedPredictionsNamespace,
   WaveSpeedProvider,
+  WaveSpeedRunwaymlAleph2Method,
+  WaveSpeedRunwaymlAleph2Request,
+  WaveSpeedRunwaymlNamespace,
   WaveSpeedV3Namespace,
   WaveSpeedWavespeedAiMinimaxH3Namespace,
   WaveSpeedWavespeedAiMinimaxH3VideoEditMethod,
@@ -116,6 +119,7 @@ export {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
 } from "./zod";

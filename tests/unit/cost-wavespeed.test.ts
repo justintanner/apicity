@@ -1250,3 +1250,65 @@ describe("wavespeed google/gemini-omni-1.1-flash/reference-to-video", () => {
     expect(result.usd).toBeCloseTo(0.3, 9);
   });
 });
+
+describe("wavespeed runwayml/aleph-2", () => {
+  const model = "runwayml/aleph-2";
+  const video = "https://example.com/cat.mp4";
+  // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s.
+  const clip = { inputDurationSeconds: 3 };
+
+  it("prices the recorded payload at the 1.11 USD list quote", () => {
+    const result = estimate(
+      model,
+      { prompt: "Make the cat's fur bright orange.", video },
+      clip
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(1.11, 9);
+  });
+
+  it("rounds the source up, from a 2 s floor to a 30 s cap", () => {
+    for (const [seconds, billed] of [
+      [1, 2],
+      [3.2, 4],
+      [4, 4],
+      [40, 30],
+    ] as const) {
+      expect(
+        estimate(
+          model,
+          { prompt: PROMPT, video },
+          { inputDurationSeconds: seconds }
+        ).usd,
+        String(seconds)
+      ).toBeCloseTo(billed * 0.37, 9);
+    }
+  });
+
+  it("adds nothing for keyframes", () => {
+    const image = "https://example.com/key.jpg";
+
+    expect(
+      estimate(
+        model,
+        {
+          prompt: PROMPT,
+          video,
+          keyframe_images: [image, image],
+          keyframe_positions: ["first", "last"],
+        },
+        clip
+      ).usd
+    ).toBeCloseTo(1.11, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { prompt: PROMPT, video });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});

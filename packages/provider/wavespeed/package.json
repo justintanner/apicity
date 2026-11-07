@@ -1,6 +1,6 @@
 {
   "name": "@apicity/wavespeed",
-  "version": "0.27.0",
+  "version": "0.27.1",
   "description": "WaveSpeed AI media generation API provider.",
   "license": "MIT",
   "repository": {

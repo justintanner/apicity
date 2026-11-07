@@ -299,6 +299,12 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       "Metered SMS provider; per-segment messaging charges bill real money",
   },
   {
+    match: { provider: "machgen", method: "POST", dotPath: "api.v0.upload" },
+    tier: "prohibitive",
+    rationale:
+      "Upload pricing is unconfirmed; a flat balance in one authorized probe is not an upstream free-rate guarantee.",
+  },
+  {
     match: { provider: "machgen" },
     tier: "expensive",
     rationale:

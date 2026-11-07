@@ -211,7 +211,8 @@ describe("Bytedance Seedance 2.5 US text-to-video pricing", () => {
       "Seedance 2.5 US"
     );
     const result = computeEstimate({ provider: "fal", endpoint, payload });
-    expect(result.usd).toBeCloseTo(0.996384, 10);
+    // Reprice the recorded units at the November US rate (ac-89cvvz).
+    expect(result.usd).toBeCloseTo(0.83032, 10);
     expect(result.breakdown.units).toBeCloseTo(38800, 6);
     expect(result.warnings).toEqual([]);
   });

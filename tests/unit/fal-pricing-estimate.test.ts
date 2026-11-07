@@ -539,27 +539,21 @@ describe("fal video pricing estimates", () => {
         0.0000112,
         0.43456,
       ],
-      [
-        "bytedance/seedance-2.0/us/text-to-video",
-        {},
-        38800,
-        0.0000168,
-        0.65184,
-      ],
+      ["bytedance/seedance-2.0/us/text-to-video", {}, 38800, 0.000014, 0.5432],
       [
         "bytedance/seedance-2.0/us/image-to-video",
         { image_url: "u" },
         38800,
-        0.0000168,
-        0.65184,
+        0.000014,
+        0.5432,
       ],
       ["bytedance/seedance-2.5/text-to-video", {}, 38800, 0.0000214, 0.83032],
       [
         "bytedance/seedance-2.5/us/text-to-video",
         {},
         38800,
-        0.00002568,
-        0.996384,
+        0.0000214,
+        0.83032,
       ],
     ];
     for (const [endpoint, extra, tokens, perUnitUsd, usd] of cases) {
@@ -578,14 +572,14 @@ describe("fal video pricing estimates", () => {
       seedanceReference,
       { inputDurationSeconds: 4 }
     );
-    expect(usReference.usd).toBeCloseTo(0.796852224, 10);
+    expect(usReference.usd).toBeCloseTo(0.66404352, 10);
     expect(usReference.breakdown.units).toBeCloseTo(47431.68, 6);
     expect(usReference.warnings).toEqual([]);
 
     // 46.32 units: 0.6 x 640 x 640 x (96 + 97) / 1024.
     for (const [endpoint, usd] of [
       ["bytedance/seedance-2.5/reference-to-video", 0.991248],
-      ["bytedance/seedance-2.5/us/reference-to-video", 1.1894976],
+      ["bytedance/seedance-2.5/us/reference-to-video", 0.991248],
     ] as const) {
       const result = seedance(endpoint, seedanceReference, {
         inputDurationSeconds: 4,
@@ -656,13 +650,13 @@ describe("fal video pricing estimates", () => {
         "30",
         13.973973628125,
       ],
-      // 2206 x 946 x 97 / 1024 = 197,682.58984375 tokens at $0.02808.
+      // 2206 x 946 x 97 / 1024 = 197,682.58984375 tokens at $0.0234116.
       [
         "bytedance/seedance-2.5/us/text-to-video",
         "1080p",
         "21:9",
         "4",
-        5.5509271228125,
+        4.628065720385937,
       ],
     ];
     for (const [endpoint, resolution, aspect, duration, usd] of cases) {
@@ -708,7 +702,7 @@ describe("fal video pricing estimates", () => {
     expect(draft.warnings).toEqual([]);
 
     // So does the US 2.5 draft flag (queue OpenAPI read 2026-10-31):
-    // 854 x 480 x 121 / 1024 = 48,437.8125 tokens at $0.02568.
+    // 854 x 480 x 121 / 1024 = 48,437.8125 tokens at $0.0214.
     const usDraft = seedance("bytedance/seedance-2.5/us/text-to-video", {
       ...seedanceRecorded,
       resolution: "1080p",
@@ -716,14 +710,14 @@ describe("fal video pricing estimates", () => {
       aspect_ratio: "16:9",
       duration: "5",
     });
-    expect(usDraft.usd).toBeCloseTo(1.243883025, 10);
+    expect(usDraft.usd).toBeCloseTo(1.0365691875, 10);
     expect(usDraft.warnings).toEqual([]);
     // A 1080p US reference draft prices like the recorded 480p reference call.
     // Without the flag, 1080p bills 0.6 x 1440 x 1440 x (96 + 97) / 1024 =
-    // 234,495 tokens at $0.02808.
+    // 234,495 tokens at $0.0234116.
     for (const [draftFlag, usd] of [
-      [true, 1.1894976],
-      [false, 6.5846196],
+      [true, 0.991248],
+      [false, 5.489903142],
     ] as const) {
       const usReferenceDraft = seedance(
         "bytedance/seedance-2.5/us/reference-to-video",
@@ -963,14 +957,16 @@ describe("fal video pricing estimates", () => {
     for (const [endpoint, slug, name] of priced) {
       expect(dynamic, endpoint).not.toContain(endpoint);
       expect(falPricing[endpoint], endpoint).toBeDefined();
-      expect(falPricing[endpoint].source.asOf, endpoint).toBe("2026-10-17");
+      expect(falPricing[endpoint].source.asOf, endpoint).toBe(
+        endpoint.includes("/us/") ? "2026-11-07" : "2026-10-17"
+      );
       expect(slugs[endpoint], endpoint).toBe(slug);
       expect(names[endpoint], endpoint).toBe(name);
     }
     // The US draft completion came after that sweep (ac-jjngde).
     const usComplete = "bytedance/seedance-2.5/us/draft/complete";
     expect(dynamic).not.toContain(usComplete);
-    expect(falPricing[usComplete].source.asOf).toBe("2026-10-31");
+    expect(falPricing[usComplete].source.asOf).toBe("2026-11-07");
     expect(slugs[usComplete]).toBe("sd2p5");
     expect(names[usComplete]).toBe("Seedance 2.5 US");
     // The same models kie resells keep the same slugs.

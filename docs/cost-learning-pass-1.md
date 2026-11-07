@@ -183,12 +183,12 @@ hosts.
 
 ## Follow-up work
 
-| Bead        | Family | What                                                                 |
-| ----------- | ------ | -------------------------------------------------------------------- |
-| `ac-89cvvz` | fal    | Settle Seedance US with one billed US call. Needs a spend ruling     |
-| `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy |
-| `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                             |
-| `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it          |
+| Bead        | Family | What                                                                       |
+| ----------- | ------ | -------------------------------------------------------------------------- |
+| `ac-89cvvz` | fal    | Settled 2026-11-07: US 2.5 billed $0.0214/1K tokens; US base rates aligned |
+| `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy       |
+| `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                                   |
+| `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it                |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
 justified it. They do not: no WaveSpeed group is beyond tolerance.
@@ -216,16 +216,23 @@ Those April calls now read `no-estimate`, so `grok-4` left the guard's list belo
   and the output tokens depend on the model's reasoning, so no request can price them.
   The recorded generation and edit each billed exactly 0.02 USD, on different prompts and
   with an input image on one, so the header may round to a cent. The estimate now warns.
-- **`bytedance/seedance-2.5/us/{text,reference}-to-video` is held at 0.02568.** The
-  reason this pass gave is weaker than it looked. The price list was US-aware on 2026-10-16:
-  it read 0.0168 and 0.02568 on the US routes, each matching the usage API's bill that
-  day. By 2026-11-04 the list and each page's billing record read the standard 0.014 and
-  0.0214, and 2.5 US's card agrees. Against that, 2.0 US's card still says 0.0168, and
-  fal's FAQ says US hosting is priced separately. That may be a real cut or a data error,
-  and only a bill can say. A new call would not: its header reports the same units at
-  either rate. The usage API can, once a US call is billed. `ac-cgqsxq` read it on 2026-11-05
-  and every US bill is from 2026-10-16, so `ac-89cvvz` waits for one. Until then the estimate
-  runs 20% over if the cut is real, which is the safe direction.
+- **Seedance US base rates now match the standard rates (2026-11-07).**
+  `ac-89cvvz` made one approved 480p, four-second, square 2.5 US text-to-video
+  request. The client hit its 30-second timeout, but the server completed with
+  HTTP 200 after 174 seconds. Free request-history and usage reads recovered the
+  result: 38.8 thousand tokens at $0.0214 per thousand, totaling $0.83032.
+  No second generation request was made. The initial usage read had no US bills
+  after October 16, so the new daily US row belongs to this request.
+  [The receipt](receipts/fal-seedance-us-2026-11-07.json) preserves the request ID,
+  timestamps, usage row, and current price-list entries.
+
+  This settles the lower 2.5 US base rate directly. Following the approved
+  reconciliation, 2.0 US also moves from $0.0168 to the current listed $0.014;
+  its existing unsupported-resolution behavior remains unchanged. The 2.5 US
+  1080p estimate uses the standard effective $0.0234116 rate (base x 1.094),
+  including draft completion. Those US 1080p paths were not measured by this
+  call; the multiplier remains inferred from the standard route. October's
+  historical bills at the former US premium remain valid for their dates.
 
   That read also checked the table against fal's bill, per UTC day and endpoint. Recorded
   units agree on 253 pairs, with none above the bill. Where the traffic is the same,

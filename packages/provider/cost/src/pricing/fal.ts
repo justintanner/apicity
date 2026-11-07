@@ -3253,25 +3253,29 @@ export const fal: Record<string, ModelPricing> = {
     maxSeconds: 15,
     rates: { "480p": 0.0112 / 1000, "720p": 0.0112 / 1000 },
   }),
-  // 2.0 US: $0.0168 at 480p and 720p. The schema also offers 1080p and 4k,
+  // 2.0 US: $0.014 at 480p and 720p, per the current pricing API and the
+  // US rate reconciliation below. The schema also offers 1080p and 4k,
   // but the card publishes no rate for them, so they fail closed.
   "bytedance/seedance-2.0/us/text-to-video": seedance({
     endpointId: "bytedance/seedance-2.0/us/text-to-video",
     sizes: SEEDANCE_2P0_SIZES,
     maxSeconds: 15,
-    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+    rates: { "480p": 0.014 / 1000, "720p": 0.014 / 1000 },
+    asOf: "2026-11-07",
   }),
   "bytedance/seedance-2.0/us/image-to-video": seedance({
     endpointId: "bytedance/seedance-2.0/us/image-to-video",
     sizes: SEEDANCE_2P0_SIZES,
     maxSeconds: 15,
-    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+    rates: { "480p": 0.014 / 1000, "720p": 0.014 / 1000 },
+    asOf: "2026-11-07",
   }),
   "bytedance/seedance-2.0/us/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.0/us/reference-to-video",
     sizes: SEEDANCE_2P0_SIZES,
     maxSeconds: 15,
-    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+    rates: { "480p": 0.014 / 1000, "720p": 0.014 / 1000 },
+    asOf: "2026-11-07",
     operation: "reference",
     videoOnlyDivisor: 1000,
   }),
@@ -3304,42 +3308,39 @@ export const fal: Record<string, ModelPricing> = {
     draftFlag: true,
     taskField: true,
   }),
-  // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p, the card's
-  // figure on 2026-10-31. On 2026-10-16 the usage API billed the recorded calls
-  // at $0.02568 (2.0 US at $0.0168), and the pricing API read the same. By
-  // 2026-11-04 the pricing API and each US page's billing record read the
-  // standard rates, $0.0214 (2.0 US: $0.014), and 2.5 US's card agrees, but 2.0
-  // US's card still says $0.0168 and fal's FAQ says US hosting is priced
-  // separately. This holds the last billed rate, 20% over if the cut is real,
-  // until the usage API reads a bill after 2026-10-16 (ac-89cvvz; ac-cgqsxq found none
-  // on 2026-11-05): the unit header on a new call cannot tell, as it reports the
-  // same units at either rate.
-  // No US 1080p call is recorded; if it carries the same 1.094 factor
-  // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
-  // draft flag also renders a 480p preview (queue OpenAPI read 2026-10-31).
+  // US rates reconciled on 2026-11-07 (ac-89cvvz). One 480p 4 s US
+  // text-to-video request billed 38.8 units at $0.0214 per 1000 tokens,
+  // $0.83032 total. Receipt: docs/receipts/fal-seedance-us-2026-11-07.json.
+  // The current pricing API also lists 2.0 US at $0.014. Per the approved
+  // reconciliation, both US families now use the standard base rates.
+  // No US 1080p call was measured: it retains the standard 1.094 token
+  // multiplier (effective $0.0234116), as does US draft completion.
+  // The US draft flag renders a 480p preview.
   "bytedance/seedance-2.5/us/text-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/text-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
     rates: {
-      "480p": 0.02568 / 1000,
-      "720p": 0.02568 / 1000,
-      "1080p": 0.02808 / 1000,
+      "480p": 0.0214 / 1000,
+      "720p": 0.0214 / 1000,
+      "1080p": 0.0234116 / 1000,
     },
     draftFlag: true,
+    asOf: "2026-11-07",
   }),
   "bytedance/seedance-2.5/us/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/reference-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
     rates: {
-      "480p": 0.02568 / 1000,
-      "720p": 0.02568 / 1000,
-      "1080p": 0.02808 / 1000,
+      "480p": 0.0214 / 1000,
+      "720p": 0.0214 / 1000,
+      "1080p": 0.0234116 / 1000,
     },
     operation: "reference",
     draftFlag: true,
     taskField: true,
+    asOf: "2026-11-07",
   }),
   // A completed 2.5 draft: always 1080p, at the billed $0.0234116 (above).
   // It keeps the draft's duration, aspect ratio and inputs, which arrive as
@@ -3352,17 +3353,16 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "1080p": 0.0234116 / 1000 },
     operation: "complete",
   }),
-  // A completed 2.5 US draft. No US completion is billed yet. Its card (read
-  // 2026-10-31) repeats the 2.5 completion's "$1.164 per second" and "roughly
-  // $0.0234" per 1K tokens, so it is priced like that completion. If it bills
-  // US 2.5 text-to-video's $0.02808 at 1080p instead, this is 17% low.
+  // A completed 2.5 US draft uses the standard 1080p rate. The November
+  // US base-rate receipt resolves the former 20% premium; the completion
+  // itself and its 1.094 multiplier have not been measured on the US route.
   "bytedance/seedance-2.5/us/draft/complete": seedance({
     endpointId: "bytedance/seedance-2.5/us/draft/complete",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
     rates: { "1080p": 0.0234116 / 1000 },
     operation: "complete",
-    asOf: "2026-10-31",
+    asOf: "2026-11-07",
   }),
 
   // Wan 3.0 and Wan 3.0 Prime, cards read 2026-10-29. Base is

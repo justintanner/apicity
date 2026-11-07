@@ -246,7 +246,8 @@ describe("Bytedance Seedance 2.5 US reference-to-video pricing", () => {
       payload,
       costHints: { inputDurationSeconds: 4 },
     });
-    expect(result.usd).toBeCloseTo(1.1894976, 10);
+    // Reprice the recorded units at the November US rate (ac-89cvvz).
+    expect(result.usd).toBeCloseTo(0.991248, 10);
     expect(result.breakdown.units).toBeCloseTo(46320, 6);
     expect(result.warnings).toEqual([]);
   });

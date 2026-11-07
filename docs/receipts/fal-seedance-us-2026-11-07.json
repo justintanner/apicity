@@ -1,0 +1,104 @@
+{
+  "source_bead": "ac-89cvvz",
+  "approval_bead": "ac-e8jka3",
+  "observed_at": "2026-11-07",
+  "usage_url": "https://api.fal.ai/v1/models/usage",
+  "requests_url": "https://api.fal.ai/v1/models/requests/by-endpoint",
+  "pricing_url": "https://api.fal.ai/v1/models/pricing",
+  "request": {
+    "prompt": "A small red ball rolls slowly across a plain white tabletop. Static camera.",
+    "resolution": "480p",
+    "duration": "4",
+    "aspect_ratio": "1:1",
+    "generate_audio": false,
+    "draft": false
+  },
+  "client_result": "AbortError at the default 30 second timeout; no repeat submitted. Server completion and billing recovered by free reads.",
+  "natural_traffic_check": {
+    "start": "2026-10-17",
+    "end": "2026-11-08",
+    "has_more": false,
+    "us_rows": 0
+  },
+  "usage": {
+    "next_cursor": null,
+    "has_more": false,
+    "time_series": [
+      {
+        "bucket": "2026-11-07T00:00:00+00:00",
+        "results": [
+          {
+            "endpoint_id": "bytedance/seedance-2.5/us/text-to-video",
+            "unit": "1000 tokens",
+            "quantity": 38.8,
+            "percent_discount": null,
+            "cost_subtotal": 0.83032,
+            "cost_discount": 0,
+            "cost_total": 0.83032,
+            "unit_price": 0.0214,
+            "cost": 0.83032,
+            "currency": "USD"
+          }
+        ]
+      }
+    ]
+  },
+  "requests": {
+    "items": [
+      {
+        "request_id": "01a1b35d-4808-7ad2-8da9-1d2a4b950a60",
+        "endpoint_id": "bytedance/seedance-2.5/us/text-to-video",
+        "started_at": "2026-11-07T00:16:37.405Z",
+        "sent_at": "2026-11-07T00:16:37.391Z",
+        "ended_at": "2026-11-07T00:19:31.418Z",
+        "status_code": 200,
+        "duration": 174.012484
+      }
+    ],
+    "next_cursor": null,
+    "has_more": false
+  },
+  "pricing": {
+    "prices": [
+      {
+        "endpoint_id": "bytedance/seedance-2.0/us/text-to-video",
+        "unit_price": 0.014,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      },
+      {
+        "endpoint_id": "bytedance/seedance-2.0/us/image-to-video",
+        "unit_price": 0.014,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      },
+      {
+        "endpoint_id": "bytedance/seedance-2.0/us/reference-to-video",
+        "unit_price": 0.014,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      },
+      {
+        "endpoint_id": "bytedance/seedance-2.5/us/text-to-video",
+        "unit_price": 0.0214,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      },
+      {
+        "endpoint_id": "bytedance/seedance-2.5/us/reference-to-video",
+        "unit_price": 0.0214,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      },
+      {
+        "endpoint_id": "bytedance/seedance-2.5/us/draft/complete",
+        "unit_price": 0.0214,
+        "unit": "1000 tokens",
+        "currency": "USD"
+      }
+    ],
+    "next_cursor": null,
+    "has_more": false
+  },
+  "scope": "One 2.5 US 480p text-to-video call directly measured. Other US base rates follow current pricing API and approved family reconciliation; US 1080p multiplier and draft completion remain inferred from standard routes."
+}

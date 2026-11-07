@@ -41,6 +41,36 @@ function billableUnits(har: Recording): number {
 
 const FAL = "fal_2801268556";
 
+it("matches the November Seedance US usage receipt", () => {
+  const receipt = JSON.parse(
+    readFileSync("docs/receipts/fal-seedance-us-2026-11-07.json", "utf8")
+  ) as {
+    request: Record<string, unknown>;
+    usage: {
+      time_series: Array<{
+        results: Array<{
+          endpoint_id: string;
+          quantity: number;
+          unit_price: number;
+          cost_total: number;
+        }>;
+      }>;
+    };
+  };
+  const bill = receipt.usage.time_series[0].results[0];
+  expect(bill.endpoint_id).toBe("bytedance/seedance-2.5/us/text-to-video");
+  expect(bill.unit_price).toBe(0.0214);
+  expect(bill.cost_total).toBeCloseTo(bill.quantity * bill.unit_price, 8);
+  const estimate = estimateEndpoint({
+    provider: "fal",
+    method: "POST",
+    dotPath: "bytedance.seedance2p5.us.textToVideo",
+    payload: receipt.request,
+  });
+  expect(estimate.status).toBe("priced");
+  expect(estimate.usd).toBeCloseTo(bill.cost_total, 8);
+});
+
 describe("fal corrections, at header units x the price on 2026-11-04", () => {
   it.each([
     // The card's floor: requests under 100 steps bill 100 step units.
@@ -232,26 +262,25 @@ describe("fal rows the pass left open", () => {
     expect(estimate.warnings[0]).toContain("this estimate is a floor");
   });
 
-  // Not a claim that 0.02568 is today's price: the row holds the last rate a bill
-  // confirmed, on the recordings' date, until the usage API reads a later one.
-  // Moving it means replacing these two figures with that bill.
+  // Reprice October's recorded units at the US rate billed on 2026-11-07.
+  // This is today's estimate, not a rewrite of October's historical bill.
   it.each([
     [
       "bytedance/seedance-2.5/us/text-to-video",
       "bytedance.seedance2p5.us.textToVideo",
       `${FAL}/bytedance-seedance2p5-us-text-to-video_2222117863`,
       undefined,
-      0.996384,
+      0.83032,
     ],
     [
       "bytedance/seedance-2.5/us/reference-to-video",
       "bytedance.seedance2p5.us.referenceToVideo",
       `${FAL}/bytedance-seedance2p5-us-reference-to-video_2741595005`,
       { inputDurationSeconds: 4 },
-      1.1894976,
+      0.991248,
     ],
   ])(
-    "holds %s at its last bill",
+    "reprices %s at the November US bill rate",
     (key, dotPath, recording, costHints, billedUsd) => {
       const har = read(recording);
       const estimate = estimateEndpoint({
@@ -263,9 +292,9 @@ describe("fal rows the pass left open", () => {
       });
       expect(estimate.status).toBe("priced");
       expect(estimate.usd).toBeCloseTo(billedUsd, 6);
-      expect(billableUnits(har) * 0.02568).toBeCloseTo(billedUsd, 6);
+      expect(billableUnits(har) * 0.0214).toBeCloseTo(billedUsd, 6);
       expect(PRICING.fal[key]).toMatchObject({
-        rates: { "480p": 0.02568 / 1000 },
+        rates: { "480p": 0.0214 / 1000 },
       });
     }
   );

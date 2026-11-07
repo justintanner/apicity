@@ -29,6 +29,37 @@ import { createMachGen } from "@apicity/machgen";
 const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY! });
 ```
 
+## Upload a local video
+
+Use the SDK with a `Blob` and an explicit nonempty filename. CLI JSON
+cannot carry a Blob; there is no upload file/path flag.
+
+```ts
+import { readFileSync } from "node:fs";
+import { createMachGen } from "@apicity/machgen";
+const machgen = createMachGen({ timeout: 120000 });
+const upload = await machgen.api.v0.upload({
+  file: new Blob([readFileSync("clip.mp4")], { type: "video/mp4" }),
+  filename: "clip.mp4",
+});
+const source = "@input/" + upload.artifact_path;
+// Use source in src_video_urls for a later quote or generation request.
+```
+
+Upload only media you own or have permission to use. Upload creates an
+owned input reference; it does not start generation. Prefix the returned
+`artifact_path` exactly once with `@input/`. Optional `duration_secs`,
+`fps` and `frame_count` metadata may be absent or null.
+
+This endpoint supports small multipart uploads. Upstream H3/Wan docs
+say 50 MB, but the official Python client switches away from multipart
+above 32 MiB; stay comfortably below 32 MiB. Larger/direct/resumable
+uploads are outside this SDK method. Upload pricing is unconfirmed.
+
+The default timeout remains 30 seconds. Set an explicit upload timeout
+as above when needed, and pass an AbortSignal as the second argument.
+Blob.type supplies the MIME type, falling back to application/octet-stream.
+
 ## Video models
 
 Pass a `model` id with a `task_type` it supports. For the ids below,
@@ -186,7 +217,7 @@ console.log(bill.generation_cost_micros / 1e6); // 0.06
 
 ## API Reference
 
-5 endpoints across 4 groups. Each method mirrors an upstream URL path.
+6 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### assets
 
@@ -256,6 +287,25 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await machgen.api.v0.tasks.billing({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
+
+### upload
+
+<details>
+<summary><code>POST</code> <b><code>machgen.api.v0.upload</code></b></summary>
+
+<code>POST https://api.machgen.ai/api/v0/upload</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k)
+
+```typescript
+const res = await machgen.api.v0.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)

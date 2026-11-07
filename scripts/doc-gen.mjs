@@ -4922,6 +4922,41 @@ async function generateReadme(providerDir, providerName, endpoints) {
   }
 
   if (providerName === "machgen") {
+    sections.push(
+      [
+        "## Upload a local video",
+        "",
+        "Use the SDK with a `Blob` and an explicit nonempty filename. CLI JSON",
+        "cannot carry a Blob; there is no upload file/path flag.",
+        "",
+        "```ts",
+        'import { readFileSync } from "node:fs";',
+        'import { createMachGen } from "@apicity/machgen";',
+        "const machgen = createMachGen({ timeout: 120000 });",
+        "const upload = await machgen.api.v0.upload({",
+        '  file: new Blob([readFileSync("clip.mp4")], { type: "video/mp4" }),',
+        '  filename: "clip.mp4",',
+        "});",
+        'const source = "@input/" + upload.artifact_path;',
+        "// Use source in src_video_urls for a later quote or generation request.",
+        "```",
+        "",
+        "Upload only media you own or have permission to use. Upload creates an",
+        "owned input reference; it does not start generation. Prefix the returned",
+        "`artifact_path` exactly once with `@input/`. Optional `duration_secs`,",
+        "`fps` and `frame_count` metadata may be absent or null.",
+        "",
+        "This endpoint supports small multipart uploads. Upstream H3/Wan docs",
+        "say 50 MB, but the official Python client switches away from multipart",
+        "above 32 MiB; stay comfortably below 32 MiB. Larger/direct/resumable",
+        "uploads are outside this SDK method. Upload pricing is unconfirmed.",
+        "",
+        "The default timeout remains 30 seconds. Set an explicit upload timeout",
+        "as above when needed, and pass an AbortSignal as the second argument.",
+        "Blob.type supplies the MIME type, falling back to application/octet-stream.",
+        "",
+      ].join("\n")
+    );
     sections.push(renderMachgenVideoModels());
   }
 

@@ -1894,3 +1894,4 @@ fal	klingVideo.o3.pro.imageToVideo	POST	https://fal.run/fal-ai/kling-video/o3/pr
 fal	klingVideo.o3.pro.referenceToVideo	POST	https://fal.run/fal-ai/kling-video/o3/pro/reference-to-video	https://fal.ai/models/fal-ai/kling-video/o3/pro/reference-to-video/api
 fal	klingVideo.o3.pro.videoToVideo.edit	POST	https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/edit	https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/edit/api
 fal	klingVideo.o3.pro.videoToVideo.reference	POST	https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/reference	https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/reference/api
+machgen	api.v0.upload	POST	https://api.machgen.ai/api/v0/upload	https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k

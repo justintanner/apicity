@@ -3243,6 +3243,19 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "machgen",
     {
+      kind: "unpriced",
+      reason:
+        "Multipart upload is documented, but no upstream upload price is stated. A balance observation is not a free-rate guarantee; ruling ac-2h3t3v, no follow-up",
+      source: {
+        url: "https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k",
+        asOf: "2026-11-07",
+      },
+    },
+    ["POST api.v0.upload"]
+  ),
+  ...rows(
+    "machgen",
+    {
       kind: "followup",
       reason: "Task poll or asset read; billed on the generate call",
       source: {

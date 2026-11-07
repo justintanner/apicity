@@ -54,6 +54,12 @@ function tokenHints(usage: ActualUsage, serviceTier?: string): CostHints {
     ...(usage.imageInputTokens !== undefined
       ? { imageInputTokens: usage.imageInputTokens }
       : {}),
+    ...(usage.cacheReadAudioInputTokens !== undefined
+      ? { cacheReadAudioInputTokens: usage.cacheReadAudioInputTokens }
+      : {}),
+    ...(usage.cacheReadImageInputTokens !== undefined
+      ? { cacheReadImageInputTokens: usage.cacheReadImageInputTokens }
+      : {}),
     ...(usage.audioOutputTokens !== undefined
       ? { audioOutputTokens: usage.audioOutputTokens }
       : {}),

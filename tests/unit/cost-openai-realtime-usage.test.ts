@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { extractActual } from "../../packages/provider/cost/src/actual";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
 import {
   classifyEstimate,
@@ -7,6 +8,7 @@ import {
 import type {
   CostEstimate,
   CostHints,
+  ProviderExchange,
 } from "../../packages/provider/cost/src/types";
 
 // Declared OpenAI Realtime usage (ac-ow167y). gpt-realtime-2.1 rates verified
@@ -55,6 +57,19 @@ function fromUsage(u: RealtimeUsage): CostHints {
   };
 }
 
+function realtimeExchange(usage: unknown): ProviderExchange {
+  return {
+    provider: "openai",
+    method: "POST",
+    dotPath: "v1.realtime.calls",
+    url: "https://api.openai.com/v1/realtime/calls",
+    status: 200,
+    requestBody: { model: RT },
+    responseHeaders: {},
+    responseBody: { type: "response.done", response: { usage } },
+  };
+}
+
 function counts(
   inputTokens: number,
   cacheReadInputTokens: number,
@@ -85,25 +100,25 @@ function expectUnknown(est: CostEstimate, warning: string): void {
   expect(est.warnings[0]).toContain(warning);
 }
 
-describe("openai gpt-realtime-2.1 declared modality usage", () => {
-  // OpenAI's Realtime cost guide, turn 2 of its example session.
-  const docsExample: RealtimeUsage = {
-    input_tokens: 132,
-    output_tokens: 121,
-    input_token_details: {
-      text_tokens: 119,
-      audio_tokens: 13,
+// OpenAI's Realtime cost guide, turn 2 of its example session.
+const docsExample: RealtimeUsage = {
+  input_tokens: 132,
+  output_tokens: 121,
+  input_token_details: {
+    text_tokens: 119,
+    audio_tokens: 13,
+    image_tokens: 0,
+    cached_tokens: 64,
+    cached_tokens_details: {
+      text_tokens: 64,
+      audio_tokens: 0,
       image_tokens: 0,
-      cached_tokens: 64,
-      cached_tokens_details: {
-        text_tokens: 64,
-        audio_tokens: 0,
-        image_tokens: 0,
-      },
     },
-    output_token_details: { text_tokens: 30, audio_tokens: 91 },
-  };
+  },
+  output_token_details: { text_tokens: 30, audio_tokens: 91 },
+};
 
+describe("openai gpt-realtime-2.1 declared modality usage", () => {
   it("prices mixed text and audio with cached input per modality", () => {
     const est = rt(fromUsage(docsExample));
     // 55 x 4 + 64 x 0.40 + 13 x 32 + 30 x 24 + 91 x 64 = 7,205.6 per million
@@ -174,6 +189,129 @@ describe("openai gpt-realtime-2.1 declared modality usage", () => {
     expect(est.usd).toBe(0);
     expect(isCostPolicyKnown(est)).toBe(true);
     expect(classifyEstimate(est)).toBe("cheap");
+  });
+});
+
+describe("extractActual openai realtime modality usage", () => {
+  it("prices a native response.done the same as declared hints", () => {
+    const actual = extractActual(realtimeExchange(docsExample));
+    const hints = fromUsage(docsExample);
+    expect(actual.usage).toMatchObject({
+      inputTokens: hints.inputTokens,
+      outputTokens: hints.outputTokens,
+      cacheReadInputTokens: hints.cacheReadInputTokens,
+      audioInputTokens: hints.audioInputTokens,
+      imageInputTokens: hints.imageInputTokens,
+      cacheReadAudioInputTokens: hints.cacheReadAudioInputTokens,
+      cacheReadImageInputTokens: hints.cacheReadImageInputTokens,
+      audioOutputTokens: hints.audioOutputTokens,
+    });
+    expect(actual.evidence).toContain(
+      "response.usage.input_token_details.cached_tokens_details.audio_tokens"
+    );
+    expect(actual.evidence).toContain(
+      "response.usage.output_token_details.audio_tokens"
+    );
+    expect(actual.derivedUsd).toBeCloseTo(rt(hints).usd, 9);
+    expect(actual.basis).toBe("derived");
+    expect(actual.warnings).toEqual([]);
+  });
+
+  it("prices plural containers, and a zero cache with no split", () => {
+    const usage = {
+      input_tokens: 30,
+      output_tokens: 10,
+      input_tokens_details: {
+        audio_tokens: 20,
+        image_tokens: 0,
+        cached_tokens: 0,
+      },
+      output_tokens_details: { audio_tokens: 8 },
+    };
+    const hints: CostHints = {
+      inputTokens: 30,
+      outputTokens: 10,
+      cacheReadInputTokens: 0,
+      audioInputTokens: 20,
+      imageInputTokens: 0,
+      cacheReadAudioInputTokens: 0,
+      cacheReadImageInputTokens: 0,
+      audioOutputTokens: 8,
+    };
+    const actual = extractActual(realtimeExchange(usage));
+    expect(actual.usage).toMatchObject(hints);
+    expect(actual.evidence.join(" ")).not.toContain("cached_tokens_details");
+    expect(actual.derivedUsd).toBeCloseTo(rt(hints).usd, 9);
+    expect(actual.derivedUsd).toBeCloseTo(0.00124, 9);
+    expect(actual.basis).toBe("derived");
+    expect(actual.warnings).toEqual([]);
+  });
+
+  it("prices an explicit non-zero cached audio split", () => {
+    const usage = {
+      input_tokens: 10_000,
+      output_tokens: 2_000,
+      input_token_details: {
+        audio_tokens: 8_000,
+        image_tokens: 0,
+        cached_tokens: 6_000,
+        cached_tokens_details: { audio_tokens: 5_000, image_tokens: 0 },
+      },
+      output_token_details: { audio_tokens: 1_500 },
+    };
+    const hints = counts(10_000, 6_000, 2_000, [8_000, 5_000, 1_500], [0, 0]);
+    const actual = extractActual(realtimeExchange(usage));
+    expect(actual.usage.cacheReadAudioInputTokens).toBe(5_000);
+    expect(actual.usage.cacheReadImageInputTokens).toBe(0);
+    expect(actual.derivedUsd).toBeCloseTo(rt(hints).usd, 9);
+    expect(actual.derivedUsd).toBeCloseTo(0.2104, 9);
+  });
+
+  it("stays unpriced when a positive cache omits the modality split", () => {
+    const actual = extractActual(
+      realtimeExchange({
+        input_tokens: 30,
+        output_tokens: 10,
+        input_token_details: {
+          audio_tokens: 20,
+          image_tokens: 0,
+          cached_tokens: 12,
+        },
+        output_token_details: { audio_tokens: 8 },
+      })
+    );
+    expect(actual.usage.cacheReadInputTokens).toBe(12);
+    expect(actual.usage.cacheReadAudioInputTokens).toBeUndefined();
+    expect(actual.usage.cacheReadImageInputTokens).toBeUndefined();
+    expect(actual.derivedUsd).toBeNull();
+    expect(actual.basis).toBe("usage-only");
+    const warning = actual.warnings.join(" ");
+    expect(warning).toContain("costHints.cacheReadAudioInputTokens");
+    expect(warning).toContain("costHints.cacheReadImageInputTokens");
+  });
+
+  it("does not add a modality split to text-only usage", () => {
+    const actual = extractActual({
+      provider: "openai",
+      method: "POST",
+      url: "https://api.openai.com/v1/responses",
+      status: 200,
+      requestBody: { model: "gpt-5.6-sol" },
+      responseHeaders: {},
+      responseBody: {
+        usage: {
+          input_tokens: 100,
+          output_tokens: 10,
+          input_tokens_details: {
+            cached_tokens: 0,
+            cache_write_tokens: 0,
+          },
+        },
+      },
+    });
+    expect(actual.usage.cacheReadAudioInputTokens).toBeUndefined();
+    expect(actual.usage.cacheReadImageInputTokens).toBeUndefined();
+    expect(actual.basis).toBe("derived");
   });
 });
 

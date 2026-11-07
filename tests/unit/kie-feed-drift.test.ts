@@ -343,6 +343,122 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // The 2026-11-07 feed added gpt-image-2-6 SVG rows whose text-model clause is
+  // a chat pricing key. Those rates are not the chat rates (luna output stays
+  // 0.336; the SVG output cell is 1.08). "SVG output" is the operation, so an
+  // Input row is still the input cell when the row really is that chat model.
+  it("does not price gpt-image-2-6 SVG rows as the chat model they name", async () => {
+    const row = (
+      modelDescription: string,
+      interfaceType: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType,
+        provider: "OpenAI",
+        creditPrice,
+        creditUnit: "per million tokens",
+        usdPrice,
+        anchor,
+      },
+    });
+    const luna = "https://kie.ai/gpt-5-6?model=gpt-5-6-luna";
+    const sunburst =
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fsunburst-text-to-image";
+    const flare =
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image";
+    const svg = (
+      product: "sunburst" | "flare",
+      model: string,
+      role: "Input" | "Output",
+      credits: string,
+      usd: string
+    ) =>
+      row(
+        `gpt-image-2-6-${product}, SVG output, ${model} ${role}`,
+        "image",
+        credits,
+        usd,
+        product === "sunburst" ? sunburst : flare
+      );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const file = path.join(dir, "snapshot.json");
+      await writeFile(
+        file,
+        JSON.stringify({
+          ...JSON.parse(await readFile(FIXTURE, "utf8")),
+          records: [
+            row("gpt-5.6-luna, chat, Input", "chat", "11.2", "0.056", luna),
+            row("gpt-5.6-luna, chat, Output", "chat", "67.2", "0.336", luna),
+            row(
+              "gpt-5.6-luna, chat, Cached Input",
+              "chat",
+              "1.12",
+              "0.0056",
+              luna
+            ),
+            row("gpt-5.6-luna, chat, Cache Writes", "chat", "14", "0.07", luna),
+            // The operation says output. The role is the last clause.
+            row(
+              "gpt-5-2, SVG output, Input",
+              "chat",
+              "87.5",
+              "0.4375",
+              "https://kie.ai/gpt-5-2"
+            ),
+            svg("sunburst", "gpt-5.6-luna", "Input", "36", "0.18"),
+            svg("sunburst", "gpt-5.6-luna", "Output", "216", "1.08"),
+            svg("sunburst", "gpt-6-sol", "Input", "360", "1.8"),
+            svg("sunburst", "gpt-6-sol", "Output", "1800", "9"),
+            svg("sunburst", "gpt-5.6-terra", "Input", "360", "1.8"),
+            svg("sunburst", "gpt-5.6-terra", "Output", "2160", "10.8"),
+            svg("flare", "gpt-5.6-luna", "Input", "36", "0.18"),
+            svg("flare", "gpt-5.6-luna", "Output", "216", "1.08"),
+            svg("flare", "gpt-6-sol", "Input", "360", "1.8"),
+            svg("flare", "gpt-6-sol", "Output", "1800", "9"),
+            svg("flare", "gpt-5.6-terra", "Input", "360", "1.8"),
+            svg("flare", "gpt-5.6-terra", "Output", "2160", "10.8"),
+          ],
+        })
+      );
+      const result = report(
+        await build({ snapshotPath: file, metadataPath: file, live: true })
+      );
+      expect(result.differ).toEqual([]);
+      // Luna's four chat cells, plus the labeled gpt-5-2 input cell.
+      expect(result.same).toBe(5);
+      expect(result.compared).toBe(5);
+      expect(PRICING.kie["gpt-5-6-luna"]).toMatchObject({
+        rate: { input: 0.056, output: 0.336 },
+      });
+      expect(PRICING.kie["gpt-6-sol"]).toMatchObject({
+        rate: { input: 0.6, output: 3 },
+      });
+      expect(PRICING.kie["gpt-5-6-terra"]).toMatchObject({
+        rate: { input: 0.56, output: 3.36 },
+      });
+      const parked = result.notCompared.map(({ description }) => description);
+      expect(parked).toHaveLength(12);
+      expect(
+        parked.every((description) => /SVG output/.test(description))
+      ).toBe(true);
+      expect(
+        result.notCompared.every(({ reason }) =>
+          reason.includes("no ApiCity pricing key")
+        )
+      ).toBe(true);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

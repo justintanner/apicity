@@ -64,7 +64,9 @@ function compareMedia(row, entry, key) {
 }
 
 // Which rate of a token entry a row states. Each is USD per million tokens, as
-// the feed's unit is.
+// the feed's unit is. The role is the last clause: an earlier "output" names
+// the operation ("SVG output"), not the component, and must not win over a
+// trailing Input.
 const TOKEN_COMPONENTS = Object.freeze([
   ["cacheWrite", /cache[ -]?writes?/i],
   ["cacheRead", /cached? (?:input|read)|cache[ -]?hit/i],
@@ -72,11 +74,14 @@ const TOKEN_COMPONENTS = Object.freeze([
   ["input", /\binput\b/i],
 ]);
 
+function tokenComponent(description) {
+  const clause = description.split(",").at(-1) ?? description;
+  return TOKEN_COMPONENTS.find(([, pattern]) => pattern.test(clause));
+}
+
 function compareTokens(row, entry, key) {
   const description = descriptionOf(row);
-  const match = TOKEN_COMPONENTS.find(([, pattern]) =>
-    pattern.test(description)
-  );
+  const match = tokenComponent(description);
   if (!match || !/per (?:million|1M) tokens/i.test(row.official?.creditUnit)) {
     return undefined;
   }

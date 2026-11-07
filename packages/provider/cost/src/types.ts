@@ -338,6 +338,13 @@ export interface ActualUsage {
   reasoningTokens?: number;
   audioInputTokens?: number;
   imageInputTokens?: number;
+  // Subsets of cacheReadInputTokens for a modality-priced model. OpenAI
+  // Realtime reports them as cached_tokens_details.audio_tokens and
+  // .image_tokens, under input_token_details or input_tokens_details. A
+  // cached_tokens total of 0 is that split, so both are 0 when the details
+  // object is absent. A positive total without the split stays unset.
+  cacheReadAudioInputTokens?: number;
+  cacheReadImageInputTokens?: number;
   audioOutputTokens?: number;
   imageOutputTokens?: number;
   characters?: number;

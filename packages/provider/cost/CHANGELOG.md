@@ -691,6 +691,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `extractActual` forwards OpenAI Realtime cached modality counts.
+  `ActualUsage` gains `cacheReadAudioInputTokens` and
+  `cacheReadImageInputTokens`, read from `cached_tokens_details` under
+  `input_token_details` or `input_tokens_details`. Singular
+  `output_token_details` audio and image counts are read too. A
+  `cached_tokens` total of 0 with no split is that split: both counts are 0.
+  A positive cached total without the split stays unpriced, and the derived
+  figure matches `computeEstimate` with the same hints (ac-iikgzi).
 - WaveSpeed Seedance 2 and 2.5 text-to-video and reference-to-video estimates
   with reference videos and no `duration` now price the output at the catalog's
   default 5 s, as WaveSpeed's free quotes do. They followed the references (at

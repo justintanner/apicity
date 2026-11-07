@@ -762,6 +762,16 @@ cache-write rate is published for this model), or when audio or image counts
 are declared for a model with no rate for that modality. Input transcription
 is billed by a separate transcription model and is not included.
 
+`extractActual` reads the same eight counts from a Realtime `response.done`
+body and forwards them into that pricing. Native singular containers
+(`input_token_details`, `output_token_details`) and the plural names
+(`input_tokens_details`, `output_tokens_details`) both count.
+`cached_tokens_details` supplies the cached audio and image counts. When
+`cached_tokens` is 0 and that object is absent, both cached modality counts
+are 0, because a zero total has only that split. A positive `cached_tokens`
+without the split, or any other missing required count, stays unpriced:
+`derivedUsd` is null and `warnings` name the missing hints.
+
 ### Hash and OTP guarantee
 
 `costHints` lives outside `payload`, so `canonicalHash(payload)` is

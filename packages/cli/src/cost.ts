@@ -65,6 +65,8 @@ export interface CostHelperUsage {
   reasoningTokens?: number;
   audioInputTokens?: number;
   imageInputTokens?: number;
+  cacheReadAudioInputTokens?: number;
+  cacheReadImageInputTokens?: number;
   audioOutputTokens?: number;
   imageOutputTokens?: number;
   characters?: number;

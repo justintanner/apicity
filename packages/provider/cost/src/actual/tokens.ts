@@ -97,6 +97,7 @@ export function readTokenUsage(
       ? ["cache_read_input_tokens"]
       : [
           "input_tokens_details.cached_tokens",
+          "input_token_details.cached_tokens",
           "prompt_tokens_details.cached_tokens",
           "cached_tokens",
         ]
@@ -211,9 +212,41 @@ export function readTokenUsage(
   ]);
   read("audioOutputTokens", [
     "output_tokens_details.audio_tokens",
+    "output_token_details.audio_tokens",
     "completion_tokens_details.audio_tokens",
   ]);
-  read("imageOutputTokens", ["output_tokens_details.image_tokens"]);
+  read("imageOutputTokens", [
+    "output_tokens_details.image_tokens",
+    "output_token_details.image_tokens",
+  ]);
+  read("cacheReadAudioInputTokens", [
+    "input_tokens_details.cached_tokens_details.audio_tokens",
+    "input_token_details.cached_tokens_details.audio_tokens",
+    "prompt_tokens_details.cached_tokens_details.audio_tokens",
+  ]);
+  read("cacheReadImageInputTokens", [
+    "input_tokens_details.cached_tokens_details.image_tokens",
+    "input_token_details.cached_tokens_details.image_tokens",
+    "prompt_tokens_details.cached_tokens_details.image_tokens",
+  ]);
+  // A reported cached total of 0 has only one modality split. Filling it
+  // is not an estimate: a positive total with no split stays unset, and
+  // pricing then fails closed. Text-only usage has no modality counts, so
+  // it does not gain these fields.
+  if (
+    cacheRead === 0 &&
+    (out.usage.audioInputTokens !== undefined ||
+      out.usage.imageInputTokens !== undefined ||
+      out.usage.audioOutputTokens !== undefined ||
+      out.usage.imageOutputTokens !== undefined)
+  ) {
+    if (out.usage.cacheReadAudioInputTokens === undefined) {
+      out.usage.cacheReadAudioInputTokens = 0;
+    }
+    if (out.usage.cacheReadImageInputTokens === undefined) {
+      out.usage.cacheReadImageInputTokens = 0;
+    }
+  }
   read("seconds", ["seconds"]);
 
   const oneHour = numberAt(usage, "cache_creation.ephemeral_1h_input_tokens");

@@ -1515,6 +1515,18 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     message:
       "The frozen Qwen image-to-image cell is per megapixel, but the callable schema has no output-area field that can derive megapixel units, and upstream has since moved this model to per-image billing (live evidence 2026-10-16); the runtime per-image rate is a pricing-only exception, not this row.",
   },
+  {
+    // The 2026-11-07 feed added these beside the chat rows. The clause after
+    // "SVG output" names the text model, and that name is a pricing key, so
+    // the row was read as a move on gpt-5-6-luna, gpt-6-sol, or gpt-5-6-terra.
+    // The chat cells still match the chat rows. gpt-image-2-6 has no pricing
+    // key, same as its text-to-image and image-to-image rows.
+    family: "gpt-image-2-6-svg",
+    matches: (description) =>
+      /^gpt-image-2-6-[^,]+,\s*SVG output,/i.test(description),
+    message:
+      "gpt-image-2-6 SVG output names a chat model as its text model. Those token rates are not that chat model's, and gpt-image-2-6 has no ApiCity pricing key, so the row stays unmapped like the rest of that image product.",
+  },
 ]);
 
 // A feed row that prints a different billing unit from the table's cell, with

@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const MachGenUploadRequestSchema = z.object({
+  file: z
+    .instanceof(Blob)
+    .describe("SDK Blob input; JSON cannot carry file bytes"),
+  filename: z.string().min(1),
+});
+
 // Video task types per model, from https://www.machgen.ai/docs/models
 // (2026-10-25). Vidu-Upscale-Pro is on the pricebook but not in the models
 // table, and MachGen answered HTTP 500 to every request for it that day, so it
@@ -644,13 +651,22 @@ export const MachGenGenerateRequestSchema = z
         ["video_config"],
         "set exactly one of duration_secs and num_frames"
       );
-    // SHARPEN takes an owned upload instead; its branch below checks that.
+    // UPSCALE accepts uploaded inputs; SHARPEN checks owned inputs below.
     if (req.task_type !== "SHARPEN")
       videos.forEach((url, i) => {
-        if (!isHttpUrl(url))
+        if (
+          !isHttpUrl(url) &&
+          !(
+            req.task_type === "UPSCALE" &&
+            url.startsWith("@input/") &&
+            url.length > 7
+          )
+        )
           issue(
             ["src_video_urls", i],
-            "src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids"
+            req.task_type === "UPSCALE"
+              ? "UPSCALE src_video_urls takes public http(s) URLs or nonempty @input/ references"
+              : "src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids"
           );
       });
     const subjects = new Map<string, string>();

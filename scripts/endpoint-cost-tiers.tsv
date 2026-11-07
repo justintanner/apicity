@@ -1002,6 +1002,7 @@ machgen	api.v0.assets	GET	expensive	Per-second video generation priced per model
 machgen	api.v0.generate	POST	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
 machgen	api.v0.tasks	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
 machgen	api.v0.tasks.billing	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
+machgen	api.v0.upload	POST	prohibitive	Upload pricing is unconfirmed; a flat balance in one authorized probe is not an upstream free-rate guarantee.
 machgen	api.v0.upscale.quote	POST	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
 meta	v25.container	GET	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost

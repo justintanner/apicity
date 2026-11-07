@@ -1,6 +1,8 @@
 import { attachExamples } from "./example";
 import { MachGenError } from "./types";
 import type {
+  MachGenUploadRequest,
+  MachGenUploadResponse,
   MachGenOptions,
   MachGenProvider,
   MachGenGenerateRequest,
@@ -11,6 +13,7 @@ import type {
   MachGenUpscaleQuoteResponse,
 } from "./types";
 import {
+  MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
   MachGenUpscaleQuoteRequestSchema,
 } from "./zod";
@@ -26,7 +29,7 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
   async function request<T>(
     method: "GET" | "POST",
     path: string,
-    body?: MachGenGenerateRequest,
+    body?: MachGenGenerateRequest | FormData,
     signal?: AbortSignal,
     binary = false
   ): Promise<T> {
@@ -46,9 +49,13 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
         method,
         headers: {
           Authorization: `Bearer ${key}`,
-          ...(body ? { "Content-Type": "application/json" } : {}),
+          ...(body && !(body instanceof FormData)
+            ? { "Content-Type": "application/json" }
+            : {}),
         },
-        ...(body ? { body: JSON.stringify(body) } : {}),
+        ...(body
+          ? { body: body instanceof FormData ? body : JSON.stringify(body) }
+          : {}),
         signal: controller.signal,
       });
       if (!response.ok) {
@@ -89,6 +96,24 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
   return attachExamples({
     api: {
       v0: {
+        // POST https://api.machgen.ai/api/v0/upload
+        // Docs: https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k
+        upload: Object.assign(
+          async (body: MachGenUploadRequest, signal?: AbortSignal) => {
+            const form = new FormData();
+            const file = body.file.type
+              ? body.file
+              : new Blob([body.file], { type: "application/octet-stream" });
+            form.append("file", file, body.filename);
+            return request<MachGenUploadResponse>(
+              "POST",
+              "/api/v0/upload",
+              form,
+              signal
+            );
+          },
+          { schema: MachGenUploadRequestSchema }
+        ),
         // POST https://api.machgen.ai/api/v0/generate
         // Docs: https://www.machgen.ai/docs/rest_api#submit-a-task
         generate: Object.assign(

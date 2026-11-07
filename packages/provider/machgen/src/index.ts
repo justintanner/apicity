@@ -1,6 +1,9 @@
 export { createMachGen } from "./machgen";
 export { MachGenError } from "./types";
 export type {
+  MachGenUploadRequest,
+  MachGenUploadResponse,
+  MachGenUploadMethod,
   MachGenOptions,
   MachGenProvider,
   MachGenApiNamespace,
@@ -37,5 +40,6 @@ export {
   MachGenUpscaleQuoteRequestSchema,
   MachGenModelAliasSchema,
   MachGenVideoConfigSchema,
+  MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
 } from "./zod";

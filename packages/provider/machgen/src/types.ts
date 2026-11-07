@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type {
+  MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
   MachGenImageConfigSchema,
   MachGenUpscaleConfigSchema,
@@ -35,6 +36,27 @@ export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;
 export type MachGenUpscaleQuoteRequest = z.infer<
   typeof MachGenUpscaleQuoteRequestSchema
 >;
+
+export interface MachGenUploadRequest {
+  file: Blob;
+  filename: string;
+}
+
+export interface MachGenUploadResponse {
+  artifact_path: string;
+  duration_secs?: number | null;
+  fps?: number | null;
+  frame_count?: number | null;
+  [key: string]: unknown;
+}
+
+export interface MachGenUploadMethod {
+  (
+    request: MachGenUploadRequest,
+    signal?: AbortSignal
+  ): Promise<MachGenUploadResponse>;
+  schema: typeof MachGenUploadRequestSchema;
+}
 
 export interface MachGenGenerateResponse {
   task_id: string;
@@ -103,6 +125,7 @@ export interface MachGenUpscaleNamespace {
   quote: MachGenUpscaleQuoteMethod;
 }
 export interface MachGenV0Namespace {
+  upload: MachGenUploadMethod;
   generate: MachGenGenerateMethod;
   tasks: MachGenTasksMethod;
   assets(taskId: string, signal?: AbortSignal): Promise<ArrayBuffer>;

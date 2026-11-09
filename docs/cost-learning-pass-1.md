@@ -187,7 +187,8 @@ hosts.
 | ----------- | ------ | -------------------------------------------------------------------------- |
 | `ac-89cvvz` | fal    | Settled 2026-11-07: US 2.5 billed $0.0214/1K tokens; US base rates aligned |
 | `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy       |
-| `ac-eue5ej` | fal    | Timed: FLUX 3 Max's promotion ends 11-07                                   |
+| `ac-eue5ej` | fal    | Settled 2026-11-09: FLUX 3 Max's promotion rolled into 50% off, to 11-22   |
+| `ac-f9aih6` | fal    | Timed: FLUX 3 Max's 50% promotion ends 11-22; list $0.17/$0.29 from 11-23  |
 | `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it                |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas
@@ -299,8 +300,8 @@ covered, since a chars/4 estimate says nothing about a rate.
 
 Repeat the pass when any of these holds:
 
-- a promotion named in a table comment has ended (the next are 2026-11-07 and
-  2026-11-15);
+- a promotion named in a table comment has ended (the next are 2026-11-15 and
+  2026-11-22);
 - `apicity har cost` over the captures shows a group beyond tolerance whose captures are
   all on or after the rate's `asOf`, or proposes a correction;
 - videobook starts writing quotes, which gives the captures their first estimates;

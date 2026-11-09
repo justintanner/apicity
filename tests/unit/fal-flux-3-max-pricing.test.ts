@@ -17,7 +17,7 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "720p",
       duration: 5,
     });
-    expect(at720p.usd).toBeCloseTo(0.2125, 10);
+    expect(at720p.usd).toBeCloseTo(0.425, 10);
     expect(at720p.warnings).toEqual([]);
 
     const at1080p = estimate("blackforestlabs/flux-3-max/text-to-video", {
@@ -25,8 +25,25 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "1080p",
       duration: 10,
     });
-    expect(at1080p.usd).toBeCloseTo(0.725, 10);
+    expect(at1080p.usd).toBeCloseTo(1.45, 10);
     expect(at1080p.warnings).toEqual([]);
+  });
+
+  // The card read 2026-11-09 prices its own example during the 50% promotion:
+  // "a 10-second video costs $0.85 at 720p or $1.45 at 1080p".
+  it("matches the card's ten-second examples", () => {
+    for (const [resolution, usd] of [
+      ["720p", 0.85],
+      ["1080p", 1.45],
+    ] as const) {
+      const estimated = estimate("blackforestlabs/flux-3-max/text-to-video", {
+        prompt: "p",
+        resolution,
+        duration: 10,
+      });
+      expect(estimated.usd).toBeCloseTo(usd, 10);
+      expect(estimated.warnings).toEqual([]);
+    }
   });
 
   it("prices image-to-video at both published resolution tiers", () => {
@@ -36,7 +53,7 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "720p",
       duration: 5,
     });
-    expect(at720p.usd).toBeCloseTo(0.2125, 10);
+    expect(at720p.usd).toBeCloseTo(0.425, 10);
     expect(at720p.warnings).toEqual([]);
 
     const at1080p = estimate("blackforestlabs/flux-3-max/image-to-video", {
@@ -45,7 +62,7 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "1080p",
       duration: 10,
     });
-    expect(at1080p.usd).toBeCloseTo(0.725, 10);
+    expect(at1080p.usd).toBeCloseTo(1.45, 10);
     expect(at1080p.warnings).toEqual([]);
   });
 
@@ -56,7 +73,7 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "720p",
       duration: 5,
     });
-    expect(at720p.usd).toBeCloseTo(0.2125, 10);
+    expect(at720p.usd).toBeCloseTo(0.425, 10);
     expect(at720p.warnings).toEqual([]);
 
     const at1080p = estimate("blackforestlabs/flux-3-max/keyframes-to-video", {
@@ -65,7 +82,7 @@ describe("fal FLUX 3 Max pricing", () => {
       resolution: "1080p",
       duration: 10,
     });
-    expect(at1080p.usd).toBeCloseTo(0.725, 10);
+    expect(at1080p.usd).toBeCloseTo(1.45, 10);
     expect(at1080p.warnings).toEqual([]);
   });
 
@@ -73,7 +90,7 @@ describe("fal FLUX 3 Max pricing", () => {
     const estimated = estimate("blackforestlabs/flux-3-max/text-to-video", {
       prompt: "p",
     });
-    expect(estimated.usd).toBeCloseTo(0.2125, 10);
+    expect(estimated.usd).toBeCloseTo(0.425, 10);
     expect(estimated.warnings).toEqual([]);
   });
 
@@ -92,7 +109,7 @@ describe("fal FLUX 3 Max pricing", () => {
       generate_audio: true,
       reasoning_level: "high",
     });
-    expect(audioOff.usd).toBeCloseTo(0.2125, 10);
+    expect(audioOff.usd).toBeCloseTo(0.425, 10);
     expect(audioOn.usd).toBeCloseTo(audioOff.usd, 10);
   });
 });

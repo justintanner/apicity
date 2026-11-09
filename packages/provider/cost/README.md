@@ -936,8 +936,9 @@ ticks.
 
 fal endpoints on `FAL_DYNAMIC_PRICING_ENDPOINTS` bill a unit the request does
 not fix (compute seconds, output metadata or tokens), so `computeEstimate`
-returns `usd: 0` with a warning for them. fal reports the billed units after the
-call, in the `x-fal-billable-units` response header. fal's pricing API
+returns `usd: 0` with a warning for them, except the H3 Max per-second floors
+below. fal reports the billed units after the call, in the
+`x-fal-billable-units` response header. fal's pricing API
 (`POST https://api.fal.ai/v1/models/pricing/estimate`, with `FAL_ADMIN_API_KEY`)
 prices a quantity, never a request payload. `resolveFalDynamicEstimate` takes
 fal's estimator and the quantity to price:
@@ -962,10 +963,32 @@ const est = await resolveFalDynamicEstimate(
   can be far from this request's cost.
 - With neither, nothing is called: the local `usd: 0` comes back with a warning
   naming both options.
+- `unitQuantity: 0` (exactly, including `-0`) is a call fal billed nothing.
+  The result is 0 USD with a `zeroReason`, and the pricing API is not called.
+  A static endpoint ignores `unitQuantity` and keeps its local quote.
 
 For endpoints whose card and recorded bill have been checked, the
 `computeEstimate` warning also names the billed unit and why the request
 cannot fix it (`FAL_DYNAMIC_BILLED_UNITS` in `src/pricing/fal.ts`).
+
+Six H3 Max endpoints stay on the dynamic list and also have a local lower
+bound when the per-second part of the card is fixed. Extend, insert, and
+reference-to-video (including turbo reference-to-video) use the payload's
+`duration` and `resolution`. 3d-to-video and lip-sync have no duration field;
+they use `costHints.durationSeconds` plus an explicit `resolution`, and stay
+on the dynamic warning without that hint. The quote is requested or hinted
+seconds times the card rate (3d at least 5 seconds; lip-sync times 1.2 over
+15 seconds). Reference tokens beyond the included 4,096, a possible 0.7 s
+overrun, generated reference images, and a longer whole-second lip-sync bill
+are named in the warning and are not added. An omitted duration or resolution
+does not take the schema default.
+
+A caller that holds a live estimator should not pass `callQuantity: 1` for
+those ids. When the floor applies, `resolveFalDynamicEstimate` returns it and
+does not call the estimator, whether `callQuantity` is set or neither quantity
+is. Pass `unitQuantity` from a finished call's `x-fal-billable-units` for the
+exact billed price, token surcharge included. `unitQuantity: 0` is still 0 USD
+with a `zeroReason`, even when a floor would otherwise apply.
 
 Statically priced endpoints never reach the network. `cache` (for example
 `createFalEstimateCache({ ttlMs })`) collapses repeat lookups. Its key is the

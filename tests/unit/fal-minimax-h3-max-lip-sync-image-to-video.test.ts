@@ -193,37 +193,22 @@ describe("MiniMax H3 Max lip sync image-to-video contract", () => {
     }
   });
 
-  // Dynamic branch (P-7 rules 2 and 4): the card bills each generated second
-  // at $0.05/$0.08/$0.16/$0.32 at 480p/768p/1080p/2K, times 1.2 over 15 s,
-  // and the video runs as long as the audio, which the payload carries only
-  // as a URL. A costHints.durationSeconds rate would not match the billing:
-  // the recorded 480P call sent 5.72 s of audio, got back a video fal
-  // reports as 5.720844 s (138 frames at 24 fps, 5.75 s) and billed
-  // x-fal-billable-units 6.0 at $0.05, $0.30, which fal's usage API
-  // confirms, where the card predicts $0.286 to $0.288. So a payload is
-  // deferred whether or not its length is hinted.
+  // The video runs as long as the audio, which the payload carries only as
+  // a URL, so an unhinted call stays dynamic. A duration hint quotes the
+  // card as a lower bound: the recorded 480P call sent 5.72 s and billed 6
+  // units at $0.05, $0.30, where 5.72 s predicts $0.286. The card states no
+  // rounding rule, and videos over 15 s take the 1.2 multiplier.
   it.each([
-    ["minimal", input, undefined],
-    ["recorded", { ...input, resolution: "480P" }, undefined],
-    [
-      "recorded, length-hinted",
-      { ...input, resolution: "480P" },
-      { durationSeconds: 5.72 },
-    ],
-    [
-      "2K over 15 s, length-hinted",
-      { ...input, resolution: "2K" },
-      { durationSeconds: 30 },
-    ],
+    ["minimal", input],
+    ["recorded", { ...input, resolution: "480P" }],
   ])(
-    "defers the %s payload to fal's estimate API",
-    (_label, payload, costHints) => {
+    "defers the %s payload when its length is not hinted",
+    (_label, payload) => {
       expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
       const estimate = computeEstimate({
         provider: "fal",
         endpoint,
         payload,
-        costHints,
       });
       expect(estimate.usd).toBe(0);
       expect(estimate.warnings).toHaveLength(1);
@@ -233,6 +218,44 @@ describe("MiniMax H3 Max lip sync image-to-video contract", () => {
       expect(estimate.warnings[0]).toContain("fal.v1.models.pricing.estimate");
     }
   );
+
+  it("quotes a duration hint as a lower bound", () => {
+    const recorded = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "480P" },
+      costHints: { durationSeconds: 5.72 },
+    });
+    expect(recorded.usd).toBeCloseTo(0.286, 12);
+    expect(recorded.breakdown.units).toBeCloseTo(5.72, 12);
+    expect(recorded.breakdown.perUnitUsd).toBe(0.05);
+    expect(recorded.warnings).toEqual([
+      "fal 'minimax/h3-max/lip-sync/image-to-video': prices the hinted audio seconds only; fal may bill a longer whole-second length than the hint, so this estimate is a lower bound",
+    ]);
+
+    const exactFifteen = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "768P" },
+      costHints: { durationSeconds: 15 },
+    });
+    expect(exactFifteen.usd).toBeCloseTo(1.2, 12);
+    expect(exactFifteen.breakdown.units).toBe(15);
+    expect(exactFifteen.warnings[0]).not.toContain("1.2");
+
+    const long = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "2K" },
+      costHints: { durationSeconds: 30 },
+    });
+    expect(long.usd).toBeCloseTo(11.52, 12);
+    expect(long.breakdown.units).toBeCloseTo(36, 12);
+    expect(long.breakdown.perUnitUsd).toBe(0.32);
+    expect(long.warnings).toEqual([
+      "fal 'minimax/h3-max/lip-sync/image-to-video': prices the hinted audio seconds only, with the card's 1.2 multiplier over 15 seconds; fal may bill a longer whole-second length than the hint, so this estimate is a lower bound",
+    ]);
+  });
 
   it("carries no local rate or slug, only a display name", () => {
     expect(falPricing[endpoint]).toBeUndefined();

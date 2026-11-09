@@ -116,8 +116,8 @@ describe("resolveFalDynamicEstimate", () => {
 
   it("rejects an unusable quantity without calling", async () => {
     for (const [options, needle] of [
-      [{ unitQuantity: 0 }, "unitQuantity 0"],
       [{ unitQuantity: Number.NaN }, "unitQuantity NaN"],
+      [{ unitQuantity: -1 }, "unitQuantity -1"],
       [{ callQuantity: 0 }, "callQuantity 0"],
       [{ callQuantity: 1.5 }, "callQuantity 1.5"],
       [{ unitQuantity: 1, callQuantity: 1 }, "not both"],
@@ -416,5 +416,219 @@ describe("resolveFalDynamicEstimate", () => {
       expect(calls).toEqual([]);
       expect(result.usd).toBeCloseTo(0.56, 12);
     });
+  });
+});
+
+const EXTEND = "minimax/h3-max/extend-video";
+const extendWarning =
+  "fal 'minimax/h3-max/extend-video': prices the requested seconds only; reference tokens beyond the included 4,096 ($0.02 per 1,000) are not counted, so this estimate is a lower bound";
+
+describe("H3 Max per-second floor", () => {
+  it.each([
+    [5, 1.6],
+    [15, 4.8],
+  ])(
+    "quotes extend-video duration %s at 2K as %s USD without an estimator",
+    (duration, usd) => {
+      const estimate = computeEstimate({
+        provider: "fal",
+        endpoint: EXTEND,
+        payload: {
+          video_url: "https://example.com/video.mp4",
+          prompt: "continue",
+          duration,
+          resolution: "2K",
+        },
+      });
+      expect(estimate.usd).toBeCloseTo(usd, 12);
+      expect(estimate.usd).toBe(
+        (estimate.breakdown.units ?? 0) * (estimate.breakdown.perUnitUsd ?? 0)
+      );
+      expect(estimate.warnings).toEqual([extendWarning]);
+      expect(estimate.warnings[0]).toContain("lower bound");
+    }
+  );
+
+  it("returns the floor instead of fal's historical average", async () => {
+    for (const [duration, usd] of [
+      [5, 1.6],
+      [15, 4.8],
+    ] as const) {
+      const calls: unknown[] = [];
+      const result = await resolveFalDynamicEstimate(
+        EXTEND,
+        {
+          video_url: "https://example.com/video.mp4",
+          prompt: "continue",
+          duration,
+          resolution: "2K",
+        },
+        estimator({ total_cost: 0.32, currency: "USD" }, calls),
+        { callQuantity: 1 }
+      );
+      expect(calls, String(duration)).toEqual([]);
+      expect(result.usd, String(duration)).toBeCloseTo(usd, 12);
+      expect(result.warnings).toEqual([extendWarning]);
+    }
+  });
+
+  it("returns the floor when no quantity is passed", async () => {
+    const calls: unknown[] = [];
+    const result = await resolveFalDynamicEstimate(
+      EXTEND,
+      {
+        video_url: "https://example.com/video.mp4",
+        duration: 5,
+        resolution: "2K",
+      },
+      estimator({ total_cost: 0.32, currency: "USD" }, calls)
+    );
+    expect(calls).toEqual([]);
+    expect(result.usd).toBeCloseTo(1.6, 12);
+    expect(result.warnings).toEqual([extendWarning]);
+    expect(result.warnings.join(" ")).not.toContain("not requested");
+  });
+
+  it("still calls for a positive unitQuantity", async () => {
+    const calls: unknown[] = [];
+    const result = await resolveFalDynamicEstimate(
+      EXTEND,
+      {
+        video_url: "https://example.com/video.mp4",
+        duration: 5,
+        resolution: "2K",
+      },
+      estimator({ total_cost: 9.99, currency: "USD" }, calls),
+      { unitQuantity: 32 }
+    );
+    expect(calls).toEqual([
+      {
+        estimate_type: "unit_price",
+        endpoints: { [EXTEND]: { unit_quantity: 32 } },
+      },
+    ]);
+    expect(result.usd).toBeCloseTo(9.99, 12);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it.each([0, -0])(
+    "treats unitQuantity %s as 0 USD and does not call",
+    async (unitQuantity) => {
+      const calls: unknown[] = [];
+      const onFloor = await resolveFalDynamicEstimate(
+        EXTEND,
+        {
+          video_url: "https://example.com/video.mp4",
+          duration: 5,
+          resolution: "2K",
+        },
+        estimator({ total_cost: 1.6, currency: "USD" }, calls),
+        { unitQuantity }
+      );
+      expect(calls).toEqual([]);
+      expect(onFloor.usd).toBe(0);
+      expect(onFloor.source).toBe("free");
+      expect(onFloor.warnings).toEqual([]);
+      expect(onFloor.breakdown).toEqual({});
+      expect(onFloor.rateAsOf).toBeNull();
+      expect(onFloor.zeroReason).toBe(
+        `unitQuantity is 0: x-fal-billable-units for '${EXTEND}' reported no billed units, so the call is 0 USD`
+      );
+
+      const plain = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "x" },
+        estimator({ total_cost: 999, currency: "USD" }, calls),
+        { unitQuantity }
+      );
+      expect(calls).toEqual([]);
+      expect(plain.usd).toBe(0);
+      expect(plain.zeroReason).toContain("x-fal-billable-units");
+      expect(plain.warnings).toEqual([]);
+    }
+  );
+
+  it("does not return the floor for an unusable quantity", async () => {
+    for (const [options, needle] of [
+      [{ unitQuantity: 0.0000001 }, "1e-7"],
+      [{ callQuantity: 0 }, "callQuantity 0"],
+      [{ callQuantity: 1.5 }, "callQuantity 1.5"],
+      [{ unitQuantity: 0, callQuantity: 1 }, "not both"],
+      [{ unitQuantity: Number.NaN }, "unitQuantity NaN"],
+    ] as const) {
+      const calls: unknown[] = [];
+      const result = await resolveFalDynamicEstimate(
+        EXTEND,
+        {
+          video_url: "https://example.com/video.mp4",
+          duration: 15,
+          resolution: "2K",
+        },
+        estimator({ total_cost: 4.8, currency: "USD" }, calls),
+        options
+      );
+      expect(calls, needle).toEqual([]);
+      expect(result.usd, needle).toBe(0);
+      expect(result.breakdown, needle).toEqual({});
+      expect(
+        result.warnings.some((warning) => warning.includes(needle)),
+        needle
+      ).toBe(true);
+      expect(result.warnings.join(" "), needle).not.toContain("lower bound");
+    }
+  });
+
+  it("degrades a failed unit-price call to the floor", async () => {
+    const result = await resolveFalDynamicEstimate(
+      EXTEND,
+      {
+        video_url: "https://example.com/video.mp4",
+        duration: 5,
+        resolution: "2K",
+      },
+      estimator(new Error("ECONNRESET")),
+      { unitQuantity: 32 }
+    );
+    expect(result.usd).toBeCloseTo(1.6, 12);
+    expect(
+      result.warnings.some((warning) => warning.includes("ECONNRESET"))
+    ).toBe(true);
+    expect(
+      result.warnings.some((warning) => warning.includes("lower bound"))
+    ).toBe(true);
+  });
+
+  it("does not apply a schema default or fold resolution case", () => {
+    for (const payload of [
+      { duration: 5 },
+      { resolution: "2K" },
+      { duration: 5, resolution: "2k" },
+      { duration: "5", resolution: "2K" },
+      { duration: 0, resolution: "2K" },
+      { duration: -1, resolution: "2K" },
+    ]) {
+      const estimate = computeEstimate({
+        provider: "fal",
+        endpoint: EXTEND,
+        payload,
+      });
+      expect(estimate.usd, JSON.stringify(payload)).toBe(0);
+      expect(estimate.warnings[0], JSON.stringify(payload)).toContain(
+        "models/pricing/estimate"
+      );
+    }
+  });
+
+  it("ignores unitQuantity 0 on a statically priced endpoint", async () => {
+    const calls: unknown[] = [];
+    const result = await resolveFalDynamicEstimate(
+      STATIC,
+      { prompt: "a red panda", duration: 2 },
+      estimator({ total_cost: 0, currency: "USD" }, calls),
+      { unitQuantity: 0 }
+    );
+    expect(calls).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.56, 12);
+    expect(result.zeroReason).toBeUndefined();
   });
 });

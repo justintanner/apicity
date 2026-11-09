@@ -200,15 +200,12 @@ describe("MiniMax H3 Max 3D-to-video contract", () => {
     }
   });
 
-  // Dynamic branch (P-7 rule 1): besides the billed seconds, which follow
-  // the source video's shots rather than any request field, the card charges
-  // $0.02 per 1,000 input-video and reference-image tokens beyond the 4,096
-  // included per shot, and those tokens depend on the source's frames and
-  // each image's shape, which the payload carries only as URLs. The page also
-  // lists a per-request processing fee and a charge per generated reference.
-  // The recorded 480P call (an 8 s source, one 16:9 reference image) billed
-  // x-fal-billable-units 15.9832 at $0.05, $0.79916 with no processing fee,
-  // and is deferred like any other payload.
+  // The output length follows the source video, which the payload carries
+  // only as a URL, so an unhinted call stays dynamic. The 2026-11-09 card
+  // dropped the $0.50 processing fee. With costHints.durationSeconds and a
+  // resolution, the quote is hinted seconds (at least 5) at the card rate.
+  // Reference tokens and generated references stay a warning: the recorded
+  // 8 s 480P call billed 15.9832 units, $0.79916, above the $0.40 floor.
   it.each([
     ["minimal", input],
     [
@@ -228,6 +225,46 @@ describe("MiniMax H3 Max 3D-to-video contract", () => {
       "POST https://api.fal.ai/v1/models/pricing/estimate"
     );
     expect(estimate.warnings[0]).toContain("fal.v1.models.pricing.estimate");
+  });
+
+  it("quotes a duration hint at the card rate, at least 5 seconds", () => {
+    const hinted = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "480P" },
+      costHints: { durationSeconds: 8 },
+    });
+    expect(hinted.usd).toBeCloseTo(0.4, 12);
+    expect(hinted.breakdown).toMatchObject({
+      units: 8,
+      unit: "seconds",
+      perUnitUsd: 0.05,
+    });
+    expect(hinted.warnings).toEqual([
+      "fal 'minimax/h3-max/3d-to-video': prices the hinted seconds only, at least 5; reference tokens for the input video and images are not counted, and generated reference images are not counted when none are supplied, so this estimate is a lower bound",
+    ]);
+
+    const clamped = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "480P" },
+      costHints: { durationSeconds: 3 },
+    });
+    expect(clamped.breakdown.units).toBe(5);
+    expect(clamped.usd).toBeCloseTo(0.25, 12);
+
+    const withImages = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: {
+        ...input,
+        resolution: "480P",
+        reference_image_urls: [image],
+      },
+      costHints: { durationSeconds: 8 },
+    });
+    expect(withImages.usd).toBeCloseTo(0.4, 12);
+    expect(withImages.warnings[0]).not.toContain("generated reference");
   });
 
   it("carries no local rate or slug, only a display name", () => {

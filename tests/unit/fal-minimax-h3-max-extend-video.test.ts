@@ -185,18 +185,47 @@ describe("MiniMax H3 Max video extension contract", () => {
     }
   });
 
-  it.each([
-    ["minimal", input],
-    ["2K 15-second", { ...input, resolution: "2K", duration: 15 }],
-  ])("defers the %s payload to fal's estimate API", (_label, payload) => {
+  it("defers a payload that omits duration or resolution", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
-    const estimate = computeEstimate({ provider: "fal", endpoint, payload });
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: input,
+    });
     expect(estimate.usd).toBe(0);
     expect(estimate.warnings).toHaveLength(1);
     expect(estimate.warnings[0]).toContain(
       "POST https://api.fal.ai/v1/models/pricing/estimate"
     );
     expect(estimate.warnings[0]).toContain("fal.v1.models.pricing.estimate");
+  });
+
+  // Requested seconds times the 2026-11-09 card ($0.32/s at 2K). The two
+  // operator bills matched this with no reference-token surcharge. The
+  // warning is why the quote stays a lower bound.
+  it.each([
+    [5, 1.6],
+    [15, 4.8],
+  ])("quotes %s seconds at 2K as a lower bound (%s USD)", (duration, usd) => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: { ...input, resolution: "2K", duration },
+    });
+    expect(estimate.usd).toBeCloseTo(usd, 12);
+    expect(estimate.usd).toBe(
+      (estimate.breakdown.units ?? 0) * (estimate.breakdown.perUnitUsd ?? 0)
+    );
+    expect(estimate.breakdown).toMatchObject({
+      units: duration,
+      unit: "seconds",
+      perUnitUsd: 0.32,
+    });
+    expect(estimate.rateAsOf).toBe("2026-11-09");
+    expect(estimate.warnings).toEqual([
+      "fal 'minimax/h3-max/extend-video': prices the requested seconds only; reference tokens beyond the included 4,096 ($0.02 per 1,000) are not counted, so this estimate is a lower bound",
+    ]);
   });
 
   it("carries no local rate or slug, only a display name", () => {

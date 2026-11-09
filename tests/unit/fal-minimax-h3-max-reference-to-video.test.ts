@@ -346,43 +346,65 @@ describe("MiniMax H3 Max reference-to-video contract", () => {
     }
   });
 
-  // Dynamic branch (P-7 rule 1): the card adds $0.02 per 1,000 reference
-  // tokens beyond the 4,096 included with each request, and those tokens
-  // depend on each reference's shape, frame count or length, which the
-  // payload carries only as URLs. The recorded 480P call (0.92 s, one square
-  // reference image inside the allowance) billed x-fal-billable-units 0.92,
-  // $0.046, and is deferred like any other payload.
-  it.each([
-    ["minimal", input],
-    [
-      "recorded",
-      {
-        ...input,
-        reference_image_urls: [image],
-        duration: 0.92,
-        resolution: "480P",
-        prompt_expansion_mode: "disabled",
-      },
-    ],
-    [
-      "reference-heavy 1080P",
-      {
-        ...input,
-        reference_image_urls: urls(image, 9),
-        reference_video_urls: urls(video, 3),
-        duration: 15,
-        resolution: "1080P",
-      },
-    ],
-  ])("defers the %s payload to fal's estimate API", (_label, payload) => {
+  const floorWarning =
+    "fal 'minimax/h3-max/reference-to-video': prices the requested seconds only; the output can run about 0.7 s longer, and reference tokens beyond the included 4,096 ($0.02 per 1,000) are not counted, so this estimate is a lower bound";
+
+  // The card adds $0.02 per 1,000 reference tokens beyond the 4,096 included,
+  // and the output can run about 0.7 s past the request. Those stay a warning.
+  // The requested seconds are priced. The recorded 480P call (0.92 s, one
+  // square reference image) billed 0.92 units, $0.046, which is the floor.
+  it("defers a payload that omits duration or resolution", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
-    const estimate = computeEstimate({ provider: "fal", endpoint, payload });
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: input,
+    });
     expect(estimate.usd).toBe(0);
     expect(estimate.warnings).toHaveLength(1);
     expect(estimate.warnings[0]).toContain(
       "POST https://api.fal.ai/v1/models/pricing/estimate"
     );
     expect(estimate.warnings[0]).toContain("fal.v1.models.pricing.estimate");
+  });
+
+  it("quotes the recorded 0.92 s 480P call at the card rate", () => {
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: {
+        ...input,
+        reference_image_urls: [image],
+        duration: 0.92,
+        resolution: "480P",
+        prompt_expansion_mode: "disabled",
+      },
+    });
+    expect(estimate.usd).toBeCloseTo(0.046, 12);
+    expect(estimate.breakdown.units).toBeCloseTo(0.92, 12);
+    expect(estimate.breakdown.perUnitUsd).toBe(0.05);
+    expect(estimate.warnings).toEqual([floorWarning]);
+  });
+
+  it("quotes 15 s at 1080P as a lower bound", () => {
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: {
+        ...input,
+        reference_image_urls: urls(image, 9),
+        reference_video_urls: urls(video, 3),
+        duration: 15,
+        resolution: "1080P",
+      },
+    });
+    expect(estimate.usd).toBeCloseTo(2.4, 12);
+    expect(estimate.breakdown).toMatchObject({
+      units: 15,
+      unit: "seconds",
+      perUnitUsd: 0.16,
+    });
+    expect(estimate.warnings).toEqual([floorWarning]);
   });
 
   it("carries no local rate or slug, only a display name", () => {

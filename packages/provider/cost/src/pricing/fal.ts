@@ -1,4 +1,4 @@
-import type { CostHints } from "../types";
+import type { CostEstimate, CostHints } from "../types";
 import type { ModelPricing } from "./types";
 import {
   asNumber,
@@ -1142,52 +1142,63 @@ const gptImagePerImage = (
 //     model returns is chosen by the model, not the payload — the statically
 //     priced Seedream siblings bill per IMAGE instead, a unit their
 //     `num_images` fixes exactly.
-//   - minimax/h3-max/extend-video: the official card (read 2026-10-07)
+//   - minimax/h3-max/extend-video: the official card (re-read 2026-11-09)
 //     bills $0.05/$0.08/$0.16/$0.32 per generated second at
 //     480p/768p/1080p/2K, plus $0.02 per 1,000 reference tokens beyond the
 //     4,096 included with each request. Those tokens come from the source
 //     clip and the optional reference audio, which the payload carries only
-//     as URLs, so no request field determines the charge. The same card
-//     language made minimax/h3-max/insert-video dynamic; the turbo twin
-//     bills continuation seconds only and stays priced statically below.
-//   - minimax/h3-max/reference-to-video: the official card (read
-//     2026-10-07) bills the requested seconds at $0.05/$0.08/$0.16 per
+//     as URLs. When the payload fixes duration and resolution,
+//     falH3MaxSecondsFloor quotes the requested seconds at the card rate as
+//     a lower bound and says the tokens are not counted. Two 2K calls on
+//     2026-11-09 billed exactly that: 5 s was 32 units / $1.60 and 15 s was
+//     96 units / $4.80, with no token surcharge. Without both fields the
+//     endpoint stays dynamic. The turbo twin bills continuation seconds
+//     only and stays priced statically below.
+//   - minimax/h3-max/insert-video: the official card (re-read 2026-11-09)
+//     bills only the new scene, $0.05/s at 480p and $0.06/s at 768p, plus
+//     $0.02 per 1,000 reference tokens beyond the included 4,096. Same
+//     floor: requested duration and resolution quote the seconds, and the
+//     tokens stay a warning. The 2026-10-07 note that grouped it with the
+//     extend-video ladder is stale; 768p is $0.06, and there is no 1080p
+//     or 2K tier.
+//   - minimax/h3-max/reference-to-video: the official card (re-read
+//     2026-11-09) bills the requested seconds at $0.05/$0.08/$0.16 per
 //     second at 480p/768p/1080p, plus $0.02 per 1,000 reference tokens
-//     beyond the 4,096 included with each request. Reference tokens depend
-//     on each image's aspect ratio, each video's aspect ratio and frame
-//     count, and each audio clip's length, none of which the payload's URLs
-//     carry, so no request field determines the charge. Same card language
-//     as minimax/h3-max/extend-video above. The recorded 0.92 s 480P call
-//     with one square reference image billed 0.92 units, $0.046.
-//   - minimax/h3-max-turbo/reference-to-video: the official card (read
-//     2026-10-31) bills each second of output video at $0.05/$0.08/$0.16
-//     at 480p/768p/1080p, plus $0.016 per 1,000 reference tokens beyond the
-//     4,096 included. The tokens depend on the references as for
-//     minimax/h3-max/reference-to-video above, and the output can run about
-//     0.7 s past the requested duration, so no request field determines the
-//     charge.
-//   - minimax/h3-max/3d-to-video: the official card (read 2026-10-07) bills
-//     every output second at $0.05/$0.08/$0.16 at 480p/768p/1080p (5 s
-//     minimum), plus input-video and reference-image tokens priced as for
-//     minimax/h3-max/reference-to-video above, plus each reference it
-//     generates when none is supplied. The output length and shot count
-//     follow the source video, and the tokens follow its frames and each
-//     image's shape, all of which the payload carries only as URLs, so no
-//     request field determines the charge. The model page's own pricing
-//     section also lists a $0.50 processing fee per request, which the
-//     recorded call was not billed: its 8 s 480P source with one 16:9
-//     reference image billed 15.9832 units at $0.05, $0.79916 in all.
-//   - minimax/h3-max/lip-sync/image-to-video: the official card (read
-//     2026-10-08) bills each second of generated video at
+//     beyond the 4,096 included. A 5 s 768p clip with the allowance is
+//     $0.40. Reference tokens depend on each image's shape, each video's
+//     frames and each audio clip's length, none of which the payload's
+//     URLs carry, and the output can run about 0.7 s past the request.
+//     The floor quotes the requested seconds and warns about both. The
+//     recorded 0.92 s 480P call with one square reference image billed
+//     0.92 units, $0.046, which is the floor.
+//   - minimax/h3-max-turbo/reference-to-video: the official card (re-read
+//     2026-11-09) bills each second of output video at $0.05/$0.08/$0.16
+//     at 480p/768p/1080p, plus $0.016 per 1,000 reference tokens beyond
+//     the 4,096 included. The output can run about 0.7 s past the
+//     request. The floor quotes the requested seconds and warns about
+//     both, the same treatment as H3 Max reference-to-video. The recorded
+//     2 s 480P call billed 2 units, $0.10, which is the floor.
+//   - minimax/h3-max/3d-to-video: the official card (re-read 2026-11-09)
+//     bills every output second at $0.05/$0.08/$0.16 at 480p/768p/1080p
+//     (5 s minimum), plus input-video and reference-image tokens priced
+//     as for reference-to-video, plus each reference it generates when
+//     none is supplied (about $0.02–$0.04). The output length follows the
+//     source video. With no costHints.durationSeconds the endpoint stays
+//     dynamic. With that hint and a resolution, the floor quotes the
+//     hinted seconds (at least 5) and warns that the tokens and generated
+//     references are not counted. The 2026-10-07 card's $0.50 processing
+//     fee is gone. The recorded 8 s 480P source with one 16:9 reference
+//     image billed 15.9832 units at $0.05, $0.79916, above the $0.40 floor.
+//   - minimax/h3-max/lip-sync/image-to-video: the official card (re-read
+//     2026-11-09) bills each second of generated video at
 //     $0.05/$0.08/$0.16/$0.32 at 480p/768p/1080p/2K, times 1.2 for a video
-//     over 15 s. The video runs as long as the audio, which the payload
-//     carries only as a URL. costHints.durationSeconds could declare that
-//     length, but the billing does not follow it: the recorded 480P call
-//     sent 5.72 s of audio, got back a video fal reports as 5.72 s (138
-//     frames at 24 fps, 5.75 s) and billed 6 units at $0.05, $0.30 (fal's
-//     usage API reads the same 6 seconds), where the card predicts $0.286 to
-//     $0.288. The card states no rounding, and one call cannot tell rounding
-//     up from rounding to the nearest second, so no rate is encoded.
+//     over 15 s (a 30 s 768p video is $2.88). The video runs as long as
+//     the audio. With no costHints.durationSeconds the endpoint stays
+//     dynamic. With that hint and a resolution, the floor quotes the
+//     hinted seconds, including the 1.2 multiplier, and warns that fal
+//     may bill a longer whole-second length: the recorded 480P call sent
+//     5.72 s of audio and billed 6 units at $0.05, $0.30, where 5.72 s
+//     predicts $0.286. The card states no rounding rule.
 //   - bytedance/seedream/v5/pro/text-to-image: fal's pricing API reports a
 //     bare "units" unit at USD 0.0675 (pulled 2026-08-28), and the model
 //     page's card calls its own numbers "tentative": $0.0675 per image at or
@@ -1753,6 +1764,192 @@ export function falDynamicBilledUnit(
         endpoint as keyof typeof FAL_DYNAMIC_BILLED_UNITS
       ]
     : undefined;
+}
+
+/**
+ * List rates from the 2026-11-09 H3 Max cards. The November 2026 promotion
+ * (0.035 / 0.0175 USD/s at 480P) is the text and image-to-video cards, not
+ * these endpoints. Resolution keys are the schema's strings, not folded.
+ */
+const H3_MAX_CARD_AS_OF = "2026-11-09";
+
+const H3_EXTEND_RATES: Record<string, number> = {
+  "480P": 0.05,
+  "768P": 0.08,
+  "1080P": 0.16,
+  "2K": 0.32,
+};
+
+const H3_REFERENCE_RATES: Record<string, number> = {
+  "480P": 0.05,
+  "768P": 0.08,
+  "1080P": 0.16,
+};
+
+const H3_INSERT_RATES: Record<string, number> = {
+  "480p": 0.05,
+  "768p": 0.06,
+};
+
+function h3LowerBound(endpoint: string, detail: string): string {
+  return `fal '${endpoint}': ${detail}, so this estimate is a lower bound`;
+}
+
+function h3RequestedSeconds(perThousand: string, overrun: boolean): string {
+  const overrunClause = overrun
+    ? "the output can run about 0.7 s longer, and "
+    : "";
+  return (
+    "prices the requested seconds only; " +
+    overrunClause +
+    "reference tokens beyond the included 4,096 (" +
+    perThousand +
+    " per 1,000) are not counted"
+  );
+}
+
+function h3HasReferenceImages(payload: Record<string, unknown>): boolean {
+  const urls = payload.reference_image_urls;
+  return Array.isArray(urls) && urls.length > 0;
+}
+
+function h3ThreeDWarning(
+  endpoint: string,
+  _seconds: number,
+  payload: Record<string, unknown>
+): string {
+  const generated = h3HasReferenceImages(payload)
+    ? ""
+    : ", and generated reference images are not counted when none are supplied";
+  return h3LowerBound(
+    endpoint,
+    "prices the hinted seconds only, at least 5; reference tokens for the " +
+      "input video and images are not counted" +
+      generated
+  );
+}
+
+function h3LipSyncWarning(endpoint: string, seconds: number): string {
+  const multiplier =
+    seconds > 15 ? ", with the card's 1.2 multiplier over 15 seconds" : "";
+  return h3LowerBound(
+    endpoint,
+    "prices the hinted audio seconds only" +
+      multiplier +
+      "; fal may bill a longer whole-second length than the hint"
+  );
+}
+
+interface H3MaxFloorSpec {
+  rates: Record<string, number>;
+  /** Payload `duration`, or `costHints.durationSeconds`. No schema default. */
+  lengthFrom: "payload" | "hint";
+  /** 3d bills at least this many seconds. */
+  minimumSeconds?: number;
+  /**
+   * Lip-sync multiplies seconds strictly above `above`. The factor is folded
+   * into `units` so `perUnitUsd` stays the card's per-second rate.
+   */
+  longVideo?: { above: number; factor: number };
+  warning: (
+    endpoint: string,
+    seconds: number,
+    payload: Record<string, unknown>
+  ) => string;
+}
+
+const H3_MAX_FLOORS: Record<string, H3MaxFloorSpec> = {
+  "minimax/h3-max/extend-video": {
+    rates: H3_EXTEND_RATES,
+    lengthFrom: "payload",
+    warning: (endpoint) =>
+      h3LowerBound(endpoint, h3RequestedSeconds("$0.02", false)),
+  },
+  "minimax/h3-max/insert-video": {
+    rates: H3_INSERT_RATES,
+    lengthFrom: "payload",
+    warning: (endpoint) =>
+      h3LowerBound(endpoint, h3RequestedSeconds("$0.02", false)),
+  },
+  "minimax/h3-max/reference-to-video": {
+    rates: H3_REFERENCE_RATES,
+    lengthFrom: "payload",
+    warning: (endpoint) =>
+      h3LowerBound(endpoint, h3RequestedSeconds("$0.02", true)),
+  },
+  "minimax/h3-max-turbo/reference-to-video": {
+    rates: H3_REFERENCE_RATES,
+    lengthFrom: "payload",
+    warning: (endpoint) =>
+      h3LowerBound(endpoint, h3RequestedSeconds("$0.016", true)),
+  },
+  "minimax/h3-max/3d-to-video": {
+    rates: H3_REFERENCE_RATES,
+    lengthFrom: "hint",
+    minimumSeconds: 5,
+    warning: h3ThreeDWarning,
+  },
+  "minimax/h3-max/lip-sync/image-to-video": {
+    rates: H3_EXTEND_RATES,
+    lengthFrom: "hint",
+    longVideo: { above: 15, factor: 1.2 },
+    warning: (endpoint, seconds) => h3LipSyncWarning(endpoint, seconds),
+  },
+};
+
+function h3FloorSeconds(
+  spec: H3MaxFloorSpec,
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined {
+  if (spec.lengthFrom === "hint") return hintSeconds(hints);
+  const duration = asNumber(payload.duration);
+  return duration !== undefined && duration > 0 ? duration : undefined;
+}
+
+/**
+ * Per-second lower bound for an H3 Max card that bills requested or hinted
+ * seconds plus reference tokens the payload cannot count.
+ *
+ * Returns undefined unless both the length and the resolution are explicit.
+ * Omitted fields do not take the schema default, and resolution is matched
+ * exactly. The six ids stay on `FAL_DYNAMIC_PRICING_ENDPOINTS`: a payload
+ * that does not fix both fields, and every other dynamic id, still has no
+ * local rate. A positive result is the only dynamic local estimate with
+ * `usd > 0`; `resolveFalDynamicEstimate` relies on that.
+ */
+export function falH3MaxSecondsFloor(
+  endpoint: string,
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): CostEstimate | undefined {
+  if (!Object.hasOwn(H3_MAX_FLOORS, endpoint)) return undefined;
+  const spec = H3_MAX_FLOORS[endpoint];
+  if (!spec) return undefined;
+  const resolution = asString(payload.resolution);
+  if (resolution === undefined || !Object.hasOwn(spec.rates, resolution)) {
+    return undefined;
+  }
+  const perUnitUsd = spec.rates[resolution];
+  if (perUnitUsd === undefined) return undefined;
+  const raw = h3FloorSeconds(spec, payload, hints);
+  if (raw === undefined) return undefined;
+  const seconds =
+    spec.minimumSeconds !== undefined
+      ? Math.max(raw, spec.minimumSeconds)
+      : raw;
+  const units =
+    spec.longVideo !== undefined && seconds > spec.longVideo.above
+      ? seconds * spec.longVideo.factor
+      : seconds;
+  return {
+    usd: units * perUnitUsd,
+    currency: "USD",
+    source: "per-unit-table",
+    breakdown: { units, unit: "seconds", perUnitUsd },
+    rateAsOf: H3_MAX_CARD_AS_OF,
+    warnings: [spec.warning(endpoint, seconds, payload)],
+  };
 }
 
 export const fal: Record<string, ModelPricing> = {

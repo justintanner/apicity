@@ -263,10 +263,11 @@ describe("MiniMax H3 Max Turbo reference-to-video contract", () => {
     }
   });
 
-  // Dynamic, like minimax/h3-max/reference-to-video: the card adds $0.016
-  // per 1,000 reference tokens beyond the 4,096 included, and those depend
-  // on the references, which the payload carries only as URLs.
-  it("defers every payload to fal's estimate API", () => {
+  // The card adds $0.016 per 1,000 reference tokens beyond the 4,096
+  // included, and the output can run about 0.7 s past the request. The
+  // requested seconds are priced. The recorded 2 s 480P call billed 2 units,
+  // $0.10, which is the floor.
+  it("quotes requested seconds at the card rate, as a lower bound", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
     const estimate = computeEstimate({
       provider: "fal",
@@ -278,11 +279,25 @@ describe("MiniMax H3 Max Turbo reference-to-video contract", () => {
         resolution: "480P",
       },
     });
+    expect(estimate.usd).toBeCloseTo(0.1, 12);
+    expect(estimate.breakdown).toMatchObject({
+      units: 2,
+      unit: "seconds",
+      perUnitUsd: 0.05,
+    });
+    expect(estimate.warnings).toEqual([
+      "fal 'minimax/h3-max-turbo/reference-to-video': prices the requested seconds only; the output can run about 0.7 s longer, and reference tokens beyond the included 4,096 ($0.016 per 1,000) are not counted, so this estimate is a lower bound",
+    ]);
+  });
+
+  it("defers a payload that omits duration or resolution", () => {
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: input,
+    });
     expect(estimate.usd).toBe(0);
-    expect(estimate.warnings).toHaveLength(1);
-    expect(estimate.warnings[0]).toContain(
-      "POST https://api.fal.ai/v1/models/pricing/estimate"
-    );
+    expect(estimate.warnings[0]).toContain("models/pricing/estimate");
   });
 
   it("carries no local rate or slug, only a display name", () => {

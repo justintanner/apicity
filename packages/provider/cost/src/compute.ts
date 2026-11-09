@@ -15,6 +15,7 @@ import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import {
   FAL_DYNAMIC_PRICING_ENDPOINTS,
   falDynamicBilledUnit,
+  falH3MaxSecondsFloor,
 } from "./pricing/fal";
 import { ELEVENLABS_LIST_NOTE } from "./pricing/elevenlabs";
 import { asString } from "./pricing/helpers";
@@ -1432,6 +1433,16 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
     // and why the request cannot fix it (ac-j3d6ki.4).
     case "fal": {
       if (req.endpoint && isFalDynamicEndpoint(req.endpoint)) {
+        // H3 Max cards that publish a per-second rate quote that part when
+        // the payload, or a duration hint, fixes it. The token surcharge
+        // stays a warning. Every other dynamic id, and a payload that omits
+        // the length or the resolution, stays on the warning below.
+        const floor = falH3MaxSecondsFloor(
+          req.endpoint,
+          req.payload,
+          req.costHints
+        );
+        if (floor) return floor;
         const billed = falDynamicBilledUnit(req.endpoint);
         return {
           usd: 0,

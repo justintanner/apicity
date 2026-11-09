@@ -20,8 +20,19 @@ import type { CostEstimate, CostHints } from "./types";
  * its place is a 400). So a number needs a quantity the caller supplies —
  * typically the billed units fal reports after a call in the
  * `x-fal-billable-units` response header. Without one, nothing is asked
- * (ac-ytg1l1). The open question this module settles is WHERE that call
- * belongs.
+ * (ac-ytg1l1), except the H3 Max per-second floors. Extend, insert, and
+ * reference-to-video (including the turbo reference twin) quote the
+ * requested seconds at the card rate when the payload fixes duration and
+ * resolution. 3d-to-video and lip-sync do the same from
+ * `hints.durationSeconds` plus an explicit resolution. That quote is a
+ * lower bound: reference tokens and the other extras the card adds are
+ * named in a warning and not counted. This function returns that bound
+ * instead of calling fal for a missing quantity or for `callQuantity`.
+ * A positive `unitQuantity` still calls, because billed units can include
+ * the surcharge the bound leaves out. `unitQuantity` of exactly 0 is a
+ * call fal billed nothing: 0 USD with a `zeroReason`, and no call, even
+ * when a bound would otherwise apply (ac-vo9l4a). The open question this
+ * module settles is WHERE that call belongs.
  *
  * It does not belong inside `computeEstimate`. `@apicity/cost` is
  * dependency-free and its estimation is pure local computation; importing a
@@ -205,8 +216,11 @@ export interface ResolveFalDynamicEstimateOptions {
    * Billed units to price with fal's unit price (`estimate_type: "unit_price"`),
    * in the endpoint's own unit — seconds, megapixels, images or 1000-token
    * units — for example a finished call's `x-fal-billable-units` header.
-   * Finite and at least 0.000001, as fal requires. The answer is that exact
-   * quantity priced, with no warning. Exclusive with `callQuantity`.
+   * Finite and at least 0.000001, as fal requires, except exactly 0: fal
+   * billed nothing, and the result is 0 USD with a `zeroReason` and no
+   * request. A positive quantity is that exact quantity priced, with no
+   * warning, and it wins over an H3 Max per-second floor. Exclusive with
+   * `callQuantity`.
    */
   unitQuantity?: number;
   /**
@@ -214,7 +228,9 @@ export interface ResolveFalDynamicEstimateOptions {
    * (`estimate_type: "historical_api_price"`). An integer of at least 1. The
    * average comes from fal's past usage of the endpoint, not from this
    * request, so the answer always carries a warning that it ignores the
-   * payload. Exclusive with `unitQuantity`.
+   * payload. Exclusive with `unitQuantity`. On an H3 Max endpoint whose
+   * payload or duration hint fixes the per-second floor, this option is
+   * ignored and the floor is returned instead.
    */
   callQuantity?: number;
   /** Optional cache; omitted means every priced lookup reaches the estimator. */
@@ -260,11 +276,17 @@ function pickBasis(
  * `computeEstimate` unchanged, so wiring this in does not turn every estimate
  * into a request.
  *
- * A dynamic endpoint reaches fal only with a quantity: `options.unitQuantity`
- * prices those billed units exactly, and `options.callQuantity` asks for fal's
- * historical average per call, which ignores the payload and says so in a
- * warning. With neither, nothing is called and the local `usd: 0` comes back
- * with a warning naming both options (ac-ytg1l1).
+ * A dynamic endpoint reaches fal only with a positive `unitQuantity`, which
+ * prices those billed units exactly. `callQuantity` asks for fal's historical
+ * average per call, which ignores the payload and says so in a warning,
+ * unless the local estimate is an H3 Max per-second floor (`usd > 0`): a
+ * missing quantity or any `callQuantity` then returns that floor and does
+ * not call. A dynamic local estimate is otherwise always `usd: 0`, so that
+ * test is the floor. `unitQuantity` of exactly 0 is 0 USD with a
+ * `zeroReason` and no call, floor or not. With neither quantity, and no
+ * floor, nothing is called and the local `usd: 0` comes back with a warning
+ * naming both options (ac-ytg1l1). An unusable quantity is a no-call refusal
+ * and does not return a floor.
  *
  * A failed or malformed remote answer degrades to the local estimate —
  * `usd: 0` plus a warning naming the call — rather than throwing. An estimate
@@ -296,6 +318,24 @@ export async function resolveFalDynamicEstimate(
     });
   }
 
+  // x-fal-billable-units: 0 is a call fal billed nothing, including a 422.
+  // It is 0 USD even when a per-second floor would otherwise apply, and it
+  // never calls fal. `-0 === 0`. A callQuantity beside it stays the
+  // existing "not both" refusal below.
+  if (options.unitQuantity === 0 && options.callQuantity === undefined) {
+    return {
+      usd: 0,
+      currency: "USD",
+      source: "free",
+      zeroReason:
+        `unitQuantity is 0: x-fal-billable-units for '${endpoint}' ` +
+        "reported no billed units, so the call is 0 USD",
+      warnings: [],
+      breakdown: {},
+      rateAsOf: null,
+    };
+  }
+
   const local = computeEstimate({
     provider: "fal",
     endpoint,
@@ -304,13 +344,25 @@ export async function resolveFalDynamicEstimate(
   });
 
   const basis = pickBasis(endpoint, options);
+  // A positive local figure is the H3 Max floor. A historical average, or
+  // no quantity at all, must not replace it or call fal. A positive
+  // unitQuantity still falls through: billed units can include the token
+  // surcharge. An unusable quantity must not come back beside the floor.
+  if (typeof basis === "string") {
+    return withWarning(local.usd > 0 ? withoutFloor(local) : local, basis);
+  }
+  if (
+    local.usd > 0 &&
+    (basis === undefined || basis.estimate_type === "historical_api_price")
+  ) {
+    return local;
+  }
   if (basis === undefined) {
     return withWarning(
       local,
       `fal pricing estimate for '${endpoint}' not requested: pass options.unitQuantity (the billed units, e.g. a finished call's x-fal-billable-units header) for an exact number, or options.callQuantity for fal's historical average per call, which ignores the payload`
     );
   }
-  if (typeof basis === "string") return withWarning(local, basis);
 
   // fal's answer depends on the endpoint, the estimate type and the quantity,
   // never on the payload; the quantity discriminator is always part of the key.
@@ -409,4 +461,9 @@ function withWarning(estimate: CostEstimate, warning: string): CostEstimate {
     rateAsOf: estimate.rateAsOf ?? PRICING_AS_OF,
     warnings: [...estimate.warnings, warning],
   };
+}
+
+/** Drop a local floor so a refusal cannot quote it. */
+function withoutFloor(estimate: CostEstimate): CostEstimate {
+  return { ...estimate, usd: 0, breakdown: {}, warnings: [] };
 }

@@ -691,6 +691,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- fal MiniMax H3 Max extend, insert, and reference-to-video, including turbo
+  reference-to-video, quote the requested seconds at the card rate when the
+  payload sets `duration` and `resolution`. 3d-to-video and lip-sync quote
+  `costHints.durationSeconds` (3d at least 5 seconds; lip-sync times 1.2 over
+  15 seconds) once resolution is set, and stay dynamic without the hint. The
+  figure is a lower bound: reference tokens past the included 4,096, a longer
+  output, generated reference images, and a longer lip-sync bill are a warning,
+  not part of the USD. `resolveFalDynamicEstimate` returns that floor instead
+  of `callQuantity`'s historical average and does not call fal. A positive
+  `unitQuantity` still calls. `unitQuantity: 0` is 0 USD with a `zeroReason`
+  and no pricing-API call (ac-vo9l4a).
 - `extractActual` forwards OpenAI Realtime cached modality counts.
   `ActualUsage` gains `cacheReadAudioInputTokens` and
   `cacheReadImageInputTokens`, read from `cached_tokens_details` under

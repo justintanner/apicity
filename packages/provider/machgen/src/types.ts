@@ -1,5 +1,8 @@
 import type { z } from "zod";
 import type {
+  MachGenAdapterConfigSchema,
+  MachGenAdapterCreateRequestSchema,
+  MachGenAdapterInferenceConfigSchema,
   MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
   MachGenImageConfigSchema,
@@ -35,6 +38,13 @@ export type MachGenVideoConfig = z.infer<typeof MachGenVideoConfigSchema>;
 export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;
 export type MachGenUpscaleQuoteRequest = z.infer<
   typeof MachGenUpscaleQuoteRequestSchema
+>;
+export type MachGenAdapterCreateRequest = z.infer<
+  typeof MachGenAdapterCreateRequestSchema
+>;
+export type MachGenAdapterConfig = z.infer<typeof MachGenAdapterConfigSchema>;
+export type MachGenAdapterInferenceConfig = z.infer<
+  typeof MachGenAdapterInferenceConfigSchema
 >;
 
 export interface MachGenUploadRequest {
@@ -98,6 +108,28 @@ export interface MachGenTaskBillingResponse {
   [key: string]: unknown;
 }
 
+/** A custom-LoRA upload, as the reserve call answers it. */
+export interface MachGenAdapterUpload {
+  /** The LoRA's id: `up-` and hex, derived from the file and both configs. */
+  adapter: string;
+  model: string;
+  /** `pending` until committed; a pending upload expires after 7 days. */
+  status: "pending" | "ready";
+  size_bytes: number;
+  /** Unix seconds. */
+  created_at: number;
+  /** Unix seconds; when a pending upload expires. */
+  expires_at?: number | null;
+  /** Resumable uploads send pieces in multiples of this many bytes. */
+  chunk_size?: number;
+  /**
+   * One-time URL that takes the weights by PUT for 7 days. Anyone holding it
+   * can write the file. `null` once the file has arrived.
+   */
+  upload_url?: string | null;
+  [key: string]: unknown;
+}
+
 export interface MachGenGenerateMethod {
   (
     request: MachGenGenerateRequest,
@@ -124,12 +156,25 @@ export interface MachGenUpscaleNamespace {
   /** Free and creates no task; not in MachGen's REST docs. */
   quote: MachGenUpscaleQuoteMethod;
 }
+export interface MachGenAdapterCreateMethod {
+  (
+    request: MachGenAdapterCreateRequest,
+    signal?: AbortSignal
+  ): Promise<MachGenAdapterUpload>;
+  schema: typeof MachGenAdapterCreateRequestSchema;
+}
+/** Custom LoRAs: https://www.machgen.ai/docs/rest_api/custom-loras */
+export interface MachGenAdaptersNamespace {
+  /** Reserve an upload (free); `model` is sent as the `?model=` query. */
+  create: MachGenAdapterCreateMethod;
+}
 export interface MachGenV0Namespace {
   upload: MachGenUploadMethod;
   generate: MachGenGenerateMethod;
   tasks: MachGenTasksMethod;
   assets(taskId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
   upscale: MachGenUpscaleNamespace;
+  adapters: MachGenAdaptersNamespace;
 }
 export interface MachGenApiNamespace {
   v0: MachGenV0Namespace;

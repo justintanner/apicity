@@ -1825,7 +1825,7 @@
       "packages/provider/kie/src/kie.ts": "sha256:01181e9e89032da31e5d5813c2aebb69f2aaaf7e7d416497e5e3bad256e98de9",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:01cf3d58d0ba6efba7b09155c52fc224016152861950e2f927fa45ac0e7e8329",
       "packages/provider/cost/src/slugs.ts": "sha256:1f2bd4d5b929a17105c28c9ec2f26f42b888afda9fdb41e07527bf878c73f467",
-      "scripts/endpoint-docs.tsv": "sha256:1e2c170aac18527c4db74efb09e72a13ab9db692ae16b520da21df10248aa76d"
+      "scripts/endpoint-docs.tsv": "sha256:9428762dffd36bef8dec545c417c7f15e6d0dcabd5053fcc3cd633e0050a9374"
     }
   },
   "rows": [

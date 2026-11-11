@@ -1,6 +1,12 @@
 export { createMachGen } from "./machgen";
 export { MachGenError } from "./types";
 export type {
+  MachGenAdapterConfig,
+  MachGenAdapterCreateMethod,
+  MachGenAdapterCreateRequest,
+  MachGenAdapterInferenceConfig,
+  MachGenAdaptersNamespace,
+  MachGenAdapterUpload,
   MachGenUploadRequest,
   MachGenUploadResponse,
   MachGenUploadMethod,
@@ -29,6 +35,11 @@ export type {
   MachGenVideoModel,
 } from "./zod";
 export {
+  MachGenAdapterBaseModelAliasSchema,
+  MachGenAdapterConfigSchema,
+  MachGenAdapterCreateRequestSchema,
+  MachGenAdapterInferenceConfigSchema,
+  MachGenAdapterSamplingSchema,
   MACHGEN_IMAGE_MODELS,
   MACHGEN_I2I_MAX_IMAGES,
   MachGenImageConfigSchema,

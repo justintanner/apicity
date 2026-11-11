@@ -1,4 +1,33 @@
 {
+  "POST api.v0.adapters.create": {
+    "source": "machgen/adapters-create-synthetic-h3-lora",
+    "payload": {
+      "size_bytes": 408,
+      "md5": "4836aa15066d5e124172cdb1954c3616",
+      "adapter_config": {
+        "base_model": "minimax-h3",
+        "base_partition": "FL2VA",
+        "export_format": "h3-native-v1",
+        "scaling": {
+          "mode": "unit"
+        }
+      },
+      "inference_config": {
+        "default_strength": 1,
+        "trigger_prompt": "",
+        "sampling": {
+          "num_inference_steps": 6,
+          "guidance_scale": 1,
+          "video_shift": 12,
+          "audio_shift": 3,
+          "sampler": "euler",
+          "sigma_grid": "linspace"
+        }
+      }
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST api.v0.generate": {
     "source": "machgen/veo-3-1-t2v",
     "payload": {

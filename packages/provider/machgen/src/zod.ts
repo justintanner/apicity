@@ -892,3 +892,120 @@ export const MachGenUpscaleQuoteRequestSchema =
       "creating a task. MachGen's REST docs do not list this endpoint " +
       "(read 2026-10-26), so MachGen may change it without notice."
   );
+
+// Custom LoRAs, https://www.machgen.ai/docs/rest_api/custom-loras (read
+// 2026-11-11). Free reserve probes that day
+// (tests/fixtures/machgen-evidence/machgen-adapter-reserve-2026-11-11.json)
+// answered HTTP 400 before reserving anything. They named every field below
+// as required, rejected unknown keys in both configs, and set the bounds
+// pinned here: size_bytes 9 to 5000000000, a lowercase hex md5, 1 to 1000
+// steps, guidance_scale exactly 1, shifts above 0, and the three sampling
+// rules the docs list. MachGen's sampler list also names `renoise`, which the
+// docs leave out.
+
+/** Lowercase kebab-case base-model ids, the grammar of `minimax-h3`. */
+export const MachGenAdapterBaseModelAliasSchema = z
+  .string()
+  .regex(/^[a-z][a-z0-9.]*(?:-[a-z0-9.]+)+$/);
+
+/** How the weights file was trained and how its tensors are named. */
+export const MachGenAdapterConfigSchema = z
+  .object({
+    base_model: z.enum(["minimax-h3"]).or(MachGenAdapterBaseModelAliasSchema),
+    base_partition: z
+      .enum(["FL2VA", "Ref2VA"])
+      .describe("FL2VA LoRAs serve T2V and I2V; Ref2VA LoRAs serve R2V"),
+    export_format: z.enum([
+      "machgen-h3-direct-v1",
+      "h3-native-v1",
+      "h3-comfy-packed-v1",
+      "h3-diffusers-hyperflow-v1",
+    ]),
+    scaling: z.discriminatedUnion("mode", [
+      z.object({ mode: z.literal("unit") }),
+      z.object({ mode: z.literal("alpha_over_rank"), alpha: z.number() }),
+      z.object({ mode: z.literal("alpha_tensor_over_rank") }),
+    ]),
+  })
+  .strict();
+
+/** The sampling recipe the LoRA was trained for. */
+export const MachGenAdapterSamplingSchema = z
+  .object({
+    num_inference_steps: z.number().int().min(1).max(1000),
+    guidance_scale: z.literal(1),
+    video_shift: z.number().positive(),
+    audio_shift: z.number().positive(),
+    sampler: z.enum(["euler", "res_multistep", "renoise"]),
+    sigma_grid: z.enum(["linspace", "simple", "fixed"]),
+    fixed_sigmas: z
+      .array(z.number())
+      .optional()
+      .describe("Fixed grid only: steps + 1 values, strictly from 1 down to 0"),
+  })
+  .superRefine((sampling, ctx) => {
+    const issue = (path: string, message: string) =>
+      ctx.addIssue({ code: "custom", path: [path], message });
+    if (
+      sampling.sampler === "res_multistep" &&
+      sampling.sigma_grid !== "simple"
+    )
+      issue("sigma_grid", "res_multistep requires the simple sigma grid");
+    if (sampling.sigma_grid !== "linspace" && sampling.audio_shift !== 3)
+      issue("audio_shift", "simple and fixed grids require audio_shift 3.0");
+    const sigmas = sampling.fixed_sigmas ?? [];
+    if (
+      sampling.sigma_grid === "fixed" &&
+      (sigmas.length !== sampling.num_inference_steps + 1 ||
+        sigmas[0] !== 1 ||
+        sigmas[sigmas.length - 1] !== 0 ||
+        sigmas.some((sigma, i) => i > 0 && sigma >= sigmas[i - 1]))
+    )
+      issue(
+        "fixed_sigmas",
+        "fixed_sigmas must decrease strictly from 1 to 0 with steps+1 entries"
+      );
+  });
+
+/** Default strength, trigger phrase and sampling recipe for the LoRA. */
+export const MachGenAdapterInferenceConfigSchema = z
+  .object({
+    default_strength: z.number(),
+    trigger_prompt: z
+      .string()
+      .describe(
+        "Prepended to every prompt; empty when there is no trigger word"
+      ),
+    sampling: MachGenAdapterSamplingSchema,
+  })
+  .strict();
+
+export const MachGenAdapterCreateRequestSchema = z
+  .object({
+    model: z
+      .enum(["MiniMax-H3"])
+      .or(MachGenModelAliasSchema)
+      .describe("Sent as the ?model= query parameter"),
+    size_bytes: z
+      .number()
+      .int()
+      .min(9)
+      .max(5_000_000_000)
+      .describe("The weights file's exact size in bytes; at most 5 GB"),
+    md5: z
+      .string()
+      .regex(/^[0-9a-f]{32}$/)
+      .describe("The weights file's MD5, lowercase hex"),
+    adapter_config: MachGenAdapterConfigSchema,
+    inference_config: MachGenAdapterInferenceConfigSchema,
+  })
+  .describe(
+    "Reserves a custom-LoRA upload for MiniMax-H3, the only model with " +
+      "custom LoRAs (read 2026-11-11). model goes in the ?model= query and " +
+      "the rest in the JSON body. Reserving bills nothing. The response's " +
+      "one-time upload_url accepts the .safetensors file by PUT for 7 days, " +
+      "and anyone holding it can write the file, so treat it like a password. " +
+      "Commit the upload next. The adapter id is derived from the file and " +
+      "both configs, so reserving the same upload again returns the same id " +
+      "and a fresh upload_url, which retires the previous one."
+  );

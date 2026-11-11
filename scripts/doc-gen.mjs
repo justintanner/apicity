@@ -706,6 +706,21 @@ export const ENDPOINT_NOTES = new Map([
       "an estimate.",
     ].join(" "),
   ],
+  [
+    "machgen\tapi.v0.adapters.create\tPOST",
+    [
+      "> **Write capability:** the reserve answers a one-time `upload_url`",
+      "that takes the `.safetensors` weights by `PUT` for 7 days, and anyone",
+      "holding it can write the file, so keep it out of logs and recordings.",
+      "apicity's recording of this call keeps only `https://storage.googleapis.com/***`.",
+      "Reserving bills nothing, and `MiniMax-H3` is the only model with custom",
+      "LoRAs (read 2026-11-11). `model` goes in the `?model=` query and the",
+      "rest in the JSON body. Send the file to the latest `upload_url`, then",
+      "commit it (`POST /api/v0/adapters/{adapter_id}/commit`). Reserving the",
+      "same file and configs again returns the same `adapter` id and a fresh",
+      "`upload_url`, which retires the previous one.",
+    ].join(" "),
+  ],
 ]);
 
 const PROVIDER_NOTES = new Map([

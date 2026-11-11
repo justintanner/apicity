@@ -3315,6 +3315,19 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v0.adapters.create"]
   ),
   ...rows(
+    "machgen",
+    {
+      kind: "free",
+      reason:
+        "Committing an uploaded custom LoRA bills nothing (wallet unchanged across the recorded commit); generating with the LoRA bills on api.v0.generate",
+      source: {
+        url: "https://www.machgen.ai/docs/rest_api/custom-loras",
+        asOf: "2026-11-11",
+      },
+    },
+    ["POST api.v0.adapters.commit"]
+  ),
+  ...rows(
     "meta",
     {
       kind: "free",

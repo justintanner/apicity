@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { request as httpsRequest } from "node:https";
 import type {
   MachGenAdapterConfig,
   MachGenAdapterInferenceConfig,
@@ -165,4 +166,37 @@ export function redactMachGenUploadUrls(
     if (header.name?.toLowerCase() === "content-length")
       header.value = String(bytes);
   }
+}
+
+/**
+ * Sends the weights to a reserve's live `upload_url`, as MachGen's docs do
+ * with `curl -X PUT --upload-file`. The URL is Google Cloud Storage's, not a
+ * MachGen endpoint. The PUT goes through `node:https` rather than `fetch`,
+ * so Polly, which wraps `fetch`, never records the live URL. Resolves to the
+ * HTTP status; errors never carry the URL.
+ */
+export function putAdapterWeights(
+  uploadUrl: string,
+  bytes: Uint8Array
+): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const req = httpsRequest(
+      uploadUrl,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Content-Length": String(bytes.length),
+        },
+      },
+      (res) => {
+        res.resume();
+        res.on("end", () => resolve(res.statusCode ?? 0));
+        res.on("error", () => reject(new Error("upload_url PUT failed")));
+      }
+    );
+    req.setTimeout(60_000, () => req.destroy());
+    req.on("error", () => reject(new Error("upload_url PUT failed")));
+    req.end(Buffer.from(bytes));
+  });
 }

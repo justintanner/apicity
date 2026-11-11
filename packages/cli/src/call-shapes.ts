@@ -119,6 +119,17 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "machgen\tPOST\tapi.v0.adapters.commit": {
+    provider: "machgen",
+    method: "POST",
+    dotPath: "api.v0.adapters.commit",
+    positional: [
+      { placeholder: "adapterId", param: "adapterId", optional: false },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "simplefunctions\tGET\tapi.agent.feed": {
     provider: "simplefunctions",
     method: "GET",

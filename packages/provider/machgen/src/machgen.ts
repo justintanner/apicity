@@ -197,6 +197,17 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
             },
             { schema: MachGenAdapterCreateRequestSchema }
           ),
+          // schema-ok: body-less POST (no request payload)
+          // POST https://api.machgen.ai/api/v0/adapters/{adapterId}/commit
+          // Docs: https://www.machgen.ai/docs/rest_api/custom-loras#3-commit
+          commit: async (adapterId: string, signal?: AbortSignal) => {
+            return request<MachGenAdapterUpload>(
+              "POST",
+              `/api/v0/adapters/${encodeURIComponent(adapterId)}/commit`,
+              undefined,
+              signal
+            );
+          },
         },
       },
     },

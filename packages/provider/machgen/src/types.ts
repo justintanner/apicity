@@ -109,8 +109,9 @@ export interface MachGenTaskBillingResponse {
 }
 
 /**
- * A custom-LoRA upload, as reserve and commit answer it. Commit leaves out
- * `expires_at`, `chunk_size` and `upload_url` (read 2026-11-11).
+ * A custom-LoRA upload, as reserve, commit and retrieve answer it. Commit, and
+ * retrieve of a ready LoRA, leave out `expires_at`, `chunk_size` and
+ * `upload_url` (read 2026-11-11).
  */
 export interface MachGenAdapterUpload {
   /** The LoRA's id: `up-` and hex, derived from the file and both configs. */
@@ -175,6 +176,11 @@ export interface MachGenAdaptersNamespace {
    * ready (free). Safe to repeat.
    */
   commit(
+    adapterId: string,
+    signal?: AbortSignal
+  ): Promise<MachGenAdapterUpload>;
+  /** Read one LoRA (free); 404 for an unknown, deleted or expired id. */
+  retrieve(
     adapterId: string,
     signal?: AbortSignal
   ): Promise<MachGenAdapterUpload>;

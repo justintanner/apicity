@@ -130,6 +130,17 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "machgen\tGET\tapi.v0.adapters.retrieve": {
+    provider: "machgen",
+    method: "GET",
+    dotPath: "api.v0.adapters.retrieve",
+    positional: [
+      { placeholder: "adapterId", param: "adapterId", optional: false },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "simplefunctions\tGET\tapi.agent.feed": {
     provider: "simplefunctions",
     method: "GET",

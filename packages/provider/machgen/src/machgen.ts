@@ -208,6 +208,16 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
               signal
             );
           },
+          // GET https://api.machgen.ai/api/v0/adapters/{adapterId}
+          // Docs: https://www.machgen.ai/docs/rest_api/custom-loras#manage
+          retrieve: async (adapterId: string, signal?: AbortSignal) => {
+            return request<MachGenAdapterUpload>(
+              "GET",
+              `/api/v0/adapters/${encodeURIComponent(adapterId)}`,
+              undefined,
+              signal
+            );
+          },
         },
       },
     },

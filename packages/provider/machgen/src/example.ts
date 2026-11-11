@@ -16,7 +16,7 @@ export interface EndpointExample {
 
 const EXAMPLES: Record<string, EndpointExample> = {
   "POST api.v0.adapters.create": {
-    "source": "machgen/adapters-create-synthetic-h3-lora",
+    "source": "machgen/adapters-commit-synthetic-h3-lora",
     "payload": {
       "size_bytes": 408,
       "md5": "4836aa15066d5e124172cdb1954c3616",

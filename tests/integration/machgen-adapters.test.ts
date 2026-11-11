@@ -12,6 +12,7 @@ import {
   MACHGEN_LORA_ADAPTER_CONFIG,
   MACHGEN_LORA_INFERENCE_CONFIG,
   md5Hex,
+  putAdapterWeights,
   redactMachGenUploadUrls,
   syntheticH3Lora,
   uploadUrlsIn,
@@ -203,6 +204,41 @@ describe("MachGen custom-LoRA reserve", () => {
           expect(upload.upload_url).toBe("https://storage.googleapis.com/***");
         else expect(upload.upload_url).toMatch(/^https:\/\//);
       }
+    } finally {
+      await teardownPolly(ctx);
+    }
+  });
+
+  // Reserve again (free; same id, fresh upload_url), send the weights, commit
+  // (free). The PUT goes to Google Cloud Storage, not MachGen, and runs only
+  // against a live upload_url: through node:https, so Polly never records it.
+  // On replay the reserve answers the redacted URL and the PUT is skipped.
+  it("commits the synthetic LoRA", async () => {
+    const ctx = setupPollyWithPersistScrubber(
+      "machgen/adapters-commit-synthetic-h3-lora",
+      redactMachGenUploadUrls
+    );
+    try {
+      const machgen = createMachGen({
+        apiKey: process.env.MACHGEN_API_KEY ?? "test-key",
+      });
+      const reserved = await machgen.api.v0.adapters.create(RESERVE);
+      expect(reserved.adapter).toBe(MACHGEN_SYNTHETIC_LORA_ID);
+      if (
+        reserved.status === "pending" &&
+        !isRedactedUploadUrl(reserved.upload_url)
+      )
+        expect([200, 201]).toContain(
+          await putAdapterWeights(reserved.upload_url!, weights)
+        );
+      const committed = await machgen.api.v0.adapters.commit(reserved.adapter);
+      expect(committed).toMatchObject({
+        adapter: MACHGEN_SYNTHETIC_LORA_ID,
+        model: "MiniMax-H3",
+        status: "ready",
+        size_bytes: weights.length,
+      });
+      expect(committed.upload_url ?? null).toBeNull();
     } finally {
       await teardownPolly(ctx);
     }

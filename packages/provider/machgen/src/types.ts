@@ -108,7 +108,10 @@ export interface MachGenTaskBillingResponse {
   [key: string]: unknown;
 }
 
-/** A custom-LoRA upload, as the reserve call answers it. */
+/**
+ * A custom-LoRA upload, as reserve and commit answer it. Commit leaves out
+ * `expires_at`, `chunk_size` and `upload_url` (read 2026-11-11).
+ */
 export interface MachGenAdapterUpload {
   /** The LoRA's id: `up-` and hex, derived from the file and both configs. */
   adapter: string;
@@ -167,6 +170,14 @@ export interface MachGenAdapterCreateMethod {
 export interface MachGenAdaptersNamespace {
   /** Reserve an upload (free); `model` is sent as the `?model=` query. */
   create: MachGenAdapterCreateMethod;
+  /**
+   * Check the uploaded file (size, MD5, safetensors header) and mark the LoRA
+   * ready (free). Safe to repeat.
+   */
+  commit(
+    adapterId: string,
+    signal?: AbortSignal
+  ): Promise<MachGenAdapterUpload>;
 }
 export interface MachGenV0Namespace {
   upload: MachGenUploadMethod;

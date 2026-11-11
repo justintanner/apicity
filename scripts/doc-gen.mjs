@@ -721,6 +721,19 @@ export const ENDPOINT_NOTES = new Map([
       "`upload_url`, which retires the previous one.",
     ].join(" "),
   ],
+  [
+    "machgen\tapi.v0.adapters.commit\tPOST",
+    [
+      "> **Send the file first:** `PUT` the `.safetensors` bytes to the",
+      "reserve's `upload_url` with `Content-Type: application/octet-stream`.",
+      "That URL belongs to Google Cloud Storage, not MachGen, so apicity has",
+      "no method for it. Commit then checks the file's size, MD5 and",
+      'safetensors header and answers the upload with `status: "ready"`',
+      "(without `expires_at`, `chunk_size` or `upload_url`, read 2026-11-11).",
+      "It bills nothing and is safe to repeat. A 409 means the file has not",
+      "arrived or a newer reserve replaced its URL: reserve again and resend.",
+    ].join(" "),
+  ],
 ]);
 
 const PROVIDER_NOTES = new Map([

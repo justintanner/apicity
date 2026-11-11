@@ -217,9 +217,28 @@ console.log(bill.generation_cost_micros / 1e6); // 0.06
 
 ## API Reference
 
-7 endpoints across 6 groups. Each method mirrors an upstream URL path.
+8 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### adapters
+
+<details>
+<summary><code>POST</code> <b><code>machgen.api.v0.adapters.commit</code></b></summary>
+
+<code>POST https://api.machgen.ai/api/v0/adapters/{adapterId}/commit</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.machgen.ai/docs/rest_api/custom-loras#3-commit)
+
+> **Send the file first:** `PUT` the `.safetensors` bytes to the reserve's `upload_url` with `Content-Type: application/octet-stream`. That URL belongs to Google Cloud Storage, not MachGen, so apicity has no method for it. Commit then checks the file's size, MD5 and safetensors header and answers the upload with `status: "ready"` (without `expires_at`, `chunk_size` or `upload_url`, read 2026-11-11). It bills nothing and is safe to repeat. A 409 means the file has not arrived or a newer reserve replaced its URL: reserve again and resend.
+
+```typescript
+const res = await machgen.api.v0.adapters.commit({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>machgen.api.v0.adapters.create</code></b></summary>

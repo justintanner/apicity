@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 image-to-video
+  (`google/gemini-omni-flash/v1.2/image-to-video`) is priced dynamically,
+  like the other 1.2 endpoints: a recorded 3 s, 360p call from the owned cat
+  photo billed 3.277456 seconds, USD 0.089475, about 3.03 for the output
+  file and the rest for input tokens that no request field measures. It
+  joins `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS` and has
+  a display-only `MODEL_DISPLAY` name (ac-4xoxb6).
+
 - fal Seedance 2.0 Mini text-to-video
   (`bytedance/seedance-2.0/mini/text-to-video`) is priced statically by output
   tokens, like Mini image-to-video: 0.007 USD per 1000 tokens at 480p and

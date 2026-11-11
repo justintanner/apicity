@@ -7502,6 +7502,57 @@ export type FalGeminiOmniFlashV1p2TextToVideoParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p2TextToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 333c44ce2e20f0122928184dba7d73deb14b318b2d8e016fe1b8ef04341e0827). Field order follows x-fal-order-properties.
+// `prompt` and `image_url` are required. Against v1.1 the output runs up to
+// 15 seconds, and the descriptions add a 10-second cap when an end image is
+// provided. Five unbilled 422 pairing probes (2026-11-11) drew a `duration`
+// error for 16 seconds but none for 15 or 11 seconds with `end_image_url`
+// set, so upstream does not check that cap at field level. It stays in the
+// descriptions only; no refinement restates it.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/image-to-video/api
+export const FalGeminiOmniFlashV1p2ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe(
+      "The text prompt describing how the first image should be animated or interpolated into the optional end image."
+    ),
+  image_url: z.string().describe("URL of the first frame to animate."),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the end frame. When provided, the model interpolates between the two images in their listed order and the duration is capped at 10 seconds."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .default(8)
+    .describe(
+      "The duration of the generated video, in seconds. At most 10 seconds when an end image is provided."
+    ),
+});
+export type FalGeminiOmniFlashV1p2ImageToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p2ImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p2ImageToVideoRequestInput =
+  FalGeminiOmniFlashV1p2ImageToVideoRequest;
+export type FalGeminiOmniFlashV1p2ImageToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p2ImageToVideoRequestSchema
+>;
+
 // The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
 // (2026-10-08) found upstream's validator to match it: `image_urls` holds at
 // most ten strings and `reference_video_urls` at most three, with no minimum
@@ -18900,6 +18951,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema,
   "google/gemini-omni-flash/v1.2/text-to-video":
     FalGeminiOmniFlashV1p2TextToVideoRequestSchema,
+  "google/gemini-omni-flash/v1.2/image-to-video":
+    FalGeminiOmniFlashV1p2ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

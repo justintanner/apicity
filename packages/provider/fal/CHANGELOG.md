@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.openai.gptImage2p6.sunburst.textToImage`
+  (`POST https://fal.run/openai/gpt-image-2.6/sunburst/text-to-image`) adds GPT
+  Image 2.6 Sunburst, #1 on the 2026-11-11 text-to-image board. The schema
+  follows fal's queue OpenAPI (read 2026-11-11). Against 2.5 it adds
+  `reasoning_effort` (low, medium or high; default high), `gif` and `svg`
+  output, `frame_count` and `frame_duration_ms` for GIFs, and `svg_model` for
+  SVGs; `svg_model` stays open to `gpt-<version>[-<name>]` ids. This child
+  declares the new `openai.gptImage2p6` namespace with its `sunburst` object. A
+  recorded call at quality low, reasoning_effort low, one square JPEG billed
+  `x-fal-billable-units` 0.0217 (ac-pns6xz).
+
 - `run.bytedance.seedance2p5.us.textToVideo`, `.imageToVideo` and
   `.referenceToVideo` take `draft` (boolean, default `false`), as fal's queue
   OpenAPI documents for all three (read 2026-10-31): it renders a 480p preview

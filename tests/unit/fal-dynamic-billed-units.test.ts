@@ -43,6 +43,8 @@ const CHECKED = [
   "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",
   "openai/gpt-image-2",
+  // Card read 2026-11-11; the recorded low-quality call billed 0.0217 units.
+  "openai/gpt-image-2.6/sunburst/text-to-image",
   "openai/gpt-image-2/edit",
 ];
 

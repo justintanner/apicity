@@ -67,7 +67,7 @@ describe("apicity frontier", () => {
     const i2v = envelope.data.find((row) => row.type === "i2v");
     expect(i2v).toMatchObject({ models: "5/10", captured: "2026-11-11" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "6/10", captured: "2026-11-11" });
+    expect(t2i).toMatchObject({ models: "7/10", captured: "2026-11-11" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
     expect(i2i).toMatchObject({ models: "4/10", captured: "2026-11-11" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
@@ -190,7 +190,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("gemini-3.1-flash-image");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
     expect(table).toContain(
-      "not yet in apicity: GPT Image 2.6 Sunburst (max), GPT Image 2.6 Flare (max), MAI-Image-2.6, Seedream 5.5"
+      "not yet in apicity: GPT Image 2.6 Flare (max), MAI-Image-2.6, Seedream 5.5"
     );
   });
 

@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds GPT Image 2.6 Sunburst text-to-image at `run.openai.gptImage2p6.sunburst.textToImage` (`POST https://fal.run/openai/gpt-image-2.6/sunburst/text-to-image`), #1 on the 2026-11-11 text-to-image board. It adds `reasoning_effort`, GIF and SVG output, and their frame and `svg_model` options to the 2.5 request. `@apicity/cost` prices it dynamically from fal's token card, as 2.5 is priced, and the frontier registry now points GPT Image 2.6 Sunburst (max) at it. A recorded call at quality low, reasoning_effort low, one square JPEG billed 0.0217 USD (ac-pns6xz).
+
 - `@apicity/machgen` adds `api.v0.adapters.del(adapterId)` (`DELETE https://api.machgen.ai/api/v0/adapters/{adapterId}`), which deletes a custom LoRA. It is free and safe to repeat: both calls answered `{ adapter, status: "deleted" }`. A deleted LoRA then reads as a 404 and leaves the list. The recording deletes the synthetic LoRA the other adapter recordings made, so the account's list is empty again, and the wallet was unchanged (ac-fj3vil).
 
 - `@apicity/machgen` adds `api.v0.adapters.list()` (`GET https://api.machgen.ai/api/v0/adapters`), a free list of the account's custom LoRAs and their storage use: `adapters`, `used_bytes`, `max_bytes` (15 GB), `used_count` and `max_count` (100), typed as `MachGenAdapterList`. The recording lists the ready synthetic LoRA, and the wallet was unchanged (ac-k99bh1).

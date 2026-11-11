@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal GPT Image 2.6 Sunburst text-to-image
+  (`openai/gpt-image-2.6/sunburst/text-to-image`) is priced dynamically, like
+  2.5. The card bills tokens, with the same rates as 2.5 (read 2026-11-11), so
+  the endpoint joins `FAL_DYNAMIC_PRICING_ENDPOINTS` and
+  `FAL_DYNAMIC_BILLED_UNITS`. It has a display-only `MODEL_DISPLAY` name and no
+  slug or `PRICING` row, and it is the fal entry for GPT Image 2.6 Sunburst
+  (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
+  billed 0.0217 USD (ac-pns6xz).
+
 - WaveSpeed Happy Horse 1.1 reference-to-video
   (`alibaba/happyhorse-1.1/reference-to-video`) bills the output's seconds (5 by
   default) at 0.07, 0.14 and 0.18 USD/s for 480p, 720p and 1080p (720p by

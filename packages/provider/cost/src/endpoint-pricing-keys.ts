@@ -359,6 +359,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "openai/gpt-image-2.5/sunburst/edit",
   "fal POST openai.gptImage2p5.sunburst.textToImage":
     "openai/gpt-image-2.5/sunburst/text-to-image",
+  "fal POST openai.gptImage2p6.sunburst.textToImage":
+    "openai/gpt-image-2.6/sunburst/text-to-image",
   "fal POST openrouter.router.decisions": "openrouter/router/decisions",
   "fal POST pixelcut.loopingVideo": "pixelcut/looping-video",
   "fal POST pixverse.musicVideo.vibemv": "pixverse/music-video/vibemv",

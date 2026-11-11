@@ -2614,6 +2614,19 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openai.gptImage2p6.sunburst.textToImage": {
+    "source": "fal/openai-gpt-image-2-6-sunburst-text-to-image",
+    "payload": {
+      "prompt": "A red balloon.",
+      "quality": "low",
+      "reasoning_effort": "low",
+      "image_size": "square",
+      "num_images": 1,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST openrouter.router.decisions": {
     "source": "fal/openrouter-router-decisions",
     "payload": {

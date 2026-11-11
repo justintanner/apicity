@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.upscale`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/upscale`) adds Gemini
+  Omni Flash 1.2 upscale, the last leaf on the `geminiOmniFlash.v1p2` object.
+  The schema follows fal's queue OpenAPI (read 2026-11-11): `video_url`
+  (required, at most 15 seconds) and a target `resolution` of 720p, 1080p
+  (default) or 4k, which must exceed the source's. A recorded upscale of an
+  owned 3 s, 360p clip to 720p billed `x-fal-billable-units` 4.543215
+  (ac-rmm7j3).
+
 - `run.geminiOmniFlash.v1p2.extend`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/extend`) adds Gemini
   Omni Flash 1.2 extend, a leaf on the `geminiOmniFlash.v1p2` object. The

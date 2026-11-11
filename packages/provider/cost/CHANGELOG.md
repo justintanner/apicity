@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 upscale (`google/gemini-omni-flash/v1.2/upscale`)
+  is priced dynamically, like fal's other video upscalers: the card bills
+  each second of upscaled output at a rate set by the source and target
+  resolutions, and the request carries the source only as a URL. A recorded
+  360p-to-720p upscale of an owned 3 s clip billed 4.543215 units at 0.0273,
+  USD 0.12403, about 1.5 units per output second. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS` and has a
+  display-only `MODEL_DISPLAY` name, "Gemini Omni 1.2 Flash Upscale"
+  (ac-rmm7j3).
+
 - fal Gemini Omni Flash 1.2 extend (`google/gemini-omni-flash/v1.2/extend`)
   is priced dynamically, like the other 1.2 endpoints: a recorded 3 s, 360p
   extension of fal's 5 s example clip billed 4.956952 seconds, USD 0.135325,

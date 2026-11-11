@@ -195,6 +195,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "google/gemini-omni-flash/v1.2/reference-to-video",
   "fal POST geminiOmniFlash.v1p2.textToVideo":
     "google/gemini-omni-flash/v1.2/text-to-video",
+  "fal POST geminiOmniFlash.v1p2.upscale":
+    "google/gemini-omni-flash/v1.2/upscale",
   "fal POST google.gemini3p8FlashLiteTts": "google/gemini-3.8-flash-lite-tts",
   "fal POST google.gemini3p8FlashTts": "google/gemini-3.8-flash-tts",
   "fal POST google.lyria3p5": "google/lyria-3.5",

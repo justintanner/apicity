@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds Gemini Omni Flash 1.2 upscale at `run.geminiOmniFlash.v1p2.upscale` (`POST https://fal.run/google/gemini-omni-flash/v1.2/upscale`): upscales a source video of up to 15 seconds to 720p, 1080p or 4k, completing the `geminiOmniFlash.v1p2` object. `@apicity/cost` prices it dynamically, as fal's other video upscalers are, because the rate and the billed length follow the source video. A recorded 360p-to-720p upscale of an owned 3 s clip billed 0.12403 USD (ac-rmm7j3).
+
 - `@apicity/fal` adds Gemini Omni Flash 1.2 extend at `run.geminiOmniFlash.v1p2.extend` (`POST https://fal.run/google/gemini-omni-flash/v1.2/extend`): continues a source video by 3 to 10 seconds at 360p to 4k and returns the whole extended video. `@apicity/cost` prices it dynamically, as the other 1.2 endpoints are. A recorded 3 s, 360p extension of fal's 5 s example clip billed 0.135325 USD, most of the excess over the new seconds being input tokens for the source (ac-bxz9xk).
 
 - `@apicity/fal` adds Gemini Omni Flash 1.2 image-to-video at `run.geminiOmniFlash.v1p2.imageToVideo` (`POST https://fal.run/google/gemini-omni-flash/v1.2/image-to-video`): a required first frame and an optional end frame, 3 to 15 seconds at 360p to 4k. `@apicity/cost` prices it dynamically, as the other 1.2 endpoints are. A recorded 3 s, 360p call from the owned cat photo billed 0.089475 USD (ac-4xoxb6).

@@ -1264,6 +1264,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p2.upscale": {
+    "source": "fal/google-gemini-omni-flash-v1-2-upscale",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0ab20aa6/_-uXxPeQ4CvqA-usGco3f_cccfda385c03442bb5fe74b45beb3a8d.mp4",
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

@@ -249,6 +249,8 @@ import {
   FalGeminiOmniFlashV1p2ImageToVideoRequest,
   FalGeminiOmniFlashV1p2ExtendResponse,
   FalGeminiOmniFlashV1p2ExtendRequest,
+  FalGeminiOmniFlashV1p2UpscaleResponse,
+  FalGeminiOmniFlashV1p2UpscaleRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoResponse,
@@ -687,6 +689,7 @@ import {
   FalGeminiOmniFlashV1p2TextToVideoRequestSchema,
   FalGeminiOmniFlashV1p2ImageToVideoRequestSchema,
   FalGeminiOmniFlashV1p2ExtendRequestSchema,
+  FalGeminiOmniFlashV1p2UpscaleRequestSchema,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   FalMinimaxH3MaxTurboTextToVideoRequestSchema,
@@ -2347,6 +2350,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/v1.2/upscale
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/upscale/api
+  const geminiOmniFlashV1p2Upscale = jsonBody<
+    FalGeminiOmniFlashV1p2UpscaleRequest,
+    FalGeminiOmniFlashV1p2UpscaleResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/v1.2/upscale",
+    FalGeminiOmniFlashV1p2UpscaleRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
   const geminiOmniFlash = Object.assign(
@@ -2387,6 +2403,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/google/gemini-omni-flash/v1.2/extend
         // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/extend/api
         extend: geminiOmniFlashV1p2Extend,
+        // POST https://fal.run/google/gemini-omni-flash/v1.2/upscale
+        // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/upscale/api
+        upscale: geminiOmniFlashV1p2Upscale,
       },
       edit: geminiOmniFlashEdit,
       imageToVideo: geminiOmniFlashImageToVideo,

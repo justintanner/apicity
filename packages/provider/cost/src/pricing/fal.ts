@@ -1403,6 +1403,19 @@ const gptImagePerImage = (
 //     edit billed for the same clip. The source, which the request carries
 //     only as a URL, is billed as tokens, so no request field fixes the
 //     quantity and no rate is encoded.
+//   - google/gemini-omni-flash/v1.2/upscale: the official card (read
+//     2026-11-11) bills each second of upscaled output video by the source
+//     and target resolutions: about $0.041 from 360p to 720p or 720p to
+//     1080p, $0.0819 from 360p to 1080p, and $0.1638 from 720p or 1080p to
+//     4K, metered in $0.0273 units. The request carries only the target and
+//     the source's URL. The recorded call upscaled the owned 3 s, 360p
+//     output of the 1.2 text-to-video recording to 720p, got back 3.000 s of
+//     1280x720 video with the source's 3.029333 s audio track, and billed
+//     4.543215 units, USD 0.12403 (fal's usage API reads the same): about
+//     1.5 units per second of the output file. Both the billed length and
+//     the source resolution that picks the rate come from the source video,
+//     as with blackforestlabs/flux-video-upscale and
+//     topaz/upscale/video/precision above, so no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -1589,6 +1602,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/v1.2/image-to-video",
   "google/gemini-omni-flash/v1.2/reference-to-video",
   "google/gemini-omni-flash/v1.2/text-to-video",
+  "google/gemini-omni-flash/v1.2/upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
@@ -1712,6 +1726,12 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "google/gemini-omni-flash/v1.2/extend": {
     unit: "seconds of newly generated video at $0.0273/$0.0819/$0.1229/$0.2457 (360p/720p/1080p/4K), plus input tokens (text, image, video) at $1.50 per 1M",
     why: "the source video, which the request carries only as a URL, is billed as input tokens, and no request field measures them",
+  },
+  // Public card read 2026-11-11. The recorded 360p-to-720p upscale of a
+  // 3 s clip billed 4.543215 units at $0.0273: about 1.5 per output second.
+  "google/gemini-omni-flash/v1.2/upscale": {
+    unit: "seconds of upscaled output video by source and target: about $0.041 (360p to 720p, 720p to 1080p), $0.0819 (360p to 1080p) or $0.1638 (720p or 1080p to 4K), metered in $0.0273 units",
+    why: "the source video, which the request carries only as a URL, sets both the billed length and the source resolution that picks the rate",
   },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per

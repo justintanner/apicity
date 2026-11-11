@@ -6,7 +6,13 @@
       "pricingKey": "alibaba/wan-3.0/video-edit"
     }
   ],
-  "Gemini Omni Flash 1.2": [],
+  "Gemini Omni Flash 1.2": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p2.edit",
+      "pricingKey": "google/gemini-omni-flash/v1.2/edit"
+    }
+  ],
   "Hyperflow H3": [],
   "Dreamina Seedance 2.5": [
     {

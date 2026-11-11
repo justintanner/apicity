@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.edit`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/edit`) adds Gemini Omni
+  Flash 1.2 video editing, #2 on the 2026-11-11 video-editing board. It
+  declares the `geminiOmniFlash.v1p2` object on the existing `geminiOmniFlash`
+  callable, as `v1p1` sits; the other 1.2 leaves join it. The schema follows
+  fal's queue OpenAPI (read 2026-11-11): `prompt` (up to 20,000 characters)
+  and `video_url` (a source of at most 15 s) are required, and `resolution` is
+  360p, 720p, 1080p or 4k (default 720p). A recorded 360p edit of fal's 5 s
+  example clip billed `x-fal-billable-units` 7.137917 seconds (ac-0k5eqv).
+
 - `run.openai.gptImage2p6.flare.textToImage`
   (`POST https://fal.run/openai/gpt-image-2.6/flare/text-to-image`) adds GPT
   Image 2.6 Flare, #3 on the 2026-11-11 text-to-image board, as a leaf on the

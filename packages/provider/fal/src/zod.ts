@@ -7157,6 +7157,33 @@ export type FalGeminiOmniFlashV1p1EditParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p1EditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 c9219206492f5ab5117bddbf35355c4fde4649978b382a876569f72b50be8bda). Field order follows x-fal-order-properties.
+// It requires `prompt` and `video_url`, as v1.1 edit does; `prompt` has no
+// minimum, and the source video may run at most 15 seconds.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/edit/api
+export const FalGeminiOmniFlashV1p2EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("A simple instruction describing the edit."),
+  video_url: z
+    .string()
+    .describe("URL of the video to edit. Must be at most 15 seconds long."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the edited video."),
+});
+export type FalGeminiOmniFlashV1p2EditRequest = z.input<
+  typeof FalGeminiOmniFlashV1p2EditRequestSchema
+>;
+export type FalGeminiOmniFlashV1p2EditRequestInput =
+  FalGeminiOmniFlashV1p2EditRequest;
+export type FalGeminiOmniFlashV1p2EditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p2EditRequestSchema
+>;
+
 // The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
 // (2026-10-08) found upstream's validator to match it: `image_urls` holds at
 // most ten strings and `reference_video_urls` at most three, with no minimum
@@ -18550,6 +18577,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/gemini-omni-flash/v1.1/reference-to-video":
     FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/edit": FalGeminiOmniFlashV1p1EditRequestSchema,
+  "google/gemini-omni-flash/v1.2/edit": FalGeminiOmniFlashV1p2EditRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

@@ -1327,6 +1327,18 @@ const gptImagePerImage = (
 //     the muxer (the image-to-video file above carried the same 142 frames
 //     behind an edit list and billed 3.008 s), not the requested duration,
 //     so no rate is encoded.
+//   - google/gemini-omni-flash/v1.2/edit: the official card (read
+//     2026-11-11) bills each second of the edited output video at
+//     $0.0273/$0.0819/$0.1229/$0.2457 at 360p/720p/1080p/4K, plus input
+//     tokens (text, image and video) at $1.50 per 1M. As with v1.1 edit, the
+//     request carries no duration: the edit follows the source, which the
+//     payload carries only as a URL. The recorded 360p call sent fal's
+//     5.000 s example clip (854x480 at 30 fps), got back 5.000 s of 640x360
+//     video (120 frames at 24 fps) with a generated 48 kHz audio track of
+//     5.034667 s, and billed 7.137917 seconds at $0.0273, USD 0.194865 (fal's
+//     usage API reads the same quantity and cost). The output file accounts
+//     for about 5.03 of those seconds; the rest is the input-token charge,
+//     which no request field measures, so no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -1508,6 +1520,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/v1.1/image-to-video",
   "google/gemini-omni-flash/v1.1/reference-to-video",
   "google/gemini-omni-flash/v1.1/text-to-video",
+  "google/gemini-omni-flash/v1.2/edit",
   "google/nano-banana-2-lite",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
@@ -1596,6 +1609,13 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "openai/gpt-image-2.6/flare/text-to-image": {
     unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
     why: "quality, reasoning_effort and dimensions do not fix actual token usage; prompt and reasoning tokens vary per call",
+  },
+  // Public card read 2026-11-11. The recorded 360p edit of fal's 5 s example
+  // clip billed 7.137917 seconds: about 5.03 for the output file, the rest
+  // for input tokens.
+  "google/gemini-omni-flash/v1.2/edit": {
+    unit: "seconds of output video at $0.0273/$0.0819/$0.1229/$0.2457 (360p/720p/1080p/4K), plus input tokens (text, image, video) at $1.50 per 1M",
+    why: "the edit follows the source video, which the request carries only as a URL, and no request field measures the source's input tokens",
   },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per

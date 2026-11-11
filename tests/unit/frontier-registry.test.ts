@@ -178,7 +178,7 @@ const I2V_UNMAPPED = [
   "P-Video-2-Pro",
   "Pika H3 Flex",
 ];
-const V2V_UNMAPPED = ["Gemini Omni Flash 1.2", "Hyperflow H3"];
+const V2V_UNMAPPED = ["Hyperflow H3"];
 
 /** t2v and i2v top-10 models with no reference-to-video endpoint. */
 const R2V_LEFT_OUT = [
@@ -1301,7 +1301,7 @@ describe("frontier video snapshots", () => {
     expect(seedRows(v2v.snapshot)).toEqual(V2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(v2v.snapshot)).toEqual([]);
     expect(unmappedNames(v2v.endpointMap)).toEqual(V2V_UNMAPPED);
-    expect(mappedCount(v2v.endpointMap)).toBe(8);
+    expect(mappedCount(v2v.endpointMap)).toBe(9);
     expect(Object.keys(v2v.endpointMap)).toHaveLength(10);
   });
 

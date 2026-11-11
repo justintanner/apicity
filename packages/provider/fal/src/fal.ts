@@ -376,6 +376,8 @@ import {
   FalSeedance2p0MiniImageToVideoResponse,
   FalSeedance2p0MiniReferenceToVideoRequest,
   FalSeedance2p0MiniReferenceToVideoResponse,
+  FalSeedance2p0MiniTextToVideoRequest,
+  FalSeedance2p0MiniTextToVideoResponse,
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0ReferenceToVideoResponse,
   FalSeedance2p0FastReferenceToVideoRequest,
@@ -721,6 +723,7 @@ import {
   FalSeedance2p0FastTextToVideoRequestSchema,
   FalSeedance2p0MiniImageToVideoRequestSchema,
   FalSeedance2p0MiniReferenceToVideoRequestSchema,
+  FalSeedance2p0MiniTextToVideoRequestSchema,
   FalSeedance2p0ReferenceToVideoRequestSchema,
   FalSeedance2p0FastReferenceToVideoRequestSchema,
   FalSeedance2p5TextToVideoRequestSchema,
@@ -1840,6 +1843,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/bytedance/seedance-2.0/mini/reference-to-video",
     FalSeedance2p0MiniReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.0/mini/text-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/text-to-video/api
+  const bytedanceSeedance2p0MiniTextToVideo = jsonBody<
+    FalSeedance2p0MiniTextToVideoRequest,
+    FalSeedance2p0MiniTextToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/mini/text-to-video",
+    FalSeedance2p0MiniTextToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -5251,6 +5267,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video/api
           referenceToVideo: bytedanceSeedance2p0MiniReferenceToVideo,
+          // POST https://fal.run/bytedance/seedance-2.0/mini/text-to-video
+          // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/text-to-video/api
+          textToVideo: bytedanceSeedance2p0MiniTextToVideo,
         },
       },
       seedance2p5: {

@@ -630,6 +630,9 @@ export type {
   FalSeedance2p0MiniReferenceToVideoRequest,
   FalSeedance2p0MiniReferenceToVideoRequestInput,
   FalSeedance2p0MiniReferenceToVideoParsedRequest,
+  FalSeedance2p0MiniTextToVideoRequest,
+  FalSeedance2p0MiniTextToVideoRequestInput,
+  FalSeedance2p0MiniTextToVideoParsedRequest,
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0ReferenceToVideoRequestInput,
   FalSeedance2p0ReferenceToVideoParsedRequest,
@@ -1094,6 +1097,7 @@ import type {
   FalSeedance2p0FastTextToVideoRequest,
   FalSeedance2p0MiniImageToVideoRequest,
   FalSeedance2p0MiniReferenceToVideoRequest,
+  FalSeedance2p0MiniTextToVideoRequest,
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p5TextToVideoRequest,
@@ -1661,6 +1665,11 @@ export interface FalSeedance2p0MiniImageToVideoResponse {
 }
 
 export interface FalSeedance2p0MiniReferenceToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
+export interface FalSeedance2p0MiniTextToVideoResponse {
   video: FalFile;
   seed: number;
 }
@@ -2767,9 +2776,17 @@ type FalSeedance2p0MiniReferenceToVideoFn = ((
   schema: ApicitySchema<FalSeedance2p0MiniReferenceToVideoRequest>;
 };
 
+type FalSeedance2p0MiniTextToVideoFn = ((
+  params: FalSeedance2p0MiniTextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p0MiniTextToVideoResponse>) & {
+  schema: ApicitySchema<FalSeedance2p0MiniTextToVideoRequest>;
+};
+
 export interface FalRunBytedanceSeedance2p0MiniNamespace {
   imageToVideo: FalSeedance2p0MiniImageToVideoFn;
   referenceToVideo: FalSeedance2p0MiniReferenceToVideoFn;
+  textToVideo: FalSeedance2p0MiniTextToVideoFn;
 }
 
 export interface FalRunBytedanceSeedance2p0Namespace {

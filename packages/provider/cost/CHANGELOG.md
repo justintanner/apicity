@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Seedance 2.0 Mini text-to-video
+  (`bytedance/seedance-2.0/mini/text-to-video`) is priced statically by output
+  tokens, like Mini image-to-video: 0.007 USD per 1000 tokens at 480p and
+  720p, with the `sd2m` slug and "Seedance 2 Mini" name. A recorded 4 s,
+  480p, square call billed 38.8 thousand tokens, 0.2716 USD, exactly the
+  estimate (ac-e1ujc0).
+
 - fal Seedance 2.0 Mini reference-to-video
   (`bytedance/seedance-2.0/mini/reference-to-video`) is priced statically for
   image references alone: 0.007 USD per 1000 output tokens at 480p and 720p,

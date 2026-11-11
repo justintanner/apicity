@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.bytedance.seedance2p0.mini.textToVideo`
+  (`POST https://fal.run/bytedance/seedance-2.0/mini/text-to-video`) adds
+  Seedance 2.0 Mini text-to-video, the last leaf on the
+  `bytedance.seedance2p0.mini` object. The schema follows fal's queue OpenAPI
+  (read 2026-11-11): 2.0 Fast text-to-video's request without `bitrate_mode`,
+  at 480p or 720p (default 720p) and 4 to 15 seconds or `auto`. A recorded
+  4 s, 480p, square call billed `x-fal-billable-units` 38.8 (ac-e1ujc0).
+
 - `run.bytedance.seedance2p0.mini.referenceToVideo`
   (`POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video`)
   adds Seedance 2.0 Mini reference-to-video, a leaf on the

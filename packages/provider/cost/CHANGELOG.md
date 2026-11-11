@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Seedance 2.0 Mini image-to-video
+  (`bytedance/seedance-2.0/mini/image-to-video`) is priced statically by
+  output tokens, like 2.0 Fast: 0.007 USD per 1000 tokens at 480p and 720p
+  (card read 2026-11-11), with the `sd2m` slug and "Seedance 2 Mini" name that
+  KIE and MachGen use for the model. A recorded 4 s, 480p, square call billed
+  38.8 thousand tokens, 0.2716 USD, exactly the estimate (ac-1b5mco).
+
 - fal Gemini Omni Flash 1.2 edit (`google/gemini-omni-flash/v1.2/edit`) is
   priced dynamically, as the v1.1 endpoints are. Its card bills output seconds
   by resolution (0.0273 to 0.2457 USD) plus input tokens at 1.50 USD per 1M,

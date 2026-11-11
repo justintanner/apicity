@@ -2144,6 +2144,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST bytedance.seedance2p0.fast.imageToVideo",
       "POST bytedance.seedance2p0.fast.textToVideo",
       "POST bytedance.seedance2p0.imageToVideo",
+      "POST bytedance.seedance2p0.mini.imageToVideo",
       "POST bytedance.seedance2p0.textToVideo",
       "POST bytedance.seedance2p0.us.imageToVideo",
       "POST bytedance.seedance2p0.us.referenceToVideo",

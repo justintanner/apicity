@@ -927,12 +927,13 @@ export const MODEL_SLUGS = {
     "blackforestlabs/flux-3-max/keyframes-to-video": "flux3max",
     "blackforestlabs/flux-3-max/text-to-video": "flux3max",
 
-    // Video — Seedance 2.0 and 2.0 Fast, US twins included (the 2.0 and
-    // 2.0 Fast reference-to-video ids are dynamic and carry no slug).
+    // Video — Seedance 2.0, 2.0 Fast and 2.0 Mini, US twins included (the 2.0
+    // and 2.0 Fast reference-to-video ids are dynamic and carry no slug).
     "bytedance/seedance-2.0/text-to-video": "sd2",
     "bytedance/seedance-2.0/image-to-video": "sd2",
     "bytedance/seedance-2.0/fast/text-to-video": "sd2f",
     "bytedance/seedance-2.0/fast/image-to-video": "sd2f",
+    "bytedance/seedance-2.0/mini/image-to-video": "sd2m",
     "bytedance/seedance-2.0/us/text-to-video": "sd2",
     "bytedance/seedance-2.0/us/image-to-video": "sd2",
     "bytedance/seedance-2.0/us/reference-to-video": "sd2",
@@ -1930,6 +1931,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.0/image-to-video": "Seedance 2",
     "bytedance/seedance-2.0/fast/text-to-video": "Seedance 2 Fast",
     "bytedance/seedance-2.0/fast/image-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/mini/image-to-video": "Seedance 2 Mini",
     "bytedance/seedance-2.0/us/text-to-video": "Seedance 2 US",
     "bytedance/seedance-2.0/us/image-to-video": "Seedance 2 US",
     "bytedance/seedance-2.0/us/reference-to-video": "Seedance 2 US",

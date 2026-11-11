@@ -303,6 +303,37 @@ describe("MachGen custom-LoRA reserve", () => {
     }
   });
 
+  // The chain's cleanup: delete the synthetic LoRA (free), delete it again
+  // (the docs call it safe to repeat), then read and list it as gone.
+  it("deletes the synthetic LoRA", async () => {
+    const ctx = setupPollyWithPersistScrubber(
+      "machgen/adapters-del-synthetic-h3-lora",
+      redactMachGenUploadUrls
+    );
+    try {
+      const machgen = createMachGen({
+        apiKey: process.env.MACHGEN_API_KEY ?? "test-key",
+      });
+      // A repeat answers the same.
+      for (let attempt = 0; attempt < 2; attempt++)
+        expect(
+          await machgen.api.v0.adapters.del(MACHGEN_SYNTHETIC_LORA_ID)
+        ).toEqual({ adapter: MACHGEN_SYNTHETIC_LORA_ID, status: "deleted" });
+      await expect(
+        machgen.api.v0.adapters.retrieve(MACHGEN_SYNTHETIC_LORA_ID)
+      ).rejects.toMatchObject({
+        status: 404,
+        detail: "Adapter upload not found",
+      });
+      const list = await machgen.api.v0.adapters.list();
+      expect(list.adapters.map((row) => row.adapter)).not.toContain(
+        MACHGEN_SYNTHETIC_LORA_ID
+      );
+    } finally {
+      await teardownPolly(ctx);
+    }
+  });
+
   it("keeps no live upload_url in any MachGen recording", () => {
     const files = machgenRecordings();
     expect(files.length).toBeGreaterThan(0);

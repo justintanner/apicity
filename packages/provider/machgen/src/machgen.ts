@@ -2,6 +2,7 @@ import { attachExamples } from "./example";
 import { MachGenError } from "./types";
 import type {
   MachGenAdapterCreateRequest,
+  MachGenAdapterDeleteResponse,
   MachGenAdapterList,
   MachGenAdapterUpload,
   MachGenUploadRequest,
@@ -31,7 +32,7 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
   const timeout = options.timeout ?? 30000;
 
   async function request<T>(
-    method: "GET" | "POST",
+    method: "GET" | "POST" | "DELETE",
     path: string,
     body?: object,
     signal?: AbortSignal,
@@ -225,6 +226,16 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
             return request<MachGenAdapterList>(
               "GET",
               "/api/v0/adapters",
+              undefined,
+              signal
+            );
+          },
+          // DELETE https://api.machgen.ai/api/v0/adapters/{adapterId}
+          // Docs: https://www.machgen.ai/docs/rest_api/custom-loras#manage
+          del: async (adapterId: string, signal?: AbortSignal) => {
+            return request<MachGenAdapterDeleteResponse>(
+              "DELETE",
+              `/api/v0/adapters/${encodeURIComponent(adapterId)}`,
               undefined,
               signal
             );

@@ -2064,6 +2064,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST geminiOmniFlash.v1p2.imageToVideo",
       "POST geminiOmniFlash.v1p2.referenceToVideo",
       "POST geminiOmniFlash.v1p2.textToVideo",
+      "POST geminiOmniFlash.v1p2.upscale",
       "POST heygen.avatar3.digitalTwin",
       "POST heygen.avatar4.digitalTwin",
       "POST heygen.avatar4.imageToVideo",

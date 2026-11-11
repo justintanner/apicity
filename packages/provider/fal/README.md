@@ -114,7 +114,7 @@ console.log(result.video.file_size);
 
 ## API Reference
 
-295 endpoints across 55 groups. Each method mirrors an upstream URL path.
+296 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1809,6 +1809,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.geminiOmniFlash.v1p2.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.v1p2.upscale</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/v1.2/upscale</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/v1.2/upscale/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.v1p2.upscale({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

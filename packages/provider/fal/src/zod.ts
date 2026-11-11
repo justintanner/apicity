@@ -7589,6 +7589,34 @@ export type FalGeminiOmniFlashV1p2ExtendParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p2ExtendRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 51d3827b0f3ae4c125616ce0044add99adf771b6cfa129c8d585e5cb2d00131e). Field order follows x-fal-order-properties.
+// Only `video_url` is required. The card's overview mentions an optional text
+// instruction, but the OpenAPI publishes no prompt field, so none is declared.
+// The target must exceed the source's resolution and the source may run at
+// most 15 seconds; the request carries the source only as a URL, so both
+// rules stay in the descriptions.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/upscale/api
+export const FalGeminiOmniFlashV1p2UpscaleRequestSchema = z.object({
+  video_url: z
+    .string()
+    .describe("URL of the video to upscale. Must be at most 15 seconds long."),
+  resolution: z
+    .enum(["720p", "1080p", "4k"])
+    .default("1080p")
+    .describe(
+      "The target resolution of the upscaled video. Must be higher than the source video's resolution."
+    ),
+});
+export type FalGeminiOmniFlashV1p2UpscaleRequest = z.input<
+  typeof FalGeminiOmniFlashV1p2UpscaleRequestSchema
+>;
+export type FalGeminiOmniFlashV1p2UpscaleRequestInput =
+  FalGeminiOmniFlashV1p2UpscaleRequest;
+export type FalGeminiOmniFlashV1p2UpscaleParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p2UpscaleRequestSchema
+>;
+
 // The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
 // (2026-10-08) found upstream's validator to match it: `image_urls` holds at
 // most ten strings and `reference_video_urls` at most three, with no minimum
@@ -18991,6 +19019,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalGeminiOmniFlashV1p2ImageToVideoRequestSchema,
   "google/gemini-omni-flash/v1.2/extend":
     FalGeminiOmniFlashV1p2ExtendRequestSchema,
+  "google/gemini-omni-flash/v1.2/upscale":
+    FalGeminiOmniFlashV1p2UpscaleRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

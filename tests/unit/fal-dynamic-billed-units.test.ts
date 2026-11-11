@@ -48,6 +48,9 @@ const CHECKED = [
   "google/gemini-omni-flash/v1.2/reference-to-video",
   // Card read 2026-11-11; the recorded 3 s, 360p call billed 3.252469 seconds.
   "google/gemini-omni-flash/v1.2/text-to-video",
+  // Card read 2026-11-11; the recorded 360p-to-720p upscale of a 3 s clip
+  // billed 4.543215 units.
+  "google/gemini-omni-flash/v1.2/upscale",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
   "kling/v4/video-to-video/edit",

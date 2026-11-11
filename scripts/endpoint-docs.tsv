@@ -873,6 +873,7 @@ fal	blackforestlabs.fluxVideoUpscale	POST	https://fal.run/blackforestlabs/flux-v
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://fal.run/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.mini.imageToVideo	POST	https://fal.run/bytedance/seedance-2.0/mini/image-to-video	https://fal.ai/models/bytedance/seedance-2.0/mini/image-to-video/api
 fal	bytedance.seedance2p0.mini.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.0/mini/reference-to-video	https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video/api
+fal	bytedance.seedance2p0.mini.textToVideo	POST	https://fal.run/bytedance/seedance-2.0/mini/text-to-video	https://fal.ai/models/bytedance/seedance-2.0/mini/text-to-video/api
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://fal.run/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.imageToVideo	POST	https://fal.run/bytedance/seedance-2.0/image-to-video	https://docs.fal.ai

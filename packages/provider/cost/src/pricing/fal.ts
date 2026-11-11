@@ -3568,6 +3568,13 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "480p": 0.007 / 1000, "720p": 0.007 / 1000 },
     asOf: "2026-11-11",
   }),
+  "bytedance/seedance-2.0/mini/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/mini/text-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.007 / 1000, "720p": 0.007 / 1000 },
+    asOf: "2026-11-11",
+  }),
   // 2.0 US: $0.014 at 480p and 720p, per the current pricing API and the
   // US rate reconciliation below. The schema also offers 1080p and 4k,
   // but the card publishes no rate for them, so they fail closed.

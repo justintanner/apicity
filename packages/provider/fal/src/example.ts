@@ -800,6 +800,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p0.mini.textToVideo": {
+    "source": "fal/bytedance-seedance-2-0-mini-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "resolution": "480p",
+      "duration": "4",
+      "aspect_ratio": "1:1",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedance2p0.textToVideo": {
     "source": "fal/bytedance-seedance2p0-text-to-video",
     "payload": {

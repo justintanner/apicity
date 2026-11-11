@@ -135,6 +135,9 @@ export const MACHGEN_RECORDED: ReadonlyArray<
   [6, "R2V", undefined, 0.04],
   // 4 s read from the reference video plus 4 s out.
   [6, "R2V", { video: {} }, 0.08],
+  // 1 s at 480p, allowed from 2026-11-11: the 0.015 USD/s promotion (25 %
+  // off the 0.02 list rate until 2027-01-01T07:59Z).
+  [6, "T2V", { durationSecs: 1 }, 0.015],
   [7, "T2V", undefined, 0.09],
   [7, "I2V", undefined, 0.09],
   [8, "I2V", undefined, 0.18],

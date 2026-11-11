@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/machgen` `api.v0.generate` takes 1-3 s on `MiniMax-H3-Turbo` T2V, I2V and R2V. MachGen now accepts 1-15 s there (its `GET /api/v0/models` list and three free 400 probes on 2026-11-11, `tests/fixtures/machgen-evidence/machgen-turbo-durations-2026-11-11.json`), where its 2026-10-25 400s allowed only 4-15 s, so `.schema.safeParse` and `apicity describe` refused a valid short clip. A recorded 1 s 480p T2V billed 15000 micro-USD, the estimate at the 25 % promotion rate (task 14f37c18) (ac-t71px5).
+
 - `@apicity/cost` quotes fal MiniMax H3 Max extend, insert, and reference-to-video, including turbo reference-to-video, from the requested seconds and resolution. 3d-to-video and lip-sync quote from `costHints.durationSeconds` plus resolution, and stay dynamic without that hint. The quote is a lower bound: reference tokens past the included 4,096, output overrun, generated references, and a longer lip-sync bill are named in a warning and not added. A payload that does not fix the length and the resolution stays on fal's pricing API. `resolveFalDynamicEstimate` returns that floor instead of fal's historical per-call average, and still calls the pricing API for a positive `unitQuantity`. `unitQuantity: 0` is 0 USD with a `zeroReason` and no pricing-API call (ac-vo9l4a).
 
 - `@apicity/cost` WaveSpeed Seedance 2 and 2.5 text-to-video and reference-to-video estimates with reference videos and no `duration` now price the output at the catalog's default 5 s, as WaveSpeed's free quotes do. They followed the references (at least 4 s), the published formula's fallback, which never fires, so a 3 s reference read 1 s short and a 7 s reference 2 s long (ac-hgtlgj).

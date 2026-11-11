@@ -49,6 +49,21 @@ const omniEvidence = JSON.parse(
   probes: Array<{ label: string; status: number; response: unknown }>;
 };
 
+// MiniMax-H3-Turbo's 1-15 s grids from the model list and 400s on 2026-11-11;
+// they replace the 2026-10-25 entry (4-15 s).
+const turboEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-turbo-durations-2026-11-11.json",
+    { encoding: "utf8" }
+  )
+) as Pick<typeof evidence, "grids"> & {
+  probes: Array<{
+    label: string;
+    status: number;
+    response: { detail: string };
+  }>;
+};
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -122,7 +137,16 @@ describe("MachGen", () => {
     }
   });
   it("pins every T2V, I2V and R2V grid to MachGen's own 400 responses", () => {
-    const grids = { ...evidence.grids, ...omniEvidence.grids };
+    const grids = {
+      ...evidence.grids,
+      ...omniEvidence.grids,
+      ...turboEvidence.grids,
+    };
+    // Each Turbo 400 names the grid the fixture pins.
+    for (const probe of turboEvidence.probes)
+      expect(probe.response.detail, probe.label).toContain(
+        "allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+      );
     expect(Object.keys(MACHGEN_VIDEO_GRIDS).sort()).toEqual(
       Object.keys(grids).sort()
     );
@@ -198,10 +222,14 @@ describe("MachGen", () => {
       "video_config.height: LTX-2.3-Pro does not support I2V height=540; allowed heights: 1080, 1440, 2160",
     ]);
     expect(
-      issues({ video_config: { height: 480, duration_secs: 2 } }, 6)
+      issues({ video_config: { height: 480, duration_secs: 16 } }, 6)
     ).toEqual([
-      "video_config.duration_secs: MiniMax-H3-Turbo does not support I2V duration_secs=2; allowed durations: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15",
+      "video_config.duration_secs: MiniMax-H3-Turbo does not support I2V duration_secs=16; allowed durations: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15",
     ]);
+    // 1-3 s were refused on 2026-10-25 and accepted from 2026-11-11.
+    expect(
+      issues({ video_config: { height: 480, duration_secs: 1 } }, 6)
+    ).toEqual([]);
     expect(
       issues({
         model: "Seedance-2.5",

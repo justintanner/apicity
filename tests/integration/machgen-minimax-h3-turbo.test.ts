@@ -3,6 +3,14 @@ import { setupPolly } from "../harness";
 import { recordMachgen } from "../machgen-helpers";
 
 describe("MachGen minimax-h3-turbo", () => {
+  it("generates a 1 s T2V, the shortest clip since 2026-11-11", async () => {
+    await recordMachgen(
+      6,
+      "T2V",
+      () => setupPolly("machgen/minimax-h3-turbo-t2v-1s"),
+      { durationSecs: 1 }
+    );
+  }, 2000000);
   it("generates I2V from a start frame", async () => {
     await recordMachgen(6, "I2V", () =>
       setupPolly("machgen/minimax-h3-turbo-i2v")

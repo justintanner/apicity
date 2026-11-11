@@ -1,0 +1,189 @@
+{
+  "capturedAt": "2026-11-11",
+  "source": "Free reads of MachGen on 2026-11-11: GET https://api.machgen.ai/api/v0/models?kind=video (this account's exact surfaces) and three off-grid POST https://api.machgen.ai/api/v0/generate probes with duration_secs 999, which MachGen answered HTTP 400 before accepting a task (none was billed; the wallet read 15225713 micros before and after).",
+  "modelList": {
+    "source": "https://api.machgen.ai/api/v0/models?kind=video",
+    "readAt": "2026-11-11T02:39:30Z",
+    "model": "MiniMax-H3-Turbo",
+    "aliases": ["MiniMax-H3-MultiMax"],
+    "surfaces": [
+      {
+        "task_type": "F2F",
+        "heights": [480, 768],
+        "aspect_ratios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "supports_last_frame": false,
+        "requires_visual_reference": false,
+        "max_prompt_chars": 65535
+      },
+      {
+        "task_type": "I2V",
+        "heights": [480, 768],
+        "aspect_ratios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "supports_last_frame": true,
+        "requires_visual_reference": false,
+        "max_prompt_chars": 65535
+      },
+      {
+        "task_type": "R2V",
+        "heights": [480, 768],
+        "aspect_ratios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "supports_last_frame": false,
+        "max_reference_images": 9,
+        "max_reference_videos": 3,
+        "max_reference_audios": 3,
+        "requires_visual_reference": false,
+        "reference_video_operation_controls": {
+          "reference": {
+            "aspect_ratio": "requested",
+            "duration": "requested",
+            "allows_smart_duration": false,
+            "min_source_duration_secs": null
+          }
+        },
+        "max_prompt_chars": 65535
+      },
+      {
+        "task_type": "T2V",
+        "heights": [480, 768],
+        "aspect_ratios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "supports_last_frame": false,
+        "requires_visual_reference": false,
+        "max_prompt_chars": 65535
+      }
+    ]
+  },
+  "probes": [
+    {
+      "label": "turbo-t2v-d999",
+      "at": "2026-11-11T02:39:26Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "T2V",
+        "prompt": "probe",
+        "video_config": {
+          "duration_secs": 999,
+          "height": 480,
+          "aspect_ratio": "16:9"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support T2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
+        "task_id": "80d03c67-d82a-410d-9151-0e05a4ad7bc6"
+      }
+    },
+    {
+      "label": "turbo-i2v-d999",
+      "at": "2026-11-11T02:39:27Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "I2V",
+        "prompt": "probe",
+        "src_image_urls": [
+          "https://v3b.fal.media/files/b/0a9c2f0f/p3rXI18zMYTBz1M0qP2h4_b9a2087ce0b64cd788cb5ec067edc26e.jpg"
+        ],
+        "video_config": {
+          "duration_secs": 999,
+          "height": 480,
+          "aspect_ratio": "adaptive"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support I2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
+        "task_id": "605a14f0-8646-46c8-8f6f-a24706bee6e4"
+      }
+    },
+    {
+      "label": "turbo-r2v-d999",
+      "at": "2026-11-11T02:39:29Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "R2V",
+        "prompt": "probe",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "video_config": {
+          "duration_secs": 999,
+          "height": 480,
+          "aspect_ratio": "16:9"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support R2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]",
+        "task_id": "765a70b5-066a-48cf-8f3f-1d55e47ea220"
+      }
+    }
+  ],
+  "grids": {
+    "MiniMax-H3-Turbo": {
+      "I2V": {
+        "heights": [480, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
+        "heights": [480, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"]
+      }
+    }
+  },
+  "notes": [
+    "MiniMax-H3-Turbo (resolved id MiniMax-H3-MultiMax) now accepts duration_secs 1-15 on T2V, I2V and R2V; the 2026-10-25 400s allowed only 4-15 (machgen-grids-2026-10-25.json).",
+    "Heights and aspect ratios are unchanged from the 2026-10-25 400s. 1080 stays in the grid because MachGen's height 400 still lists it, but it is a private height: this account's model list omits it and a 1080 request answers 403.",
+    "The F2F surface in the model list is the I2V end-frame form (src_image_urls entry 1); MachGen's TaskInput has no F2F task_type. Its durations are also 1-15.",
+    "A rejected request's 400 body now carries a task_id beside detail; nothing is billed."
+  ]
+}

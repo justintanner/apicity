@@ -1695,6 +1695,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/gemini-omni-flash/v1.1/reference-to-video",
       "google/gemini-omni-flash/v1.1/text-to-video",
       "google/gemini-omni-flash/v1.2/edit",
+      "google/gemini-omni-flash/v1.2/extend",
       "google/gemini-omni-flash/v1.2/image-to-video",
       "google/gemini-omni-flash/v1.2/reference-to-video",
       "google/gemini-omni-flash/v1.2/text-to-video",

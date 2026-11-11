@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 extend (`google/gemini-omni-flash/v1.2/extend`)
+  is priced dynamically, like the other 1.2 endpoints: a recorded 3 s, 360p
+  extension of fal's 5 s example clip billed 4.956952 seconds, USD 0.135325,
+  about 3 for the new footage and the rest for input tokens, mostly the
+  source video that the request carries only as a URL. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS` and has a
+  display-only `MODEL_DISPLAY` name, "Gemini Omni 1.2 Flash Extend"
+  (ac-bxz9xk).
+
 - fal Gemini Omni Flash 1.2 image-to-video
   (`google/gemini-omni-flash/v1.2/image-to-video`) is priced dynamically,
   like the other 1.2 endpoints: a recorded 3 s, 360p call from the owned cat

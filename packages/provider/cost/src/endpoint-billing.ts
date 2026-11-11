@@ -2060,6 +2060,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST geminiOmniFlash.v1p1.referenceToVideo",
       "POST geminiOmniFlash.v1p1.textToVideo",
       "POST geminiOmniFlash.v1p2.edit",
+      "POST geminiOmniFlash.v1p2.extend",
       "POST geminiOmniFlash.v1p2.imageToVideo",
       "POST geminiOmniFlash.v1p2.referenceToVideo",
       "POST geminiOmniFlash.v1p2.textToVideo",

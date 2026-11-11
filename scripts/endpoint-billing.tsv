@@ -731,6 +731,7 @@ fal	openai.gptImage2p5.flare.edit	POST	metered	units	fal dynamic list: priced af
 fal	openai.gptImage2p5.flare.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	openai.gptImage2p5.sunburst.edit	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	openai.gptImage2p5.sunburst.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	openai.gptImage2p6.flare.edit	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	openai.gptImage2p6.sunburst.edit	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	openai.gptImage2p6.sunburst.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	openrouter.router.decisions	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04

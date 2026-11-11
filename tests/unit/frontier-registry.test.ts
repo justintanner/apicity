@@ -114,7 +114,6 @@ const T2I_UNMAPPED = [
   "Seedream 5.5",
 ];
 const I2I_UNMAPPED = [
-  "GPT Image 2.6 Flare (max)",
   "MAI-Image-2.7-Preview",
   "Seedream 5.5",
   "MAI-Image-2.6",
@@ -1026,7 +1025,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(I2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(i2i.snapshot)).toEqual([]);
     expect(unmappedNames(i2i.endpointMap)).toEqual(I2I_UNMAPPED);
-    expect(mappedCount(i2i.endpointMap)).toBe(5);
+    expect(mappedCount(i2i.endpointMap)).toBe(6);
     expect(Object.keys(i2i.endpointMap)).toHaveLength(10);
   });
 

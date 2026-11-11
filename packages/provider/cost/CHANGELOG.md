@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Seedance 2.0 Mini reference-to-video
+  (`bytedance/seedance-2.0/mini/reference-to-video`) is priced statically for
+  image references alone: 0.007 USD per 1000 output tokens at 480p and 720p,
+  as Mini image-to-video. A recorded call with one reference image billed 38.8
+  thousand tokens, 0.2716 USD, exactly the estimate. The card bills video
+  references at 0.0042 per 1000 on input plus output tokens, which no call
+  has recorded, so a request with video or audio references fails closed
+  through a new `imageOnly` option on the Seedance helper (ac-5qsajb).
+
 - fal Gemini Omni Flash 1.2 text-to-video
   (`google/gemini-omni-flash/v1.2/text-to-video`) is priced dynamically, like
   the other 1.2 endpoints: a recorded 3 s, 360p call billed 3.252469 seconds,

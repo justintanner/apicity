@@ -551,6 +551,7 @@ fal	bytedance.seedance2p0.fast.referenceToVideo	POST	prohibitive	Media-generatio
 fal	bytedance.seedance2p0.fast.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	bytedance.seedance2p0.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	bytedance.seedance2p0.mini.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.mini.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	bytedance.seedance2p0.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	bytedance.seedance2p0.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	bytedance.seedance2p0.us.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

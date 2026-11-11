@@ -374,6 +374,8 @@ import {
   FalSeedance2p0FastTextToVideoResponse,
   FalSeedance2p0MiniImageToVideoRequest,
   FalSeedance2p0MiniImageToVideoResponse,
+  FalSeedance2p0MiniReferenceToVideoRequest,
+  FalSeedance2p0MiniReferenceToVideoResponse,
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0ReferenceToVideoResponse,
   FalSeedance2p0FastReferenceToVideoRequest,
@@ -718,6 +720,7 @@ import {
   FalSeedance2p0FastImageToVideoRequestSchema,
   FalSeedance2p0FastTextToVideoRequestSchema,
   FalSeedance2p0MiniImageToVideoRequestSchema,
+  FalSeedance2p0MiniReferenceToVideoRequestSchema,
   FalSeedance2p0ReferenceToVideoRequestSchema,
   FalSeedance2p0FastReferenceToVideoRequestSchema,
   FalSeedance2p5TextToVideoRequestSchema,
@@ -1824,6 +1827,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/bytedance/seedance-2.0/mini/image-to-video",
     FalSeedance2p0MiniImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video/api
+  const bytedanceSeedance2p0MiniReferenceToVideo = jsonBody<
+    FalSeedance2p0MiniReferenceToVideoRequest,
+    FalSeedance2p0MiniReferenceToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/mini/reference-to-video",
+    FalSeedance2p0MiniReferenceToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -5232,6 +5248,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.0/mini/image-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/image-to-video/api
           imageToVideo: bytedanceSeedance2p0MiniImageToVideo,
+          // POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video
+          // Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video/api
+          referenceToVideo: bytedanceSeedance2p0MiniReferenceToVideo,
         },
       },
       seedance2p5: {

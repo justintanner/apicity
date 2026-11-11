@@ -128,7 +128,13 @@ export const FRONTIER = {
         model: "GPT Image 2.6 Flare (max)",
         creator: "OpenAI",
         elo: 1226,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p6.flare.textToImage",
+            pricingKey: "openai/gpt-image-2.6/flare/text-to-image",
+          },
+        ],
       },
       {
         rank: 4,

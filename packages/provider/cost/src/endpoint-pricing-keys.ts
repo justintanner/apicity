@@ -360,6 +360,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST openai.gptImage2p5.sunburst.textToImage":
     "openai/gpt-image-2.5/sunburst/text-to-image",
   "fal POST openai.gptImage2p6.flare.edit": "openai/gpt-image-2.6/flare/edit",
+  "fal POST openai.gptImage2p6.flare.textToImage":
+    "openai/gpt-image-2.6/flare/text-to-image",
   "fal POST openai.gptImage2p6.sunburst.edit":
     "openai/gpt-image-2.6/sunburst/edit",
   "fal POST openai.gptImage2p6.sunburst.textToImage":

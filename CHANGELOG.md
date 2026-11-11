@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds GPT Image 2.6 Flare text-to-image at `run.openai.gptImage2p6.flare.textToImage` (`POST https://fal.run/openai/gpt-image-2.6/flare/text-to-image`), #3 on the 2026-11-11 text-to-image board, with the same request as Sunburst text-to-image: `reasoning_effort`, GIF and SVG output, and their frame and `svg_model` options. `@apicity/cost` prices it dynamically from fal's token card, and the frontier registry points GPT Image 2.6 Flare (max) at it for text-to-image. A recorded call at quality low, reasoning_effort low, one square JPEG billed 0.0217 USD (ac-na2744).
+
 - `@apicity/fal` adds GPT Image 2.6 Flare editing at `run.openai.gptImage2p6.flare.edit` (`POST https://fal.run/openai/gpt-image-2.6/flare/edit`), #2 on the 2026-11-11 image-editing board, with the same request as Sunburst editing: up to 16 reference images, a mask, a markup image, `reasoning_effort`, and GIF output. `@apicity/cost` prices it dynamically from fal's token card, and the frontier registry points GPT Image 2.6 Flare (max) at it for image editing. A recorded low-quality edit of the owned cat photo billed 0.0232 USD (ac-0fkzgx).
 
 - `@apicity/fal` adds GPT Image 2.6 Sunburst editing at `run.openai.gptImage2p6.sunburst.edit` (`POST https://fal.run/openai/gpt-image-2.6/sunburst/edit`), #1 on the 2026-11-11 image-editing board: up to 16 reference images, a mask, a markup image, `reasoning_effort`, and GIF output. `@apicity/cost` prices it dynamically from fal's token card, and the frontier registry points GPT Image 2.6 Sunburst (max) at it for image editing. A recorded low-quality edit of the owned cat photo billed 0.0232 USD (ac-qd2l6z).

@@ -1726,6 +1726,7 @@ describe("fal edit/image pricing estimates", () => {
       "openai/gpt-image-2.5/sunburst/edit",
       "openai/gpt-image-2.5/sunburst/text-to-image",
       "openai/gpt-image-2.6/flare/edit",
+      "openai/gpt-image-2.6/flare/text-to-image",
       "openai/gpt-image-2.6/sunburst/edit",
       "openai/gpt-image-2.6/sunburst/text-to-image",
       "openrouter/router/decisions",

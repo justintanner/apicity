@@ -10143,6 +10143,140 @@ export type FalOpenaiGptImage2p6FlareEditParsedRequest = z.output<
   typeof FalOpenaiGptImage2p6FlareEditRequestSchema
 >;
 
+const FalOpenaiGptImage2p6FlareTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 7ac322e36a1a1436dd6505924977f3c9369c913b8a18bc292d95bc0cc04e2c49). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/text-to-image/api
+export const FalOpenaiGptImage2p6FlareTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p6FlareTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. Supports preset names, explicit {width, height}, or 'auto' to let the model pick the best size. Concrete sizes must have both dimensions as multiples of 16, max edge 3840px, aspect ratio <= 3:1, total pixels between 655,360 and 8,294,400."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Rendering quality for the generated image. For SVG output it controls the reference image used to create the vector."
+    ),
+  reasoning_effort: z
+    .enum(["low", "medium", "high"])
+    .default("high")
+    .describe(
+      "How much the model plans before rendering, independently of quality (OpenAI `complexity`). Higher levels can help with dense text and complex layouts but add latency."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe(
+      "Number of images to generate. Must be 1 for SVG output. For GIF output, all frames of all outputs share the request's pixel budget."
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp", "gif", "svg"])
+    .default("png")
+    .describe(
+      "Output format for the images. 'gif' returns an animation and 'svg' a vector image."
+    ),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  frame_count: z
+    .number()
+    .int()
+    .min(2)
+    .max(16)
+    .default(9)
+    .describe(
+      "GIF only: number of frames. image_size applies to each frame; reduce size or count if the request exceeds the pixel budget."
+    ),
+  frame_duration_ms: z
+    .number()
+    .int()
+    .min(20)
+    .max(2000)
+    .default(200)
+    .describe("GIF only: milliseconds per frame, rounded to 10 ms."),
+  svg_model: z
+    .enum([
+      "gpt-6-astra",
+      "gpt-5.5",
+      "gpt-5.4",
+      "gpt-5.6-terra",
+      "gpt-6-luna",
+      "gpt-6-sol",
+    ])
+    .or(FalOpenaiGptImage2p6SvgModelAliasSchema)
+    .default("gpt-6-astra")
+    .describe(
+      "SVG only: the model that converts the generated reference image into vector paths. Larger models produce more accurate shapes."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalOpenaiGptImage2p6FlareTextToImageRequest = z.input<
+  typeof FalOpenaiGptImage2p6FlareTextToImageRequestSchema
+>;
+export type FalOpenaiGptImage2p6FlareTextToImageRequestInput =
+  FalOpenaiGptImage2p6FlareTextToImageRequest;
+export type FalOpenaiGptImage2p6FlareTextToImageParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p6FlareTextToImageRequestSchema
+>;
+
 const FalOpenaiGptImage2p5FlareEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -18366,6 +18500,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "openai/gpt-image-2.6/sunburst/edit":
     FalOpenaiGptImage2p6SunburstEditRequestSchema,
   "openai/gpt-image-2.6/flare/edit": FalOpenaiGptImage2p6FlareEditRequestSchema,
+  "openai/gpt-image-2.6/flare/text-to-image":
+    FalOpenaiGptImage2p6FlareTextToImageRequestSchema,
   "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
   "krea/v3/edit": FalKreaV3EditRequestSchema,
   "krea/v3/text-to-image": FalKreaV3TextToImageRequestSchema,

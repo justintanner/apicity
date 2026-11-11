@@ -88,7 +88,13 @@
       "pricingKey": "blackforestlabs/flux-3-max/text-to-video"
     }
   ],
-  "Gemini Omni Flash 1.2": [],
+  "Gemini Omni Flash 1.2": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p2.textToVideo",
+      "pricingKey": "google/gemini-omni-flash/v1.2/text-to-video"
+    }
+  ],
   "HeyGen Video 1": [
     {
       "provider": "fal",

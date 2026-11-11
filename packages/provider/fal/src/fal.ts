@@ -243,6 +243,8 @@ import {
   FalGeminiOmniFlashV1p2EditRequest,
   FalGeminiOmniFlashV1p2ReferenceToVideoResponse,
   FalGeminiOmniFlashV1p2ReferenceToVideoRequest,
+  FalGeminiOmniFlashV1p2TextToVideoResponse,
+  FalGeminiOmniFlashV1p2TextToVideoRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoResponse,
@@ -674,6 +676,7 @@ import {
   FalGeminiOmniFlashV1p1EditRequestSchema,
   FalGeminiOmniFlashV1p2EditRequestSchema,
   FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema,
+  FalGeminiOmniFlashV1p2TextToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   FalMinimaxH3MaxTurboTextToVideoRequestSchema,
@@ -2267,6 +2270,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/v1.2/text-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/text-to-video/api
+  const geminiOmniFlashV1p2TextToVideo = jsonBody<
+    FalGeminiOmniFlashV1p2TextToVideoRequest,
+    FalGeminiOmniFlashV1p2TextToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/v1.2/text-to-video",
+    FalGeminiOmniFlashV1p2TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
   const geminiOmniFlash = Object.assign(
@@ -2298,6 +2314,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video
         // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/reference-to-video/api
         referenceToVideo: geminiOmniFlashV1p2ReferenceToVideo,
+        // POST https://fal.run/google/gemini-omni-flash/v1.2/text-to-video
+        // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/text-to-video/api
+        textToVideo: geminiOmniFlashV1p2TextToVideo,
       },
       edit: geminiOmniFlashEdit,
       imageToVideo: geminiOmniFlashImageToVideo,

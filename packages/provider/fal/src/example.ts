@@ -772,6 +772,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p0.mini.imageToVideo": {
+    "source": "fal/bytedance-seedance-2-0-mini-image-to-video",
+    "payload": {
+      "prompt": "The cat turns its head toward the camera.",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "480p",
+      "duration": "4",
+      "aspect_ratio": "1:1",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedance2p0.textToVideo": {
     "source": "fal/bytedance-seedance2p0-text-to-video",
     "payload": {

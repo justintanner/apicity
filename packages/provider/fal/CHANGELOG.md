@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.bytedance.seedance2p0.mini.imageToVideo`
+  (`POST https://fal.run/bytedance/seedance-2.0/mini/image-to-video`) adds
+  Seedance 2.0 Mini image-to-video. It declares the
+  `bytedance.seedance2p0.mini` object beside `fast` and `us`; the Mini
+  reference-to-video and text-to-video leaves join it. The schema follows
+  fal's queue OpenAPI (read 2026-11-11): 2.0 Fast image-to-video's request
+  without `bitrate_mode`, at 480p or 720p (default 720p) and 4 to 15 seconds
+  or `auto`. A recorded 4 s, 480p, square call from the owned cat photo
+  billed `x-fal-billable-units` 38.8 (ac-1b5mco).
+
 - `run.geminiOmniFlash.v1p2.edit`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/edit`) adds Gemini Omni
   Flash 1.2 video editing, #2 on the 2026-11-11 video-editing board. It

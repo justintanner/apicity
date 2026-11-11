@@ -228,6 +228,91 @@ export const FalSeedance2p0FastTextToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 Mini image-to-video
+// ---------------------------------------------------------------------------
+
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 53f5a77a6aa221f36913231b20e96d01fa1358bea2e9101bb6bf7b0993d189e7). Field order follows x-fal-order-properties.
+// The request is 2.0 Fast image-to-video's without bitrate_mode.
+// Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/image-to-video/api
+export const FalSeedance2p0MiniImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "The text prompt describing the desired motion and action for the video."
+    ),
+  image_url: z
+    .string()
+    .describe(
+      "The URL of the starting frame image to animate. Supported formats: JPEG, PNG, WebP, BMP, TIFF, GIF, HEIC, HEIF. Max 30 MB."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The URL of the image to use as the last frame of the video. When provided, the generated video will transition from the starting image to this ending image. Supported formats: JPEG, PNG, WebP, BMP, TIFF, GIF, HEIC, HEIF. Max 30 MB."
+    ),
+  resolution: z
+    .enum(["480p", "720p"])
+    .default("720p")
+    .describe(
+      "Video resolution - 480p for faster generation, 720p for balance."
+    ),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .default("auto")
+    .describe(
+      "Duration of the video in seconds. Supports 4 to 15 seconds, or auto to let the model decide based on the prompt."
+    ),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("auto")
+    .describe(
+      "The aspect ratio of the generated video. Use 16:9 for landscape, 9:16 for portrait/vertical, 1:1 for square, 21:9 for ultrawide cinematic, or auto to infer from the input image."
+    ),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Whether to generate synchronized audio for the video, including sound effects, ambient sounds, and lip-synced speech. The cost of video generation is the same regardless of whether audio is generated or not."
+    ),
+  codec: z
+    .enum(["auto", "H264", "H265"])
+    .default("auto")
+    .describe(
+      "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+    ),
+  end_user_id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The unique user ID of the end user."),
+});
+export type FalSeedance2p0MiniImageToVideoRequest = z.input<
+  typeof FalSeedance2p0MiniImageToVideoRequestSchema
+>;
+export type FalSeedance2p0MiniImageToVideoRequestInput =
+  FalSeedance2p0MiniImageToVideoRequest;
+export type FalSeedance2p0MiniImageToVideoParsedRequest = z.output<
+  typeof FalSeedance2p0MiniImageToVideoRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Bytedance Seedance 2.0 reference-to-video
 // ---------------------------------------------------------------------------
 
@@ -18683,6 +18768,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p0FastImageToVideoRequestSchema,
   "bytedance/seedance-2.0/fast/text-to-video":
     FalSeedance2p0FastTextToVideoRequestSchema,
+  "bytedance/seedance-2.0/mini/image-to-video":
+    FalSeedance2p0MiniImageToVideoRequestSchema,
   "bytedance/seedance-2.0/reference-to-video":
     FalSeedance2p0ReferenceToVideoRequestSchema,
   "bytedance/seedance-2.0/fast/reference-to-video":

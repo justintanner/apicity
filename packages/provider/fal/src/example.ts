@@ -1216,6 +1216,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p2.imageToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-2-image-to-video",
+    "payload": {
+      "prompt": "The cat turns its head toward the camera.",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "duration": 3,
+      "resolution": "360p",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST geminiOmniFlash.v1p2.referenceToVideo": {
     "source": "fal/google-gemini-omni-flash-v1-2-reference-to-video",
     "payload": {

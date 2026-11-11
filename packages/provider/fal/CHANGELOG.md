@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.imageToVideo`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/image-to-video`) adds
+  Gemini Omni Flash 1.2 image-to-video, a leaf on the `geminiOmniFlash.v1p2`
+  object. The schema follows fal's queue OpenAPI (read 2026-11-11): `prompt`
+  and `image_url` (required), an optional `end_image_url`, 3 to 15 seconds
+  (default 8), 360p to 4k, 16:9 or 9:16. The descriptions cap an end-frame
+  interpolation at 10 seconds; unbilled 422 probes found no field-level check
+  of that cap, so the schema leaves it to upstream. A recorded 3 s, 360p call
+  billed `x-fal-billable-units` 3.277456 seconds (ac-4xoxb6).
+
 - `run.bytedance.seedance2p0.mini.textToVideo`
   (`POST https://fal.run/bytedance/seedance-2.0/mini/text-to-video`) adds
   Seedance 2.0 Mini text-to-video, the last leaf on the

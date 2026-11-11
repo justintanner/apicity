@@ -294,7 +294,13 @@ export const FRONTIER = {
         model: "GPT Image 2.6 Sunburst (max)",
         creator: "OpenAI",
         elo: 1209,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p6.sunburst.edit",
+            pricingKey: "openai/gpt-image-2.6/sunburst/edit",
+          },
+        ],
       },
       {
         rank: 2,

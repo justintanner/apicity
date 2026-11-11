@@ -114,7 +114,7 @@ console.log(result.video.file_size);
 
 ## API Reference
 
-284 endpoints across 55 groups. Each method mirrors an upstream URL path.
+285 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -4092,6 +4092,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.openai.gptImage2p5.sunburst.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2p6.sunburst.edit</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2.6/sunburst/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2.6/sunburst/edit/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2p6.sunburst.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

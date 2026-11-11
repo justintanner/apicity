@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/machgen` adds `api.v0.adapters.del(adapterId)` (`DELETE https://api.machgen.ai/api/v0/adapters/{adapterId}`), which deletes a custom LoRA. It is free and safe to repeat: both calls answered `{ adapter, status: "deleted" }`. A deleted LoRA then reads as a 404 and leaves the list. The recording deletes the synthetic LoRA the other adapter recordings made, so the account's list is empty again, and the wallet was unchanged (ac-fj3vil).
+
 - `@apicity/machgen` adds `api.v0.adapters.list()` (`GET https://api.machgen.ai/api/v0/adapters`), a free list of the account's custom LoRAs and their storage use: `adapters`, `used_bytes`, `max_bytes` (15 GB), `used_count` and `max_count` (100), typed as `MachGenAdapterList`. The recording lists the ready synthetic LoRA, and the wallet was unchanged (ac-k99bh1).
 
 - `@apicity/machgen` adds `api.v0.adapters.retrieve(adapterId)` (`GET https://api.machgen.ai/api/v0/adapters/{adapterId}`), a free read of one custom LoRA. A ready LoRA answers `adapter`, `model`, `status`, `size_bytes` and `created_at`. An unknown, deleted or expired id is a 404 ("Adapter upload not found"). The recording reads the committed synthetic LoRA and an unknown id, and the wallet was unchanged (ac-qo9yxp).

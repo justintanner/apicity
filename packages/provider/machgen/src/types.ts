@@ -147,6 +147,13 @@ export interface MachGenAdapterList {
   [key: string]: unknown;
 }
 
+/** What deleting a custom LoRA answers; a repeat answers the same. */
+export interface MachGenAdapterDeleteResponse {
+  adapter: string;
+  status: "deleted";
+  [key: string]: unknown;
+}
+
 export interface MachGenGenerateMethod {
   (
     request: MachGenGenerateRequest,
@@ -199,6 +206,11 @@ export interface MachGenAdaptersNamespace {
   ): Promise<MachGenAdapterUpload>;
   /** List every LoRA on the account and its storage use (free). */
   list(signal?: AbortSignal): Promise<MachGenAdapterList>;
+  /** Delete a LoRA (free); safe to repeat. */
+  del(
+    adapterId: string,
+    signal?: AbortSignal
+  ): Promise<MachGenAdapterDeleteResponse>;
 }
 export interface MachGenV0Namespace {
   upload: MachGenUploadMethod;

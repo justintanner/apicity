@@ -3354,6 +3354,19 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["GET api.v0.adapters.list"]
   ),
   ...rows(
+    "machgen",
+    {
+      kind: "free",
+      reason:
+        "Deleting a custom LoRA bills nothing (wallet unchanged across the recorded delete)",
+      source: {
+        url: "https://www.machgen.ai/docs/rest_api/custom-loras",
+        asOf: "2026-11-11",
+      },
+    },
+    ["DELETE api.v0.adapters.del"]
+  ),
+  ...rows(
     "meta",
     {
       kind: "free",

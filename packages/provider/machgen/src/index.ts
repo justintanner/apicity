@@ -4,6 +4,7 @@ export type {
   MachGenAdapterConfig,
   MachGenAdapterCreateMethod,
   MachGenAdapterCreateRequest,
+  MachGenAdapterDeleteResponse,
   MachGenAdapterInferenceConfig,
   MachGenAdapterList,
   MachGenAdaptersNamespace,

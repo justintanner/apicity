@@ -141,6 +141,17 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "machgen\tDELETE\tapi.v0.adapters.del": {
+    provider: "machgen",
+    method: "DELETE",
+    dotPath: "api.v0.adapters.del",
+    positional: [
+      { placeholder: "adapterId", param: "adapterId", optional: false },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "simplefunctions\tGET\tapi.agent.feed": {
     provider: "simplefunctions",
     method: "GET",

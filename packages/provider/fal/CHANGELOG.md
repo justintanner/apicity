@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.referenceToVideo`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video`)
+  adds Gemini Omni Flash 1.2 reference-to-video, a leaf on the
+  `geminiOmniFlash.v1p2` object. The schema follows fal's queue OpenAPI (read
+  2026-11-11): `prompt` (required), up to ten `image_urls` and three
+  `reference_video_urls` (each up to 15 s), and 3 to 15 seconds of output
+  (default 8) at 360p, 720p, 1080p or 4k in 16:9 or 9:16. A recorded 3 s,
+  360p call with the owned cat photo as its reference billed
+  `x-fal-billable-units` 3.401161 seconds (ac-7tfowj).
+
 - `run.bytedance.seedance2p0.mini.imageToVideo`
   (`POST https://fal.run/bytedance/seedance-2.0/mini/image-to-video`) adds
   Seedance 2.0 Mini image-to-video. It declares the

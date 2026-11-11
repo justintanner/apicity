@@ -1092,6 +1092,19 @@ export const FRONTIER = {
       },
       {
         rank: 4,
+        model: "Gemini Omni Flash 1.2",
+        creator: "Google",
+        elo: 1154,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "geminiOmniFlash.v1p2.referenceToVideo",
+            pricingKey: "google/gemini-omni-flash/v1.2/reference-to-video",
+          },
+        ],
+      },
+      {
+        rank: 5,
         model: "HeyGen Video 1",
         creator: "HeyGen",
         elo: 1153,
@@ -1109,7 +1122,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 6,
         model: "MiniMax H3 Max",
         creator: "Fal",
         elo: 1147,
@@ -1127,7 +1140,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
+        rank: 7,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
         elo: 1140,

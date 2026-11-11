@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds Gemini Omni Flash 1.2 reference-to-video at `run.geminiOmniFlash.v1p2.referenceToVideo` (`POST https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video`): up to ten reference images and three reference videos, 3 to 15 seconds of output. `@apicity/cost` prices it dynamically, as the 1.2 edit is, and the model now enters the derived reference-to-video frontier board at #4 (t2v Elo 1154). A recorded 3 s, 360p call with the owned cat photo billed 0.092852 USD (ac-7tfowj).
+
 - `@apicity/fal` adds Seedance 2.0 Mini image-to-video at `run.bytedance.seedance2p0.mini.imageToVideo` (`POST https://fal.run/bytedance/seedance-2.0/mini/image-to-video`), under a new `bytedance.seedance2p0.mini` object for the other Mini endpoints. `@apicity/cost` prices it statically by output tokens at 0.007 USD per 1000, as 2.0 Fast is priced; a recorded 4 s, 480p, square call from the owned cat photo billed 0.2716 USD, exactly the estimate (ac-1b5mco).
 
 - `@apicity/fal` adds Gemini Omni Flash 1.2 video editing at `run.geminiOmniFlash.v1p2.edit` (`POST https://fal.run/google/gemini-omni-flash/v1.2/edit`), #2 on the 2026-11-11 video-editing board, under a new `geminiOmniFlash.v1p2` object for the other 1.2 endpoints. `@apicity/cost` prices it dynamically, as v1.1 is priced: the card bills output seconds by resolution plus input tokens, which no request field fixes. A recorded 360p edit of fal's 5 s example clip billed 7.137917 seconds, 0.194865 USD, and the frontier registry points Gemini Omni Flash 1.2 at it for video editing (ac-0k5eqv).

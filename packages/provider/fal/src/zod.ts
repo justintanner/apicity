@@ -7269,6 +7269,55 @@ export type FalGeminiOmniFlashV1p2EditParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p2EditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 804f837794efcde3514911f4b6089a42c04003b194f2077262b28da6d1175570). Field order follows x-fal-order-properties.
+// Only `prompt` is required. Against v1.1 the output runs up to 15 seconds,
+// and each reference video may run 15 seconds too.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/reference-to-video/api
+export const FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe(
+      "The text prompt describing the video. Reference media is sent in list order before the prompt."
+    ),
+  image_urls: z
+    .array(z.string())
+    .max(10)
+    .optional()
+    .describe("URLs of up to ten reference images to incorporate."),
+  reference_video_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "URLs of up to three reference videos. Each video must be at most 15 seconds long."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p2ReferenceToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p2ReferenceToVideoRequestInput =
+  FalGeminiOmniFlashV1p2ReferenceToVideoRequest;
+export type FalGeminiOmniFlashV1p2ReferenceToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema
+>;
+
 // The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
 // (2026-10-08) found upstream's validator to match it: `image_urls` holds at
 // most ten strings and `reference_video_urls` at most three, with no minimum
@@ -18663,6 +18712,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/edit": FalGeminiOmniFlashV1p1EditRequestSchema,
   "google/gemini-omni-flash/v1.2/edit": FalGeminiOmniFlashV1p2EditRequestSchema,
+  "google/gemini-omni-flash/v1.2/reference-to-video":
+    FalGeminiOmniFlashV1p2ReferenceToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

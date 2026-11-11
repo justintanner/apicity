@@ -602,6 +602,7 @@ fal	geminiOmniFlash.v1p1.imageToVideo	POST	metered	seconds	fal dynamic list: pri
 fal	geminiOmniFlash.v1p1.referenceToVideo	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	geminiOmniFlash.v1p1.textToVideo	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	geminiOmniFlash.v1p2.edit	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	geminiOmniFlash.v1p2.referenceToVideo	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	google.gemini3p8FlashLiteTts	POST	metered	1000 characters		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	google.gemini3p8FlashTts	POST	metered	1000 characters		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	google.lyria3p5	POST	metered	generations		https://api.fal.ai/v1/models/pricing	2026-11-04

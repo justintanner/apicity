@@ -1391,6 +1391,18 @@ const gptImagePerImage = (
 //     reads the same): about 3.03 seconds for the output file and 0.25
 //     (about 4,500 tokens) for input tokens, whose count no request field
 //     fixes, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.2/extend: the official card (read
+//     2026-11-11) bills each second of newly generated video at the same
+//     rates by resolution, plus input tokens at $1.50 per 1M, and says the
+//     input video is not billed. The recorded 360p call extended fal's
+//     5.000 s example clip by 3 s and got back the whole 8.000 s video (5 s
+//     source plus 3 s continuation) with a generated audio track of
+//     8.042667 s. It billed 4.956952 seconds at $0.0273, USD 0.135325 (fal's
+//     usage API reads the same): about 3 seconds for the new footage and
+//     1.96 (about 36,000 tokens) for input tokens, close to the 2.10 the 1.2
+//     edit billed for the same clip. The source, which the request carries
+//     only as a URL, is billed as tokens, so no request field fixes the
+//     quantity and no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -1573,6 +1585,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/v1.1/reference-to-video",
   "google/gemini-omni-flash/v1.1/text-to-video",
   "google/gemini-omni-flash/v1.2/edit",
+  "google/gemini-omni-flash/v1.2/extend",
   "google/gemini-omni-flash/v1.2/image-to-video",
   "google/gemini-omni-flash/v1.2/reference-to-video",
   "google/gemini-omni-flash/v1.2/text-to-video",
@@ -1692,6 +1705,13 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "google/gemini-omni-flash/v1.2/image-to-video": {
     unit: "seconds of output video at $0.0273/$0.0819/$0.1229/$0.2457 (360p/720p/1080p/4K), plus input tokens (text, image, video) at $1.50 per 1M",
     why: "the billed seconds follow the output file, whose generated audio track runs past the requested duration, and no request field measures the input tokens of the prompt and frame images",
+  },
+  // Public card read 2026-11-11. The recorded 3 s, 360p extension of fal's
+  // 5 s example clip billed 4.956952 seconds: about 3 for the new footage,
+  // the rest for input tokens.
+  "google/gemini-omni-flash/v1.2/extend": {
+    unit: "seconds of newly generated video at $0.0273/$0.0819/$0.1229/$0.2457 (360p/720p/1080p/4K), plus input tokens (text, image, video) at $1.50 per 1M",
+    why: "the source video, which the request carries only as a URL, is billed as input tokens, and no request field measures them",
   },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per

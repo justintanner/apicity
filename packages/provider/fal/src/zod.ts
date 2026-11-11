@@ -7553,6 +7553,42 @@ export type FalGeminiOmniFlashV1p2ImageToVideoParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p2ImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 af1581b1a8499a3245d80ae7cfb050e4821ee4e9cfae0dc2bc540f0a5cc4b054). Field order follows x-fal-order-properties.
+// `prompt` and `video_url` are required. `duration` counts only the new
+// continuation, from 3 to 10 seconds; there is no aspect ratio field.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/extend/api
+export const FalGeminiOmniFlashV1p2ExtendRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("The text prompt describing how the video should continue."),
+  video_url: z
+    .string()
+    .describe(
+      "URL of the video to extend. Any length is accepted; the model conditions on the last 10 seconds and appends the continuation."
+    ),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the extended video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the continuation, in seconds."),
+});
+export type FalGeminiOmniFlashV1p2ExtendRequest = z.input<
+  typeof FalGeminiOmniFlashV1p2ExtendRequestSchema
+>;
+export type FalGeminiOmniFlashV1p2ExtendRequestInput =
+  FalGeminiOmniFlashV1p2ExtendRequest;
+export type FalGeminiOmniFlashV1p2ExtendParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p2ExtendRequestSchema
+>;
+
 // The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
 // (2026-10-08) found upstream's validator to match it: `image_urls` holds at
 // most ten strings and `reference_video_urls` at most three, with no minimum
@@ -18953,6 +18989,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalGeminiOmniFlashV1p2TextToVideoRequestSchema,
   "google/gemini-omni-flash/v1.2/image-to-video":
     FalGeminiOmniFlashV1p2ImageToVideoRequestSchema,
+  "google/gemini-omni-flash/v1.2/extend":
+    FalGeminiOmniFlashV1p2ExtendRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.extend`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/extend`) adds Gemini
+  Omni Flash 1.2 extend, a leaf on the `geminiOmniFlash.v1p2` object. The
+  schema follows fal's queue OpenAPI (read 2026-11-11): `prompt` and
+  `video_url` (required), 360p to 4k, and a continuation of 3 to 10 seconds
+  (default 8). The response carries the whole extended video. A recorded
+  3 s, 360p extension of fal's 5 s example clip billed
+  `x-fal-billable-units` 4.956952 seconds (ac-bxz9xk).
+
 - `run.geminiOmniFlash.v1p2.imageToVideo`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/image-to-video`) adds
   Gemini Omni Flash 1.2 image-to-video, a leaf on the `geminiOmniFlash.v1p2`

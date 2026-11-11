@@ -39,6 +39,9 @@ const CHECKED = [
   "fal-ai/kandinsky6-vsr/lite",
   // Card read 2026-11-11; the recorded 360p edit billed 7.137917 seconds.
   "google/gemini-omni-flash/v1.2/edit",
+  // Card read 2026-11-11; the recorded 3 s, 360p extension billed 4.956952
+  // seconds.
+  "google/gemini-omni-flash/v1.2/extend",
   // Card read 2026-11-11; the recorded 3 s, 360p call billed 3.277456 seconds.
   "google/gemini-omni-flash/v1.2/image-to-video",
   // Card read 2026-11-11; the recorded 3 s, 360p call billed 3.401161 seconds.

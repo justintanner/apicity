@@ -1216,6 +1216,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p2.extend": {
+    "source": "fal/google-gemini-omni-flash-v1-2-extend",
+    "payload": {
+      "prompt": "Continue the scene for a moment.",
+      "video_url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST geminiOmniFlash.v1p2.imageToVideo": {
     "source": "fal/google-gemini-omni-flash-v1-2-image-to-video",
     "payload": {

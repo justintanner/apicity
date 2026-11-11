@@ -1796,6 +1796,7 @@ fal	geminiOmniFlash.v1p2.edit	POST	https://fal.run/google/gemini-omni-flash/v1.2
 fal	geminiOmniFlash.v1p2.referenceToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.2/reference-to-video/api
 fal	geminiOmniFlash.v1p2.textToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.2/text-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.2/text-to-video/api
 fal	geminiOmniFlash.v1p2.imageToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.2/image-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.2/image-to-video/api
+fal	geminiOmniFlash.v1p2.extend	POST	https://fal.run/google/gemini-omni-flash/v1.2/extend	https://fal.ai/models/google/gemini-omni-flash/v1.2/extend/api
 fal	lightricks.ltx2p5.textToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/text-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api
 fal	lightricks.ltx2p5.textToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/text-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/text-to-video/pro/api
 fal	lightricks.ltx2p5.audioToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/audio-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api

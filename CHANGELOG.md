@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds Gemini Omni Flash 1.2 extend at `run.geminiOmniFlash.v1p2.extend` (`POST https://fal.run/google/gemini-omni-flash/v1.2/extend`): continues a source video by 3 to 10 seconds at 360p to 4k and returns the whole extended video. `@apicity/cost` prices it dynamically, as the other 1.2 endpoints are. A recorded 3 s, 360p extension of fal's 5 s example clip billed 0.135325 USD, most of the excess over the new seconds being input tokens for the source (ac-bxz9xk).
+
 - `@apicity/fal` adds Gemini Omni Flash 1.2 image-to-video at `run.geminiOmniFlash.v1p2.imageToVideo` (`POST https://fal.run/google/gemini-omni-flash/v1.2/image-to-video`): a required first frame and an optional end frame, 3 to 15 seconds at 360p to 4k. `@apicity/cost` prices it dynamically, as the other 1.2 endpoints are. A recorded 3 s, 360p call from the owned cat photo billed 0.089475 USD (ac-4xoxb6).
 
 - `@apicity/fal` adds Seedance 2.0 Mini text-to-video at `run.bytedance.seedance2p0.mini.textToVideo` (`POST https://fal.run/bytedance/seedance-2.0/mini/text-to-video`), completing the Mini object. `@apicity/cost` prices it statically at 0.007 USD per 1000 output tokens, as Mini image-to-video is priced; a recorded 4 s, 480p, square call billed 0.2716 USD, exactly the estimate (ac-e1ujc0).

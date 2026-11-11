@@ -1,4 +1,6 @@
 {
+  "GPT Image 2.6 Sunburst (max)": [],
+  "GPT Image 2.6 Flare (max)": [],
   "GPT Image 2.5 Sunburst (max)": [
     {
       "provider": "fal",
@@ -21,6 +23,7 @@
       "modelId": "gpt-image-2.5-sunburst"
     }
   ],
+  "MAI-Image-2.7-Preview": [],
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",
@@ -43,7 +46,14 @@
       "modelId": "gpt-image-2.5-flare"
     }
   ],
-  "MAI-Image-2.6": [],
+  "Seedream 5.5": [],
+  "Krea 3 (Ultra)": [
+    {
+      "provider": "fal",
+      "dotPath": "krea.v3.edit",
+      "pricingKey": "krea/v3/edit"
+    }
+  ],
   "Nano Banana 2.1": [
     {
       "provider": "fal",
@@ -61,60 +71,6 @@
       "modelId": "Nano-Banana-2.1"
     }
   ],
-  "Krea 3 (Ultra)": [
-    {
-      "provider": "fal",
-      "dotPath": "krea.v3.edit",
-      "pricingKey": "krea/v3/edit"
-    }
-  ],
-  "MAI-Image-2.6-Flash": [],
-  "GPT Image 2 (high)": [
-    {
-      "provider": "fal",
-      "dotPath": "openai.gptImage2.edit",
-      "pricingKey": "openai/gpt-image-2/edit"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "gpt-image-2-image-to-image"
-    },
-    {
-      "provider": "machgen",
-      "dotPath": "api.v0.generate",
-      "modelId": "GPT-Image-2"
-    },
-    {
-      "provider": "openai",
-      "dotPath": "v1.images.edits",
-      "modelId": "gpt-image-2"
-    }
-  ],
-  "Seedream 5.0 Pro": [
-    {
-      "provider": "fal",
-      "dotPath": "bytedance.seedream.v5.pro.edit",
-      "pricingKey": "bytedance/seedream/v5/pro/edit"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "seedream/5-pro-image-to-image"
-    }
-  ],
-  "Muse Image": [
-    {
-      "provider": "fal",
-      "dotPath": "meta.museImage.edit",
-      "pricingKey": "meta/muse-image/edit"
-    }
-  ],
-  "MAI-Image-2.5": [
-    {
-      "provider": "fal",
-      "dotPath": "microsoft.maiImage2p5Pro.edit",
-      "pricingKey": "microsoft/mai-image-2.5-pro/edit"
-    }
-  ]
+  "MAI-Image-2.6": [],
+  "MAI-Image-2.6-Flash": []
 }

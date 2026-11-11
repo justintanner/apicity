@@ -1,62 +1,68 @@
 {
   "leaderboardId": "AA-Video-Editing v1.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/video-editing",
-  "capturedOn": "2026-10-22",
+  "capturedOn": "2026-11-11",
   "methodology": "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
   "entries": [
     {
       "rank": 1,
       "model": "Wan 3.0",
       "creator": "Alibaba",
-      "elo": 1198
+      "elo": 1192
     },
     {
       "rank": 2,
-      "model": "Dreamina Seedance 2.5",
-      "creator": "ByteDance Seed",
-      "elo": 1155
+      "model": "Gemini Omni Flash 1.2",
+      "creator": "Google",
+      "elo": 1164
     },
     {
       "rank": 3,
-      "model": "Gemini Omni Flash 1.1",
-      "creator": "Google",
-      "elo": 1148
+      "model": "Hyperflow H3",
+      "creator": "Video Rebirth",
+      "elo": 1149
     },
     {
       "rank": 4,
-      "model": "MiniMax H3 (768p)",
-      "creator": "MiniMax",
-      "elo": 1124
+      "model": "Dreamina Seedance 2.5",
+      "creator": "ByteDance Seed",
+      "elo": 1147
     },
     {
       "rank": 5,
-      "model": "HappyHorse-1.0",
-      "creator": "Alibaba-ATH",
-      "elo": 1090
+      "model": "Gemini Omni Flash 1.1",
+      "creator": "Google",
+      "elo": 1146
     },
     {
       "rank": 6,
-      "model": "Dreamina Seedance 2.0",
-      "creator": "ByteDance Seed",
-      "elo": 1082
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1119
     },
     {
       "rank": 7,
-      "model": "Wan 2.7",
-      "creator": "Alibaba",
-      "elo": 1077
+      "model": "HappyHorse-1.0",
+      "creator": "Alibaba-ATH",
+      "elo": 1085
     },
     {
       "rank": 8,
-      "model": "Aleph 2.0",
-      "creator": "Runway",
-      "elo": 1012
+      "model": "Dreamina Seedance 2.0",
+      "creator": "ByteDance Seed",
+      "elo": 1076
     },
     {
       "rank": 9,
-      "model": "Kling 3.0 Omni 1080p (Pro)",
-      "creator": "KlingAI",
-      "elo": 1000
+      "model": "Wan 2.7",
+      "creator": "Alibaba",
+      "elo": 1071
+    },
+    {
+      "rank": 10,
+      "model": "Aleph 2.0",
+      "creator": "Runway",
+      "elo": 1006
     }
   ]
 }

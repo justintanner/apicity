@@ -31,18 +31,6 @@
       "pricingKey": "alibaba/wan-3.0/reference-to-video"
     }
   ],
-  "HeyGen Video (ultraquality)": [
-    {
-      "provider": "fal",
-      "dotPath": "heygen.heygenVideo.referenceToVideo",
-      "pricingKey": "heygen/heygen-video/reference-to-video"
-    },
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.heygen.video1p0.referenceToVideo",
-      "pricingKey": "heygen/video-1.0/reference-to-video"
-    }
-  ],
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",
@@ -92,6 +80,18 @@
       "pricingKey": "bytedance/seedance-2.5/reference-to-video"
     }
   ],
+  "HeyGen Video 1": [
+    {
+      "provider": "fal",
+      "dotPath": "heygen.heygenVideo.referenceToVideo",
+      "pricingKey": "heygen/heygen-video/reference-to-video"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.heygen.video1p0.referenceToVideo",
+      "pricingKey": "heygen/video-1.0/reference-to-video"
+    }
+  ],
   "MiniMax H3 Max": [
     {
       "provider": "fal",
@@ -129,67 +129,6 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.bytedance.seedance2p0.referenceToVideo",
       "pricingKey": "bytedance/seedance-2.0/reference-to-video"
-    }
-  ],
-  "Gemini Omni Flash 1.1": [
-    {
-      "provider": "fal",
-      "dotPath": "geminiOmniFlash.v1p1.referenceToVideo",
-      "pricingKey": "google/gemini-omni-flash/v1.1/reference-to-video"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "google/gemini-omni-flash-1-1"
-    },
-    {
-      "provider": "googleflow",
-      "dotPath": "v1.videos",
-      "modelId": "omni-flash"
-    },
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.google.geminiOmni1p1Flash.referenceToVideo",
-      "pricingKey": "google/gemini-omni-1.1-flash/reference-to-video"
-    }
-  ],
-  "Grok Imagine Video 1.5": [
-    {
-      "provider": "fal",
-      "dotPath": "xai.grokImagineVideo.v1p5.referenceToVideo",
-      "pricingKey": "xai/grok-imagine-video/v1.5/reference-to-video"
-    },
-    {
-      "provider": "xai",
-      "dotPath": "v1.videos.generations",
-      "modelId": "grok-imagine-video-1.5"
-    },
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.xAi.grokImagineVideoV1p5.referenceToVideo",
-      "pricingKey": "x-ai/grok-imagine-video-v1.5/reference-to-video"
-    }
-  ],
-  "HappyHorse-1.1": [
-    {
-      "provider": "fal",
-      "dotPath": "alibaba.happyHorse.v1p1.referenceToVideo",
-      "pricingKey": "alibaba/happy-horse/v1.1/reference-to-video"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "happyhorse-1-1/reference-to-video"
-    },
-    {
-      "provider": "machgen",
-      "dotPath": "api.v0.generate",
-      "modelId": "HappyHorse-1.1"
-    },
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.alibaba.happyhorse1p1.referenceToVideo",
-      "pricingKey": "alibaba/happyhorse-1.1/reference-to-video"
     }
   ]
 }

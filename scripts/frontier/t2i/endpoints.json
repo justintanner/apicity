@@ -1,4 +1,5 @@
 {
+  "GPT Image 2.6 Sunburst (max)": [],
   "GPT Image 2.5 Sunburst (max)": [
     {
       "provider": "fal",
@@ -21,6 +22,7 @@
       "modelId": "gpt-image-2.5-sunburst"
     }
   ],
+  "GPT Image 2.6 Flare (max)": [],
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",
@@ -128,29 +130,5 @@
       "modelId": "Nano-Banana-2"
     }
   ],
-  "Muse Image": [
-    {
-      "provider": "fal",
-      "dotPath": "meta.museImage.textToImage",
-      "pricingKey": "meta/muse-image/text-to-image"
-    }
-  ],
-  "GPT Image 1.5 (high)": [
-    {
-      "provider": "fal",
-      "dotPath": "gptImage1p5",
-      "pricingKey": "fal-ai/gpt-image-1.5"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "gpt-image/1.5-text-to-image"
-    },
-    {
-      "provider": "openai",
-      "dotPath": "v1.images.generations",
-      "modelId": "gpt-image-1.5"
-    }
-  ],
-  "MAI-Image-2.6-Flash": []
+  "Seedream 5.5": []
 }

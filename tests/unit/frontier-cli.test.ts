@@ -37,10 +37,10 @@ describe("apicity frontier", () => {
     expect(table).toContain("leaderboard");
     expect(table).toContain("i2v");
     expect(table).toContain("image-to-video");
-    expect(table).toContain("10/10");
-    expect(table).toContain("2026-10-22");
+    expect(table).toContain("5/10");
+    expect(table).toContain("2026-11-11");
     expect(table).toContain("derived");
-    expect(table).toContain("9/9");
+    expect(table).toContain("6/6");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
@@ -65,20 +65,20 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "10/10", captured: "2026-10-22" });
+    expect(i2v).toMatchObject({ models: "5/10", captured: "2026-11-11" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
+    expect(t2i).toMatchObject({ models: "6/10", captured: "2026-11-11" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
+    expect(i2i).toMatchObject({ models: "4/10", captured: "2026-11-11" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
-    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-10-22" });
+    expect(t2v).toMatchObject({ models: "7/10", captured: "2026-11-11" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "9/9", captured: "2026-10-22" });
+    expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-11" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
-      models: "9/9",
-      captured: "2026-10-22",
+      models: "6/6",
+      captured: "2026-11-11",
     });
   });
 
@@ -105,8 +105,19 @@ describe("apicity frontier", () => {
     expect(envelope.data.length).toBeGreaterThan(10);
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
-      model: "MiniMax H3 (768p)",
+      model: "Dreamina Seedance 2.5",
       provider: "fal",
+      dotPath: "bytedance.seedance2p5.imageToVideo",
+      modelId: "-",
+      price: { unit: "dynamic" },
+      configured: false,
+    });
+    expect(
+      envelope.data.find(
+        (row) => row.model === "MiniMax H3 (768p)" && row.provider === "fal"
+      )
+    ).toMatchObject({
+      rank: 4,
       dotPath: "minimax.h3.imageToVideo",
       modelId: "-",
       price: { unit: "seconds", min: 0.05, max: 0.16 },
@@ -117,8 +128,8 @@ describe("apicity frontier", () => {
     expect(kie?.modelId).not.toBe("-");
     expect(kie?.price).toMatchObject({
       unit: "seconds",
-      min: 0.04,
-      max: 0.065,
+      min: 0.085,
+      max: 0.79,
     });
 
     const quiet = capture();
@@ -153,7 +164,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("0.04-0.065 USD/s");
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
-    expect(table).not.toContain("not yet in apicity");
+    expect(table).toContain(
+      "not yet in apicity: Utopai X, SkyReels V4, Hyperflow H3, P-Video-2-Pro, Pika H3 Flex"
+    );
     expect(table).not.toContain("present");
   });
 
@@ -177,7 +190,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("gemini-3.1-flash-image");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
     expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.6, MAI-Image-2.6-Flash"
+      "not yet in apicity: GPT Image 2.6 Sunburst (max), GPT Image 2.6 Flare (max), MAI-Image-2.6, Seedream 5.5"
     );
   });
 
@@ -191,16 +204,13 @@ describe("apicity frontier", () => {
     ).resolves.toBe(0);
     const table = out.join("\n");
     expect(table).toContain("openai.gptImage2p5.sunburst.edit");
+    expect(table).toContain("openai.gptImage2p5.flare.edit");
     expect(table).toContain("nanoBanana2p1.edit");
-    expect(table).toContain("bytedance.seedream.v5.pro.edit");
-    expect(table).toContain("meta.museImage.edit");
-    expect(table).toContain("microsoft.maiImage2p5Pro.edit");
-    expect(table).toContain("openai.gptImage2.edit");
     expect(table).not.toContain("kie");
     expect(table).toContain("Krea 3 (Ultra)");
     expect(table).toContain("krea.v3.edit");
     expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.6, MAI-Image-2.6-Flash"
+      "not yet in apicity: GPT Image 2.6 Sunburst (max), GPT Image 2.6 Flare (max), MAI-Image-2.7-Preview, Seedream 5.5, MAI-Image-2.6, MAI-Image-2.6-Flash"
     );
   });
 
@@ -216,8 +226,10 @@ describe("apicity frontier", () => {
     const table = out.join("\n");
     expect(table).toContain("alibaba.wan3p0.textToVideo");
     expect(table).toContain("wan/3-0-video-prime");
-    expect(table).toContain("omni-flash");
-    expect(table).toContain("not yet in apicity: Utopai X");
+    expect(table).toContain("MiniMax-H3");
+    expect(table).toContain(
+      "not yet in apicity: Utopai X, Gemini Omni Flash 1.2, SkyReels V4"
+    );
   });
 
   it("prints v2v rows through the video-editing alias", async () => {
@@ -232,13 +244,15 @@ describe("apicity frontier", () => {
     expect(table).toContain("geminiOmniFlash.v1p1.edit");
     expect(table).toContain("wan.v2p7.editVideo");
     expect(table).toContain("wan2.7-videoedit");
-    expect(table).toContain("kling-3.0-omni/transformation");
-    expect(table).toContain("klingVideo.o3.pro.videoToVideo.reference");
+    expect(table).toContain("happyhorse/video-edit");
+    expect(table).toContain("alibaba.happyHorse.videoEdit");
     expect(table).toContain("api.v3.alibaba.wan3p0.videoEdit");
     expect(table).toContain("api.v3.wavespeedAi.minimaxH3.videoEdit");
     expect(table).toContain("api.v3.bytedance.seedance2p0.videoEdit");
     expect(table).toContain("api.v3.runwayml.aleph2");
-    expect(table).not.toContain("not yet in apicity");
+    expect(table).toContain(
+      "not yet in apicity: Gemini Omni Flash 1.2, Hyperflow H3"
+    );
   });
 
   it("prints the derived r2v rows with no gaps", async () => {
@@ -254,16 +268,16 @@ describe("apicity frontier", () => {
       data: Array<{ rank: number; model: string; provider: string }>;
     };
     expect(envelope.ok).toBe(true);
-    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(9);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(6);
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
       model: "Wan 3.0",
       provider: "fal",
     });
+    // Dreamina Seedance 2.0 reaches r2v from the i2v board alone.
     expect(
       envelope.data.some(
-        (row) =>
-          row.model === "Grok Imagine Video 1.5" && row.provider === "xai"
+        (row) => row.model === "Dreamina Seedance 2.0" && row.provider === "kie"
       )
     ).toBe(true);
 
@@ -298,7 +312,7 @@ describe("apicity frontier", () => {
       ).toBe(true);
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 5, i2i: 4, t2v: 4, i2v: 6, r2v: 5 });
+    expect(counts).toEqual({ t2i: 5, i2i: 3, t2v: 3, i2v: 3, r2v: 4 });
 
     const { writer, err } = capture();
     await expect(

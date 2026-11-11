@@ -83,90 +83,121 @@ const KIE_IMAGE_INPUT_FIELDS = [
 ] as const;
 
 const T2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1222],
-  [2, "GPT Image 2.5 Flare (max)", "OpenAI", 1207],
-  [3, "GPT Image 2 (high)", "OpenAI", 1186],
-  [4, "Nano Banana 2.1", "Google", 1176],
-  [5, "MAI-Image-2.6", "Microsoft AI", 1166],
-  [6, "Grok Imagine Image 2.0", "SpaceXAI", 1166],
-  [7, "Nano Banana 2 (Gemini 3.1 Flash Image)", "Google", 1140],
-  [8, "Muse Image", "Meta", 1127],
-  [9, "GPT Image 1.5 (high)", "OpenAI", 1123],
-  [10, "MAI-Image-2.6-Flash", "Microsoft AI", 1119],
+  [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1261],
+  [2, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1229],
+  [3, "GPT Image 2.6 Flare (max)", "OpenAI", 1226],
+  [4, "GPT Image 2.5 Flare (max)", "OpenAI", 1210],
+  [5, "GPT Image 2 (high)", "OpenAI", 1190],
+  [6, "Nano Banana 2.1", "Google", 1176],
+  [7, "MAI-Image-2.6", "Microsoft AI", 1170],
+  [8, "Grok Imagine Image 2.0", "SpaceXAI", 1168],
+  [9, "Nano Banana 2 (Gemini 3.1 Flash Image)", "Google", 1143],
+  [10, "Seedream 5.5", "ByteDance Seed", 1135],
 ];
 
 const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1200],
-  [2, "GPT Image 2.5 Flare (max)", "OpenAI", 1183],
-  [3, "MAI-Image-2.6", "Microsoft AI", 1153],
-  [4, "Nano Banana 2.1", "Google", 1152],
-  [5, "Krea 3 (Ultra)", "Krea", 1152],
-  [6, "MAI-Image-2.6-Flash", "Microsoft AI", 1144],
-  [7, "GPT Image 2 (high)", "OpenAI", 1137],
-  [8, "Seedream 5.0 Pro", "ByteDance Seed", 1132],
-  [9, "Muse Image", "Meta", 1131],
-  [10, "MAI-Image-2.5", "Microsoft AI", 1128],
+  [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1209],
+  [2, "GPT Image 2.6 Flare (max)", "OpenAI", 1206],
+  [3, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1200],
+  [4, "MAI-Image-2.7-Preview", "Microsoft AI", 1198],
+  [5, "GPT Image 2.5 Flare (max)", "OpenAI", 1183],
+  [6, "Seedream 5.5", "ByteDance Seed", 1159],
+  [7, "Krea 3 (Ultra)", "Krea", 1153],
+  [8, "Nano Banana 2.1", "Google", 1152],
+  [9, "MAI-Image-2.6", "Microsoft AI", 1150],
+  [10, "MAI-Image-2.6-Flash", "Microsoft AI", 1143],
 ];
 
-const T2I_UNMAPPED = ["MAI-Image-2.6", "MAI-Image-2.6-Flash"];
-const I2I_UNMAPPED = ["MAI-Image-2.6", "MAI-Image-2.6-Flash"];
+const T2I_UNMAPPED = [
+  "GPT Image 2.6 Sunburst (max)",
+  "GPT Image 2.6 Flare (max)",
+  "MAI-Image-2.6",
+  "Seedream 5.5",
+];
+const I2I_UNMAPPED = [
+  "GPT Image 2.6 Sunburst (max)",
+  "GPT Image 2.6 Flare (max)",
+  "MAI-Image-2.7-Preview",
+  "Seedream 5.5",
+  "MAI-Image-2.6",
+  "MAI-Image-2.6-Flash",
+];
 
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "MiniMax H3 (768p)", "MiniMax", 1140],
-  [2, "FLUX 3 Max (720p)", "Black Forest Labs", 1138],
-  [3, "Dreamina Seedance 2.5", "ByteDance", 1138],
-  [4, "Gemini Omni Flash 1.1", "Google", 1132],
-  [5, "Wan 3.0", "Alibaba", 1127],
-  [6, "MiniMax H3 Max", "MiniMax", 1125],
-  [7, "Dreamina Seedance 2.0", "ByteDance", 1121],
-  [8, "FLUX 3", "Black Forest Labs", 1086],
-  [9, "Grok Imagine Video 1.5", "SpaceXAI", 1067],
-  [10, "HappyHorse-1.1", "Alibaba", 1061],
+  [1, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
+  [2, "Utopai X", "Utopai Studios", 1151],
+  [3, "Dreamina Seedance 2.0", "ByteDance Seed", 1140],
+  [4, "MiniMax H3 (768p)", "MiniMax", 1133],
+  [5, "SkyReels V4", "Skywork AI", 1125],
+  [6, "HeyGen Video 1", "HeyGen", 1124],
+  [7, "Hyperflow H3", "Video Rebirth", 1120],
+  [8, "P-Video-2-Pro", "Pruna AI", 1116],
+  [9, "MiniMax H3 Max", "Fal", 1115],
+  [10, "Pika H3 Flex", "Pika Art", 1114],
 ];
 
 const T2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Wan 3.0", "Alibaba", 1175],
-  [2, "Utopai X", "Utopai Studios", 1167],
-  [3, "HeyGen Video (ultraquality)", "HeyGen", 1160],
-  [4, "MiniMax H3 (768p)", "MiniMax", 1158],
-  [5, "Dreamina Seedance 2.5", "ByteDance Seed", 1158],
-  [6, "FLUX 3 Max (720p)", "Black Forest Labs", 1155],
-  [7, "MiniMax H3 Max", "MiniMax", 1154],
-  [8, "FLUX 3", "Black Forest Labs", 1145],
-  [9, "Dreamina Seedance 2.0", "ByteDance Seed", 1136],
-  [10, "Gemini Omni Flash 1.1", "Google", 1130],
+  [2, "Utopai X", "Utopai Studios", 1168],
+  [3, "MiniMax H3 (768p)", "MiniMax", 1161],
+  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1155],
+  [5, "FLUX 3 Max", "Fal", 1155],
+  [6, "Gemini Omni Flash 1.2", "Google", 1154],
+  [7, "HeyGen Video 1", "HeyGen", 1153],
+  [8, "MiniMax H3 Max", "Fal", 1147],
+  [9, "SkyReels V4", "Skywork AI", 1138],
+  [10, "FLUX 3", "Black Forest Labs", 1138],
 ];
 
-/** The video-editing board has nine models, so all nine are listed. */
+/** The video-editing board has 11 models; the top 10 are listed. */
 const V2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "Wan 3.0", "Alibaba", 1198],
-  [2, "Dreamina Seedance 2.5", "ByteDance Seed", 1155],
-  [3, "Gemini Omni Flash 1.1", "Google", 1148],
-  [4, "MiniMax H3 (768p)", "MiniMax", 1124],
-  [5, "HappyHorse-1.0", "Alibaba-ATH", 1090],
-  [6, "Dreamina Seedance 2.0", "ByteDance Seed", 1082],
-  [7, "Wan 2.7", "Alibaba", 1077],
-  [8, "Aleph 2.0", "Runway", 1012],
-  [9, "Kling 3.0 Omni 1080p (Pro)", "KlingAI", 1000],
+  [1, "Wan 3.0", "Alibaba", 1192],
+  [2, "Gemini Omni Flash 1.2", "Google", 1164],
+  [3, "Hyperflow H3", "Video Rebirth", 1149],
+  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1147],
+  [5, "Gemini Omni Flash 1.1", "Google", 1146],
+  [6, "MiniMax H3 (768p)", "MiniMax", 1119],
+  [7, "HappyHorse-1.0", "Alibaba-ATH", 1085],
+  [8, "Dreamina Seedance 2.0", "ByteDance Seed", 1076],
+  [9, "Wan 2.7", "Alibaba", 1071],
+  [10, "Aleph 2.0", "Runway", 1006],
 ];
 
-/** Derived: each Elo is the better of the model's t2v and i2v Elos. */
+/**
+ * Derived: each Elo is the better of the model's t2v and i2v Elos. MiniMax
+ * H3 (768p) and Dreamina Seedance 2.5 tie at 1161; the tie keeps source
+ * order, so the t2v model ranks first.
+ */
 const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Wan 3.0", "Alibaba", 1175],
-  [2, "HeyGen Video (ultraquality)", "HeyGen", 1160],
-  [3, "MiniMax H3 (768p)", "MiniMax", 1158],
-  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1158],
-  [5, "MiniMax H3 Max", "MiniMax", 1154],
-  [6, "Dreamina Seedance 2.0", "ByteDance Seed", 1136],
-  [7, "Gemini Omni Flash 1.1", "Google", 1132],
-  [8, "Grok Imagine Video 1.5", "SpaceXAI", 1067],
-  [9, "HappyHorse-1.1", "Alibaba", 1061],
+  [2, "MiniMax H3 (768p)", "MiniMax", 1161],
+  [3, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
+  [4, "HeyGen Video 1", "HeyGen", 1153],
+  [5, "MiniMax H3 Max", "Fal", 1147],
+  [6, "Dreamina Seedance 2.0", "ByteDance Seed", 1140],
 ];
 
-const T2V_UNMAPPED = ["Utopai X"];
+const T2V_UNMAPPED = ["Utopai X", "Gemini Omni Flash 1.2", "SkyReels V4"];
+const I2V_UNMAPPED = [
+  "Utopai X",
+  "SkyReels V4",
+  "Hyperflow H3",
+  "P-Video-2-Pro",
+  "Pika H3 Flex",
+];
+const V2V_UNMAPPED = ["Gemini Omni Flash 1.2", "Hyperflow H3"];
 
 /** t2v and i2v top-10 models with no reference-to-video endpoint. */
-const R2V_LEFT_OUT = ["Utopai X", "FLUX 3 Max (720p)", "FLUX 3"];
+const R2V_LEFT_OUT = [
+  "Utopai X",
+  "FLUX 3 Max",
+  "Gemini Omni Flash 1.2",
+  "SkyReels V4",
+  "FLUX 3",
+  "Hyperflow H3",
+  "P-Video-2-Pro",
+  "Pika H3 Flex",
+];
 
 /** KIE field names that carry media rather than a setting. */
 const KIE_MEDIA_FIELD =
@@ -200,14 +231,15 @@ const MACHGEN_TASK: Readonly<Record<string, string>> = {
   r2v: "R2V",
 };
 
-/** The MachGen model ids per frontier model, one shared generate call. */
+/**
+ * The MachGen model ids per frontier model, one shared generate call. Every
+ * one of them is on r2v.
+ */
 const MACHGEN_IDS: Readonly<Record<string, string>> = {
+  "Wan 3.0": "Alibaba-Wan-3.0",
   "MiniMax H3 (768p)": "MiniMax-H3",
   "Dreamina Seedance 2.5": "Seedance-2.5",
-  "Wan 3.0": "Alibaba-Wan-3.0",
   "Dreamina Seedance 2.0": "Seedance-2.0",
-  "Grok Imagine Video 1.5": "Grok-Imagine-Video-1.5",
-  "HappyHorse-1.1": "HappyHorse-1.1",
 };
 
 /** The MachGen image ids per frontier model, on the same generate call. */
@@ -811,12 +843,12 @@ describe("frontier snapshots", () => {
     expect(structuralProblems()).toEqual([]);
   });
 
-  it("commits the AA-Video-I2V v1.1 top 10 verbatim", () => {
-    expect(snapshot.leaderboardId).toBe("AA-Video-I2V v1.1");
+  it("commits the AA-Video-I2V v2.1 top 10 verbatim", () => {
+    expect(snapshot.leaderboardId).toBe("AA-Video-I2V v2.1");
     expect(snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/image-to-video"
     );
-    expect(snapshot.capturedOn).toBe("2026-10-22");
+    expect(snapshot.capturedOn).toBe("2026-11-11");
     expect(snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
@@ -829,10 +861,8 @@ describe("frontier snapshots", () => {
       ])
     ).toEqual(I2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(snapshot)).toEqual([]);
-    const unmapped = Object.entries(endpointMap).filter(
-      ([, list]) => Array.isArray(list) && list.length === 0
-    );
-    expect(unmapped).toEqual([]);
+    expect(unmappedNames(endpointMap)).toEqual(I2V_UNMAPPED);
+    expect(mappedCount(endpointMap)).toBe(5);
     expect(Object.keys(endpointMap)).toHaveLength(10);
   });
 
@@ -865,10 +895,10 @@ describe("frontier snapshots", () => {
 
   it("requires an explicit endpoint list for every leaderboard model", () => {
     const dropped = { ...endpointMap };
-    delete dropped["FLUX 3"];
+    delete dropped["HeyGen Video 1"];
     expect(
       endpointMapProblems(snapshot, dropped).some((problem) =>
-        problem.includes("FLUX 3")
+        problem.includes("HeyGen Video 1")
       )
     ).toBe(true);
     expect(
@@ -961,7 +991,7 @@ describe("frontier image snapshots", () => {
     expect(t2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/text-to-image"
     );
-    expect(t2i.snapshot.capturedOn).toBe("2026-10-22");
+    expect(t2i.snapshot.capturedOn).toBe("2026-11-11");
     expect(t2i.snapshot.methodology).toBe(
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators."
     );
@@ -975,7 +1005,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(T2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2i.snapshot)).toEqual([]);
     expect(unmappedNames(t2i.endpointMap)).toEqual(T2I_UNMAPPED);
-    expect(mappedCount(t2i.endpointMap)).toBe(8);
+    expect(mappedCount(t2i.endpointMap)).toBe(6);
     expect(Object.keys(t2i.endpointMap)).toHaveLength(10);
   });
 
@@ -984,7 +1014,7 @@ describe("frontier image snapshots", () => {
     expect(i2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/editing"
     );
-    expect(i2i.snapshot.capturedOn).toBe("2026-10-22");
+    expect(i2i.snapshot.capturedOn).toBe("2026-11-11");
     expect(i2i.snapshot.methodology).toBe(
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes."
     );
@@ -998,7 +1028,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(I2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(i2i.snapshot)).toEqual([]);
     expect(unmappedNames(i2i.endpointMap)).toEqual(I2I_UNMAPPED);
-    expect(mappedCount(i2i.endpointMap)).toBe(8);
+    expect(mappedCount(i2i.endpointMap)).toBe(4);
     expect(Object.keys(i2i.endpointMap)).toHaveLength(10);
   });
 
@@ -1066,30 +1096,37 @@ describe("frontier image snapshots", () => {
     ).toBe(true);
   });
 
-  // gptImage1p5 carries no type keyword; it resolves on t2i because its schema
-  // takes a prompt and an image count and size, and no media input.
-  it("maps GPT Image 1.5 through the fal leaf, the KIE id and OpenAI", () => {
-    expect(t2i.endpointMap["GPT Image 1.5 (high)"]).toEqual([
+  // openai.gptImage2 carries no type keyword; it resolves on t2i because its
+  // schema takes a prompt and an image count and size, and no media input.
+  it("maps GPT Image 2 through the fal leaf, the KIE id, MachGen and OpenAI", () => {
+    expect(textCarriesTypeKeyword("t2i", "openai.gptImage2")).toBe(false);
+    expect(t2i.endpointMap["GPT Image 2 (high)"]).toEqual([
       {
         provider: "fal",
-        dotPath: "gptImage1p5",
-        pricingKey: "fal-ai/gpt-image-1.5",
+        dotPath: "openai.gptImage2",
+        pricingKey: "openai/gpt-image-2",
       },
       {
         provider: "kie",
         dotPath: "api.v1.jobs.createTask",
-        modelId: "gpt-image/1.5-text-to-image",
+        modelId: "gpt-image-2-text-to-image",
+      },
+      {
+        provider: "machgen",
+        dotPath: "api.v0.generate",
+        modelId: "GPT-Image-2",
       },
       {
         provider: "openai",
         dotPath: "v1.images.generations",
-        modelId: "gpt-image-1.5",
+        modelId: "gpt-image-2",
       },
     ]);
   });
 
   // PRICING.openai prices each GPT Image id, so the rows carry no pricingKey.
-  it("lists OpenAI's images calls on every GPT Image row", () => {
+  // GPT Image 2.6 is not yet in apicity, so its rows have no OpenAI call.
+  it("lists OpenAI's images calls on every mapped GPT Image row", () => {
     const openaiRows = (
       map: Record<string, ReadonlyArray<{ provider: string }>>
     ) =>
@@ -1115,7 +1152,6 @@ describe("frontier image snapshots", () => {
         "gpt-image-2.5-flare"
       ),
       "GPT Image 2 (high)": row("v1.images.generations", "gpt-image-2"),
-      "GPT Image 1.5 (high)": row("v1.images.generations", "gpt-image-1.5"),
     });
     expect(openaiRows(i2i.endpointMap)).toEqual({
       "GPT Image 2.5 Sunburst (max)": row(
@@ -1126,7 +1162,6 @@ describe("frontier image snapshots", () => {
         "v1.images.edits",
         "gpt-image-2.5-flare"
       ),
-      "GPT Image 2 (high)": row("v1.images.edits", "gpt-image-2"),
     });
   });
 
@@ -1215,7 +1250,6 @@ describe("frontier image snapshots", () => {
           "GPT Image 2.5 Sunburst (max)",
           "GPT Image 2.5 Flare (max)",
           "Nano Banana 2.1",
-          "GPT Image 2 (high)",
         ],
         MACHGEN_IMAGE_IDS
       )
@@ -1251,42 +1285,42 @@ describe("frontier video snapshots", () => {
     expect(t2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/text-to-video"
     );
-    expect(t2v.snapshot.capturedOn).toBe("2026-10-22");
+    expect(t2v.snapshot.capturedOn).toBe("2026-11-11");
     expect(t2v.snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
     expect(seedRows(t2v.snapshot)).toEqual(T2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2v.snapshot)).toEqual([]);
     expect(unmappedNames(t2v.endpointMap)).toEqual(T2V_UNMAPPED);
-    expect(mappedCount(t2v.endpointMap)).toBe(9);
+    expect(mappedCount(t2v.endpointMap)).toBe(7);
     expect(Object.keys(t2v.endpointMap)).toHaveLength(10);
   });
 
-  it("commits all nine AA-Video-Editing v1.1 models verbatim", () => {
+  it("commits the AA-Video-Editing v1.1 top 10 verbatim", () => {
     expect(v2v.snapshot.leaderboardId).toBe("AA-Video-Editing v1.1");
     expect(v2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/video-editing"
     );
-    expect(v2v.snapshot.capturedOn).toBe("2026-10-22");
+    expect(v2v.snapshot.capturedOn).toBe("2026-11-11");
     expect(v2v.snapshot.methodology).toBe(
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes."
     );
     expect(seedRows(v2v.snapshot)).toEqual(V2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(v2v.snapshot)).toEqual([]);
-    expect(unmappedNames(v2v.endpointMap)).toEqual([]);
-    expect(mappedCount(v2v.endpointMap)).toBe(9);
-    expect(Object.keys(v2v.endpointMap)).toHaveLength(9);
+    expect(unmappedNames(v2v.endpointMap)).toEqual(V2V_UNMAPPED);
+    expect(mappedCount(v2v.endpointMap)).toBe(8);
+    expect(Object.keys(v2v.endpointMap)).toHaveLength(10);
   });
 
   it("derives r2v from the t2v and i2v top 10", () => {
     expect(r2v.snapshot.derived).toBe(true);
     expect(r2v.snapshot.sources).toEqual([
       "AA-Video-T2V v2.1",
-      "AA-Video-I2V v1.1",
+      "AA-Video-I2V v2.1",
     ]);
     expect(r2v.snapshot).not.toHaveProperty("leaderboardId");
     expect(r2v.snapshot.sourceUrl).toBe(t2v.snapshot.sourceUrl);
-    expect(r2v.snapshot.capturedOn).toBe("2026-10-22");
+    expect(r2v.snapshot.capturedOn).toBe("2026-11-11");
     expect(r2v.snapshot.methodology).toBe(
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard."
     );
@@ -1294,7 +1328,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(9);
+    expect(mappedCount(r2v.endpointMap)).toBe(6);
 
     const ranked = [
       ...new Set([
@@ -1311,47 +1345,62 @@ describe("frontier video snapshots", () => {
     const entries = r2v.snapshot.entries;
     const problemsFor = (
       changed: Array<(typeof entries)[number]>,
-      endpointMap = r2v.endpointMap
+      endpointMap = r2v.endpointMap,
+      boards = sources
     ) =>
       derivedProblems(
         { ...r2v.snapshot, entries: changed },
         endpointMap,
-        sources
+        boards
       );
 
-    const swapped = [entries[2], entries[1], ...entries.slice(3)];
+    // HeyGen Video 1 (1153) ahead of Dreamina Seedance 2.5 (1161).
+    const swapped = [entries[3], entries[2], ...entries.slice(4)];
     expect(
-      problemsFor([entries[0], ...swapped]).some((problem) =>
+      problemsFor([entries[0], entries[1], ...swapped]).some((problem) =>
         problem.includes("best Elo down")
       )
     ).toBe(true);
+    // MiniMax H3 (768p) and Dreamina Seedance 2.5 tie at 1161, and the tie
+    // keeps source order: the t2v model ranks ahead of the i2v one.
+    const tied = [entries[2], entries[1], ...entries.slice(3)];
     expect(
-      problemsFor(
-        entries.map((entry) =>
-          entry.model === "Gemini Omni Flash 1.1"
-            ? { ...entry, elo: 1130 }
-            : entry
-        )
-      ).some((problem) => problem.includes("elo must be 1132"))
+      problemsFor([entries[0], ...tied]).some((problem) =>
+        problem.includes("best Elo down")
+      )
     ).toBe(true);
+    // Dreamina Seedance 2.5 has 1155 on t2v and its better 1161 on i2v.
     expect(
       problemsFor(
         entries.map((entry) =>
           entry.model === "Dreamina Seedance 2.5"
-            ? { ...entry, creator: "ByteDance" }
+            ? { ...entry, elo: 1155 }
             : entry
+        )
+      ).some((problem) => problem.includes("elo must be 1161"))
+    ).toBe(true);
+    // MiniMax H3 Max takes its better Elo from t2v, so a creator only the
+    // i2v board gives it is refused.
+    const creditMiniMax = (entry: (typeof entries)[number]) =>
+      entry.model === "MiniMax H3 Max"
+        ? { ...entry, creator: "MiniMax" }
+        : entry;
+    expect(
+      problemsFor(
+        entries.map(creditMiniMax),
+        r2v.endpointMap,
+        sources.map((source) =>
+          source.leaderboardId === "AA-Video-I2V v2.1"
+            ? { ...source, entries: source.entries.map(creditMiniMax) }
+            : source
         )
       ).some((problem) => problem.includes("AA-Video-T2V v2.1 gives it"))
     ).toBe(true);
+    // Aleph 2.0 is on the video-editing board, which r2v does not re-rank.
     expect(
       problemsFor([
         ...entries,
-        {
-          rank: 9,
-          model: "Kling 3.0 Omni 1080p (Pro)",
-          creator: "KlingAI",
-          elo: 1000,
-        },
+        { rank: 7, model: "Aleph 2.0", creator: "Runway", elo: 1006 },
       ]).some((problem) => problem.includes("is in no source snapshot"))
     ).toBe(true);
     expect(
@@ -1371,7 +1420,7 @@ describe("frontier video snapshots", () => {
       "snapshot.sources must list the source leaderboard ids"
     );
     expect(
-      snapshotProblems({ ...t2v.snapshot, sources: ["AA-Video-I2V v1.1"] })
+      snapshotProblems({ ...t2v.snapshot, sources: ["AA-Video-I2V v2.1"] })
     ).toContain("snapshot.sources belongs to a derived snapshot");
   });
 
@@ -1567,24 +1616,17 @@ describe("frontier video snapshots", () => {
   it("lists MachGen through its generate call for t2v, i2v and r2v", () => {
     const expected = (models: string[]) => machgenGenerate(models, MACHGEN_IDS);
     expect(machgenRows(t2v.endpointMap)).toEqual(
-      expected([
-        "Wan 3.0",
-        "MiniMax H3 (768p)",
-        "Dreamina Seedance 2.5",
-        "Dreamina Seedance 2.0",
-      ])
+      expected(["Wan 3.0", "MiniMax H3 (768p)", "Dreamina Seedance 2.5"])
     );
     expect(machgenRows(i2v.endpointMap)).toEqual(
-      expected(Object.keys(MACHGEN_IDS))
-    );
-    expect(machgenRows(r2v.endpointMap)).toEqual(
       expected([
-        "Wan 3.0",
-        "MiniMax H3 (768p)",
         "Dreamina Seedance 2.5",
         "Dreamina Seedance 2.0",
-        "HappyHorse-1.1",
+        "MiniMax H3 (768p)",
       ])
+    );
+    expect(machgenRows(r2v.endpointMap)).toEqual(
+      expected(Object.keys(MACHGEN_IDS))
     );
     expect(machgenRows(v2v.endpointMap)).toEqual({});
   });
@@ -1628,40 +1670,40 @@ describe("frontier video snapshots", () => {
       ...maps,
       r2v: {
         ...maps.r2v,
-        "Dreamina Seedance 2.0": maps.r2v["Dreamina Seedance 2.0"].filter(
+        "Dreamina Seedance 2.5": maps.r2v["Dreamina Seedance 2.5"].filter(
           (entry) => !entry.dotPath.includes(".us.")
         ),
       },
     };
     expect(crossTypeProblems(withoutTwin, ctx)).toContain(
-      "Dreamina Seedance 2.0: t2v fal bytedance.seedance2p0.us.textToVideo implies r2v fal bytedance.seedance2p0.us.referenceToVideo"
+      "Dreamina Seedance 2.5: t2v fal bytedance.seedance2p5.us.textToVideo implies r2v fal bytedance.seedance2p5.us.referenceToVideo"
     );
     const withoutModel = { ...maps, r2v: { ...maps.r2v } };
-    delete withoutModel.r2v["HappyHorse-1.1"];
+    delete withoutModel.r2v["MiniMax H3 (768p)"];
     expect(crossTypeProblems(withoutModel, ctx)).toContain(
-      "HappyHorse-1.1: i2v kie happyhorse-1-1/image-to-video implies r2v kie happyhorse-1-1/reference-to-video"
+      "MiniMax H3 (768p): i2v kie minimax-h3/image-to-video implies r2v kie minimax-h3/reference-to-video"
     );
 
-    // The image-to-video leaf names no model id (it sends the preview
-    // alias), so the r2v shared callable's i2v twin is missing.
-    const withLeaf = {
+    // A KIE row that names no model id is on the same call but is not the
+    // twin of the r2v shared id, so the i2v twin is missing.
+    const withoutModelId = {
       ...maps,
       i2v: {
         ...maps.i2v,
-        "Grok Imagine Video 1.5": maps.i2v["Grok Imagine Video 1.5"].map(
+        "Dreamina Seedance 2.0": maps.i2v["Dreamina Seedance 2.0"].map(
           (entry) =>
-            entry.provider === "xai"
+            entry.provider === "kie"
               ? {
-                  provider: "xai",
-                  dotPath: "v1.videos.generations.imageToVideo",
-                  pricingKey: "grok-imagine-video-1.5-preview",
+                  provider: "kie",
+                  dotPath: entry.dotPath,
+                  pricingKey: "unpriced",
                 }
               : entry
         ),
       },
     };
-    expect(crossTypeProblems(withLeaf, ctx)).toContain(
-      "Grok Imagine Video 1.5: r2v xai grok-imagine-video-1.5 implies i2v xai grok-imagine-video-1.5"
+    expect(crossTypeProblems(withoutModelId, ctx)).toContain(
+      "Dreamina Seedance 2.0: r2v kie bytedance/seedance-2 implies i2v kie bytedance/seedance-2"
     );
   });
 });
@@ -1693,7 +1735,7 @@ describe("frontier generated registry", () => {
       leaderboardId: "",
       sourceUrl:
         "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-      capturedOn: "2026-10-22",
+      capturedOn: "2026-11-11",
     });
     expect(frontier("video-editing")).toEqual(frontier("v2v"));
     expect(
@@ -1703,9 +1745,12 @@ describe("frontier generated registry", () => {
       R2V_SEED.map((row) => row[1])
     );
 
+    // An unmapped model has no endpoint, so it yields no row.
     const rows = frontier("i2v");
     expect([...new Set(rows.map((row) => row.model))]).toEqual(
-      I2V_SEED.map((row) => row[1])
+      I2V_SEED.map((row) => row[1]).filter(
+        (model) => !I2V_UNMAPPED.includes(model)
+      )
     );
     expect(frontier("image-to-video")).toEqual(rows);
     expect(frontierType("image-editing")).toBe("i2i");
@@ -1726,11 +1771,11 @@ describe("frontier generated registry", () => {
       "reference-to-video is derived because no leaderboard"
     );
     expect(doc).toContain("leaderboard\nexists.");
-    expect(doc).toContain("image-to-video),\ncaptured 2026-10-22");
-    expect(doc).toContain("text-to-image),\ncaptured 2026-10-22");
-    expect(doc).toContain("editing),\ncaptured 2026-10-22");
-    expect(doc).toContain("text-to-video),\ncaptured 2026-10-22");
-    expect(doc).toContain("video-editing),\ncaptured 2026-10-22");
+    expect(doc).toContain("image-to-video),\ncaptured 2026-11-11");
+    expect(doc).toContain("text-to-image),\ncaptured 2026-11-11");
+    expect(doc).toContain("editing),\ncaptured 2026-11-11");
+    expect(doc).toContain("text-to-video),\ncaptured 2026-11-11");
+    expect(doc).toContain("video-editing),\ncaptured 2026-11-11");
     expect(doc).toContain("not yet in apicity");
     expect(doc).not.toMatch(/^, captured /m);
     expect(doc).not.toContain("no data yet");
@@ -1746,12 +1791,12 @@ describe("frontier generated registry", () => {
     }
     const derived = doc.slice(doc.indexOf("## reference-to-video"));
     expect(derived).toContain(
-      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v1.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-10-22. Derived:"
+      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v2.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-11-11. Derived:"
     );
     expect(doc).toContain("fal `minimax.h3.imageToVideo`");
     expect(doc).toContain("kie `minimax-h3/image-to-video`");
     expect(doc).toContain("fal `geminiOmniFlash.v1p1.edit`");
-    expect(doc).toContain("xai `grok-imagine-video-1.5`");
+    expect(doc).toContain("xai `grok-imagine-image-2.0`");
     expect(doc).toContain("machgen `Alibaba-Wan-3.0`");
     expect(doc).toContain("## Refresh");
     expect(doc).toContain("re-derives `r2v`");
@@ -2024,13 +2069,15 @@ describe("frontier prices", () => {
       }
     }
 
-    const xai = frontierFiles("i2v").endpointMap[
-      "Grok Imagine Video 1.5"
+    // PRICING.xai prices the Grok id, so the xai row names it and carries no
+    // pricingKey.
+    const xai = frontierFiles("t2i").endpointMap[
+      "Grok Imagine Image 2.0"
     ]?.find((entry) => entry.provider === "xai");
     expect(xai).toEqual({
       provider: "xai",
-      dotPath: "v1.videos.generations",
-      modelId: XAI_GROK_IMAGINE_VIDEO_1_5,
+      dotPath: "v1.images.generations",
+      modelId: "grok-imagine-image-2.0",
     });
   });
 });

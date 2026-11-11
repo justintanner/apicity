@@ -27,7 +27,7 @@
     "type": "i2v",
     "name": "image-to-video",
     "aliases": [],
-    "leaderboardId": "AA-Video-I2V v1.1",
+    "leaderboardId": "AA-Video-I2V v2.1",
     "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/image-to-video",
     "derived": false
   },

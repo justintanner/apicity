@@ -14,7 +14,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     derived: false,
@@ -25,7 +25,7 @@ export const FRONTIER_TYPES = [
     aliases: ["image-editing"],
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     derived: false,
@@ -36,7 +36,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -44,9 +44,9 @@ export const FRONTIER_TYPES = [
     type: "i2v",
     name: "image-to-video",
     aliases: [],
-    leaderboardId: "AA-Video-I2V v1.1",
+    leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -56,7 +56,7 @@ export const FRONTIER_TYPES = [
     aliases: ["video-editing"],
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     derived: false,
@@ -67,7 +67,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     derived: true,
@@ -78,15 +78,22 @@ export const FRONTIER = {
   t2i: {
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     entries: [
       {
         rank: 1,
+        model: "GPT Image 2.6 Sunburst (max)",
+        creator: "OpenAI",
+        elo: 1261,
+        endpoints: [],
+      },
+      {
+        rank: 2,
         model: "GPT Image 2.5 Sunburst (max)",
         creator: "OpenAI",
-        elo: 1222,
+        elo: 1229,
         endpoints: [
           {
             provider: "fal",
@@ -111,10 +118,17 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 2,
+        rank: 3,
+        model: "GPT Image 2.6 Flare (max)",
+        creator: "OpenAI",
+        elo: 1226,
+        endpoints: [],
+      },
+      {
+        rank: 4,
         model: "GPT Image 2.5 Flare (max)",
         creator: "OpenAI",
-        elo: 1207,
+        elo: 1210,
         endpoints: [
           {
             provider: "fal",
@@ -139,10 +153,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
+        rank: 5,
         model: "GPT Image 2 (high)",
         creator: "OpenAI",
-        elo: 1186,
+        elo: 1190,
         endpoints: [
           {
             provider: "fal",
@@ -167,7 +181,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
+        rank: 6,
         model: "Nano Banana 2.1",
         creator: "Google",
         elo: 1176,
@@ -190,17 +204,17 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 7,
         model: "MAI-Image-2.6",
         creator: "Microsoft AI",
-        elo: 1166,
+        elo: 1170,
         endpoints: [],
       },
       {
-        rank: 6,
+        rank: 8,
         model: "Grok Imagine Image 2.0",
         creator: "SpaceXAI",
-        elo: 1166,
+        elo: 1168,
         endpoints: [
           {
             provider: "fal",
@@ -220,10 +234,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 9,
         model: "Nano Banana 2 (Gemini 3.1 Flash Image)",
         creator: "Google",
-        elo: 1140,
+        elo: 1143,
         endpoints: [
           {
             provider: "fal",
@@ -254,46 +268,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
-        model: "Muse Image",
-        creator: "Meta",
-        elo: 1127,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "meta.museImage.textToImage",
-            pricingKey: "meta/muse-image/text-to-image",
-          },
-        ],
-      },
-      {
-        rank: 9,
-        model: "GPT Image 1.5 (high)",
-        creator: "OpenAI",
-        elo: 1123,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "gptImage1p5",
-            pricingKey: "fal-ai/gpt-image-1.5",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "gpt-image/1.5-text-to-image",
-          },
-          {
-            provider: "openai",
-            dotPath: "v1.images.generations",
-            modelId: "gpt-image-1.5",
-          },
-        ],
-      },
-      {
         rank: 10,
-        model: "MAI-Image-2.6-Flash",
-        creator: "Microsoft AI",
-        elo: 1119,
+        model: "Seedream 5.5",
+        creator: "ByteDance Seed",
+        elo: 1135,
         endpoints: [],
       },
     ],
@@ -301,12 +279,26 @@ export const FRONTIER = {
   i2i: {
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     entries: [
       {
         rank: 1,
+        model: "GPT Image 2.6 Sunburst (max)",
+        creator: "OpenAI",
+        elo: 1209,
+        endpoints: [],
+      },
+      {
+        rank: 2,
+        model: "GPT Image 2.6 Flare (max)",
+        creator: "OpenAI",
+        elo: 1206,
+        endpoints: [],
+      },
+      {
+        rank: 3,
         model: "GPT Image 2.5 Sunburst (max)",
         creator: "OpenAI",
         elo: 1200,
@@ -334,7 +326,14 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 2,
+        rank: 4,
+        model: "MAI-Image-2.7-Preview",
+        creator: "Microsoft AI",
+        elo: 1198,
+        endpoints: [],
+      },
+      {
+        rank: 5,
         model: "GPT Image 2.5 Flare (max)",
         creator: "OpenAI",
         elo: 1183,
@@ -362,14 +361,27 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
-        model: "MAI-Image-2.6",
-        creator: "Microsoft AI",
-        elo: 1153,
+        rank: 6,
+        model: "Seedream 5.5",
+        creator: "ByteDance Seed",
+        elo: 1159,
         endpoints: [],
       },
       {
-        rank: 4,
+        rank: 7,
+        model: "Krea 3 (Ultra)",
+        creator: "Krea",
+        elo: 1153,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "krea.v3.edit",
+            pricingKey: "krea/v3/edit",
+          },
+        ],
+      },
+      {
+        rank: 8,
         model: "Nano Banana 2.1",
         creator: "Google",
         elo: 1152,
@@ -392,103 +404,25 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
-        model: "Krea 3 (Ultra)",
-        creator: "Krea",
-        elo: 1152,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "krea.v3.edit",
-            pricingKey: "krea/v3/edit",
-          },
-        ],
-      },
-      {
-        rank: 6,
-        model: "MAI-Image-2.6-Flash",
+        rank: 9,
+        model: "MAI-Image-2.6",
         creator: "Microsoft AI",
-        elo: 1144,
+        elo: 1150,
         endpoints: [],
       },
       {
-        rank: 7,
-        model: "GPT Image 2 (high)",
-        creator: "OpenAI",
-        elo: 1137,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "openai.gptImage2.edit",
-            pricingKey: "openai/gpt-image-2/edit",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "gpt-image-2-image-to-image",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "GPT-Image-2",
-          },
-          {
-            provider: "openai",
-            dotPath: "v1.images.edits",
-            modelId: "gpt-image-2",
-          },
-        ],
-      },
-      {
-        rank: 8,
-        model: "Seedream 5.0 Pro",
-        creator: "ByteDance Seed",
-        elo: 1132,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "bytedance.seedream.v5.pro.edit",
-            pricingKey: "bytedance/seedream/v5/pro/edit",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "seedream/5-pro-image-to-image",
-          },
-        ],
-      },
-      {
-        rank: 9,
-        model: "Muse Image",
-        creator: "Meta",
-        elo: 1131,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "meta.museImage.edit",
-            pricingKey: "meta/muse-image/edit",
-          },
-        ],
-      },
-      {
         rank: 10,
-        model: "MAI-Image-2.5",
+        model: "MAI-Image-2.6-Flash",
         creator: "Microsoft AI",
-        elo: 1128,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "microsoft.maiImage2p5Pro.edit",
-            pricingKey: "microsoft/mai-image-2.5-pro/edit",
-          },
-        ],
+        elo: 1143,
+        endpoints: [],
       },
     ],
   },
   t2v: {
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
@@ -533,32 +467,14 @@ export const FRONTIER = {
         rank: 2,
         model: "Utopai X",
         creator: "Utopai Studios",
-        elo: 1167,
+        elo: 1168,
         endpoints: [],
       },
       {
         rank: 3,
-        model: "HeyGen Video (ultraquality)",
-        creator: "HeyGen",
-        elo: 1160,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "heygen.heygenVideo.textToVideo",
-            pricingKey: "heygen/heygen-video/text-to-video",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.heygen.video1p0.textToVideo",
-            pricingKey: "heygen/video-1.0/text-to-video",
-          },
-        ],
-      },
-      {
-        rank: 4,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
-        elo: 1158,
+        elo: 1161,
         endpoints: [
           {
             provider: "fal",
@@ -583,10 +499,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 4,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
-        elo: 1158,
+        elo: 1155,
         endpoints: [
           {
             provider: "fal",
@@ -616,9 +532,9 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
-        model: "FLUX 3 Max (720p)",
-        creator: "Black Forest Labs",
+        rank: 5,
+        model: "FLUX 3 Max",
+        creator: "Fal",
         elo: 1155,
         endpoints: [
           {
@@ -629,10 +545,35 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
-        model: "MiniMax H3 Max",
-        creator: "MiniMax",
+        rank: 6,
+        model: "Gemini Omni Flash 1.2",
+        creator: "Google",
         elo: 1154,
+        endpoints: [],
+      },
+      {
+        rank: 7,
+        model: "HeyGen Video 1",
+        creator: "HeyGen",
+        elo: 1153,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "heygen.heygenVideo.textToVideo",
+            pricingKey: "heygen/heygen-video/text-to-video",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.heygen.video1p0.textToVideo",
+            pricingKey: "heygen/video-1.0/text-to-video",
+          },
+        ],
+      },
+      {
+        rank: 8,
+        model: "MiniMax H3 Max",
+        creator: "Fal",
+        elo: 1147,
         endpoints: [
           {
             provider: "fal",
@@ -647,10 +588,17 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
+        model: "SkyReels V4",
+        creator: "Skywork AI",
+        elo: 1138,
+        endpoints: [],
+      },
+      {
+        rank: 10,
         model: "FLUX 3",
         creator: "Black Forest Labs",
-        elo: 1145,
+        elo: 1138,
         endpoints: [
           {
             provider: "fal",
@@ -664,121 +612,19 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 9,
-        model: "Dreamina Seedance 2.0",
-        creator: "ByteDance Seed",
-        elo: 1136,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "bytedance.seedance2p0.textToVideo",
-            pricingKey: "bytedance/seedance-2.0/text-to-video",
-          },
-          {
-            provider: "fal",
-            dotPath: "bytedance.seedance2p0.us.textToVideo",
-            pricingKey: "bytedance/seedance-2.0/us/text-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "bytedance/seedance-2",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "Seedance-2.0",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.bytedance.seedance2p0.textToVideo",
-            pricingKey: "bytedance/seedance-2.0/text-to-video",
-          },
-        ],
-      },
-      {
-        rank: 10,
-        model: "Gemini Omni Flash 1.1",
-        creator: "Google",
-        elo: 1130,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "geminiOmniFlash.v1p1.textToVideo",
-            pricingKey: "google/gemini-omni-flash/v1.1/text-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "google/gemini-omni-flash-1-1",
-          },
-          {
-            provider: "googleflow",
-            dotPath: "v1.videos",
-            modelId: "omni-flash",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.google.geminiOmni1p1Flash.textToVideo",
-            pricingKey: "google/gemini-omni-1.1-flash/text-to-video",
-          },
-        ],
-      },
     ],
   },
   i2v: {
-    leaderboardId: "AA-Video-I2V v1.1",
+    leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
         rank: 1,
-        model: "MiniMax H3 (768p)",
-        creator: "MiniMax",
-        elo: 1140,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "minimax.h3.imageToVideo",
-            pricingKey: "minimax/h3/image-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "minimax-h3/image-to-video",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "MiniMax-H3",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.minimax.h3.imageToVideo",
-            pricingKey: "minimax/h3/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 2,
-        model: "FLUX 3 Max (720p)",
-        creator: "Black Forest Labs",
-        elo: 1138,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "blackforestlabs.flux3Max.imageToVideo",
-            pricingKey: "blackforestlabs/flux-3-max/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 3,
         model: "Dreamina Seedance 2.5",
-        creator: "ByteDance",
-        elo: 1138,
+        creator: "ByteDance Seed",
+        elo: 1161,
         endpoints: [
           {
             provider: "fal",
@@ -808,94 +654,17 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
-        model: "Gemini Omni Flash 1.1",
-        creator: "Google",
-        elo: 1132,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "geminiOmniFlash.v1p1.imageToVideo",
-            pricingKey: "google/gemini-omni-flash/v1.1/image-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "google/gemini-omni-flash-1-1",
-          },
-          {
-            provider: "googleflow",
-            dotPath: "v1.videos",
-            modelId: "omni-flash",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.google.geminiOmni1p1Flash.imageToVideo",
-            pricingKey: "google/gemini-omni-1.1-flash/image-to-video",
-          },
-        ],
+        rank: 2,
+        model: "Utopai X",
+        creator: "Utopai Studios",
+        elo: 1151,
+        endpoints: [],
       },
       {
-        rank: 5,
-        model: "Wan 3.0",
-        creator: "Alibaba",
-        elo: 1127,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "alibaba.wan3p0.imageToVideo",
-            pricingKey: "alibaba/wan-3.0/image-to-video",
-          },
-          {
-            provider: "fal",
-            dotPath: "alibaba.wan3p0Prime.imageToVideo",
-            pricingKey: "alibaba/wan-3.0-prime/image-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "wan/3-0-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "wan/3-0-video-prime",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "Alibaba-Wan-3.0",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.alibaba.wan3p0.imageToVideo",
-            pricingKey: "alibaba/wan-3.0/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 6,
-        model: "MiniMax H3 Max",
-        creator: "MiniMax",
-        elo: 1125,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "minimax.h3Max.imageToVideo",
-            pricingKey: "minimax/h3-max/image-to-video",
-          },
-          {
-            provider: "fal",
-            dotPath: "minimax.h3MaxTurbo.imageToVideo",
-            pricingKey: "minimax/h3-max-turbo/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 7,
+        rank: 3,
         model: "Dreamina Seedance 2.0",
-        creator: "ByteDance",
-        elo: 1121,
+        creator: "ByteDance Seed",
+        elo: 1140,
         endpoints: [
           {
             provider: "fal",
@@ -925,95 +694,98 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
-        model: "FLUX 3",
-        creator: "Black Forest Labs",
-        elo: 1086,
+        rank: 4,
+        model: "MiniMax H3 (768p)",
+        creator: "MiniMax",
+        elo: 1133,
         endpoints: [
           {
             provider: "fal",
-            dotPath: "blackforestlabs.flux3.imageToVideo",
-            pricingKey: "blackforestlabs/flux-3/image-to-video",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.blackForestLabs.flux3.imageToVideo",
-            pricingKey: "black-forest-labs/flux-3/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 9,
-        model: "Grok Imagine Video 1.5",
-        creator: "SpaceXAI",
-        elo: 1067,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "xai.grokImagineVideo.v1p5.imageToVideo",
-            pricingKey: "xai/grok-imagine-video/v1.5/image-to-video",
+            dotPath: "minimax.h3.imageToVideo",
+            pricingKey: "minimax/h3/image-to-video",
           },
           {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
-            modelId: "grok-imagine/image-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "grok-imagine-video-1-5-preview",
-          },
-          {
-            provider: "xai",
-            dotPath: "v1.videos.generations",
-            modelId: "grok-imagine-video-1.5",
+            modelId: "minimax-h3/image-to-video",
           },
           {
             provider: "machgen",
             dotPath: "api.v0.generate",
-            modelId: "Grok-Imagine-Video-1.5",
+            modelId: "MiniMax-H3",
           },
           {
             provider: "wavespeed",
-            dotPath: "api.v3.xAi.grokImagineVideoV1p5.imageToVideo",
-            pricingKey: "x-ai/grok-imagine-video-v1.5/image-to-video",
+            dotPath: "api.v3.minimax.h3.imageToVideo",
+            pricingKey: "minimax/h3/image-to-video",
+          },
+        ],
+      },
+      {
+        rank: 5,
+        model: "SkyReels V4",
+        creator: "Skywork AI",
+        elo: 1125,
+        endpoints: [],
+      },
+      {
+        rank: 6,
+        model: "HeyGen Video 1",
+        creator: "HeyGen",
+        elo: 1124,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "heygen.heygenVideo.imageToVideo",
+            pricingKey: "heygen/heygen-video/image-to-video",
+          },
+        ],
+      },
+      {
+        rank: 7,
+        model: "Hyperflow H3",
+        creator: "Video Rebirth",
+        elo: 1120,
+        endpoints: [],
+      },
+      {
+        rank: 8,
+        model: "P-Video-2-Pro",
+        creator: "Pruna AI",
+        elo: 1116,
+        endpoints: [],
+      },
+      {
+        rank: 9,
+        model: "MiniMax H3 Max",
+        creator: "Fal",
+        elo: 1115,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "minimax.h3Max.imageToVideo",
+            pricingKey: "minimax/h3-max/image-to-video",
+          },
+          {
+            provider: "fal",
+            dotPath: "minimax.h3MaxTurbo.imageToVideo",
+            pricingKey: "minimax/h3-max-turbo/image-to-video",
           },
         ],
       },
       {
         rank: 10,
-        model: "HappyHorse-1.1",
-        creator: "Alibaba",
-        elo: 1061,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "alibaba.happyHorse.v1p1.imageToVideo",
-            pricingKey: "alibaba/happy-horse/v1.1/image-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "happyhorse-1-1/image-to-video",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "HappyHorse-1.1",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.alibaba.happyhorse1p1.imageToVideo",
-            pricingKey: "alibaba/happyhorse-1.1/image-to-video",
-          },
-        ],
+        model: "Pika H3 Flex",
+        creator: "Pika Art",
+        elo: 1114,
+        endpoints: [],
       },
     ],
   },
   v2v: {
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     entries: [
@@ -1021,7 +793,7 @@ export const FRONTIER = {
         rank: 1,
         model: "Wan 3.0",
         creator: "Alibaba",
-        elo: 1198,
+        elo: 1192,
         endpoints: [
           {
             provider: "wavespeed",
@@ -1032,9 +804,23 @@ export const FRONTIER = {
       },
       {
         rank: 2,
+        model: "Gemini Omni Flash 1.2",
+        creator: "Google",
+        elo: 1164,
+        endpoints: [],
+      },
+      {
+        rank: 3,
+        model: "Hyperflow H3",
+        creator: "Video Rebirth",
+        elo: 1149,
+        endpoints: [],
+      },
+      {
+        rank: 4,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
-        elo: 1155,
+        elo: 1147,
         endpoints: [
           {
             provider: "fal",
@@ -1054,10 +840,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
+        rank: 5,
         model: "Gemini Omni Flash 1.1",
         creator: "Google",
-        elo: 1148,
+        elo: 1146,
         endpoints: [
           {
             provider: "fal",
@@ -1077,10 +863,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
+        rank: 6,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
-        elo: 1124,
+        elo: 1119,
         endpoints: [
           {
             provider: "wavespeed",
@@ -1090,10 +876,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 7,
         model: "HappyHorse-1.0",
         creator: "Alibaba-ATH",
-        elo: 1090,
+        elo: 1085,
         endpoints: [
           {
             provider: "fal",
@@ -1113,10 +899,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
+        rank: 8,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
-        elo: 1082,
+        elo: 1076,
         endpoints: [
           {
             provider: "wavespeed",
@@ -1126,10 +912,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 9,
         model: "Wan 2.7",
         creator: "Alibaba",
-        elo: 1077,
+        elo: 1071,
         endpoints: [
           {
             provider: "fal",
@@ -1154,10 +940,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 10,
         model: "Aleph 2.0",
         creator: "Runway",
-        elo: 1012,
+        elo: 1006,
         endpoints: [
           {
             provider: "wavespeed",
@@ -1166,40 +952,12 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 9,
-        model: "Kling 3.0 Omni 1080p (Pro)",
-        creator: "KlingAI",
-        elo: 1000,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "klingVideo.o3.pro.videoToVideo.edit",
-            pricingKey: "fal-ai/kling-video/o3/pro/video-to-video/edit",
-          },
-          {
-            provider: "fal",
-            dotPath: "klingVideo.o3.pro.videoToVideo.reference",
-            pricingKey: "fal-ai/kling-video/o3/pro/video-to-video/reference",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "kling-3.0-omni/transformation",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.kwaivgi.klingVideoO3Pro.videoEdit",
-            pricingKey: "kwaivgi/kling-video-o3-pro/video-edit",
-          },
-        ],
-      },
     ],
   },
   r2v: {
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-10-22",
+    capturedOn: "2026-11-11",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     entries: [
@@ -1243,27 +1001,9 @@ export const FRONTIER = {
       },
       {
         rank: 2,
-        model: "HeyGen Video (ultraquality)",
-        creator: "HeyGen",
-        elo: 1160,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "heygen.heygenVideo.referenceToVideo",
-            pricingKey: "heygen/heygen-video/reference-to-video",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.heygen.video1p0.referenceToVideo",
-            pricingKey: "heygen/video-1.0/reference-to-video",
-          },
-        ],
-      },
-      {
-        rank: 3,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
-        elo: 1158,
+        elo: 1161,
         endpoints: [
           {
             provider: "fal",
@@ -1288,10 +1028,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
+        rank: 3,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
-        elo: 1158,
+        elo: 1161,
         endpoints: [
           {
             provider: "fal",
@@ -1321,10 +1061,28 @@ export const FRONTIER = {
         ],
       },
       {
+        rank: 4,
+        model: "HeyGen Video 1",
+        creator: "HeyGen",
+        elo: 1153,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "heygen.heygenVideo.referenceToVideo",
+            pricingKey: "heygen/heygen-video/reference-to-video",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.heygen.video1p0.referenceToVideo",
+            pricingKey: "heygen/video-1.0/reference-to-video",
+          },
+        ],
+      },
+      {
         rank: 5,
         model: "MiniMax H3 Max",
-        creator: "MiniMax",
-        elo: 1154,
+        creator: "Fal",
+        elo: 1147,
         endpoints: [
           {
             provider: "fal",
@@ -1342,7 +1100,7 @@ export const FRONTIER = {
         rank: 6,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
-        elo: 1136,
+        elo: 1140,
         endpoints: [
           {
             provider: "fal",
@@ -1368,85 +1126,6 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.bytedance.seedance2p0.referenceToVideo",
             pricingKey: "bytedance/seedance-2.0/reference-to-video",
-          },
-        ],
-      },
-      {
-        rank: 7,
-        model: "Gemini Omni Flash 1.1",
-        creator: "Google",
-        elo: 1132,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "geminiOmniFlash.v1p1.referenceToVideo",
-            pricingKey: "google/gemini-omni-flash/v1.1/reference-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "google/gemini-omni-flash-1-1",
-          },
-          {
-            provider: "googleflow",
-            dotPath: "v1.videos",
-            modelId: "omni-flash",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.google.geminiOmni1p1Flash.referenceToVideo",
-            pricingKey: "google/gemini-omni-1.1-flash/reference-to-video",
-          },
-        ],
-      },
-      {
-        rank: 8,
-        model: "Grok Imagine Video 1.5",
-        creator: "SpaceXAI",
-        elo: 1067,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "xai.grokImagineVideo.v1p5.referenceToVideo",
-            pricingKey: "xai/grok-imagine-video/v1.5/reference-to-video",
-          },
-          {
-            provider: "xai",
-            dotPath: "v1.videos.generations",
-            modelId: "grok-imagine-video-1.5",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.xAi.grokImagineVideoV1p5.referenceToVideo",
-            pricingKey: "x-ai/grok-imagine-video-v1.5/reference-to-video",
-          },
-        ],
-      },
-      {
-        rank: 9,
-        model: "HappyHorse-1.1",
-        creator: "Alibaba",
-        elo: 1061,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "alibaba.happyHorse.v1p1.referenceToVideo",
-            pricingKey: "alibaba/happy-horse/v1.1/reference-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "happyhorse-1-1/reference-to-video",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "HappyHorse-1.1",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.alibaba.happyhorse1p1.referenceToVideo",
-            pricingKey: "alibaba/happyhorse-1.1/reference-to-video",
           },
         ],
       },

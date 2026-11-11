@@ -462,6 +462,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The frontier registry (`frontier()`, `docs/frontier.md`) now follows the
+  Artificial Analysis boards as read on 2026-11-11 (was 2026-10-22). Every board
+  moved. New rows, unmapped for now: GPT Image 2.6 Sunburst and Flare (t2i #1/#3,
+  i2i #1/#2), Seedream 5.5, MAI-Image-2.7-Preview, Gemini Omni Flash 1.2 (t2v #6,
+  v2v #2), SkyReels V4, Hyperflow H3, P-Video-2-Pro, Pika H3 Flex and Utopai X on
+  i2v. AA renamed HeyGen Video (ultraquality) to HeyGen Video 1 (now also on i2v,
+  through fal) and FLUX 3 Max (720p) to FLUX 3 Max. Image-to-video is now
+  AA-Video-I2V v2.1, and the video-editing board fills 10 rows. The derived
+  reference-to-video list drops from 9 models to 6 (ac-pehukx).
+
 - KIE repriced the whole Kling family on 2026-11-05, when a promotion ended, and
   the table now follows its credits: 60 cells across 19 keys, all up, 1.08x to
   2.02x. `kling/v2-1-standard` goes from 0.125 and 0.25 USD per video to 0.2525

@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/fal` adds Seedance 2.0 Mini reference-to-video at `run.bytedance.seedance2p0.mini.referenceToVideo` (`POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video`): up to 9 images, 3 videos and 3 audio files as references. `@apicity/cost` prices image references alone statically at 0.007 USD per 1000 output tokens (a recorded call billed 0.2716 USD, exactly the estimate) and fails closed when video or audio references bring in the card's unrecorded reduced rate (ac-5qsajb).
+
 - `@apicity/fal` adds Gemini Omni Flash 1.2 text-to-video at `run.geminiOmniFlash.v1p2.textToVideo` (`POST https://fal.run/google/gemini-omni-flash/v1.2/text-to-video`), #6 on the 2026-11-11 text-to-video board: 3 to 15 seconds at 360p to 4k. `@apicity/cost` prices it dynamically, as the other 1.2 endpoints are, and the frontier registry points Gemini Omni Flash 1.2 at it for text-to-video. A recorded 3 s, 360p call billed 0.088792 USD (ac-c9b83v).
 
 - `@apicity/fal` adds Gemini Omni Flash 1.2 reference-to-video at `run.geminiOmniFlash.v1p2.referenceToVideo` (`POST https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video`): up to ten reference images and three reference videos, 3 to 15 seconds of output. `@apicity/cost` prices it dynamically, as the 1.2 edit is, and the model now enters the derived reference-to-video frontier board at #4 (t2v Elo 1154). A recorded 3 s, 360p call with the owned cat photo billed 0.092852 USD (ac-7tfowj).

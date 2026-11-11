@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.bytedance.seedance2p0.mini.referenceToVideo`
+  (`POST https://fal.run/bytedance/seedance-2.0/mini/reference-to-video`)
+  adds Seedance 2.0 Mini reference-to-video, a leaf on the
+  `bytedance.seedance2p0.mini` object. The schema follows fal's queue OpenAPI
+  (read 2026-11-11): 2.0 Fast reference-to-video's request without
+  `bitrate_mode`, with up to 9 images, 3 videos and 3 audio files (12 files at
+  most, and audio only beside an image or video). A recorded 4 s, 480p,
+  square call with the owned cat photo as its reference billed
+  `x-fal-billable-units` 38.8 (ac-5qsajb).
+
 - `run.geminiOmniFlash.v1p2.textToVideo`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/text-to-video`) adds
   Gemini Omni Flash 1.2 text-to-video, #6 on the 2026-11-11 text-to-video

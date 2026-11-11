@@ -409,6 +409,87 @@ export const FalSeedance2p0FastReferenceToVideoRequestSchema = z
   });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 Mini reference-to-video
+// ---------------------------------------------------------------------------
+
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 d74c296efb90bd55ae0f1936bdd22be6097d4e91d70b1da66df81a0533da6965). Field order follows x-fal-order-properties.
+// The request is 2.0 Fast reference-to-video's without bitrate_mode, with the
+// same two cross-field rules its descriptions document.
+// Docs: https://fal.ai/models/bytedance/seedance-2.0/mini/reference-to-video/api
+export const FalSeedance2p0MiniReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().describe("The text prompt used to generate the video."),
+    image_urls: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "Reference images to guide video generation. Refer to them in the prompt as @Image1, @Image2, etc. Supported formats: JPEG, PNG, WebP, BMP, TIFF, GIF, HEIC, HEIF. Max 30 MB per image. Up to 9 images. Total files across all modalities must not exceed 12."
+      ),
+    video_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Reference videos to guide video generation. Refer to them in the prompt as @Video1, @Video2, etc. Supported formats: MP4, MOV. Up to 3 videos, combined duration must be between 2 and 15 seconds, total size under 50 MB. Each video must be between ~480p (640x640) and ~720p (834x1112) in resolution."
+      ),
+    audio_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Reference audio to guide video generation. Refer to them in the prompt as @Audio1, @Audio2, etc. Supported formats: MP3, WAV. Up to 3 files, combined duration must not exceed 15 seconds. Max 15 MB per file. At least one reference image or video is required."
+      ),
+    resolution: z
+      .enum(["480p", "720p"])
+      .default("720p")
+      .describe(
+        "Video resolution - 480p for faster generation, 720p for balance."
+      ),
+    duration: Seedance2p0ReferenceDurationSchema.default("auto").describe(
+      "Duration of the video in seconds. Supports 4 to 15 seconds, or auto to let the model decide based on the prompt."
+    ),
+    aspect_ratio: Seedance2p0ReferenceAspectRatioSchema.default(
+      "auto"
+    ).describe(
+      "The aspect ratio of the generated video. Use 16:9 for landscape, 9:16 for portrait/vertical, 1:1 for square, 21:9 for ultrawide cinematic, or auto to let the model decide."
+    ),
+    generate_audio: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate synchronized audio for the video, including sound effects, ambient sounds, and lip-synced speech. The cost of video generation is the same regardless of whether audio is generated or not."
+      ),
+    codec: z
+      .enum(["auto", "H264", "H265"])
+      .default("auto")
+      .describe(
+        "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+      ),
+    end_user_id: z
+      .string()
+      .nullable()
+      .optional()
+      .describe("The unique user ID of the end user."),
+  })
+  .refine((v) => seedanceReferenceFileCount(v) <= 12, {
+    message: "Total files across all modalities must not exceed 12",
+  })
+  .refine(seedanceAudioHasVisual, {
+    message: "Audio references require at least one image or video",
+    path: ["audio_urls"],
+  });
+export type FalSeedance2p0MiniReferenceToVideoRequest = z.input<
+  typeof FalSeedance2p0MiniReferenceToVideoRequestSchema
+>;
+export type FalSeedance2p0MiniReferenceToVideoRequestInput =
+  FalSeedance2p0MiniReferenceToVideoRequest;
+export type FalSeedance2p0MiniReferenceToVideoParsedRequest = z.output<
+  typeof FalSeedance2p0MiniReferenceToVideoRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Bytedance Seedance 2.5 shared vocabularies
 // ---------------------------------------------------------------------------
 
@@ -18857,6 +18938,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p0FastTextToVideoRequestSchema,
   "bytedance/seedance-2.0/mini/image-to-video":
     FalSeedance2p0MiniImageToVideoRequestSchema,
+  "bytedance/seedance-2.0/mini/reference-to-video":
+    FalSeedance2p0MiniReferenceToVideoRequestSchema,
   "bytedance/seedance-2.0/reference-to-video":
     FalSeedance2p0ReferenceToVideoRequestSchema,
   "bytedance/seedance-2.0/fast/reference-to-video":

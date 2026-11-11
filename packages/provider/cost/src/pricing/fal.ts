@@ -745,6 +745,12 @@ interface SeedanceSpec {
   // video_urls) divided by 1000. Its divisor without video is unrecorded, so
   // such a request fails closed.
   videoOnlyDivisor?: number;
+  // Set only on 2.0 Mini reference-to-video, whose one recording (image
+  // references alone) divided by 1024 at the full rate. Its card bills video
+  // references at a reduced rate on input plus output tokens, and neither
+  // that divisor nor the effect of audio references is recorded, so a
+  // request with video_urls or audio_urls fails closed.
+  imageOnly?: boolean;
   // When the card was read, for an id added after the family's sweep.
   asOf?: string;
 }
@@ -877,6 +883,22 @@ function seedanceTokens(
       };
     }
     video = Array.isArray(urls) && urls.length > 0;
+    const audio = Array.isArray(p.audio_urls) && p.audio_urls.length > 0;
+    if (
+      spec.imageOnly &&
+      (video ||
+        audio ||
+        (p.audio_urls !== undefined && !Array.isArray(p.audio_urls)))
+    ) {
+      return {
+        warning:
+          `${id}: only a request whose references are images alone is ` +
+          "priced; the one recorded call had a reference image and divided " +
+          "by 1024 at the full rate, and the card bills video references at " +
+          "a reduced rate on input plus output tokens that no call has " +
+          "recorded",
+      };
+    }
     if (!video && spec.videoOnlyDivisor !== undefined) {
       return {
         warning:
@@ -3571,6 +3593,20 @@ export const fal: Record<string, ModelPricing> = {
     asOf: "2026-11-07",
     operation: "reference",
     videoOnlyDivisor: 1000,
+  }),
+  // 2.0 Mini reference-to-video: $0.007 at 480p and 720p (card read
+  // 2026-11-11). The recorded call with one reference image billed 38.8
+  // thousand tokens, exactly 640 x 640 x 97 / 1024, as image-to-video does.
+  // The card's video-reference rate ($0.0042 on input plus output tokens) is
+  // unrecorded, so a request with video or audio references fails closed.
+  "bytedance/seedance-2.0/mini/reference-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/mini/reference-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.007 / 1000, "720p": 0.007 / 1000 },
+    asOf: "2026-11-11",
+    operation: "reference",
+    imageOnly: true,
   }),
   // 2.5: $0.0214 at 480p and 720p, and $0.0234116 at 1080p. fal bills 1080p
   // as 1.094 x the formula tokens at the base $0.0214, which the card rounds

@@ -183,10 +183,12 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
     I2V: { heights: [480, 768, 1080, 1440], durations: secs(1, 30), ...H3_I2V },
     R2V: { heights: [480, 768, 1080, 1440], durations: secs(1, 30), ...H3_R2V },
   },
+  // 1-15 s since 2026-11-11 (4-15 on 2026-10-25), from the model list and
+  // 400s in tests/fixtures/machgen-evidence/machgen-turbo-durations-2026-11-11.json.
   "MiniMax-H3-Turbo": {
-    T2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_T2V },
-    I2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_I2V },
-    R2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_R2V },
+    T2V: { heights: [480, 768, 1080], durations: secs(1, 15), ...H3_T2V },
+    I2V: { heights: [480, 768, 1080], durations: secs(1, 15), ...H3_I2V },
+    R2V: { heights: [480, 768, 1080], durations: secs(1, 15), ...H3_R2V },
   },
   // Read from 400s on 2026-11-01
   // (tests/fixtures/machgen-evidence/machgen-omni-2026-11-01.json).

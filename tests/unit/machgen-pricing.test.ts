@@ -83,6 +83,16 @@ const pricebookAsOf: Record<string, string> = {
 // Those re-read after their receipts were recorded; MiniMax-H3-Omni was
 // first priced and recorded on 2026-11-01.
 const repriced = new Set(["Seedance-2.5", "Seedance-2.0", "MiniMax-H3-Turbo"]);
+// A receipt recorded after its model's re-read bills the forward rate. The
+// 1 s MiniMax-H3-Turbo T2V (2026-11-11) is the one so far.
+const billedAtForwardRate = (
+  i: number,
+  task: string,
+  variant: (typeof MACHGEN_RECORDED)[number][2]
+) =>
+  MACHGEN_CASES[i]![1] === "MiniMax-H3-Turbo" &&
+  task === "T2V" &&
+  variant?.durationSecs === 1;
 
 const estimate = (
   overrides: Record<string, unknown> = {},
@@ -148,8 +158,9 @@ describe("MachGen pricing", () => {
         const seconds = variant?.operation ? 8 : 4;
         return seconds * (video ? 0.061488 : 0.1028);
       }
-      // 4 s out, plus the 4 s read from a reference video.
-      if (model === "MiniMax-H3-Turbo") return (video ? 8 : 4) * 0.015;
+      // The seconds out (4 by default), plus the 4 s read from a reference video.
+      if (model === "MiniMax-H3-Turbo")
+        return ((video ? 4 : 0) + (variant?.durationSecs ?? 4)) * 0.015;
       return 4 * 0.070308;
     };
     for (const [i, task, variant, usd] of MACHGEN_RECORDED) {
@@ -165,7 +176,10 @@ describe("MachGen pricing", () => {
       expect(result.usd, label).toBeCloseTo(forward, 8);
       expect(result.warnings, label).toEqual([]);
       expect(result.rateAsOf, label).toBe(pricebookAsOf[model] ?? "2026-10-25");
-      if (reread) expect(usd, label).not.toBeCloseTo(forward, 6);
+      if (reread && !billedAtForwardRate(i, task, variant))
+        expect(usd, label).not.toBeCloseTo(forward, 6);
+      if (billedAtForwardRate(i, task, variant))
+        expect(usd, label).toBeCloseTo(forward, 8);
     }
   });
   it("checks MiniMax-H3-Turbo's receipts against its dated promotions", () => {
@@ -174,9 +188,27 @@ describe("MachGen pricing", () => {
     // receipt was recorded on 2026-10-25, inside the first promotion; the
     // forward estimate prices the one read after it ended.
     const turbo = MACHGEN_RECORDED.filter(
-      ([i]) => MACHGEN_CASES[i]![1] === "MiniMax-H3-Turbo"
+      ([i, task, variant]) =>
+        MACHGEN_CASES[i]![1] === "MiniMax-H3-Turbo" &&
+        !billedAtForwardRate(i, task, variant)
     );
     expect(turbo).toHaveLength(5);
+    // The 1 s T2V was recorded on 2026-11-11, inside the promotion the
+    // forward estimate prices: its seconds at discounted_unit_price_micros.
+    const current = MACHGEN_RECORDED.filter(([i, task, variant]) =>
+      billedAtForwardRate(i, task, variant)
+    );
+    expect(current).toHaveLength(1);
+    for (const [i, , variant, usd] of current) {
+      const now = turboRow(turboPricebook.prices, MACHGEN_CASES[i]![3], false);
+      expect(Date.parse(now.discount_ends_at!)).toBeGreaterThan(
+        Date.parse("2026-11-11T23:59:59Z")
+      );
+      expect(usd).toBeCloseTo(
+        (variant!.durationSecs! * now.discounted_unit_price_micros!) / 1e6,
+        8
+      );
+    }
     for (const [i, task, variant, usd] of turbo) {
       const label = `${task} ${JSON.stringify(variant ?? {})}`;
       const height = MACHGEN_CASES[i]![3];

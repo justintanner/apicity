@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.geminiOmniFlash.v1p2.textToVideo`
+  (`POST https://fal.run/google/gemini-omni-flash/v1.2/text-to-video`) adds
+  Gemini Omni Flash 1.2 text-to-video, #6 on the 2026-11-11 text-to-video
+  board, as a leaf on the `geminiOmniFlash.v1p2` object. The schema follows
+  fal's queue OpenAPI (read 2026-11-11): `prompt` (required), 3 to 15 seconds
+  (default 8), 360p to 4k, 16:9 or 9:16. A recorded 3 s, 360p call billed
+  `x-fal-billable-units` 3.252469 seconds (ac-c9b83v).
+
 - `run.geminiOmniFlash.v1p2.referenceToVideo`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/reference-to-video`)
   adds Gemini Omni Flash 1.2 reference-to-video, a leaf on the

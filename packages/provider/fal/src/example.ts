@@ -1203,6 +1203,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p2.textToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-2-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 3,
+      "resolution": "360p",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

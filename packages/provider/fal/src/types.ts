@@ -389,6 +389,9 @@ export type {
   FalGeminiOmniFlashV1p2ReferenceToVideoParsedRequest,
   FalGeminiOmniFlashV1p2ReferenceToVideoRequestInput,
   FalGeminiOmniFlashV1p2ReferenceToVideoRequest,
+  FalGeminiOmniFlashV1p2TextToVideoParsedRequest,
+  FalGeminiOmniFlashV1p2TextToVideoRequestInput,
+  FalGeminiOmniFlashV1p2TextToVideoRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
@@ -1028,6 +1031,7 @@ import type {
   FalGeminiOmniFlashV1p1EditRequest,
   FalGeminiOmniFlashV1p2EditRequest,
   FalGeminiOmniFlashV1p2ReferenceToVideoRequest,
+  FalGeminiOmniFlashV1p2TextToVideoRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
   FalMinimaxH3MaxTurboTextToVideoRequest,
@@ -3057,9 +3061,17 @@ type FalGeminiOmniFlashV1p2ReferenceToVideoFn = ((
   schema: ApicitySchema<FalGeminiOmniFlashV1p2ReferenceToVideoRequest>;
 };
 
+type FalGeminiOmniFlashV1p2TextToVideoFn = ((
+  params: FalGeminiOmniFlashV1p2TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashV1p2TextToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashV1p2TextToVideoRequest>;
+};
+
 export interface FalRunGeminiOmniFlashV1p2Namespace {
   edit: FalGeminiOmniFlashV1p2EditFn;
   referenceToVideo: FalGeminiOmniFlashV1p2ReferenceToVideoFn;
+  textToVideo: FalGeminiOmniFlashV1p2TextToVideoFn;
 }
 
 type FalSeedreamV5LiteEditFn = ((
@@ -5056,6 +5068,15 @@ export interface FalGeminiOmniFlashV1p2EditResponse {
 }
 
 export interface FalGeminiOmniFlashV1p2ReferenceToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+export interface FalGeminiOmniFlashV1p2TextToVideoResponse {
   video: {
     url: string;
     content_type?: string | null;

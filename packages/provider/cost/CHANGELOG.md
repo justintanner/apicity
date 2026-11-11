@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 text-to-video
+  (`google/gemini-omni-flash/v1.2/text-to-video`) is priced dynamically, like
+  the other 1.2 endpoints: a recorded 3 s, 360p call billed 3.252469 seconds,
+  USD 0.088792, about 3.03 for the output file and the rest for input tokens
+  that far exceed the prompt's own words. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for Gemini Omni
+  Flash 1.2 on the text-to-video frontier board (ac-c9b83v).
+
 - fal Gemini Omni Flash 1.2 reference-to-video
   (`google/gemini-omni-flash/v1.2/reference-to-video`) is priced dynamically,
   like the 1.2 edit: a recorded 3 s, 360p call billed 3.401161 seconds, USD

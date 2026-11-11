@@ -3341,6 +3341,19 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["GET api.v0.adapters.retrieve"]
   ),
   ...rows(
+    "machgen",
+    {
+      kind: "free",
+      reason:
+        "Listing custom LoRAs and storage use bills nothing (wallet unchanged across the recorded list)",
+      source: {
+        url: "https://www.machgen.ai/docs/rest_api/custom-loras",
+        asOf: "2026-11-11",
+      },
+    },
+    ["GET api.v0.adapters.list"]
+  ),
+  ...rows(
     "meta",
     {
       kind: "free",

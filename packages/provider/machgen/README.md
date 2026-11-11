@@ -217,7 +217,7 @@ console.log(bill.generation_cost_micros / 1e6); // 0.06
 
 ## API Reference
 
-9 endpoints across 6 groups. Each method mirrors an upstream URL path.
+10 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### adapters
 
@@ -253,6 +253,23 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await machgen.api.v0.adapters.create({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>machgen.api.v0.adapters.list</code></b></summary>
+
+<code>GET https://api.machgen.ai/api/v0/adapters</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.machgen.ai/docs/rest_api/custom-loras#manage)
+
+```typescript
+const res = await machgen.api.v0.adapters.list();
 ```
 
 Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)

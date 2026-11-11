@@ -2,6 +2,7 @@ import { attachExamples } from "./example";
 import { MachGenError } from "./types";
 import type {
   MachGenAdapterCreateRequest,
+  MachGenAdapterList,
   MachGenAdapterUpload,
   MachGenUploadRequest,
   MachGenUploadResponse,
@@ -214,6 +215,16 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
             return request<MachGenAdapterUpload>(
               "GET",
               `/api/v0/adapters/${encodeURIComponent(adapterId)}`,
+              undefined,
+              signal
+            );
+          },
+          // GET https://api.machgen.ai/api/v0/adapters
+          // Docs: https://www.machgen.ai/docs/rest_api/custom-loras#manage
+          list: async (signal?: AbortSignal) => {
+            return request<MachGenAdapterList>(
+              "GET",
+              "/api/v0/adapters",
               undefined,
               signal
             );

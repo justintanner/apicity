@@ -308,7 +308,7 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     match: { provider: "machgen" },
     tier: "expensive",
     rationale:
-      "Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.",
+      "Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads, the free upscale quote and custom-LoRA management share the provider policy.",
   },
 
   // ── prohibitive: media generation (dollars per call, request-dependent) ─

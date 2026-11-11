@@ -1,6 +1,8 @@
 import { attachExamples } from "./example";
 import { MachGenError } from "./types";
 import type {
+  MachGenAdapterCreateRequest,
+  MachGenAdapterUpload,
   MachGenUploadRequest,
   MachGenUploadResponse,
   MachGenOptions,
@@ -13,6 +15,7 @@ import type {
   MachGenUpscaleQuoteResponse,
 } from "./types";
 import {
+  MachGenAdapterCreateRequestSchema,
   MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
   MachGenUpscaleQuoteRequestSchema,
@@ -29,7 +32,7 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
   async function request<T>(
     method: "GET" | "POST",
     path: string,
-    body?: MachGenGenerateRequest | FormData,
+    body?: object,
     signal?: AbortSignal,
     binary = false
   ): Promise<T> {
@@ -173,6 +176,26 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
                 signal
               ),
             { schema: MachGenUpscaleQuoteRequestSchema }
+          ),
+        },
+        adapters: {
+          // POST https://api.machgen.ai/api/v0/adapters?model={model}
+          // Docs: https://www.machgen.ai/docs/rest_api/custom-loras#1-reserve
+          create: Object.assign(
+            async (
+              { model, ...upload }: MachGenAdapterCreateRequest,
+              signal?: AbortSignal
+            ) => {
+              // A block body, so the endpoint walker resolves this leaf and
+              // lint:endpoints checks the URL comment against the code.
+              return request<MachGenAdapterUpload>(
+                "POST",
+                `/api/v0/adapters?model=${encodeURIComponent(model)}`,
+                upload,
+                signal
+              );
+            },
+            { schema: MachGenAdapterCreateRequestSchema }
           ),
         },
       },

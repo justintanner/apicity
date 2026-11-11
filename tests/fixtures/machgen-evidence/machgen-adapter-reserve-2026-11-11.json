@@ -1,0 +1,417 @@
+{
+  "capturedAt": "2026-11-11",
+  "source": "Free POST https://api.machgen.ai/api/v0/adapters probes on 2026-11-11 (reserve a custom-LoRA upload; docs https://www.machgen.ai/docs/rest_api/custom-loras#1-reserve). Each sent an invalid request, and MachGen answered HTTP 422 or 400 before reserving anything, so no upload_url was handed out. The pydantic help-link lines are dropped from each detail. The wallet read 15210713 micros before them.",
+  "checkOrder": "The ?model= query first (422 when missing), then the model (400 'This model does not support adapter uploads' for anything but MiniMax-H3), then size_bytes and md5 (UploadRequest), then the 5 GB size limit, then adapter_config (AdapterConfig), then inference_config (InferenceConfig, its field checks before its sampling rules). Each stage reports only its own errors.",
+  "probes": [
+    {
+      "name": "p1-empty-noquery",
+      "at": "2026-11-11T03:37:16Z",
+      "query": "",
+      "body": {},
+      "status": 422,
+      "detail": [
+        {
+          "type": "missing",
+          "loc": ["query", "model"],
+          "msg": "Field required",
+          "input": null
+        }
+      ]
+    },
+    {
+      "name": "p2-empty-nested",
+      "at": "2026-11-11T03:37:18Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 1,
+        "md5": "x",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "2 validation errors for UploadRequest\nsize_bytes\n  Input should be greater than 8 [type=greater_than, input_value=1, input_type=int]\nmd5\n  String should match pattern '^[0-9a-f]{32}$' [type=string_pattern_mismatch, input_value='x', input_type=str]"
+    },
+    {
+      "name": "p3-bad-configs",
+      "at": "2026-11-11T03:37:33Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "scaling": {
+            "mode": "bogus"
+          }
+        },
+        "inference_config": {
+          "sampling": {
+            "sampler": "bogus"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "4 validation errors for AdapterConfig\nbase_model\n  Field required [type=missing, input_value={'scaling': {'mode': 'bog...'}, 'schema_version': 1}, input_type=dict]\nbase_partition\n  Field required [type=missing, input_value={'scaling': {'mode': 'bog...'}, 'schema_version': 1}, input_type=dict]\nexport_format\n  Field required [type=missing, input_value={'scaling': {'mode': 'bog...'}, 'schema_version': 1}, input_type=dict]\nscaling\n  Input tag 'bogus' found using 'mode' does not match any of the expected tags: 'unit', 'alpha_over_rank', 'alpha_tensor_over_rank' [type=union_tag_invalid, input_value={'mode': 'bogus'}, input_type=dict]"
+    },
+    {
+      "name": "p4-noscaling-badinference",
+      "at": "2026-11-11T03:37:42Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1"
+        },
+        "inference_config": {
+          "sampling": {
+            "sampler": "bogus"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "1 validation error for AdapterConfig\nscaling\n  Field required [type=missing, input_value={'base_model': 'minimax-h...1', 'schema_version': 1}, input_type=dict]"
+    },
+    {
+      "name": "p5-bad-enums",
+      "at": "2026-11-11T03:37:44Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "base_model": "bogus",
+          "base_partition": "bogus",
+          "export_format": "bogus",
+          "scaling": {
+            "mode": "alpha_over_rank"
+          },
+          "extra_field": 1
+        },
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "5 validation errors for AdapterConfig\nbase_model\n  Input should be 'minimax-h3' [type=literal_error, input_value='bogus', input_type=str]\nbase_partition\n  Input should be 'FL2VA' or 'Ref2VA' [type=literal_error, input_value='bogus', input_type=str]\nexport_format\n  Input should be 'machgen-h3-direct-v1', 'h3-native-v1', 'h3-comfy-packed-v1' or 'h3-diffusers-hyperflow-v1' [type=literal_error, input_value='bogus', input_type=str]\nscaling.alpha_over_rank.alpha\n  Field required [type=missing, input_value={'mode': 'alpha_over_rank'}, input_type=dict]\nextra_field\n  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]"
+    },
+    {
+      "name": "p6-bad-inference",
+      "at": "2026-11-11T03:37:54Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "sampling": {
+            "sampler": "bogus",
+            "sigma_grid": "bogus"
+          },
+          "extra_field": 1
+        }
+      },
+      "status": 400,
+      "detail": "9 validation errors for InferenceConfig\ndefault_strength\n  Field required [type=missing, input_value={'sampling': {'sampler': ... 1, 'schema_version': 1}, input_type=dict]\ntrigger_prompt\n  Field required [type=missing, input_value={'sampling': {'sampler': ... 1, 'schema_version': 1}, input_type=dict]\nsampling.num_inference_steps\n  Field required [type=missing, input_value={'sampler': 'bogus', 'sigma_grid': 'bogus'}, input_type=dict]\nsampling.guidance_scale\n  Field required [type=missing, input_value={'sampler': 'bogus', 'sigma_grid': 'bogus'}, input_type=dict]\nsampling.video_shift\n  Field required [type=missing, input_value={'sampler': 'bogus', 'sigma_grid': 'bogus'}, input_type=dict]\nsampling.audio_shift\n  Field required [type=missing, input_value={'sampler': 'bogus', 'sigma_grid': 'bogus'}, input_type=dict]\nsampling.sampler\n  Input should be 'euler', 'res_multistep' or 'renoise' [type=literal_error, input_value='bogus', input_type=str]\nsampling.sigma_grid\n  Input should be 'simple', 'linspace' or 'fixed' [type=literal_error, input_value='bogus', input_type=str]\nextra_field\n  Extra inputs are not permitted [type=extra_forbidden, input_value=1, input_type=int]"
+    },
+    {
+      "name": "p7-inference-ranges",
+      "at": "2026-11-11T03:38:13Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": -1000,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 0,
+            "guidance_scale": 2.0,
+            "video_shift": -1000,
+            "audio_shift": -1000,
+            "sampler": "bogus",
+            "sigma_grid": "linspace",
+            "fixed_sigmas": "x"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "6 validation errors for InferenceConfig\nsampling.num_inference_steps\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0, input_type=int]\nsampling.guidance_scale\n  Input should be less than or equal to 1 [type=less_than_equal, input_value=2.0, input_type=float]\nsampling.video_shift\n  Input should be greater than 0 [type=greater_than, input_value=-1000, input_type=int]\nsampling.audio_shift\n  Input should be greater than 0 [type=greater_than, input_value=-1000, input_type=int]\nsampling.sampler\n  Input should be 'euler', 'res_multistep' or 'renoise' [type=literal_error, input_value='bogus', input_type=str]\nsampling.fixed_sigmas\n  Input should be a valid list [type=list_type, input_value='x', input_type=str]"
+    },
+    {
+      "name": "p8-size-cap",
+      "at": "2026-11-11T03:38:15Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 10000000000000,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "Adapter weights exceed the upload size limit"
+    },
+    {
+      "name": "p9-inference-upper",
+      "at": "2026-11-11T03:38:29Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": 1000000000,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 1000000,
+            "guidance_scale": 0.5,
+            "video_shift": 1000000000,
+            "audio_shift": 1000000000,
+            "sampler": "bogus",
+            "sigma_grid": "fixed",
+            "fixed_sigmas": []
+          }
+        }
+      },
+      "status": 400,
+      "detail": "3 validation errors for InferenceConfig\nsampling.num_inference_steps\n  Input should be less than or equal to 1000 [type=less_than_equal, input_value=1000000, input_type=int]\nsampling.guidance_scale\n  Input should be greater than or equal to 1 [type=greater_than_equal, input_value=0.5, input_type=float]\nsampling.sampler\n  Input should be 'euler', 'res_multistep' or 'renoise' [type=literal_error, input_value='bogus', input_type=str]"
+    },
+    {
+      "name": "p10-size-5000000000",
+      "at": "2026-11-11T03:38:32Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 5000000000,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "4 validation errors for AdapterConfig\nbase_model\n  Field required [type=missing, input_value={'schema_version': 1}, input_type=dict]\nbase_partition\n  Field required [type=missing, input_value={'schema_version': 1}, input_type=dict]\nexport_format\n  Field required [type=missing, input_value={'schema_version': 1}, input_type=dict]\nscaling\n  Field required [type=missing, input_value={'schema_version': 1}, input_type=dict]"
+    },
+    {
+      "name": "p10-size-5000000001",
+      "at": "2026-11-11T03:38:34Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 5000000001,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "Adapter weights exceed the upload size limit"
+    },
+    {
+      "name": "p10-size-5368709120",
+      "at": "2026-11-11T03:38:36Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 5368709120,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "Adapter weights exceed the upload size limit"
+    },
+    {
+      "name": "p10-size-5368709121",
+      "at": "2026-11-11T03:38:39Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 5368709121,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "Adapter weights exceed the upload size limit"
+    },
+    {
+      "name": "p11-model-Bogus-Model",
+      "at": "2026-11-11T03:38:56Z",
+      "query": "model=Bogus-Model",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "This model does not support adapter uploads"
+    },
+    {
+      "name": "p11-model-MiniMax-H3-Turbo",
+      "at": "2026-11-11T03:38:58Z",
+      "query": "model=MiniMax-H3-Turbo",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "This model does not support adapter uploads"
+    },
+    {
+      "name": "p11-model-minimax-h3",
+      "at": "2026-11-11T03:39:00Z",
+      "query": "model=minimax-h3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "00000000000000000000000000000000",
+        "adapter_config": {},
+        "inference_config": {}
+      },
+      "status": 400,
+      "detail": "This model does not support adapter uploads"
+    },
+    {
+      "name": "c1-resmulti-linspace",
+      "at": "2026-11-11T03:42:24Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "2362517a47f733d5376ed5172b99a7ec",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": 1.0,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 6,
+            "guidance_scale": 1.0,
+            "video_shift": 12.0,
+            "audio_shift": 3.0,
+            "sampler": "res_multistep",
+            "sigma_grid": "linspace"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "1 validation error for InferenceConfig\nsampling\n  Value error, res_multistep requires the simple sigma grid [type=value_error, input_value={'num_inference_steps': 6...sigma_grid': 'linspace'}, input_type=dict]"
+    },
+    {
+      "name": "c2-simple-audio2",
+      "at": "2026-11-11T03:42:32Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "02a10ca30565d28ff726260942fef735",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": 1.0,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 6,
+            "guidance_scale": 1.0,
+            "video_shift": 12.0,
+            "audio_shift": 2.0,
+            "sampler": "euler",
+            "sigma_grid": "simple"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "1 validation error for InferenceConfig\nsampling\n  Value error, simple/fixed grids currently require audio_shift=3.0 [type=value_error, input_value={'num_inference_steps': 6... 'sigma_grid': 'simple'}, input_type=dict]"
+    },
+    {
+      "name": "c3-fixed-nosigmas",
+      "at": "2026-11-11T03:42:34Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "0b38114f61b23c85130af720dbe37d50",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": 1.0,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 2,
+            "guidance_scale": 1.0,
+            "video_shift": 12.0,
+            "audio_shift": 3.0,
+            "sampler": "euler",
+            "sigma_grid": "fixed"
+          }
+        }
+      },
+      "status": 400,
+      "detail": "1 validation error for InferenceConfig\nsampling\n  Value error, fixed_sigmas must decrease strictly from 1 to 0 with steps+1 entries [type=value_error, input_value={'num_inference_steps': 2..., 'sigma_grid': 'fixed'}, input_type=dict]"
+    },
+    {
+      "name": "c4-fixed-wronglen",
+      "at": "2026-11-11T03:42:37Z",
+      "query": "model=MiniMax-H3",
+      "body": {
+        "size_bytes": 370,
+        "md5": "0286e10657bd4b72b6d95661115b2d5d",
+        "adapter_config": {
+          "base_model": "minimax-h3",
+          "base_partition": "FL2VA",
+          "export_format": "h3-native-v1",
+          "scaling": {
+            "mode": "unit"
+          }
+        },
+        "inference_config": {
+          "default_strength": 1.0,
+          "trigger_prompt": "",
+          "sampling": {
+            "num_inference_steps": 2,
+            "guidance_scale": 1.0,
+            "video_shift": 12.0,
+            "audio_shift": 3.0,
+            "sampler": "euler",
+            "sigma_grid": "fixed",
+            "fixed_sigmas": [1.0, 0.0]
+          }
+        }
+      },
+      "status": 400,
+      "detail": "1 validation error for InferenceConfig\nsampling\n  Value error, fixed_sigmas must decrease strictly from 1 to 0 with steps+1 entries [type=value_error, input_value={'num_inference_steps': 2...xed_sigmas': [1.0, 0.0]}, input_type=dict]"
+    }
+  ]
+}

@@ -217,7 +217,28 @@ console.log(bill.generation_cost_micros / 1e6); // 0.06
 
 ## API Reference
 
-6 endpoints across 5 groups. Each method mirrors an upstream URL path.
+7 endpoints across 6 groups. Each method mirrors an upstream URL path.
+
+### adapters
+
+<details>
+<summary><code>POST</code> <b><code>machgen.api.v0.adapters.create</code></b></summary>
+
+<code>POST https://api.machgen.ai/api/v0/adapters?model={model}</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.machgen.ai/docs/rest_api/custom-loras#1-reserve)
+
+> **Write capability:** the reserve answers a one-time `upload_url` that takes the `.safetensors` weights by `PUT` for 7 days, and anyone holding it can write the file, so keep it out of logs and recordings. apicity's recording of this call keeps only `https://storage.googleapis.com/***`. Reserving bills nothing, and `MiniMax-H3` is the only model with custom LoRAs (read 2026-11-11). `model` goes in the `?model=` query and the rest in the JSON body. Send the file to the latest `upload_url`, then commit it (`POST /api/v0/adapters/{adapter_id}/commit`). Reserving the same file and configs again returns the same `adapter` id and a fresh `upload_url`, which retires the previous one.
+
+```typescript
+const res = await machgen.api.v0.adapters.create({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
 
 ### assets
 

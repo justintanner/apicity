@@ -1001,6 +1001,7 @@ kimicoding	coding.v1.messages	POST	subscription	tokens	Kimi Code plan: flat and 
 machgen	api.v0.assets	GET	followup		Task poll or asset read; billed on the generate call	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
 machgen	api.v0.tasks	GET	followup		Task poll or asset read; billed on the generate call	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
 machgen	api.v0.tasks.billing	GET	followup		Free receipt for a task: states generation_cost_micros and net_cost_micros	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
+machgen	api.v0.adapters.create	POST	free		Reserving a custom-LoRA upload bills nothing (wallet unchanged across the recorded reserve); generating with the LoRA bills on api.v0.generate	https://www.machgen.ai/docs/rest_api/custom-loras	2026-11-11
 machgen	api.v0.generate	POST	metered	seconds	Per second or per image by model. Upscale models price through the free quote; audio and Topaz models in the pricebook have no row.	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
 machgen	api.v0.upload	POST	unpriced		Multipart upload is documented, but no upstream upload price is stated. A balance observation is not a free-rate guarantee; ruling ac-2h3t3v, no follow-up	https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k	2026-11-07
 machgen	api.v0.upscale.quote	POST	free		Free quote; bills nothing	https://machgen.ai/docs	2026-11-04

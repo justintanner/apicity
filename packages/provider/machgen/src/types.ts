@@ -134,6 +134,19 @@ export interface MachGenAdapterUpload {
   [key: string]: unknown;
 }
 
+/** Every custom LoRA on the account, and the storage they use. */
+export interface MachGenAdapterList {
+  /** Rows carry no `upload_url` or `chunk_size`. */
+  adapters: MachGenAdapterUpload[];
+  used_bytes: number;
+  /** 15000000000 (15 GB) when read 2026-11-11. */
+  max_bytes: number;
+  used_count: number;
+  /** 100 when read 2026-11-11. */
+  max_count: number;
+  [key: string]: unknown;
+}
+
 export interface MachGenGenerateMethod {
   (
     request: MachGenGenerateRequest,
@@ -184,6 +197,8 @@ export interface MachGenAdaptersNamespace {
     adapterId: string,
     signal?: AbortSignal
   ): Promise<MachGenAdapterUpload>;
+  /** List every LoRA on the account and its storage use (free). */
+  list(signal?: AbortSignal): Promise<MachGenAdapterList>;
 }
 export interface MachGenV0Namespace {
   upload: MachGenUploadMethod;

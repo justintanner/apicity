@@ -274,6 +274,35 @@ describe("MachGen custom-LoRA reserve", () => {
     }
   });
 
+  // A free list of the account's LoRAs, with the synthetic one ready.
+  it("lists the account's LoRAs and storage use", async () => {
+    const ctx = setupPollyWithPersistScrubber(
+      "machgen/adapters-list-synthetic-h3-lora",
+      redactMachGenUploadUrls
+    );
+    try {
+      const machgen = createMachGen({
+        apiKey: process.env.MACHGEN_API_KEY ?? "test-key",
+      });
+      const list = await machgen.api.v0.adapters.list();
+      expect(list.adapters).toContainEqual({
+        adapter: MACHGEN_SYNTHETIC_LORA_ID,
+        model: "MiniMax-H3",
+        status: "ready",
+        size_bytes: weights.length,
+        created_at: expect.any(Number),
+      });
+      expect(list).toMatchObject({
+        used_count: list.adapters.length,
+        max_bytes: 15_000_000_000,
+        max_count: 100,
+      });
+      expect(list.used_bytes).toBeGreaterThanOrEqual(weights.length);
+    } finally {
+      await teardownPolly(ctx);
+    }
+  });
+
   it("keeps no live upload_url in any MachGen recording", () => {
     const files = machgenRecordings();
     expect(files.length).toBeGreaterThan(0);

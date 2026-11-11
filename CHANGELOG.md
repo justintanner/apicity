@@ -93,6 +93,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/machgen` adds `api.v0.adapters.list()` (`GET https://api.machgen.ai/api/v0/adapters`), a free list of the account's custom LoRAs and their storage use: `adapters`, `used_bytes`, `max_bytes` (15 GB), `used_count` and `max_count` (100), typed as `MachGenAdapterList`. The recording lists the ready synthetic LoRA, and the wallet was unchanged (ac-k99bh1).
+
 - `@apicity/machgen` adds `api.v0.adapters.retrieve(adapterId)` (`GET https://api.machgen.ai/api/v0/adapters/{adapterId}`), a free read of one custom LoRA. A ready LoRA answers `adapter`, `model`, `status`, `size_bytes` and `created_at`. An unknown, deleted or expired id is a 404 ("Adapter upload not found"). The recording reads the committed synthetic LoRA and an unknown id, and the wallet was unchanged (ac-qo9yxp).
 
 - `@apicity/machgen` adds the custom-LoRA commit at `api.v0.adapters.commit(adapterId)` (`POST https://api.machgen.ai/api/v0/adapters/{adapterId}/commit`), the last of MachGen's three upload calls. It checks the uploaded file's size, MD5 and safetensors header and answers the upload with `status: "ready"`, without `expires_at`, `chunk_size` or `upload_url`. It is free and safe to repeat. The file itself goes to the reserve's `upload_url` by `PUT`, a Google Cloud Storage URL with no apicity method. The recording reserves the synthetic 408-byte LoRA again (same id, fresh URL), sends it with a `PUT` outside Polly, so the live URL is never recorded, and commits it: `ready`, and the wallet was unchanged (ac-3xv6pw).

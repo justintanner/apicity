@@ -244,6 +244,36 @@ describe("MachGen custom-LoRA reserve", () => {
     }
   });
 
+  // A free read of the LoRA the commit above made ready; an unknown id is 404.
+  it("retrieves the committed synthetic LoRA", async () => {
+    const ctx = setupPollyWithPersistScrubber(
+      "machgen/adapters-retrieve-synthetic-h3-lora",
+      redactMachGenUploadUrls
+    );
+    try {
+      const machgen = createMachGen({
+        apiKey: process.env.MACHGEN_API_KEY ?? "test-key",
+      });
+      expect(
+        await machgen.api.v0.adapters.retrieve(MACHGEN_SYNTHETIC_LORA_ID)
+      ).toEqual({
+        adapter: MACHGEN_SYNTHETIC_LORA_ID,
+        model: "MiniMax-H3",
+        status: "ready",
+        size_bytes: weights.length,
+        created_at: expect.any(Number),
+      });
+      await expect(
+        machgen.api.v0.adapters.retrieve(`up-${"0".repeat(40)}`)
+      ).rejects.toMatchObject({
+        status: 404,
+        detail: "Adapter upload not found",
+      });
+    } finally {
+      await teardownPolly(ctx);
+    }
+  });
+
   it("keeps no live upload_url in any MachGen recording", () => {
     const files = machgenRecordings();
     expect(files.length).toBeGreaterThan(0);

@@ -998,6 +998,7 @@ kimicoding	coding.v1.chat.completions	POST	subscription	tokens	Kimi Code plan: f
 kimicoding	coding.v1.countTokens	POST	free		Token count or model list; no charge	https://www.kimi.com/code/docs/	2026-11-04
 kimicoding	coding.v1.embeddings	POST	subscription	tokens	Kimi Code plan: flat and quota-limited, zero marginal USD	https://www.kimi.com/code/docs/	2026-11-04
 kimicoding	coding.v1.messages	POST	subscription	tokens	Kimi Code plan: flat and quota-limited, zero marginal USD. List rates are for comparison, and the plan's model ids (k3-256k, k2p5) do not match the platform's	https://www.kimi.com/code/docs/	2026-11-04
+machgen	api.v0.adapters.retrieve	GET	free		Reading one custom LoRA bills nothing (wallet unchanged across the recorded read)	https://www.machgen.ai/docs/rest_api/custom-loras	2026-11-11
 machgen	api.v0.assets	GET	followup		Task poll or asset read; billed on the generate call	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
 machgen	api.v0.tasks	GET	followup		Task poll or asset read; billed on the generate call	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04
 machgen	api.v0.tasks.billing	GET	followup		Free receipt for a task: states generation_cost_micros and net_cost_micros	https://api.machgen.ai/api/v0/billing/pricebook/public	2026-11-04

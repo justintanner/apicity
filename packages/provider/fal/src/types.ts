@@ -282,6 +282,9 @@ export type {
   FalOpenaiGptImage2p6SunburstEditParsedRequest,
   FalOpenaiGptImage2p6SunburstEditRequestInput,
   FalOpenaiGptImage2p6SunburstEditRequest,
+  FalOpenaiGptImage2p6FlareEditParsedRequest,
+  FalOpenaiGptImage2p6FlareEditRequestInput,
+  FalOpenaiGptImage2p6FlareEditRequest,
   FalOpenaiGptImage2ParsedRequest,
   FalOpenaiGptImage2EditParsedRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequestInput,
@@ -978,6 +981,7 @@ import type {
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstEditRequest,
+  FalOpenaiGptImage2p6FlareEditRequest,
   FalOpenaiGptImage2Request,
   FalOpenaiGptImage2EditRequest,
   FalOpenaiGptImage2p5SunburstEditRequest,
@@ -5733,6 +5737,32 @@ type FalOpenaiGptImage2p6SunburstEditFn = ((
 
 export interface FalRunOpenaiGptImage2p6SunburstNamespace {
   edit: FalOpenaiGptImage2p6SunburstEditFn;
+}
+
+export interface FalOpenaiGptImage2p6FlareEditResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+type FalOpenaiGptImage2p6FlareEditFn = ((
+  params: FalOpenaiGptImage2p6FlareEditRequest,
+  signal?: AbortSignal
+) => Promise<FalOpenaiGptImage2p6FlareEditResponse>) & {
+  schema: ApicitySchema<FalOpenaiGptImage2p6FlareEditRequest>;
+};
+
+export interface FalRunOpenaiGptImage2p6FlareNamespace {
+  edit: FalOpenaiGptImage2p6FlareEditFn;
+}
+
+export interface FalRunOpenaiGptImage2p6Namespace {
+  flare: FalRunOpenaiGptImage2p6FlareNamespace;
 }
 
 export interface FalOpenaiGptImage2p5FlareEditResponse {

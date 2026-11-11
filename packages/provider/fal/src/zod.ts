@@ -10005,6 +10005,144 @@ export type FalOpenaiGptImage2p6SunburstEditParsedRequest = z.output<
   typeof FalOpenaiGptImage2p6SunburstEditRequestSchema
 >;
 
+const FalOpenaiGptImage2p6FlareEditImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-11-11
+// (sha256 1620a82cfa986ed100e7ab80467fae9a56f370a7872a5311abd620a5b263dba2). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/edit/api
+export const FalOpenaiGptImage2p6FlareEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_urls: z
+    .array(z.string())
+    .max(16)
+    .describe(
+      "The URLs of the images to use as a reference for the generation. A maximum of 16 images are allowed."
+    ),
+  mask_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Mask image URL. White marks regions to edit and black marks regions to keep."
+    ),
+  markup_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Transparent PNG containing only annotations (circles, arrows, notes) that guide the edit of the first image. Must match the first image's dimensions. Cannot be combined with mask_url. Reference images are sent unmodified when set."
+    ),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p6FlareEditImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("auto")
+    .describe(
+      "The size of the generated image. Use 'auto' to infer from input images."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Rendering quality for the generated image. For SVG output it controls the reference image used to create the vector."
+    ),
+  reasoning_effort: z
+    .enum(["low", "medium", "high"])
+    .default("high")
+    .describe(
+      "How much the model plans before rendering, independently of quality (OpenAI `complexity`). Higher levels can help with dense text and complex layouts but add latency."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe(
+      "Number of images to generate. Must be 1 for SVG output. For GIF output, all frames of all outputs share the request's pixel budget."
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp", "gif"])
+    .default("png")
+    .describe("Output format for the images. 'gif' returns an animation."),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  frame_count: z
+    .number()
+    .int()
+    .min(2)
+    .max(16)
+    .default(9)
+    .describe(
+      "GIF only: number of frames. image_size applies to each frame; reduce size or count if the request exceeds the pixel budget."
+    ),
+  frame_duration_ms: z
+    .number()
+    .int()
+    .min(20)
+    .max(2000)
+    .default(200)
+    .describe("GIF only: milliseconds per frame, rounded to 10 ms."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalOpenaiGptImage2p6FlareEditRequest = z.input<
+  typeof FalOpenaiGptImage2p6FlareEditRequestSchema
+>;
+export type FalOpenaiGptImage2p6FlareEditRequestInput =
+  FalOpenaiGptImage2p6FlareEditRequest;
+export type FalOpenaiGptImage2p6FlareEditParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p6FlareEditRequestSchema
+>;
+
 const FalOpenaiGptImage2p5FlareEditImageSizeSchema = z.object({
   width: z
     .number()
@@ -18227,6 +18365,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   "openai/gpt-image-2.6/sunburst/edit":
     FalOpenaiGptImage2p6SunburstEditRequestSchema,
+  "openai/gpt-image-2.6/flare/edit": FalOpenaiGptImage2p6FlareEditRequestSchema,
   "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
   "krea/v3/edit": FalKreaV3EditRequestSchema,
   "krea/v3/text-to-image": FalKreaV3TextToImageRequestSchema,

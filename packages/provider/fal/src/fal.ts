@@ -166,11 +166,13 @@ import {
   FalOpenaiGptImage2p5SunburstTextToImageResponse,
   FalOpenaiGptImage2p6SunburstTextToImageResponse,
   FalOpenaiGptImage2p6SunburstEditResponse,
+  FalOpenaiGptImage2p6FlareEditResponse,
   FalOpenaiGptImage2Response,
   FalOpenaiGptImage2EditResponse,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstEditRequest,
+  FalOpenaiGptImage2p6FlareEditRequest,
   FalOpenaiGptImage2Request,
   FalOpenaiGptImage2EditRequest,
   FalOpenaiGptImage2p5SunburstEditResponse,
@@ -627,6 +629,7 @@ import {
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p6SunburstEditRequestSchema,
+  FalOpenaiGptImage2p6FlareEditRequestSchema,
   FalOpenaiGptImage2RequestSchema,
   FalOpenaiGptImage2EditRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
@@ -3538,6 +3541,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/openai/gpt-image-2.6/flare/edit
+  // Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/edit/api
+  const openaiGptImage2p6FlareEdit = jsonBody<
+    FalOpenaiGptImage2p6FlareEditRequest,
+    FalOpenaiGptImage2p6FlareEditResponse
+  >(
+    "POST",
+    "/openai/gpt-image-2.6/flare/edit",
+    FalOpenaiGptImage2p6FlareEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/openai/gpt-image-2
   // Docs: https://fal.ai/models/openai/gpt-image-2/api
   const openaiGptImage2 = jsonBody<
@@ -4849,6 +4865,12 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/openai/gpt-image-2.6/sunburst/edit
           // Docs: https://fal.ai/models/openai/gpt-image-2.6/sunburst/edit/api
           edit: openaiGptImage2p6SunburstEdit,
+        },
+        flare: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/openai/gpt-image-2.6/flare/edit
+          // Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/edit/api
+          edit: openaiGptImage2p6FlareEdit,
         },
       },
     },

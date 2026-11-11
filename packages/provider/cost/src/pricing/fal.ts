@@ -1539,6 +1539,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",
   "openai/gpt-image-2.5/sunburst/text-to-image",
+  "openai/gpt-image-2.6/sunburst/edit",
   "openai/gpt-image-2.6/sunburst/text-to-image",
   "openrouter/router/decisions",
   "topaz/upscale/image/precision",
@@ -1577,6 +1578,11 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "openai/gpt-image-2.6/sunburst/text-to-image": {
     unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
     why: "quality, reasoning_effort and dimensions do not fix actual token usage; prompt and reasoning tokens vary per call",
+  },
+  // Public card read 2026-11-11: the token card of the 2.6 text-to-image.
+  "openai/gpt-image-2.6/sunburst/edit": {
+    unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
+    why: "quality, reasoning_effort and dimensions do not fix actual token usage; input images, prompt and reasoning tokens vary per call",
   },
   // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
   // megapixels ($0.0080001), while the card prices output images per

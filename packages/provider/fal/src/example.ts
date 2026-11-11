@@ -2630,6 +2630,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openai.gptImage2p6.sunburst.edit": {
+    "source": "fal/openai-gpt-image-2-6-sunburst-edit",
+    "payload": {
+      "prompt": "Add a small red bow tie to the cat.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "quality": "low",
+      "reasoning_effort": "low",
+      "num_images": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST openai.gptImage2p6.sunburst.textToImage": {
     "source": "fal/openai-gpt-image-2-6-sunburst-text-to-image",
     "payload": {

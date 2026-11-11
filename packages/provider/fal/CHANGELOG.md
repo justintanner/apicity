@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.openai.gptImage2p6.sunburst.edit`
+  (`POST https://fal.run/openai/gpt-image-2.6/sunburst/edit`) adds GPT Image 2.6
+  Sunburst editing, #1 on the 2026-11-11 image-editing board, as a leaf on the
+  `openai.gptImage2p6.sunburst` object. The schema follows fal's queue OpenAPI
+  (read 2026-11-11): up to 16 `image_urls`, `mask_url`, `markup_image_url`,
+  `reasoning_effort`, and `gif` output with `frame_count` and
+  `frame_duration_ms` (no `svg` here). A recorded edit of the owned cat photo at
+  quality low, reasoning_effort low, one image billed `x-fal-billable-units`
+  0.0232 (ac-qd2l6z).
+
 - `run.openai.gptImage2p6.sunburst.textToImage`
   (`POST https://fal.run/openai/gpt-image-2.6/sunburst/text-to-image`) adds GPT
   Image 2.6 Sunburst, #1 on the 2026-11-11 text-to-image board. The schema

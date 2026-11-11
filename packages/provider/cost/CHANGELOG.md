@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal GPT Image 2.6 Sunburst edit (`openai/gpt-image-2.6/sunburst/edit`) is
+  priced dynamically from fal's token card, like its text-to-image sibling. It
+  joins `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for GPT Image 2.6
+  Sunburst (max) on the image-editing frontier board. A recorded low-quality,
+  low-effort edit billed 0.0232 USD (ac-qd2l6z).
+
 - fal GPT Image 2.6 Sunburst text-to-image
   (`openai/gpt-image-2.6/sunburst/text-to-image`) is priced dynamically, like
   2.5. The card bills tokens, with the same rates as 2.5 (read 2026-11-11), so

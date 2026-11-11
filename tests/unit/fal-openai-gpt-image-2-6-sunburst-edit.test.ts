@@ -1,0 +1,290 @@
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import { z } from "zod";
+import {
+  createFal,
+  type FalOpenaiGptImage2p6SunburstEditParsedRequest,
+  type FalOpenaiGptImage2p6SunburstEditRequest,
+  type FalOpenaiGptImage2p6SunburstEditRequestInput,
+  type FalOpenaiGptImage2p6SunburstEditResponse,
+  type FalRunOpenaiGptImage2p6SunburstNamespace,
+} from "@apicity/fal";
+import {
+  FalOpenaiGptImage2p6SunburstEditRequestSchema as schema,
+  FAL_ENDPOINT_REQUEST_SCHEMAS,
+} from "@apicity/fal/zod";
+import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import {
+  fal as falPricing,
+  FAL_DYNAMIC_PRICING_ENDPOINTS,
+} from "../../packages/provider/cost/src/pricing/fal";
+import {
+  MODEL_DISPLAY,
+  MODEL_SLUGS,
+} from "../../packages/provider/cost/src/slugs";
+
+// Pinned against the live queue OpenAPI read on 2026-11-11
+// (sha256 ccc9a7eda628e6472b96bf68e444e31741395974914b0ddc5e8b6190f6cbd0dc).
+const endpoint = "openai/gpt-image-2.6/sunburst/edit";
+// The recording sends tests/fixtures/cat1.jpg as a data URL; a short URL
+// stands in for it here, since these checks never reach fal.
+const recorded = {
+  prompt: "Add a small red bow tie to the cat.",
+  image_urls: ["https://example.com/cat1.jpg"],
+  quality: "low",
+  reasoning_effort: "low",
+  num_images: 1,
+} satisfies FalOpenaiGptImage2p6SunburstEditRequest;
+
+function accepts(body: Record<string, unknown>): boolean {
+  return schema.safeParse({ ...recorded, ...body }).success;
+}
+
+function jsonResponse(body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+describe("GPT Image 2.6 Sunburst edit contract", () => {
+  it("exposes the schema on both run aliases and the queue registry", () => {
+    const provider = createFal({ apiKey: "test-key" });
+    const leaf = provider.run.openai.gptImage2p6.sunburst.edit;
+    expect(leaf).toBe(provider.post.run.openai.gptImage2p6.sunburst.edit);
+    expect(leaf.schema).toBe(schema);
+    expect(FAL_ENDPOINT_REQUEST_SCHEMAS[endpoint]).toBe(schema);
+    expectTypeOf(
+      provider.run.openai.gptImage2p6.sunburst
+    ).toEqualTypeOf<FalRunOpenaiGptImage2p6SunburstNamespace>();
+    expectTypeOf<FalOpenaiGptImage2p6SunburstEditRequest>().toEqualTypeOf<
+      z.input<typeof schema>
+    >();
+    expectTypeOf<FalOpenaiGptImage2p6SunburstEditRequestInput>().toEqualTypeOf<FalOpenaiGptImage2p6SunburstEditRequest>();
+    expectTypeOf<FalOpenaiGptImage2p6SunburstEditParsedRequest>().toEqualTypeOf<
+      z.output<typeof schema>
+    >();
+    expectTypeOf<FalOpenaiGptImage2p6SunburstEditResponse>().toEqualTypeOf<{
+      images: Array<{
+        url: string;
+        content_type?: string | null;
+        file_name?: string | null;
+        file_size?: number | null;
+        width?: number | null;
+        height?: number | null;
+      }>;
+    }>();
+  });
+
+  it("posts the body unchanged to fal.run with the key header", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValue(
+        jsonResponse({ images: [{ url: "https://example.com/out.bin" }] })
+      );
+    const provider = createFal({
+      apiKey: "fal-test-key",
+      fetch: mockFetch as unknown as typeof fetch,
+    });
+    const result =
+      await provider.run.openai.gptImage2p6.sunburst.edit(recorded);
+    expect(result.images[0].url).toBe("https://example.com/out.bin");
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const [url, init] = mockFetch.mock.calls[0] as [
+      RequestInfo | URL,
+      RequestInit,
+    ];
+    expect(String(url)).toBe(
+      "https://fal.run/openai/gpt-image-2.6/sunburst/edit"
+    );
+    expect(init.method).toBe("POST");
+    expect(init.headers).toMatchObject({
+      Authorization: "Key fal-test-key",
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(String(init.body))).toEqual(recorded);
+  });
+
+  it("describes the documented fields in order", () => {
+    expect(Object.keys(schema.shape)).toEqual([
+      "prompt",
+      "image_urls",
+      "mask_url",
+      "markup_image_url",
+      "image_size",
+      "background",
+      "quality",
+      "reasoning_effort",
+      "num_images",
+      "output_format",
+      "output_compression",
+      "frame_count",
+      "frame_duration_ms",
+      "sync_mode",
+      "enable_safety_checker",
+    ]);
+    expect(schema.shape.prompt.description).toBe(
+      "The prompt for image generation"
+    );
+    expect(schema.shape.image_urls.description).toBe(
+      "The URLs of the images to use as a reference for the generation. A maximum of 16 images are allowed."
+    );
+    expect(schema.shape.mask_url.description).toBe(
+      "Mask image URL. White marks regions to edit and black marks regions to keep."
+    );
+    expect(schema.shape.markup_image_url.description).toBe(
+      "Transparent PNG containing only annotations (circles, arrows, notes) that guide the edit of the first image. Must match the first image's dimensions. Cannot be combined with mask_url. Reference images are sent unmodified when set."
+    );
+    expect(schema.shape.image_size.description).toBe(
+      "The size of the generated image. Use 'auto' to infer from input images."
+    );
+    expect(schema.shape.background.description).toBe(
+      "Background for the generated image"
+    );
+    expect(schema.shape.quality.description).toBe(
+      "Rendering quality for the generated image. For SVG output it controls the reference image used to create the vector."
+    );
+    expect(schema.shape.reasoning_effort.description).toBe(
+      "How much the model plans before rendering, independently of quality (OpenAI `complexity`). Higher levels can help with dense text and complex layouts but add latency."
+    );
+    expect(schema.shape.num_images.description).toBe(
+      "Number of images to generate. Must be 1 for SVG output. For GIF output, all frames of all outputs share the request's pixel budget."
+    );
+    expect(schema.shape.output_format.description).toBe(
+      "Output format for the images. 'gif' returns an animation."
+    );
+    expect(schema.shape.output_compression.description).toBe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    );
+    expect(schema.shape.frame_count.description).toBe(
+      "GIF only: number of frames. image_size applies to each frame; reduce size or count if the request exceeds the pixel budget."
+    );
+    expect(schema.shape.frame_duration_ms.description).toBe(
+      "GIF only: milliseconds per frame, rounded to 10 ms."
+    );
+    expect(schema.shape.sync_mode.description).toBe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    );
+    expect(schema.shape.enable_safety_checker.description).toBe(
+      "Authorized callers may set false to request relaxed screening."
+    );
+  });
+
+  it("leaves the input open, as upstream does", () => {
+    expect(accepts({ unknown_field: 1 })).toBe(true);
+  });
+
+  it("requires the documented fields", () => {
+    expect(schema.safeParse(recorded).success).toBe(true);
+    const without_image_urls = { ...recorded } as Record<string, unknown>;
+    delete without_image_urls.image_urls;
+    expect(schema.safeParse(without_image_urls).success).toBe(false);
+    const without_prompt = { ...recorded } as Record<string, unknown>;
+    delete without_prompt.prompt;
+    expect(schema.safeParse(without_prompt).success).toBe(false);
+  });
+
+  it("bounds prompt", () => {
+    expect(accepts({ prompt: "x".repeat(0) })).toBe(false);
+    expect(accepts({ prompt: "x".repeat(1) })).toBe(true);
+    expect(accepts({ prompt: "x".repeat(32000) })).toBe(true);
+    expect(accepts({ prompt: "x".repeat(32001) })).toBe(false);
+  });
+
+  it("accepts a null mask_url", () => {
+    expect(accepts({ mask_url: null })).toBe(true);
+  });
+
+  it("accepts a null markup_image_url", () => {
+    expect(accepts({ markup_image_url: null })).toBe(true);
+    expect(
+      accepts({ markup_image_url: "https://example.com/markup.png" })
+    ).toBe(true);
+  });
+
+  it("accepts the documented reasoning_effort values", () => {
+    expect(accepts({ reasoning_effort: "low" })).toBe(true);
+    expect(accepts({ reasoning_effort: "medium" })).toBe(true);
+    expect(accepts({ reasoning_effort: "high" })).toBe(true);
+    expect(accepts({ reasoning_effort: "max" })).toBe(false);
+    expect(schema.parse({ prompt: "x", image_urls: [] }).reasoning_effort).toBe(
+      "high"
+    );
+  });
+
+  it("accepts gif output with its frame knobs, and no svg", () => {
+    expect(accepts({ output_format: "gif" })).toBe(true);
+    expect(accepts({ output_format: "svg" })).toBe(false);
+    expect(accepts({ frame_count: 1 })).toBe(false);
+    expect(accepts({ frame_count: 16 })).toBe(true);
+    expect(accepts({ frame_count: 17 })).toBe(false);
+    expect(accepts({ frame_duration_ms: 19 })).toBe(false);
+    expect(accepts({ frame_duration_ms: 2000 })).toBe(true);
+    expect(accepts({ frame_duration_ms: 2001 })).toBe(false);
+    expect(accepts({ svg_model: "gpt-6-astra" })).toBe(true);
+    expect("svg_model" in schema.shape).toBe(false);
+  });
+
+  it("accepts the documented background values", () => {
+    expect(accepts({ background: "auto" })).toBe(true);
+    expect(accepts({ background: "transparent" })).toBe(true);
+    expect(accepts({ background: "opaque" })).toBe(true);
+    expect(accepts({ background: "not-a-documented-value" })).toBe(false);
+    expect(accepts({ background: null })).toBe(false);
+  });
+
+  it("accepts the documented quality values", () => {
+    expect(accepts({ quality: "auto" })).toBe(true);
+    expect(accepts({ quality: "low" })).toBe(true);
+    expect(accepts({ quality: "medium" })).toBe(true);
+    expect(accepts({ quality: "high" })).toBe(true);
+    expect(accepts({ quality: "xhigh" })).toBe(true);
+    expect(accepts({ quality: "max" })).toBe(true);
+    expect(accepts({ quality: "not-a-documented-value" })).toBe(false);
+    expect(accepts({ quality: null })).toBe(false);
+  });
+
+  it("bounds the num_images number", () => {
+    expect(accepts({ num_images: 1 })).toBe(true);
+    expect(accepts({ num_images: 0 })).toBe(false);
+    expect(accepts({ num_images: 10 })).toBe(true);
+    expect(accepts({ num_images: 11 })).toBe(false);
+  });
+
+  it("accepts the documented output_format values", () => {
+    expect(accepts({ output_format: "jpeg" })).toBe(true);
+    expect(accepts({ output_format: "png" })).toBe(true);
+    expect(accepts({ output_format: "webp" })).toBe(true);
+    expect(accepts({ output_format: "gif" })).toBe(true);
+    expect(accepts({ output_format: "not-a-documented-value" })).toBe(false);
+    expect(accepts({ output_format: null })).toBe(false);
+  });
+
+  it("accepts a null output_compression", () => {
+    expect(accepts({ output_compression: null })).toBe(true);
+  });
+
+  it("bounds the output_compression number", () => {
+    expect(accepts({ output_compression: 0 })).toBe(true);
+    expect(accepts({ output_compression: -1 })).toBe(false);
+    expect(accepts({ output_compression: 100 })).toBe(true);
+    expect(accepts({ output_compression: 101 })).toBe(false);
+  });
+
+  it("is dynamically priced and has no static slug", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
+    expect(falPricing[endpoint]).toBeUndefined();
+    expect(
+      (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
+    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "GPT Image 2.6 Sunburst Edit"
+    );
+    const estimate = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload: recorded,
+    });
+    expect(estimate.usd).toBe(0);
+    expect(estimate.warnings[0]).toContain("models/pricing/estimate");
+  });
+});

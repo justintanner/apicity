@@ -165,10 +165,12 @@ import {
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageResponse,
   FalOpenaiGptImage2p6SunburstTextToImageResponse,
+  FalOpenaiGptImage2p6SunburstEditResponse,
   FalOpenaiGptImage2Response,
   FalOpenaiGptImage2EditResponse,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstTextToImageRequest,
+  FalOpenaiGptImage2p6SunburstEditRequest,
   FalOpenaiGptImage2Request,
   FalOpenaiGptImage2EditRequest,
   FalOpenaiGptImage2p5SunburstEditResponse,
@@ -624,6 +626,7 @@ import {
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p6SunburstTextToImageRequestSchema,
+  FalOpenaiGptImage2p6SunburstEditRequestSchema,
   FalOpenaiGptImage2RequestSchema,
   FalOpenaiGptImage2EditRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
@@ -3522,6 +3525,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/openai/gpt-image-2.6/sunburst/edit
+  // Docs: https://fal.ai/models/openai/gpt-image-2.6/sunburst/edit/api
+  const openaiGptImage2p6SunburstEdit = jsonBody<
+    FalOpenaiGptImage2p6SunburstEditRequest,
+    FalOpenaiGptImage2p6SunburstEditResponse
+  >(
+    "POST",
+    "/openai/gpt-image-2.6/sunburst/edit",
+    FalOpenaiGptImage2p6SunburstEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/openai/gpt-image-2
   // Docs: https://fal.ai/models/openai/gpt-image-2/api
   const openaiGptImage2 = jsonBody<
@@ -4829,6 +4845,10 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/openai/gpt-image-2.6/sunburst/text-to-image
           // Docs: https://fal.ai/models/openai/gpt-image-2.6/sunburst/text-to-image/api
           textToImage: openaiGptImage2p6SunburstTextToImage,
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/openai/gpt-image-2.6/sunburst/edit
+          // Docs: https://fal.ai/models/openai/gpt-image-2.6/sunburst/edit/api
+          edit: openaiGptImage2p6SunburstEdit,
         },
       },
     },

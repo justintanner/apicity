@@ -2007,6 +2007,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST openai.gptImage2p5.flare.textToImage",
       "POST openai.gptImage2p5.sunburst.edit",
       "POST openai.gptImage2p5.sunburst.textToImage",
+      "POST openai.gptImage2p6.sunburst.edit",
       "POST openai.gptImage2p6.sunburst.textToImage",
       "POST openrouter.router.decisions",
       "POST topaz.upscale.image.precision",

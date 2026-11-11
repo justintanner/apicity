@@ -2016,6 +2016,7 @@ export const MODEL_DISPLAY = {
     "google/gemini-omni-flash/v1.1/reference-to-video": "Gemini Omni 1.1 Flash",
     "google/gemini-omni-flash/v1.1/text-to-video": "Gemini Omni 1.1 Flash",
     "google/gemini-omni-flash/v1.2/edit": "Gemini Omni 1.2 Flash Edit",
+    "google/gemini-omni-flash/v1.2/reference-to-video": "Gemini Omni 1.2 Flash",
     "google/nano-banana-2-lite": "Nano Banana 2 Lite",
     "google/nano-banana-2.1": "Nano Banana 2.1",
     "google/nano-banana-2.1/edit": "Nano Banana 2.1 Edit",

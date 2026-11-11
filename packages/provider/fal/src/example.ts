@@ -1189,6 +1189,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p2.referenceToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-2-reference-to-video",
+    "payload": {
+      "prompt": "The cat in <IMAGE_REF_0> stretches, then sits still.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 3,
+      "resolution": "360p",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

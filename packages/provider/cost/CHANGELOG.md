@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 reference-to-video
+  (`google/gemini-omni-flash/v1.2/reference-to-video`) is priced dynamically,
+  like the 1.2 edit: a recorded 3 s, 360p call billed 3.401161 seconds, USD
+  0.092852, about 3.03 for the output file (its generated audio runs past
+  3 s) and the rest for the input tokens of the reference image and prompt.
+  It joins `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has
+  a display-only `MODEL_DISPLAY` name, and enters the derived
+  reference-to-video frontier board at #4 (ac-7tfowj).
+
 - fal Seedance 2.0 Mini image-to-video
   (`bytedance/seedance-2.0/mini/image-to-video`) is priced statically by
   output tokens, like 2.0 Fast: 0.007 USD per 1000 tokens at 480p and 720p

@@ -80,6 +80,13 @@
       "pricingKey": "bytedance/seedance-2.5/reference-to-video"
     }
   ],
+  "Gemini Omni Flash 1.2": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p2.referenceToVideo",
+      "pricingKey": "google/gemini-omni-flash/v1.2/reference-to-video"
+    }
+  ],
   "HeyGen Video 1": [
     {
       "provider": "fal",

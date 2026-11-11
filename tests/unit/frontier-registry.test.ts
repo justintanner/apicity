@@ -165,9 +165,10 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Wan 3.0", "Alibaba", 1175],
   [2, "MiniMax H3 (768p)", "MiniMax", 1161],
   [3, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
-  [4, "HeyGen Video 1", "HeyGen", 1153],
-  [5, "MiniMax H3 Max", "Fal", 1147],
-  [6, "Dreamina Seedance 2.0", "ByteDance Seed", 1140],
+  [4, "Gemini Omni Flash 1.2", "Google", 1154],
+  [5, "HeyGen Video 1", "HeyGen", 1153],
+  [6, "MiniMax H3 Max", "Fal", 1147],
+  [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1140],
 ];
 
 const T2V_UNMAPPED = ["Utopai X", "Gemini Omni Flash 1.2", "SkyReels V4"];
@@ -184,7 +185,6 @@ const V2V_UNMAPPED = ["Hyperflow H3"];
 const R2V_LEFT_OUT = [
   "Utopai X",
   "FLUX 3 Max",
-  "Gemini Omni Flash 1.2",
   "SkyReels V4",
   "FLUX 3",
   "Hyperflow H3",
@@ -1321,7 +1321,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(6);
+    expect(mappedCount(r2v.endpointMap)).toBe(7);
 
     const ranked = [
       ...new Set([

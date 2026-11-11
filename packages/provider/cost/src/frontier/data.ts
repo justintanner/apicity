@@ -831,7 +831,13 @@ export const FRONTIER = {
         model: "Gemini Omni Flash 1.2",
         creator: "Google",
         elo: 1164,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "geminiOmniFlash.v1p2.edit",
+            pricingKey: "google/gemini-omni-flash/v1.2/edit",
+          },
+        ],
       },
       {
         rank: 3,

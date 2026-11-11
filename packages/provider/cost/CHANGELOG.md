@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Gemini Omni Flash 1.2 edit (`google/gemini-omni-flash/v1.2/edit`) is
+  priced dynamically, as the v1.1 endpoints are. Its card bills output seconds
+  by resolution (0.0273 to 0.2457 USD) plus input tokens at 1.50 USD per 1M,
+  and the request carries neither the source's length nor its tokens: a
+  recorded 360p edit of a 5 s clip billed 7.137917 seconds, USD 0.194865,
+  about 5.03 for the output file and the rest for input tokens. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for Gemini Omni
+  Flash 1.2 on the video-editing frontier board (ac-0k5eqv).
+
 - fal GPT Image 2.6 Flare text-to-image
   (`openai/gpt-image-2.6/flare/text-to-image`) is priced dynamically from fal's
   token card, like its Sunburst twin. It joins `FAL_DYNAMIC_PRICING_ENDPOINTS`

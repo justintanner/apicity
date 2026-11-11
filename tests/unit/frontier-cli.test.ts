@@ -73,7 +73,7 @@ describe("apicity frontier", () => {
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "7/10", captured: "2026-11-11" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-11" });
+    expect(v2v).toMatchObject({ models: "9/10", captured: "2026-11-11" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
@@ -240,6 +240,7 @@ describe("apicity frontier", () => {
     ).resolves.toBe(0);
     const table = out.join("\n");
     expect(table).toContain("geminiOmniFlash.v1p1.edit");
+    expect(table).toContain("geminiOmniFlash.v1p2.edit");
     expect(table).toContain("wan.v2p7.editVideo");
     expect(table).toContain("wan2.7-videoedit");
     expect(table).toContain("happyhorse/video-edit");
@@ -248,9 +249,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("api.v3.wavespeedAi.minimaxH3.videoEdit");
     expect(table).toContain("api.v3.bytedance.seedance2p0.videoEdit");
     expect(table).toContain("api.v3.runwayml.aleph2");
-    expect(table).toContain(
-      "not yet in apicity: Gemini Omni Flash 1.2, Hyperflow H3"
-    );
+    expect(table).toContain("not yet in apicity: Hyperflow H3");
   });
 
   it("prints the derived r2v rows with no gaps", async () => {

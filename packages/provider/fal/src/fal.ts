@@ -239,6 +239,8 @@ import {
   FalGeminiOmniFlashV1p1ReferenceToVideoRequest,
   FalGeminiOmniFlashV1p1EditResponse,
   FalGeminiOmniFlashV1p1EditRequest,
+  FalGeminiOmniFlashV1p2EditResponse,
+  FalGeminiOmniFlashV1p2EditRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoResponse,
@@ -666,6 +668,7 @@ import {
   FalGeminiOmniFlashV1p1ImageToVideoRequestSchema,
   FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
   FalGeminiOmniFlashV1p1EditRequestSchema,
+  FalGeminiOmniFlashV1p2EditRequestSchema,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   FalMinimaxH3MaxTurboTextToVideoRequestSchema,
@@ -2219,6 +2222,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/v1.2/edit
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/edit/api
+  const geminiOmniFlashV1p2Edit = jsonBody<
+    FalGeminiOmniFlashV1p2EditRequest,
+    FalGeminiOmniFlashV1p2EditResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/v1.2/edit",
+    FalGeminiOmniFlashV1p2EditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
   const geminiOmniFlash = Object.assign(
@@ -2242,6 +2258,11 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/google/gemini-omni-flash/v1.1/edit
         // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api
         edit: geminiOmniFlashV1p1Edit,
+      },
+      v1p2: {
+        // POST https://fal.run/google/gemini-omni-flash/v1.2/edit
+        // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.2/edit/api
+        edit: geminiOmniFlashV1p2Edit,
       },
       edit: geminiOmniFlashEdit,
       imageToVideo: geminiOmniFlashImageToVideo,

@@ -37,6 +37,8 @@ const CHECKED = [
   "fal-ai/kandinsky6-pro/text-to-video",
   "fal-ai/kandinsky6-vsr",
   "fal-ai/kandinsky6-vsr/lite",
+  // Card read 2026-11-11; the recorded 360p edit billed 7.137917 seconds.
+  "google/gemini-omni-flash/v1.2/edit",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
   "kling/v4/video-to-video/edit",

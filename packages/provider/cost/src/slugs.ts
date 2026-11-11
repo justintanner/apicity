@@ -2055,6 +2055,7 @@ export const MODEL_DISPLAY = {
     "openai/gpt-image-2.5/sunburst/edit": "GPT Image 2.5 Sunburst Edit",
     "openai/gpt-image-2.5/sunburst/text-to-image": "GPT Image 2.5 Sunburst",
     "openai/gpt-image-2.6/flare/edit": "GPT Image 2.6 Flare Edit",
+    "openai/gpt-image-2.6/flare/text-to-image": "GPT Image 2.6 Flare",
     "openai/gpt-image-2.6/sunburst/edit": "GPT Image 2.6 Sunburst Edit",
     "openai/gpt-image-2.6/sunburst/text-to-image": "GPT Image 2.6 Sunburst",
     "openrouter/router/decisions": "OpenRouter Router",

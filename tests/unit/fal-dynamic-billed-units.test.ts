@@ -45,6 +45,7 @@ const CHECKED = [
   "openai/gpt-image-2",
   // Cards read 2026-11-11; see each recording's x-fal-billable-units.
   "openai/gpt-image-2.6/flare/edit",
+  "openai/gpt-image-2.6/flare/text-to-image",
   "openai/gpt-image-2.6/sunburst/edit",
   // The recorded low-quality call billed 0.0217 units.
   "openai/gpt-image-2.6/sunburst/text-to-image",

@@ -108,11 +108,7 @@ const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [10, "MAI-Image-2.6-Flash", "Microsoft AI", 1143],
 ];
 
-const T2I_UNMAPPED = [
-  "GPT Image 2.6 Flare (max)",
-  "MAI-Image-2.6",
-  "Seedream 5.5",
-];
+const T2I_UNMAPPED = ["MAI-Image-2.6", "Seedream 5.5"];
 const I2I_UNMAPPED = [
   "MAI-Image-2.7-Preview",
   "Seedream 5.5",
@@ -1002,7 +998,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(T2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2i.snapshot)).toEqual([]);
     expect(unmappedNames(t2i.endpointMap)).toEqual(T2I_UNMAPPED);
-    expect(mappedCount(t2i.endpointMap)).toBe(7);
+    expect(mappedCount(t2i.endpointMap)).toBe(8);
     expect(Object.keys(t2i.endpointMap)).toHaveLength(10);
   });
 

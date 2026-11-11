@@ -167,12 +167,14 @@ import {
   FalOpenaiGptImage2p6SunburstTextToImageResponse,
   FalOpenaiGptImage2p6SunburstEditResponse,
   FalOpenaiGptImage2p6FlareEditResponse,
+  FalOpenaiGptImage2p6FlareTextToImageResponse,
   FalOpenaiGptImage2Response,
   FalOpenaiGptImage2EditResponse,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstTextToImageRequest,
   FalOpenaiGptImage2p6SunburstEditRequest,
   FalOpenaiGptImage2p6FlareEditRequest,
+  FalOpenaiGptImage2p6FlareTextToImageRequest,
   FalOpenaiGptImage2Request,
   FalOpenaiGptImage2EditRequest,
   FalOpenaiGptImage2p5SunburstEditResponse,
@@ -630,6 +632,7 @@ import {
   FalOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p6SunburstEditRequestSchema,
   FalOpenaiGptImage2p6FlareEditRequestSchema,
+  FalOpenaiGptImage2p6FlareTextToImageRequestSchema,
   FalOpenaiGptImage2RequestSchema,
   FalOpenaiGptImage2EditRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
@@ -3554,6 +3557,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/openai/gpt-image-2.6/flare/text-to-image
+  // Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/text-to-image/api
+  const openaiGptImage2p6FlareTextToImage = jsonBody<
+    FalOpenaiGptImage2p6FlareTextToImageRequest,
+    FalOpenaiGptImage2p6FlareTextToImageResponse
+  >(
+    "POST",
+    "/openai/gpt-image-2.6/flare/text-to-image",
+    FalOpenaiGptImage2p6FlareTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/openai/gpt-image-2
   // Docs: https://fal.ai/models/openai/gpt-image-2/api
   const openaiGptImage2 = jsonBody<
@@ -4871,6 +4887,10 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/openai/gpt-image-2.6/flare/edit
           // Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/edit/api
           edit: openaiGptImage2p6FlareEdit,
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/openai/gpt-image-2.6/flare/text-to-image
+          // Docs: https://fal.ai/models/openai/gpt-image-2.6/flare/text-to-image/api
+          textToImage: openaiGptImage2p6FlareTextToImage,
         },
       },
     },

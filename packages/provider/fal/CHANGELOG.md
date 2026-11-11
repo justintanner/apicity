@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.openai.gptImage2p6.flare.textToImage`
+  (`POST https://fal.run/openai/gpt-image-2.6/flare/text-to-image`) adds GPT
+  Image 2.6 Flare, #3 on the 2026-11-11 text-to-image board, as a leaf on the
+  `openai.gptImage2p6.flare` object. The request matches Sunburst
+  text-to-image's (fal's queue OpenAPI, read 2026-11-11): `reasoning_effort`,
+  `gif` and `svg` output, `frame_count` and `frame_duration_ms` for GIFs, and
+  `svg_model` for SVGs, open to `gpt-<version>[-<name>]` ids. A recorded call
+  at quality low, reasoning_effort low, one square JPEG billed
+  `x-fal-billable-units` 0.0217 (ac-na2744).
+
 - `run.openai.gptImage2p6.flare.edit`
   (`POST https://fal.run/openai/gpt-image-2.6/flare/edit`) adds GPT Image 2.6
   Flare editing, #2 on the 2026-11-11 image-editing board. It declares the

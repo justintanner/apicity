@@ -1818,6 +1818,7 @@ fal	openai.gptImage2p5.sunburst.textToImage	POST	https://fal.run/openai/gpt-imag
 fal	openai.gptImage2p6.sunburst.textToImage	POST	https://fal.run/openai/gpt-image-2.6/sunburst/text-to-image	https://fal.ai/models/openai/gpt-image-2.6/sunburst/text-to-image/api
 fal	openai.gptImage2p6.sunburst.edit	POST	https://fal.run/openai/gpt-image-2.6/sunburst/edit	https://fal.ai/models/openai/gpt-image-2.6/sunburst/edit/api
 fal	openai.gptImage2p6.flare.edit	POST	https://fal.run/openai/gpt-image-2.6/flare/edit	https://fal.ai/models/openai/gpt-image-2.6/flare/edit/api
+fal	openai.gptImage2p6.flare.textToImage	POST	https://fal.run/openai/gpt-image-2.6/flare/text-to-image	https://fal.ai/models/openai/gpt-image-2.6/flare/text-to-image/api
 fal	openai.gptImage2	POST	https://fal.run/openai/gpt-image-2	https://fal.ai/models/openai/gpt-image-2/api
 fal	openai.gptImage2.edit	POST	https://fal.run/openai/gpt-image-2/edit	https://fal.ai/models/openai/gpt-image-2/edit/api
 fal	openai.gptImage2p5.flare.edit	POST	https://fal.run/openai/gpt-image-2.5/flare/edit	https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api

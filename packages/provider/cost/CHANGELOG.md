@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal GPT Image 2.6 Flare text-to-image
+  (`openai/gpt-image-2.6/flare/text-to-image`) is priced dynamically from fal's
+  token card, like its Sunburst twin. It joins `FAL_DYNAMIC_PRICING_ENDPOINTS`
+  and `FAL_DYNAMIC_BILLED_UNITS`, has a display-only `MODEL_DISPLAY` name, and
+  is the fal entry for GPT Image 2.6 Flare (max) on the text-to-image frontier
+  board. A recorded low-quality, low-effort square JPEG billed 0.0217 USD
+  (ac-na2744).
+
 - fal GPT Image 2.6 Flare edit (`openai/gpt-image-2.6/flare/edit`) is priced
   dynamically from fal's token card, like the Sunburst edit. It joins
   `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a

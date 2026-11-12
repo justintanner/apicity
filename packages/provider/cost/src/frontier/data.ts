@@ -93,6 +93,11 @@ export const FRONTIER = {
             dotPath: "openai.gptImage2p6.sunburst.textToImage",
             pricingKey: "openai/gpt-image-2.6/sunburst/text-to-image",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-6/sunburst-text-to-image",
+          },
         ],
       },
       {

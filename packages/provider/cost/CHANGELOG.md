@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE GPT Image 2.6 Sunburst (`gpt-image-2-6/sunburst-text-to-image`) is
+  priced from kie's token rates: text input 4.50, cached text input 1.125,
+  image input 7.20, cached image input 1.80 and image output 27.00 USD per
+  1M tokens. No request shows the generated image's tokens, so, like
+  OpenAI's per-modality image rows, it is priced only from declared usage;
+  a KIE token row with `modalityRates` now goes through
+  `evaluateDeclaredUsage`, and SVG output warns that the author model's
+  tokens bill on top. A recorded 1K low-quality jpeg billed 4.46 credits,
+  USD 0.0223 (ac-ag1t5r).
+
 - fal Gemini Omni Flash 1.2 upscale (`google/gemini-omni-flash/v1.2/upscale`)
   is priced dynamically, like fal's other video upscalers: the card bills
   each second of upscaled output at a rate set by the source and target

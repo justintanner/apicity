@@ -451,9 +451,76 @@ describe("KIE feed drift", () => {
       ).toBe(true);
       expect(
         result.notCompared.every(({ reason }) =>
-          reason.includes("no ApiCity pricing key")
+          reason.includes("bill on top of the image tokens")
         )
       ).toBe(true);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  // GPT Image 2.6 bills text and image tokens at different rates. The row's
+  // last clause names the modality, so an Image row reads the entry's image
+  // rate and a Text row its text rate (2026-11-12 feed, ac-ag1t5r).
+  it("compares gpt-image-2-6 text and image token rows with the matching modality rate", async () => {
+    const anchor =
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fsunburst-text-to-image";
+    const row = (role: string, creditPrice: string, usdPrice: string) => {
+      const modelDescription = `gpt-image-2-6-sunburst, text-to-image / image-to-image, ${role}`;
+      return {
+        occurrenceId: `sha256:${modelDescription}#1`,
+        rowHash: `sha256:${modelDescription}`,
+        semanticKey: `sha256:${modelDescription}`,
+        raw: {
+          modelDescription,
+          interfaceType: "image",
+          provider: "OpenAI",
+          creditPrice,
+          creditUnit: "per million tokens",
+          usdPrice,
+          anchor,
+        },
+      };
+    };
+    const records = [
+      row("Text Input", "900", "4.5"),
+      row("Cached Text Input", "225", "1.125"),
+      row("Image Input", "1440", "7.2"),
+      row("Cached Image Input", "360", "1.8"),
+      row("Image Output", "5400", "27"),
+    ];
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: typeof records) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write(records);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(5);
+      expect(result.compared).toBe(5);
+
+      const moved = await write([
+        ...records.slice(0, 2),
+        row("Image Input", "1600", "8"),
+        ...records.slice(3),
+      ]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "gpt-image-2-6/sunburst-text-to-image",
+          variant: "image input",
+          tableUsd: 7.2,
+        }),
+      ]);
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

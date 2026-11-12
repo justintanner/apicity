@@ -1652,8 +1652,13 @@ const MEDIA_MODEL_FAMILIES = [
       "gpt-image-2-5-flare-text-to-image",
       "gpt-image-2-5-sunburst-image-to-image",
       "gpt-image-2-5-sunburst-text-to-image",
+      "gpt-image-2-6/sunburst-text-to-image",
     ],
-    aliases: ["gpt-image-3-text-to-image", "gpt-image/2.5-image-to-image"],
+    aliases: [
+      "gpt-image-3-text-to-image",
+      "gpt-image/2.5-image-to-image",
+      "gpt-image-2-7/flare-image-to-image",
+    ],
     rejected: [
       "gpt-image",
       "gpt-image-2",
@@ -1663,6 +1668,8 @@ const MEDIA_MODEL_FAMILIES = [
       "gpt-image-2-5-flare",
       "gpt-image-x-flare-text-to-image",
       "gpt-image-2-flare",
+      "gpt-image-2-6/sunburst",
+      "gpt-image-2-6/sunburst/text-to-image",
     ],
   },
   {

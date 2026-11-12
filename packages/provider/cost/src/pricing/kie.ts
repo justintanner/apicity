@@ -2701,6 +2701,29 @@ export const kie: Record<string, ModelPricing> = {
     "1K",
     "2026-09-11"
   ),
+  // GPT Image 2.6 Sunburst bills tokens, not images. Official feed rows read
+  // 2026-11-12, per million tokens: text input 900 credits (4.50 USD), cached
+  // text input 225 (1.125), image input 1,440 (7.20), cached image input 360
+  // (1.80) and image output 5,400 (27.00), which kie's pricingDesc calls 10 %
+  // below OpenAI's list. The model writes no text, so `rate.output` is 0, as
+  // OpenAI's gpt-image-1-mini row has it, and declared usage puts every output
+  // token in imageOutputTokens. SVG output also bills the svg.model author's
+  // tokens (gpt-5.6-luna 36 / 216 credits per 1M, gpt-6-sol 360 / 1,800,
+  // gpt-5.6-terra 360 / 2,160), which this row does not carry. No payload
+  // shows the generated image's tokens or the planning (complexity) tokens,
+  // so the row is priced from declared modality usage only. A recorded 1K
+  // low-quality jpeg billed 4.46 credits at success and 0 while waiting
+  // (task 4bb42093014580bcab6af684e0c6127f; evidence in
+  // tests/fixtures/kie-pricing-evidence/gpt-image-2-6-sunburst-text-to-image-2026-11-12.json).
+  "gpt-image-2-6/sunburst-text-to-image": {
+    kind: "tokens",
+    rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+    modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+    source: pricePage(
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fsunburst-text-to-image",
+      "2026-11-12"
+    ),
+  },
   "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
   "wan/2-7-image-pro": flatImage(
     0.06,

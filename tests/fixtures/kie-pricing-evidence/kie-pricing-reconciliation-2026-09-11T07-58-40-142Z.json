@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 169,
-      "pricingKeys": 234,
-      "slugKeys": 236,
-      "displayKeys": 236,
+      "models": 170,
+      "pricingKeys": 235,
+      "slugKeys": 237,
+      "displayKeys": 237,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:d6c2377abe504c741b4ffd810cb1e1940fc1baec656062746dc021984b5a5c97",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:8cc1ed7c0a293b3e340231a7046fc71e19fc23c9934fa17dd93eb5d686b01521",
-      "packages/provider/kie/src/kie.ts": "sha256:c70365ac5499a55463b30d5b9e6dac251c507fb90681a9ed3b974ddb1d89fd32",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:596c1cd04e9a82b804817857453ea89885e0b3ec3f6a7b6be04f9e458915550d",
-      "packages/provider/cost/src/slugs.ts": "sha256:b0fc41823f35201f75a9f36e73d0a3656713e224bdf316b81d913f819fba9e2c",
+      "packages/provider/kie/src/zod.ts": "sha256:7ed4ac897bc5fead19a6336dc0bf46970e418e0b38f14b3477586f3405d7ad3d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:150a9d37dfd18cae3c25afd3708f6c16242c1eb566d8de8f85f831e8f6ec0bae",
+      "packages/provider/kie/src/kie.ts": "sha256:ee3920d188593636505d0718b9a05852858a4763a2818ee10427784f3831d514",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:41f88c65a9cea8e377294fd48e1619ab73235be02c37482ba70dc7a123e09c4b",
+      "packages/provider/cost/src/slugs.ts": "sha256:af98b873e5272a91536614e86e99d337e47f8b9ec3cc53fdc1d2f1c88e9ef317",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -21880,6 +21880,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "seedream/5-5-layer-decomposition",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "seedream/5-5-layer-decomposition",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "seedream/4.5-text-to-image",
         "descriptor": true,
         "guard": true,
@@ -25103,6 +25112,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "seedream/5-5-layer-decomposition",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "seedream/5-pro-layer-decomposition",
         "linkedRows": [
           "sha256:a81d2759efd843c9dcd9350ea05aa91d65375e96e2a6c1eab70ffbccdc501ea3#1",
@@ -26691,6 +26706,10 @@
         "disposition": "supported"
       },
       {
+        "key": "seedream/5-5-layer-decomposition",
+        "disposition": "supported"
+      },
+      {
         "key": "seedream/4.5-text-to-image",
         "disposition": "supported"
       },
@@ -27637,6 +27656,10 @@
         "disposition": "supported"
       },
       {
+        "key": "seedream/5-5-layer-decomposition",
+        "disposition": "supported"
+      },
+      {
         "key": "seedream/4.5-text-to-image",
         "disposition": "supported"
       },
@@ -28503,16 +28526,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 169,
-        "descriptors": 169,
-        "guards": 169,
+        "count": 170,
+        "descriptors": 170,
+        "guards": 170,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 70
+          "upstream-unmappable": 71
         },
         "unclassified": 0
       },
@@ -28530,20 +28553,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 234,
+        "count": 235,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 84
+          "upstream-unmappable": 85
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 236,
+        "count": 237,
         "dispositionCounts": {
-          "supported": 236,
+          "supported": 237,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28552,9 +28575,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 236,
+        "count": 237,
         "dispositionCounts": {
-          "supported": 236,
+          "supported": 237,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29138,6 +29161,27 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per image at 1K/1.5K/2K",
         "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates, the docs callback example (6.3 credits at the 2K default) matches them, and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "seedream/5-5-layer-decomposition",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per returned image at 1K/1.5K/2K",
+        "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "seedream/5-5-layer-decomposition",
+        "variant": "1.5K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per returned image at 1K/1.5K/2K",
+        "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "seedream/5-5-layer-decomposition",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per returned image at 1K/1.5K/2K",
+        "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell."
       },
       {
         "key": "google/gemini-omni-flash-1-2",

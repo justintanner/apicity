@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `seedream/5-5-layer-decomposition` (Seedream 5.5 layer decomposition) with typed inputs: one `image_url`, an optional `prompt` of up to 2,000 characters, the documented `size` (auto by default), `output_format`, `max_images` (2-100, default 30), `text_recognition` and `nsfw_checker` defaults, and a recorded decomposition. `Seedream55LayerDecompositionRequestSchema` is exported.
+
 - Added `seedream/5-5-text-to-image` (Seedream 5.5 text-to-image) with typed inputs: a required `aspect_ratio` (eight ratios, no auto), the documented `size`, `output_format`, `background` and `nsfw_checker` defaults, a transparent background only with png, and a recorded generation. It reuses the shared Seedream 5.5 schemas, and `Seedream55TextToImageRequestSchema` is exported.
 
 - Added `seedream/5-5-image-to-image` (Seedream 5.5 image-to-image) with typed inputs: 1-10 `image_urls`, the documented `aspect_ratio`, `size`, `output_format`, `background` and `nsfw_checker` defaults, a transparent background only with png, and a recorded edit. The shared `Seedream55SizeSchema`, `Seedream55OutputFormatSchema` and `Seedream55BackgroundSchema` are exported, and the Seedream model alias accepts kie's dashed minor version (`seedream/5-5-*`).

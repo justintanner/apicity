@@ -603,10 +603,11 @@ page.
 
 KIE serves Seedream 5.5 through the shared
 `kie.post.api.v1.jobs.createTask` endpoint as
-`seedream/5-5-text-to-image` and `seedream/5-5-image-to-image`. KIE
-spells the 5.5 ids with a dash (`seedream/5-5-...`), where 4.5 used a dot
-(`seedream/4.5-edit`); the Seedream model alias reads both. Both models
-require `prompt` (5-5,000 characters). Text-to-image also requires
+`seedream/5-5-text-to-image`, `seedream/5-5-image-to-image` and
+`seedream/5-5-layer-decomposition`. KIE spells the 5.5 ids with a dash
+(`seedream/5-5-...`), where 4.5 used a dot (`seedream/4.5-edit`); the
+Seedream model alias reads both. The text and image models require
+`prompt` (5-5,000 characters). Text-to-image also requires
 `aspect_ratio`, one of eight ratios with no `"auto"`. Image-to-image
 requires 1-10 `image_urls` and defaults `aspect_ratio` to `"auto"`. Both
 default `size` to `"2K"`, `output_format` to `"png"`, `background` to
@@ -640,10 +641,40 @@ console.log(generated.data?.taskId, edited.data?.taskId);
 Each output image bills by `size`: 3.6 credits ($0.018) at 1K and 1.5K,
 6.3 ($0.0315) at 2K, so a 1K text-to-image costs 3.6 credits. In
 image-to-image, every input image adds 1.44 credits ($0.0072), the first
-included, so a 1K edit of one image costs 5.04 credits. See KIE's
-[text-to-image](https://docs.kie.ai/market/seedream/5-5-text-to-image.md)
-and
+included, so a 1K edit of one image costs 5.04 credits.
+
+Layer decomposition splits one `image_url` into a base image plus
+separated layers. `prompt` (up to 2,000 characters, with optional
+`<bbox>x1 y1 x2 y2</bbox>` positions) is optional. `size` defaults to
+`"auto"`, which keeps the input size within 1K-2K. `output_format` sets
+only the base image, since layers are always transparent PNG.
+`max_images` (2-100, default 30) caps the returned images, the base
+included.
+
+```typescript
+declare const source: string;
+
+const layers = await kie.post.api.v1.jobs.createTask({
+  model: "seedream/5-5-layer-decomposition",
+  input: {
+    image_url: source,
+    size: "1K",
+    max_images: 2,
+  },
+});
+
+console.log(layers.data?.taskId);
+```
+
+It bills every returned image at the `size` rate, with `auto` at the 2K
+rate, plus 1.44 credits for the input image. A 1K job that returned two
+images cost 8.64 credits. `@apicity/cost` reads the returned count from
+`costHints.outputImages`. Without it, the estimate assumes `max_images`
+and warns that the figure is an upper bound. See KIE's
+[text-to-image](https://docs.kie.ai/market/seedream/5-5-text-to-image.md),
 [image-to-image](https://docs.kie.ai/market/seedream/5-5-image-to-image.md)
+and
+[layer decomposition](https://docs.kie.ai/market/seedream/5-5-layer-decomposition.md)
 pages.
 
 ## Seedance 2.5 audio

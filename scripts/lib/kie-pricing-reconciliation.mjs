@@ -840,7 +840,8 @@ function representativeCostHints(key, inventories, auditedUnit, payload) {
   // so the representative case declares one returned image.
   if (
     key === "seedream/5-pro-layer-decomposition" ||
-    key === "seedream/5-flash-layer-decomposition"
+    key === "seedream/5-flash-layer-decomposition" ||
+    key === "seedream/5-5-layer-decomposition"
   ) {
     hints.outputImages = 1;
   }

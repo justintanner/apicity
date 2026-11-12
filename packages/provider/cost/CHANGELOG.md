@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Seedream 5.5 layer decomposition (`seedream/5-5-layer-decomposition`)
+  is priced per returned image by size (0.018 USD at 1K and 1.5K, 0.0315 at
+  2K and at the auto default) plus 0.0072 USD for the input image. The count
+  comes from `costHints.outputImages`, checked against `max_images`; without
+  it the estimate quotes `max_images` as an upper bound with a warning. A
+  recorded 1K job that returned two images billed 8.64 credits, USD 0.0432
+  (ac-hp1ess).
+
 - KIE Seedream 5.5 text-to-image (`seedream/5-5-text-to-image`) is priced
   per output image by size (0.018 USD at 1K and 1.5K, 0.0315 at the 2K
   default), with no input-image extra. A recorded 1K generation billed 3.6

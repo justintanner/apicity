@@ -435,6 +435,64 @@ const seedream55InputImageExtra = (
   return images.length * 0.0072;
 };
 
+// Seedream 5.5 layer decomposition bills every image a job returns, the base
+// image included, and max_images (integer 2-100, schema default 30) caps that
+// count. costHints.outputImages states the returned count; without it the
+// cap is the estimate, an upper bound, and a warning says so. A cap outside
+// 2-100, or a hint that is not a positive integer within the cap, fails
+// closed.
+const seedream55LayerCap = (p: Record<string, unknown>): number | undefined => {
+  const declared = asObject(p.input)?.max_images;
+  if (declared === undefined) return 30;
+  return typeof declared === "number" &&
+    Number.isInteger(declared) &&
+    declared >= 2 &&
+    declared <= 100
+    ? declared
+    : undefined;
+};
+
+const seedream55LayerImages = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const cap = seedream55LayerCap(p);
+  if (cap === undefined) return undefined;
+  const count = hints?.outputImages;
+  if (count === undefined) return cap;
+  return typeof count === "number" &&
+    Number.isInteger(count) &&
+    count > 0 &&
+    count <= cap
+    ? count
+    : undefined;
+};
+
+const seedream55LayerWarnings = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): string[] => {
+  const cap = seedream55LayerCap(p);
+  if (cap !== undefined && hints?.outputImages === undefined) {
+    return [
+      `seedream/5-5-layer-decomposition bills each returned image; without costHints.outputImages this estimate assumes max_images (${cap}), an upper bound.`,
+    ];
+  }
+  if (seedream55LayerImages(p, hints) === undefined) {
+    return [
+      "seedream/5-5-layer-decomposition needs max_images as an integer 2-100 and costHints.outputImages as a positive integer no greater than it.",
+    ];
+  }
+  return [];
+};
+
+// The one source image of a Seedream 5.5 layer decomposition bills 1.44
+// credits ($0.0072) on top of the output images.
+const seedream55LayerInputExtra = (
+  p: Record<string, unknown>
+): number | undefined =>
+  typeof asObject(p.input)?.image_url === "string" ? 0.0072 : undefined;
+
 // Qwen 3 image-to-image publishes a separate $0.0025 "input" row per image
 // with no "first image free" qualifier. Charge every reference image rather
 // than borrowing Seedream's after-the-first rule. The request schemas require
@@ -2954,6 +3012,38 @@ export const kie: Record<string, ModelPricing> = {
     "2K",
     "2026-11-12"
   ),
+
+  // Seedream 5.5 layer decomposition bills each returned image by size, the
+  // base image included, plus the input image (feed rows "seedream 5.5,
+  // layer-decomposition, <size>" and "seedream 5.5, input image, Image to
+  // image / layer decomposition", read 2026-11-12): 3.6 credits ($0.018) at
+  // 1K and 1.5K, 6.3 ($0.0315) at 2K and at the auto default, plus 1.44
+  // ($0.0072) for the input image. The docs callback example (task
+  // 37431da86ba51e56243d5ed2b277053d) billed 20.34 = 1.44 + 3 x 6.3 for
+  // three images at auto (evidence in
+  // tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json).
+  "seedream/5-5-layer-decomposition": {
+    kind: "perUnit",
+    unit: "images",
+    units: seedream55LayerImages,
+    warn: seedream55LayerWarnings,
+    select: [
+      {
+        name: "size",
+        // auto keeps the input size and bills at the 2K rate.
+        pick: (p) => {
+          const size = asString(asObject(p.input)?.size) ?? "auto";
+          return size === "auto" ? "2K" : size;
+        },
+      },
+    ],
+    rates: { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315 },
+    extra: seedream55LayerInputExtra,
+    source: pricePage(
+      "https://kie.ai/seedream-5-5?model=seedream%2F5-5-layer-decomposition",
+      "2026-11-12"
+    ),
+  },
 
   // Seedream 5 Pro layer decomposition — per returned image by output
   // size. The callable schema exposes auto|1K|1.5K|2K and defaults to auto;

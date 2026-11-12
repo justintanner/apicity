@@ -32,6 +32,9 @@ import {
   KlingOmniAspectRatioSchema,
   KlingOmniResolutionSchema,
   MiniMaxH3FixedAspectRatioSchema,
+  MiniMaxH3ImageAspectRatioSchema,
+  MiniMaxH3ImageOutputFormatSchema,
+  MiniMaxH3ImageResolutionSchema,
   MiniMaxH3ReferenceAspectRatioSchema,
   MiniMaxH3ReferenceClipDurationMs,
   MiniMaxH3ResolutionSchema,
@@ -6946,6 +6949,68 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: miniMaxH3DurationField,
       resolution: miniMaxH3ResolutionField,
+    },
+  },
+
+  // https://docs.kie.ai/market/minimax-h3/text-to-image
+  "minimax-h3/text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "Text prompt (1-5000 characters); Chinese and English are both supported",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: MiniMaxH3ImageAspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio; documented upstream default auto (the prompt rewriter picks the ratio, or 1:1 with expand_prompt false), not synthesized locally when omitted. Not with width/height",
+      },
+      resolution: {
+        type: "string",
+        enum: MiniMaxH3ImageResolutionSchema.options,
+        default: "2K",
+        description:
+          "Output size tier (1K about 1 MP, 2K about 4 MP, 4K about 16 MP); documented upstream default 2K, not synthesized locally when omitted. Sets the price: 1K and 2K cost the same, 4K more. Not with width/height",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description:
+          "Random seed (0-2147483647); omitting it selects a random seed, which the result returns. Reproducible only with expand_prompt false",
+      },
+      expand_prompt: {
+        type: "boolean",
+        default: true,
+        description:
+          "Rewrite the prompt into a detailed English description before generating (default true, recommended)",
+      },
+      output_format: {
+        type: "string",
+        enum: MiniMaxH3ImageOutputFormatSchema.options,
+        default: "png",
+        description: "Output image format (default png); jpeg is much smaller",
+      },
+      width: {
+        type: "integer",
+        minimum: 1,
+        maximum: 8192,
+        description:
+          "Custom output width in pixels (1-8192), set together with height and never with resolution or aspect_ratio. width x height must total 655,360-20,000,000 pixels at a width : height of 1:3 to 3:1, and bills by its total pixels: up to 1.2 MP as 1K, up to 4.5 MP as 2K, larger as 4K",
+      },
+      height: {
+        type: "integer",
+        minimum: 1,
+        maximum: 8192,
+        description:
+          "Custom output height in pixels (1-8192), set together with width; see width for the limits and billing",
+      },
     },
   },
 

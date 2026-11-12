@@ -194,8 +194,9 @@ const KieMediaPixverseModelAliasSchema = z
 // contract nor its sub-tasks.
 //
 // Vidu Q4 stays enum-only: documented operations do not establish a version grammar.
-// MiniMax H3 also stays enum-only even though it has three task variants. The
-// approved surface is exactly these H3 ids; the variants do not establish a
+// MiniMax H3 also stays enum-only across its video and image task variants.
+// The approved surface is exactly these H3 ids: neither the video task slugs
+// nor the MiniMax H3 Image ones (`minimax-h3/text-to-image`) establish a
 // version grammar or authorize arbitrary future task slugs.
 //
 // Google market ids (`google/gemini-*-tts`, `google/imagen4*`,
@@ -381,6 +382,8 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/text-to-video",
   "minimax-h3/image-to-video",
   "minimax-h3/reference-to-video",
+  // MiniMax H3 Image. Docs under https://docs.kie.ai/market/minimax-h3/.
+  "minimax-h3/text-to-image",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
   "google/gemini-3-8-flash-tts",
@@ -6306,6 +6309,143 @@ export const MiniMaxH3ReferenceToVideoRequestSchema = z
     }
   });
 
+// MiniMax H3 Image, from the docs OpenAPI read on 2026-11-12. One image per
+// task, sized by a tier and a ratio (`resolution` 1K | 2K | 4K, default 2K;
+// `aspect_ratio`, default auto) or by a custom `width` x `height`, never both.
+// The image prompt is 1-5000 characters, not the video models' 1-7000.
+// `resolution` and `aspect_ratio` state their documented defaults in their
+// descriptions rather than as zod defaults: a parsed default would read as a
+// caller's value and trip the custom-size rule below.
+export const MiniMaxH3ImagePromptSchema = z.string().min(1).max(5000);
+export const MiniMaxH3ImageAspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "5:4",
+  "4:3",
+  "3:2",
+  "16:9",
+  "21:9",
+  "4:5",
+  "3:4",
+  "2:3",
+  "9:16",
+]);
+export const MiniMaxH3ImageResolutionSchema = z.enum(["1K", "2K", "4K"]);
+export const MiniMaxH3ImageOutputFormatSchema = z.enum(["png", "jpeg"]);
+export const MiniMaxH3ImageSeedSchema = z.number().int().min(0).max(2147483647);
+export const MiniMaxH3ImageDimensionSchema = z.number().int().min(1).max(8192);
+
+// The custom size, as the pages state it: width and height go together,
+// never with resolution or aspect_ratio, total 655,360-20,000,000 pixels,
+// and keep width : height between 1:3 and 3:1.
+const MINIMAX_H3_IMAGE_MIN_PIXELS = 655_360;
+const MINIMAX_H3_IMAGE_MAX_PIXELS = 20_000_000;
+const MINIMAX_H3_IMAGE_MAX_SIDE_RATIO = 3;
+
+const refineMiniMaxH3ImageSize = (
+  value: {
+    input: {
+      aspect_ratio?: string;
+      resolution?: string;
+      width?: number;
+      height?: number;
+    };
+  },
+  ctx: z.RefinementCtx
+) => {
+  const { aspect_ratio, resolution, width, height } = value.input;
+  if (width === undefined && height === undefined) return;
+  if (width === undefined || height === undefined) {
+    ctx.addIssue({
+      code: "custom",
+      message: "width and height must be set together",
+      path: ["input", width === undefined ? "width" : "height"],
+    });
+    return;
+  }
+  for (const [field, present] of [
+    ["resolution", resolution !== undefined],
+    ["aspect_ratio", aspect_ratio !== undefined],
+  ] as const) {
+    if (present) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${field} cannot be sent with width and height`,
+        path: ["input", field],
+      });
+    }
+  }
+  const pixels = width * height;
+  if (
+    pixels < MINIMAX_H3_IMAGE_MIN_PIXELS ||
+    pixels > MINIMAX_H3_IMAGE_MAX_PIXELS
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "width x height must total 655,360-20,000,000 pixels",
+      path: ["input", "width"],
+    });
+  }
+  if (
+    width > height * MINIMAX_H3_IMAGE_MAX_SIDE_RATIO ||
+    height > width * MINIMAX_H3_IMAGE_MAX_SIDE_RATIO
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "width : height must be between 1:3 and 3:1",
+      path: ["input", "width"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/minimax-h3/text-to-image
+export const MiniMaxH3TextToImageRequestSchema = z
+  .object({
+    model: z.literal("minimax-h3/text-to-image"),
+    callBackUrl: z.string().url().optional(),
+    input: z
+      .object({
+        prompt: MiniMaxH3ImagePromptSchema.describe(
+          "Text prompt, 1-5000 characters; Chinese and English are both supported."
+        ),
+        aspect_ratio: MiniMaxH3ImageAspectRatioSchema.optional().describe(
+          "Aspect ratio of the output image. Optional, defaults to auto: the prompt rewriter chooses a ratio based on the content; when expand_prompt is false, auto uses 1:1. Do not pass together with width/height."
+        ),
+        resolution: MiniMaxH3ImageResolutionSchema.optional().describe(
+          "Output size tier. Optional, default 2K. 1K: about 1 MP; 2K: about 4 MP; 4K: about 16 MP, the officially recommended quality tier. Each image is billed by this tier. Do not pass together with width/height; with a custom size, billing follows its total pixels."
+        ),
+        seed: MiniMaxH3ImageSeedSchema.optional().describe(
+          "Random seed, 0-2147483647. Optional; a random seed is used when omitted, and the actual seed is returned with the result. With prompt expansion on, the rewritten prompt differs each time, so results are only reproducible when expand_prompt is false."
+        ),
+        expand_prompt: z
+          .boolean()
+          .default(true)
+          .describe(
+            "Whether to rewrite the prompt into a detailed English description before generating. Optional, default true (recommended for better image quality); with aspect_ratio auto, the rewriter also chooses the ratio. false: the prompt is used as-is."
+          ),
+        output_format: MiniMaxH3ImageOutputFormatSchema.default("png").describe(
+          "Output image format. Optional, default png. JPEG uses quality 95 and is much smaller; 4K PNG files are very large, so use JPEG when you need smaller files."
+        ),
+        width: MiniMaxH3ImageDimensionSchema.optional().describe(
+          "Custom output width in pixels, 1-8192. Optional. width and height must be set together; when they are set, do not pass resolution or aspect_ratio. Total pixels (width x height) must be between 655,360 and 20,000,000, and width : height between 1:3 and 3:1; the output is exactly this size. Billing tier by total pixels: up to 1,200,000 -> 1K, up to 4,500,000 -> 2K, above -> 4K."
+        ),
+        height: MiniMaxH3ImageDimensionSchema.optional().describe(
+          "Custom output height in pixels, 1-8192. Optional, but must be set together with width. See width for limits, priority and billing."
+        ),
+      })
+      .strict(),
+  })
+  .superRefine(refineMiniMaxH3ImageSize);
+
+// The finished task's resultJson carries the image as its single resultUrls
+// entry, plus the seed it used: the docs say the actual seed is returned with
+// the result, and the 2026-11-12 recording's resultJson held one. The docs
+// callback example omits it, so it stays optional here.
+export const MiniMaxH3ImageTaskResultJsonSchema = z.object({
+  resultUrls: z.array(z.string().url()).min(1),
+  seed: z.number().int().optional(),
+});
+
 // Google Gemini TTS createTask models share one input shape. Sources:
 // - https://docs.kie.ai/google/gemini-2-5-pro-tts
 // - https://docs.kie.ai/market/google/gemini-3-1-flash-tts
@@ -9448,6 +9588,7 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3TextToVideoRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
   MiniMaxH3ReferenceToVideoRequestSchema,
+  MiniMaxH3TextToImageRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
   GoogleGemini38FlashTtsRequestSchema,
@@ -9661,6 +9802,15 @@ export type MiniMaxH3ReferenceAspectRatio = z.infer<
   typeof MiniMaxH3ReferenceAspectRatioSchema
 >;
 export type MiniMaxH3MediaAddress = z.infer<typeof MiniMaxH3MediaAddressSchema>;
+export type MiniMaxH3ImageAspectRatio = z.infer<
+  typeof MiniMaxH3ImageAspectRatioSchema
+>;
+export type MiniMaxH3ImageResolution = z.infer<
+  typeof MiniMaxH3ImageResolutionSchema
+>;
+export type MiniMaxH3ImageOutputFormat = z.infer<
+  typeof MiniMaxH3ImageOutputFormatSchema
+>;
 export type KlingOmniResolution = z.infer<typeof KlingOmniResolutionSchema>;
 export type KlingOmniDuration = z.infer<typeof KlingOmniDurationSchema>;
 export type KlingOmniAspectRatio = z.infer<typeof KlingOmniAspectRatioSchema>;
@@ -10494,6 +10644,16 @@ export type MiniMaxH3ReferenceToVideoRequestInput =
   MiniMaxH3ReferenceToVideoRequest;
 export type MiniMaxH3ReferenceToVideoParsedRequest = z.output<
   typeof MiniMaxH3ReferenceToVideoRequestSchema
+>;
+export type MiniMaxH3TextToImageRequest = z.input<
+  typeof MiniMaxH3TextToImageRequestSchema
+>;
+export type MiniMaxH3TextToImageRequestInput = MiniMaxH3TextToImageRequest;
+export type MiniMaxH3TextToImageParsedRequest = z.output<
+  typeof MiniMaxH3TextToImageRequestSchema
+>;
+export type MiniMaxH3ImageTaskResultJson = z.infer<
+  typeof MiniMaxH3ImageTaskResultJsonSchema
 >;
 export type GoogleGeminiTtsInput = z.input<typeof GoogleGeminiTtsInputSchema>;
 export type GoogleGeminiTtsParsedInput = z.output<

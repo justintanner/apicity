@@ -330,6 +330,11 @@ describe("modelSlug", () => {
       slug: "sd5p5",
       display: "Seedream 5.5 Layer Decomposition",
     },
+    {
+      model: "minimax-h3/text-to-image",
+      slug: "mmh3i",
+      display: "MiniMax H3 Image",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

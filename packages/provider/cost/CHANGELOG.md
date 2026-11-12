@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE MiniMax H3 Image text-to-image (`minimax-h3/text-to-image`) is priced
+  per output image by its total pixels: 0.009 USD up to 4.5 MP (the 1K and
+  the default 2K tier) and 0.0275 USD up to 20 MP (4K). A custom `width` x
+  `height` takes its tier from its pixel count (up to 1.2 MP as 1K, up to
+  4.5 MP as 2K, larger as 4K), and a size KIE rejects quotes nothing. A
+  recorded 1K generation billed 1.8 credits, USD 0.009 (ac-hqj1h2).
+
 - KIE Seedream 5.5 layer decomposition (`seedream/5-5-layer-decomposition`)
   is priced per returned image by size (0.018 USD at 1K and 1.5K, 0.0315 at
   2K and at the auto default) plus 0.0072 USD for the input image. The count

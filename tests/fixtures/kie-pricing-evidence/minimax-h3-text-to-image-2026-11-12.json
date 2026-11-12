@@ -1,0 +1,103 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image",
+  "models": ["minimax-h3/text-to-image"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image and the live GET /api/v1/models pricingDesc agree: each output image bills by its total pixels, 1.8 credits (0.009 USD) up to 4.5 MP, which covers the 1K and 2K tiers, and 5.5 credits (0.0275 USD) up to 20 MP (4K). The docs map a custom width x height to a tier by its total pixels: up to 1,200,000 as 1K, up to 4,500,000 as 2K, anything larger as 4K. Text-to-image takes no input image, so there is no input-image extra. The docs callback example carries no creditsConsumed figure. The recording below billed 1.8 at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T14:31:02Z",
+    "rows": [
+      {
+        "modelDescription": "MiniMax H3 Image, text to image, 4K (≤20 MP)",
+        "interfaceType": "image",
+        "provider": "Hailuo",
+        "creditPrice": "5.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0275",
+        "falPrice": "0.06879",
+        "discountRate": 60.02,
+        "anchor": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "MiniMax H3 Image, text to image, 1K / 2K (≤4.5 MP)",
+        "interfaceType": "image",
+        "provider": "Hailuo",
+        "creditPrice": "1.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.009",
+        "falPrice": "0.02179",
+        "discountRate": 58.7,
+        "anchor": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T14:31:13Z",
+    "entry": {
+      "model": "minimax-h3/text-to-image",
+      "slug": "minimax-h3/text-to-image",
+      "title": "MiniMax H3 Text To Image",
+      "provider": "Hailuo",
+      "taskType": ["Text to Image"],
+      "description": "",
+      "pricingDesc": "Billed per image by total output pixels: 1.8 credits ($0.009) up to 4.5 MP (1K / 2K) and 5.5 credits ($0.0275) up to 20 MP (4K) — about 60% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "minimax-h3/text-to-image",
+      "url": "https://docs.kie.ai/market/minimax-h3/text-to-image.md",
+      "fetchedAt": "2026-11-12T14:31:00Z",
+      "sha256": "bb6123bd95e698f90c730b268d0650ff7796d27f9ff4d3989bfd8e2d6a3afe4b",
+      "callbackExamples": [
+        {
+          "taskId": "b0e3febbf194d27a345de523d3321555",
+          "state": "success",
+          "creditsConsumed": null,
+          "request": {
+            "aspect_ratio": "16:9",
+            "resolution": "2K",
+            "output_format": "png"
+          },
+          "costTime": 165,
+          "note": "no billing figure: the example omits creditsConsumed, and its task id repeats other KIE docs pages' example, so it is a template"
+        }
+      ],
+      "tierRule": "width x height: up to 1,200,000 pixels -> 1K, up to 4,500,000 -> 2K, above -> 4K (e.g. 1920 x 1080 -> 2K, 3840 x 2160 -> 4K)"
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "minimax-h3/text-to-image",
+      "har": "tests/recordings/kie_2079838932/minimax-h3-text-to-image_1528287512/recording.har",
+      "request": {
+        "prompt": "A red balloon.",
+        "aspect_ratio": "1:1",
+        "resolution": "1K",
+        "output_format": "jpeg"
+      },
+      "taskId": "7c97e22118cc8a819300eb1ca5100341",
+      "creditsConsumed": 1.8,
+      "creditsConsumedWhileWaiting": [
+        1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8, 1.8
+      ],
+      "usd": 0.009,
+      "seed": 1903329667,
+      "output": {
+        "format": "jpeg",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 144723
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1132.6,
+    "after": 1130.8
+  },
+  "observedTotalUsd": 0.009
+}

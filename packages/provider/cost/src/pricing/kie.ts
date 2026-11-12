@@ -1115,6 +1115,55 @@ const miniMaxH3Video = (key: string, url: string): ModelPricing => ({
   source: pricePage(url, "2026-09-11"),
 });
 
+// MiniMax H3 Image bills each output image by its total pixels (feed rows
+// "MiniMax H3 Image, <task>, 1K / 2K (≤4.5 MP)" and "..., 4K (≤20 MP)", and
+// the GET /api/v1/models pricingDesc, read 2026-11-12): 1.8 credits ($0.009)
+// up to 4.5 MP, which covers the 1K and 2K tiers, and 5.5 credits ($0.0275)
+// up to 20 MP (4K). The tier comes from `resolution` (documented default 2K)
+// or, for a custom size, from width x height: the docs map up to 1,200,000
+// pixels to 1K, up to 4,500,000 to 2K and anything larger to 4K. The pick
+// fails closed on a size KIE rejects: one dimension alone, a custom size sent
+// with resolution or aspect_ratio, a total outside 655,360-20,000,000 pixels,
+// or a side ratio beyond 3:1. One image per task.
+const miniMaxH3ImageTier = (p: Record<string, unknown>): string | undefined => {
+  const input = asObject(p.input);
+  const width = input?.width;
+  const height = input?.height;
+  if (width === undefined && height === undefined) {
+    return asString(input?.resolution) ?? "2K";
+  }
+  if (
+    typeof width !== "number" ||
+    typeof height !== "number" ||
+    !Number.isInteger(width) ||
+    !Number.isInteger(height) ||
+    input?.resolution !== undefined ||
+    input?.aspect_ratio !== undefined
+  ) {
+    return undefined;
+  }
+  const pixels = width * height;
+  if (
+    pixels < 655_360 ||
+    pixels > 20_000_000 ||
+    width > 3 * height ||
+    height > 3 * width
+  ) {
+    return undefined;
+  }
+  if (pixels <= 1_200_000) return "1K";
+  return pixels <= 4_500_000 ? "2K" : "4K";
+};
+
+const miniMaxH3ImagePage = (url: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: () => 1,
+  select: [{ name: "resolution", required: true, pick: miniMaxH3ImageTier }],
+  rates: { "1K": 0.009, "2K": 0.009, "4K": 0.0275 },
+  source: pricePage(url, "2026-11-12"),
+});
+
 export const kie: Record<string, ModelPricing> = {
   // Vidu Q4 bills output seconds; audio does not change the rate.
   // HAR (2026-10-14): 3 s at 540p, audio omitted, creditsConsumed=21.6
@@ -2107,6 +2156,16 @@ export const kie: Record<string, ModelPricing> = {
   "minimax-h3/reference-to-video": miniMaxH3Video(
     "minimax-h3/reference-to-video",
     "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video"
+  ),
+
+  // MiniMax H3 Image text-to-image: per output image by tier or custom size
+  // (see miniMaxH3ImagePage above; feed rows "MiniMax H3 Image, text to
+  // image, ...", read 2026-11-12). The docs callback example carries no bill;
+  // a recorded 1K generation billed 1.8 credits at submission (task
+  // 7c97e22118cc8a819300eb1ca5100341; evidence in
+  // tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json).
+  "minimax-h3/text-to-image": miniMaxH3ImagePage(
+    "https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image"
   ),
 
   // ---------------------------------------------------------------------

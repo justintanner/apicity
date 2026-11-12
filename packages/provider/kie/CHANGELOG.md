@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `minimax-h3/text-to-image` (MiniMax H3 Image text-to-image) with typed inputs: a 1-5,000 character prompt, the documented `resolution` tier and `aspect_ratio` or a custom `width` and `height` (never both, with the documented pixel and ratio bounds), `seed`, `expand_prompt` and `output_format`, and a recorded generation. The shared `MiniMaxH3ImagePromptSchema`, `MiniMaxH3ImageAspectRatioSchema`, `MiniMaxH3ImageResolutionSchema`, `MiniMaxH3ImageOutputFormatSchema`, `MiniMaxH3ImageSeedSchema`, `MiniMaxH3ImageDimensionSchema`, `MiniMaxH3TextToImageRequestSchema` and `MiniMaxH3ImageTaskResultJsonSchema` are exported.
+
 - Added `seedream/5-5-layer-decomposition` (Seedream 5.5 layer decomposition) with typed inputs: one `image_url`, an optional `prompt` of up to 2,000 characters, the documented `size` (auto by default), `output_format`, `max_images` (2-100, default 30), `text_recognition` and `nsfw_checker` defaults, and a recorded decomposition. `Seedream55LayerDecompositionRequestSchema` is exported.
 
 - Added `seedream/5-5-text-to-image` (Seedream 5.5 text-to-image) with typed inputs: a required `aspect_ratio` (eight ratios, no auto), the documented `size`, `output_format`, `background` and `nsfw_checker` defaults, a transparent background only with png, and a recorded generation. It reuses the shared Seedream 5.5 schemas, and `Seedream55TextToImageRequestSchema` is exported.

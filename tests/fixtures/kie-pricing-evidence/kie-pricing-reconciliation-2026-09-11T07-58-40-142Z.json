@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 175,
-      "pricingKeys": 240,
-      "slugKeys": 242,
-      "displayKeys": 242,
+      "models": 176,
+      "pricingKeys": 241,
+      "slugKeys": 243,
+      "displayKeys": 243,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:f8847d3aba68733f04e38a72cf31e9b39b7a499eb601b37b81e15ca623c6da66",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:125bbbacba608ceb58bd643a7e02abb1fee804561ab8e590c71b8cb117a37c72",
-      "packages/provider/kie/src/kie.ts": "sha256:2c049aa782dac1a4d67dbd1e4e7cb7c048f83124ee7bb1740862ec386759b6e0",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:b53e1c793d32e9b5aaec63c32f76f496705dd6e2e66d0e0dce8d302c58210b90",
-      "packages/provider/cost/src/slugs.ts": "sha256:89e8fbbb973c77cf119d4bd13b85e63e538ddea0a62906d362322dc7641f42f2",
+      "packages/provider/kie/src/zod.ts": "sha256:13ab651ec61b3720f93c4d7e6e702f4d6ddef6df1d3248bba3e8a0f225c01a77",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:6c84544f72f68c0f1d1f150a8bac6cc964d03968cb3722db085c2155429628f7",
+      "packages/provider/kie/src/kie.ts": "sha256:a8f4fadf16e6023a29ad8a5b26e77ed9ac4221d2829977257ac9b076c42370fa",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:6dcef0cedb50468cf536b0fcb34c4b9b7c4f78e97424b68a505948758a242e9b",
+      "packages/provider/cost/src/slugs.ts": "sha256:75ad56275330e83c1107f2f31719706034e3215cc03f9f429c470ccc6e9f513d",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -23021,6 +23021,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "video/upscale",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "video/upscale",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "infinitalk/from-audio",
         "descriptor": true,
         "guard": true,
@@ -25453,6 +25462,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "video/upscale",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "qwen/text-to-image",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26921,6 +26936,10 @@
         "disposition": "supported"
       },
       {
+        "key": "video/upscale",
+        "disposition": "supported"
+      },
+      {
         "key": "qwen/text-to-image",
         "disposition": "supported"
       },
@@ -27891,6 +27910,10 @@
         "disposition": "supported"
       },
       {
+        "key": "video/upscale",
+        "disposition": "supported"
+      },
+      {
         "key": "qwen/text-to-image",
         "disposition": "supported"
       },
@@ -28641,16 +28664,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 175,
-        "descriptors": 175,
-        "guards": 175,
+        "count": 176,
+        "descriptors": 176,
+        "guards": 176,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 76
+          "upstream-unmappable": 77
         },
         "unclassified": 0
       },
@@ -28668,20 +28691,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 240,
+        "count": 241,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 90
+          "upstream-unmappable": 91
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 242,
+        "count": 243,
         "dispositionCounts": {
-          "supported": 242,
+          "supported": 243,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28690,9 +28713,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 242,
+        "count": 243,
         "dispositionCounts": {
-          "supported": 242,
+          "supported": 243,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29381,6 +29404,27 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/kie-image-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/4/12 credits = 0.0075/0.02/0.06 USD per image at the 2K/4K/8K output tiers",
         "rationale": "KIE Image Upscale was added after the frozen September catalog; the dated feed capture supplies the rates, the tier follows the output pixels (input width x height x upscale_factor squared, from costHints.inputWidth and inputHeight), and the billed recording confirms the 2K cell."
+      },
+      {
+        "key": "video/upscale",
+        "variant": "1080P",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/video-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/3/6 credits = 0.0075/0.015/0.03 USD per input second at 1080P/2K/4K",
+        "rationale": "KIE Video Upscale was added after the frozen September catalog; the dated feed capture supplies the rates (each second of input video, declared as costHints.durationSeconds, bills at the output box's rate), and the billed recording confirms the 1080P cell."
+      },
+      {
+        "key": "video/upscale",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/video-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/3/6 credits = 0.0075/0.015/0.03 USD per input second at 1080P/2K/4K",
+        "rationale": "KIE Video Upscale was added after the frozen September catalog; the dated feed capture supplies the rates (each second of input video, declared as costHints.durationSeconds, bills at the output box's rate), and the billed recording confirms the 1080P cell."
+      },
+      {
+        "key": "video/upscale",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/video-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/3/6 credits = 0.0075/0.015/0.03 USD per input second at 1080P/2K/4K",
+        "rationale": "KIE Video Upscale was added after the frozen September catalog; the dated feed capture supplies the rates (each second of input video, declared as costHints.durationSeconds, bills at the output box's rate), and the billed recording confirms the 1080P cell."
       },
       {
         "key": "google/gemini-omni-flash-1-2",

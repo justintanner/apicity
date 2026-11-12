@@ -3555,6 +3555,21 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/image-upscaler", "2026-11-12"),
   },
 
+  // KIE Video Upscale — per second of INPUT video by the `resolution` output
+  // box (feed rows "KIE Video Upscale, Video to Video, <res> output, per
+  // second" and the GET /api/v1/models pricingDesc, read 2026-11-12): 1.5 / 3
+  // / 6 credits ($0.0075 / $0.015 / $0.03) for 1080P / 2K / 4K, with the
+  // documented default 2K as the absent-field fallback. The request has no
+  // duration field, so callers declare the source clip's length as
+  // costHints.durationSeconds, as for topaz/video-upscale.
+  "video/upscale": tieredVideoPage(
+    "resolution",
+    { "1080P": 0.0075, "2K": 0.015, "4K": 0.03 },
+    "https://kie.ai/video-upscaler",
+    "2K",
+    "2026-11-12"
+  ),
+
   // Qwen Image — text-to-image and image-edit bill a FIXED number of credits
   // per input.image_size preset (1 credit = $0.005), charged at submission:
   // every probe's first recordInfo poll already showed its final

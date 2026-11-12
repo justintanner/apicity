@@ -285,6 +285,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "KIE Image Upscale was added after the frozen September catalog; the dated feed capture supplies the rates, the tier follows the output pixels (input width x height x upscale_factor squared, from costHints.inputWidth and inputHeight), and the billed recording confirms the 2K cell.",
   })),
 
+  ...["1080P", "2K", "4K"].map((variant) => ({
+    key: "video/upscale",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/video-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/3/6 credits = 0.0075/0.015/0.03 USD per input second at 1080P/2K/4K",
+    rationale:
+      "KIE Video Upscale was added after the frozen September catalog; the dated feed capture supplies the rates (each second of input video, declared as costHints.durationSeconds, bills at the output box's rate), and the billed recording confirms the 1080P cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,

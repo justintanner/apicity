@@ -1,0 +1,118 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/video-upscaler",
+  "models": ["video/upscale"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/video-upscaler and the live GET /api/v1/models pricingDesc agree: each second of INPUT video bills by the resolution output box, 1.5 credits (0.0075 USD) at 1080P, 3 (0.015 USD) at 2K, the documented default, and 6 (0.03 USD) at 4K. The request carries no duration, so the length is the caller's costHints.durationSeconds. The docs callback example carries no creditsConsumed figure. The recording below billed 4.5 = 3 x 1.5 credits, charged at success.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T19:20:43Z",
+    "rows": [
+      {
+        "modelDescription": "KIE Video Upscale, Video to Video, 1080P output, per second",
+        "interfaceType": "video",
+        "provider": "Kie",
+        "creditPrice": "1.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0075",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/video-upscaler",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "KIE Video Upscale, Video to Video, 2K output, per second",
+        "interfaceType": "video",
+        "provider": "Kie",
+        "creditPrice": "3",
+        "creditUnit": "per second",
+        "usdPrice": "0.015",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/video-upscaler",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "KIE Video Upscale, Video to Video, 4K output, per second",
+        "interfaceType": "video",
+        "provider": "Kie",
+        "creditPrice": "6",
+        "creditUnit": "per second",
+        "usdPrice": "0.03",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/video-upscaler",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T19:20:43Z",
+    "entry": {
+      "model": "video/upscale",
+      "slug": "video/upscale",
+      "title": "Kie Video Upscale",
+      "provider": "Kie",
+      "taskType": ["Video to Video"],
+      "description": "",
+      "pricingDesc": "KIE Video Upscale: 1.5 / 3 / 6 credits ($0.0075 / $0.015 / $0.03) per second of input video for 1080P / 2K / 4K — 50–80% less than comparable Topaz-class upscalers.\nHigh-tier top-ups (+10% bonus) bring it down to ~$0.0068 / $0.0136 / $0.027 per second."
+    }
+  },
+  "docs": [
+    {
+      "model": "video/upscale",
+      "url": "https://docs.kie.ai/market/kie/video-upscale.md",
+      "fetchedAt": "2026-11-12T19:20:40Z",
+      "sha256": "e51ac89f75da9d3e04dc570c96d05fe98ed8790f762d8250807fba9d81714bea",
+      "callbackExamples": [
+        {
+          "taskId": "task_example_video_webhook_001",
+          "state": "success",
+          "creditsConsumed": null,
+          "costTime": 35,
+          "note": "no billing figure: the example omits creditsConsumed, and its task id is a placeholder"
+        }
+      ],
+      "boxes": {
+        "1080P": "1920x1080",
+        "2K": "2560x1440",
+        "4K": "3840x2160",
+        "portrait": "rotated 90 degrees"
+      },
+      "billingRule": "per second of input video at the resolution box's rate; the input is at most 60 s and 50 MB, checked after download"
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "video/upscale",
+      "har": "tests/recordings/kie_2079838932/video-upscale_635560196/recording.har",
+      "request": {
+        "video_url": "<tests/fixtures/cat1-kling-o3-3s.mp4, 3.0 s, 720x960, 215071 bytes, via kie file-stream-upload>",
+        "resolution": "1080P"
+      },
+      "costHints": {
+        "durationSeconds": 3
+      },
+      "taskId": "c196316989ccd71e50ee7aa1eaca19d8",
+      "creditsConsumed": 4.5,
+      "creditsConsumedWhileWaiting": [0, 0],
+      "usd": 0.0225,
+      "costTimeSeconds": 7,
+      "output": {
+        "container": "mp4",
+        "codec": "avc1",
+        "width": 1080,
+        "height": 1440,
+        "seconds": 3.0,
+        "audio": false,
+        "bytes": 6153438
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1025,
+    "after": 1020.5
+  },
+  "observedTotalUsd": 0.0225
+}

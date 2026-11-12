@@ -250,6 +250,7 @@ export const MODEL_SLUGS = {
     // with a slash before the tier).
     "gpt-image-2-6/sunburst-text-to-image": "gi2p6sb",
     "gpt-image-2-6/sunburst-image-to-image": "gi2p6sb",
+    "gpt-image-2-6/flare-text-to-image": "gi2p6fl",
     "gpt-image-2-6/flare-image-to-image": "gi2p6fl",
 
     // Image — Wan 2.7
@@ -1297,6 +1298,7 @@ export const MODEL_DISPLAY = {
 
     "gpt-image-2-6/sunburst-text-to-image": "GPT Image 2.6 Sunburst",
     "gpt-image-2-6/sunburst-image-to-image": "GPT Image 2.6 Sunburst Edit",
+    "gpt-image-2-6/flare-text-to-image": "GPT Image 2.6 Flare",
     "gpt-image-2-6/flare-image-to-image": "GPT Image 2.6 Flare Edit",
 
     "wan/2-7-image": "Wan 2.7",

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE GPT Image 2.6 Flare (`gpt-image-2-6/flare-text-to-image`) is priced
+  from Flare's own feed rows, which carry Sunburst's five token rates, from
+  declared usage. A recorded 1K low-quality square jpeg billed 4.46 credits,
+  USD 0.0223 (ac-o746yh).
+
 - KIE GPT Image 2.6 Flare image-to-image
   (`gpt-image-2-6/flare-image-to-image`) is priced from Flare's own feed rows,
   which carry Sunburst's five token rates, from declared usage; the reference

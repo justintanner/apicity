@@ -478,12 +478,13 @@ pages.
 KIE serves GPT Image 2.6 Sunburst and Flare through the shared
 `kie.post.api.v1.jobs.createTask` endpoint as
 `gpt-image-2-6/sunburst-text-to-image`,
-`gpt-image-2-6/sunburst-image-to-image` and
+`gpt-image-2-6/sunburst-image-to-image`,
+`gpt-image-2-6/flare-text-to-image` and
 `gpt-image-2-6/flare-image-to-image`. KIE spells the 2.6 ids
 version-first, with a `/` before the tier (2.5 used
-`gpt-image-2-5-sunburst-text-to-image`). The Flare page is the Sunburst
-page under another name, so both tiers take the same fields and rules.
-`prompt` (1-32,000
+`gpt-image-2-5-sunburst-text-to-image`). The Flare pages are the
+Sunburst pages under another name, so both tiers take the same fields
+and rules. `prompt` (1-32,000
 characters) is required, and image-to-image also requires 1-16
 `input_urls`. The defaults are `aspect_ratio` `"auto"`, `resolution`
 `"1K"`, `quality` `"medium"`, `complexity` `"high"`,
@@ -545,8 +546,9 @@ you declare. See KIE's Sunburst
 [text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-text-to-image.md)
 and [image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-image-to-image.md)
 pages and the Flare
-[image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-image-to-image.md)
-page.
+[text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-text-to-image.md)
+and [image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-image-to-image.md)
+pages.
 
 ## Seedance 2.5 audio
 

@@ -139,6 +139,11 @@ export const FRONTIER = {
             dotPath: "openai.gptImage2p6.flare.textToImage",
             pricingKey: "openai/gpt-image-2.6/flare/text-to-image",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-6/flare-text-to-image",
+          },
         ],
       },
       {

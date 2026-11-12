@@ -29,6 +29,7 @@ import {
   Kling40AspectRatioSchema,
   Kling40ElementTagSchema,
   Kling40ResolutionSchema,
+  Kling40FlashResolutionSchema,
   KlingOmniAspectRatioSchema,
   KlingOmniResolutionSchema,
   MiniMaxH3FixedAspectRatioSchema,
@@ -383,6 +384,22 @@ const kling40ResolutionField = {
   enum: Kling40ResolutionSchema.options,
   default: "720p",
   description: "Output resolution (default 720p)",
+} as const;
+
+// Kling 4.0 Flash limits, shared by both Flash models.
+const kling40FlashDurationField = {
+  type: "integer",
+  minimum: 3,
+  maximum: 20,
+  default: 5,
+  description: "Output seconds, 3-20 (default 5)",
+} as const;
+
+const kling40FlashResolutionField = {
+  type: "string",
+  enum: Kling40FlashResolutionSchema.options,
+  default: "720p",
+  description: "Output resolution: 720p only on Kling 4.0 Flash (default 720p)",
 } as const;
 
 const kling40MaterialNameField = {
@@ -1451,6 +1468,35 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         pattern: "^https?://.+",
         description: "Last-frame image URL, mentioned as @last_frame",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/kling/v4-flash-keyframe-to-video
+  "kling-4.0/flash-keyframe-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 8000,
+        description:
+          "Video prompt (1-8000 characters). Mention the first frame as @first_frame; Flash takes no middle frames and no last frame",
+      },
+      duration: kling40FlashDurationField,
+      resolution: kling40FlashResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1", "21:9"],
+        description:
+          "Used only without first_frame_url (text-to-video, default 16:9); with a first frame the output follows it. There is no auto",
+      },
+      first_frame_url: {
+        type: "string",
+        pattern: "^https?://.+",
+        description:
+          "Optional first-frame image URL, mentioned as @first_frame; without it the request is text-to-video",
       },
     },
   },

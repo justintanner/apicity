@@ -254,6 +254,8 @@ export const KIE_MEDIA_MODELS = [
   // Kling 4.0. Docs under https://docs.kie.ai/market/kling/.
   "kling-4.0/reference-to-video",
   "kling-4.0/keyframe-to-video",
+  // Kling 4.0 Flash: 720p-only. The Kling alias already reads the id.
+  "kling-4.0/flash-keyframe-to-video",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -2830,6 +2832,43 @@ export const Kling40KeyframeToVideoRequestSchema =
 // the generated .mp4 URLs. JSON.parse(data.resultJson) before validating.
 export const Kling40TaskResultJsonSchema = z.object({
   resultUrls: z.array(z.string().url()).min(1),
+});
+
+// Kling 4.0 Flash (docs read 2026-11-12): a cheaper 720p-only tier of the
+// Kling 4.0 tasks, with shorter clips (3-20 s, default 5). Both Flash models
+// share these limits.
+export const Kling40FlashDurationSchema = z.number().int().min(3).max(20);
+export const Kling40FlashResolutionSchema = z.enum(["720p"]);
+
+// Docs: https://docs.kie.ai/market/kling/v4-flash-keyframe-to-video
+// Flash keyframe-to-video takes at most a first frame: middle frames and a
+// last frame are not supported, and upstream rejects them, so the input is
+// strict and refuses keyframe_urls, last_frame_url or any other undocumented
+// field locally. There is no auto ratio.
+export const Kling40FlashKeyframeToVideoRequestSchema = z.object({
+  model: z.literal("kling-4.0/flash-keyframe-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      prompt: Kling40PromptSchema.describe(
+        "Video description, 1-8000 characters. When first_frame_url is provided, mention it as @first_frame. Middle frames and a last frame are not supported on Kling 4.0 Flash: sending keyframes or last_frame is rejected."
+      ),
+      duration: Kling40FlashDurationSchema.default(5).describe(
+        "Output video duration in seconds. Integer from 3 to 20. Default: 5."
+      ),
+      resolution: Kling40FlashResolutionSchema.default("720p").describe(
+        "Output resolution. Kling 4.0 Flash only supports 720p. Default: 720p."
+      ),
+      aspect_ratio: Kling40AspectRatioSchema.exclude(["auto"])
+        .optional()
+        .describe(
+          "Output aspect ratio: 16:9, 9:16, 1:1 or 21:9. There is no auto. Only used when first_frame_url is omitted (text-to-video); default 16:9. When a first frame is provided, the output follows that image's aspect ratio."
+        ),
+      first_frame_url: Kling40MediaUrlSchema.optional().describe(
+        "Optional first-frame image URL, mentioned in the prompt as @first_frame. If omitted, the request is plain text-to-video."
+      ),
+    })
+    .strict(),
 });
 
 export const GrokTextToImageRequestSchema = z.object({
@@ -9521,6 +9560,7 @@ export const MediaGenerationRequestSchema = z.union([
   KlingOmniTransformationRequestSchema,
   Kling40ReferenceToVideoRequestSchema,
   Kling40KeyframeToVideoRequestSchema,
+  Kling40FlashKeyframeToVideoRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -9880,6 +9920,10 @@ export type Kling40ElementTag = z.infer<typeof Kling40ElementTagSchema>;
 export type Kling40Element = z.input<typeof Kling40ElementSchema>;
 export type Kling40Voice = z.input<typeof Kling40VoiceSchema>;
 export type Kling40TaskResultJson = z.infer<typeof Kling40TaskResultJsonSchema>;
+export type Kling40FlashDuration = z.infer<typeof Kling40FlashDurationSchema>;
+export type Kling40FlashResolution = z.infer<
+  typeof Kling40FlashResolutionSchema
+>;
 export type GoogleGeminiTtsVoiceName = z.infer<
   typeof GoogleGeminiTtsVoiceNameSchema
 >;
@@ -10089,6 +10133,14 @@ export type Kling40KeyframeToVideoRequest = z.input<
 export type Kling40KeyframeToVideoRequestInput = Kling40KeyframeToVideoRequest;
 export type Kling40KeyframeToVideoParsedRequest = z.output<
   typeof Kling40KeyframeToVideoRequestSchema
+>;
+export type Kling40FlashKeyframeToVideoRequest = z.input<
+  typeof Kling40FlashKeyframeToVideoRequestSchema
+>;
+export type Kling40FlashKeyframeToVideoRequestInput =
+  Kling40FlashKeyframeToVideoRequest;
+export type Kling40FlashKeyframeToVideoParsedRequest = z.output<
+  typeof Kling40FlashKeyframeToVideoRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 172,
-      "pricingKeys": 237,
-      "slugKeys": 239,
-      "displayKeys": 239,
+      "models": 173,
+      "pricingKeys": 238,
+      "slugKeys": 240,
+      "displayKeys": 240,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:c4c78892f4f1660e23fd10a2eced83acf0b09db1506ccd9e936a78dd33bbed58",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:033e85c8c1cd7fac1447a4588c344914b0cdc04cdefcc6c2b67ba05090465bec",
-      "packages/provider/kie/src/kie.ts": "sha256:c4cab3a346765704f14a6ffb5ee433d82d28c4b170fe181538798971582825dc",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:4e8e3c24770239046f50d0d4e074ee5451612251adf153f3b3c2acecda99a736",
-      "packages/provider/cost/src/slugs.ts": "sha256:cb39208c5e430ba5e3191196c323d8a0c7db422c4bf8f2455cd0912e589a0641",
+      "packages/provider/kie/src/zod.ts": "sha256:8b588a328dd353bba683295c5032c91b633b8c97a45345c4c6a7467666087f83",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:939b336d6eb914baa66b175aeb0fa53bc3f35a6bce1d4bf69ccec49edf31ac5b",
+      "packages/provider/kie/src/kie.ts": "sha256:b7e0085e9066b03c0402df5865524723638f6d0840b0f5e89b4c705e0626258d",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:ca62e4da5a3c0050d65e546b5b48bb2c317b76ea87f4194523f61af7d4d6ac50",
+      "packages/provider/cost/src/slugs.ts": "sha256:fd6dcce2b1171fe3edb4f41817ece6fa9467dfc7c537e36f4395f009332a1bd3",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -21533,6 +21533,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "kling-4.0/flash-keyframe-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4.0/flash-keyframe-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -24196,6 +24205,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "kling-4.0/flash-keyframe-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26084,6 +26099,10 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-4.0/flash-keyframe-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -27039,6 +27058,10 @@
       },
       {
         "key": "kling-4.0/keyframe-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4.0/flash-keyframe-to-video",
         "disposition": "supported"
       },
       {
@@ -28572,16 +28595,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 172,
-        "descriptors": 172,
-        "guards": 172,
+        "count": 173,
+        "descriptors": 173,
+        "guards": 173,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 73
+          "upstream-unmappable": 74
         },
         "unclassified": 0
       },
@@ -28599,20 +28622,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 237,
+        "count": 238,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 87
+          "upstream-unmappable": 88
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 239,
+        "count": 240,
         "dispositionCounts": {
-          "supported": 239,
+          "supported": 240,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28621,9 +28644,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 239,
+        "count": 240,
         "dispositionCounts": {
-          "supported": 239,
+          "supported": 240,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29270,6 +29293,13 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/minimax-h3-image-edit-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 1.8/1.8/5.5 credits = 0.009/0.009/0.0275 USD per image at 1K/2K/4K, plus 0.5 credits per reference image",
         "rationale": "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, each reference image adds 0.5 credits), and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "kling-4.0/flash-keyframe-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-40-flash-keyframe-to-video-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 17 credits = 0.085 USD per output second at 720p (the only resolution)",
+        "rationale": "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rate (the docs callback examples are non-Flash copies), and the billed recording confirms it."
       },
       {
         "key": "google/gemini-omni-flash-1-2",

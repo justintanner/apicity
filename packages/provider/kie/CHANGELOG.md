@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `kling-4.0/flash-keyframe-to-video` (Kling 4.0 Flash keyframe-to-video) with typed inputs: a 1-8,000 character prompt, `duration` 3-20 (default 5), `resolution` 720p only, an optional `first_frame_url`, and `aspect_ratio` without auto; a strict input that rejects middle and last frames, and a recorded clip. `Kling40FlashDurationSchema`, `Kling40FlashResolutionSchema` and `Kling40FlashKeyframeToVideoRequestSchema` are exported.
+
 - Added `minimax-h3/image-edit` (MiniMax H3 Image edit) with typed inputs: 1-16 required `image_urls` beside text-to-image's prompt, sizing, `seed`, `expand_prompt` and `output_format` fields and rules, and a recorded edit. It reuses the shared MiniMax H3 Image schemas, and `MiniMaxH3ImageEditRequestSchema` is exported.
 
 - Added `minimax-h3/text-to-image` (MiniMax H3 Image text-to-image) with typed inputs: a 1-5,000 character prompt, the documented `resolution` tier and `aspect_ratio` or a custom `width` and `height` (never both, with the documented pixel and ratio bounds), `seed`, `expand_prompt` and `output_format`, and a recorded generation. The shared `MiniMaxH3ImagePromptSchema`, `MiniMaxH3ImageAspectRatioSchema`, `MiniMaxH3ImageResolutionSchema`, `MiniMaxH3ImageOutputFormatSchema`, `MiniMaxH3ImageSeedSchema`, `MiniMaxH3ImageDimensionSchema`, `MiniMaxH3TextToImageRequestSchema` and `MiniMaxH3ImageTaskResultJsonSchema` are exported.

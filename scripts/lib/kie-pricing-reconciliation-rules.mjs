@@ -255,6 +255,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, each reference image adds 0.5 credits), and the billed recording confirms the 1K cell.",
   })),
 
+  {
+    key: "kling-4.0/flash-keyframe-to-video",
+    variant: "720p",
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-40-flash-keyframe-to-video-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 17 credits = 0.085 USD per output second at 720p (the only resolution)",
+    rationale:
+      "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rate (the docs callback examples are non-Flash copies), and the billed recording confirms it.",
+  },
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,

@@ -1,0 +1,81 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-keyframe-to-video",
+  "models": ["kling-4.0/flash-keyframe-to-video"],
+  "basis": "The live pricing-feed row anchored on https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-keyframe-to-video and the live GET /api/v1/models pricingDesc agree: 17 credits (0.085 USD) per output second at 720p, the only resolution, billed on the output duration (3-20 s). The docs callback examples (285 credits for 10 s) repeat the non-Flash Kling 4.0 page's examples, task ids included, so they are not Flash bills. The recording below billed 51 credits for 3 s at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T16:27:26Z",
+    "rows": [
+      {
+        "modelDescription": "kling 4.0 flash, keyframe-to-video, 720P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-keyframe-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T16:27:29Z",
+    "entry": {
+      "model": "kling-4.0/flash-keyframe-to-video",
+      "slug": "kling-4.0/flash-keyframe-to-video",
+      "title": "Kling 4.0 Flash Keyframe To Video",
+      "provider": "Kling",
+      "taskType": ["Text to Video", "Image to Video", "Video to Video"],
+      "description": "",
+      "pricingDesc": "720P: 17 credits/s ($0.085/s) — billed on the output duration (3–20 s).\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "kling-4.0/flash-keyframe-to-video",
+      "url": "https://docs.kie.ai/market/kling/v4-flash-keyframe-to-video.md",
+      "fetchedAt": "2026-11-12T16:27:24Z",
+      "sha256": "6602022ccfae2745cd7490b2ea3262c3fc952f754bc96e963c55af17b708b5f4",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 285,
+          "note": "not a Flash bill: 285 credits for 10 s is the non-Flash 28.5 credits/s rate, and the example reuses the non-Flash Kling 4.0 page's task ids"
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "kling-4.0/flash-keyframe-to-video",
+      "har": "tests/recordings/kie_2079838932/kling-40-flash-keyframe-to-video_1325323315/recording.har",
+      "request": {
+        "prompt": "@first_frame The cat turns its head toward the camera.",
+        "duration": 3,
+        "resolution": "720p",
+        "first_frame_url": "<tests/fixtures/cat1.jpg, 768x1024, 370463 bytes, via kie file-stream-upload>"
+      },
+      "taskId": "62fe12784956c0a508180622b41b5933",
+      "creditsConsumed": 51,
+      "creditsConsumedWhileGenerating": [51, 51, 51, 51, 51, 51, 51, 51],
+      "usd": 0.255,
+      "output": {
+        "format": "mp4",
+        "width": 828,
+        "height": 1108,
+        "videoSeconds": 3.0417,
+        "audioSeconds": 3.0881,
+        "bytes": 3015893
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1128.5,
+    "after": 1077.5
+  },
+  "observedTotalUsd": 0.255
+}

@@ -2738,6 +2738,22 @@ export const kie: Record<string, ModelPricing> = {
       "2026-11-12"
     ),
   },
+  // GPT Image 2.6 Flare prints its own feed rows ("gpt-image-2-6-flare,
+  // text-to-image / image-to-image", read 2026-11-12, anchored on the Flare
+  // text-to-image tab) at the same five token rates as Sunburst, so the row
+  // matches Sunburst's. A recorded edit of cat1.jpg at the Sunburst edit's
+  // settings billed the same 5.58 credits at success (task
+  // 1fd6fe650706d823d47cc3d290ba0854; evidence in
+  // tests/fixtures/kie-pricing-evidence/gpt-image-2-6-flare-image-to-image-2026-11-12.json).
+  "gpt-image-2-6/flare-image-to-image": {
+    kind: "tokens",
+    rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+    modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+    source: pricePage(
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+      "2026-11-12"
+    ),
+  },
   "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
   "wan/2-7-image-pro": flatImage(
     0.06,

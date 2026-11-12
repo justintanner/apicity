@@ -69,7 +69,10 @@ function compareMedia(row, entry, key) {
 // trailing Input.
 const TOKEN_COMPONENTS = Object.freeze([
   ["cacheWrite", /cache[ -]?writes?/i],
-  ["cacheRead", /cached? (?:input|read)|cache[ -]?hit/i],
+  [
+    "cacheRead",
+    /cached? (?:(?:text|image|audio) )?(?:input|read)|cache[ -]?hit/i,
+  ],
   ["output", /\boutput\b/i],
   ["input", /\binput\b/i],
 ]);
@@ -79,6 +82,9 @@ function tokenComponent(description) {
   return TOKEN_COMPONENTS.find(([, pattern]) => pattern.test(clause));
 }
 
+// An entry with per-modality rates (GPT Image 2.6) states image tokens apart
+// from text: a role clause that names Image ("Image Input", "Cached Image
+// Input", "Image Output") is that modality's rate.
 function compareTokens(row, entry, key) {
   const description = descriptionOf(row);
   const match = tokenComponent(description);
@@ -86,10 +92,14 @@ function compareTokens(row, entry, key) {
     return undefined;
   }
   const [component] = match;
+  const clause = description.split(",").at(-1) ?? description;
+  const image = /\bimage\b/i.test(clause)
+    ? entry.modalityRates?.image
+    : undefined;
   return {
     key,
-    variant: component,
-    tableUsd: entry.rate[component],
+    variant: image ? `image ${component}` : component,
+    tableUsd: (image ?? entry.rate)[component],
     feedUsd: feedRates(row, (figure) => figure),
   };
 }

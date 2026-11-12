@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 162,
-      "pricingKeys": 227,
-      "slugKeys": 229,
-      "displayKeys": 229,
+      "models": 163,
+      "pricingKeys": 228,
+      "slugKeys": 230,
+      "displayKeys": 230,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:7ee92ee67e020d9a9417a8612138c23cbbce7179aaabea339c4aaf6541a7b12d",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:70c3769692b449af1792666ddb00decfff11b6ff0ef8c86fc44526a85a96b566",
-      "packages/provider/kie/src/kie.ts": "sha256:01181e9e89032da31e5d5813c2aebb69f2aaaf7e7d416497e5e3bad256e98de9",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:01cf3d58d0ba6efba7b09155c52fc224016152861950e2f927fa45ac0e7e8329",
-      "packages/provider/cost/src/slugs.ts": "sha256:0dc9d0fc1df306097a618af11939af62f96c94d3ebd3880f5200c8ad5b853667",
+      "packages/provider/kie/src/zod.ts": "sha256:f7f6c0248a8c7e74243b937c8cd6a57c4183e4b711f1b1bbd27477c3bc192c23",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:9986e721a77c13d703569a3eb4600f2e21b706d9a8e0831df7d01014c8132d65",
+      "packages/provider/kie/src/kie.ts": "sha256:f35c69c0a433a9363c0867eac91be53c9ed583d5ac7dc38f8d9892ab8e141bd8",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:1891b1c2df9c54c7c778c0039665e49b6fb390460ac5b039858e459bbbf82630",
+      "packages/provider/cost/src/slugs.ts": "sha256:70f89ebb6a36460ea7785c2ceb99c1d379154db6ff7fd39923b58efe5ca3d7e0",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -21739,6 +21739,15 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "gpt-image-2-6/sunburst-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-6/sunburst-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "seedream/5-lite-image-to-image",
         "descriptor": true,
         "guard": true,
@@ -24873,6 +24882,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "gpt-image-2-6/sunburst-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "wan/2-7-image",
         "linkedRows": [
           "sha256:8ad52c3321102b56e4592ce13c896f578e59855ff8c05c43ad63229ad2b85a24#1"
@@ -26486,6 +26501,10 @@
         "disposition": "supported"
       },
       {
+        "key": "gpt-image-2-6/sunburst-text-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-7-image",
         "disposition": "supported"
       },
@@ -27401,6 +27420,10 @@
       },
       {
         "key": "gpt-image-2-5-sunburst-image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-6/sunburst-text-to-image",
         "disposition": "supported"
       },
       {
@@ -28342,16 +28365,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 162,
-        "descriptors": 162,
-        "guards": 162,
+        "count": 163,
+        "descriptors": 163,
+        "guards": 163,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 63
+          "upstream-unmappable": 64
         },
         "unclassified": 0
       },
@@ -28369,20 +28392,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 227,
+        "count": 228,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 77
+          "upstream-unmappable": 78
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 229,
+        "count": 230,
         "dispositionCounts": {
-          "supported": 229,
+          "supported": 230,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28391,9 +28414,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 229,
+        "count": 230,
         "dispositionCounts": {
-          "supported": 229,
+          "supported": 230,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,

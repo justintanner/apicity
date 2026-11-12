@@ -16,13 +16,13 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
-| Schema model IDs                 |      127 |   162 | descriptors 162; guards 162      |
+| Schema model IDs                 |      127 |   163 | descriptors 163; guards 163      |
 | Documented endpoints             |       71 |    81 | 56 POST; 25 GET                  |
-| Runtime pricing keys             |      135 |   227 | current Kie table                |
+| Runtime pricing keys             |      135 |   228 | current Kie table                |
 | Schema-without-pricing inventory |       23 |     4 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    69 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   229 | Kie model metadata               |
-| Display keys                     |      137 |   229 | Kie model metadata               |
+| Slug keys                        |      137 |   230 | Kie model metadata               |
+| Display keys                     |      137 |   230 | Kie model metadata               |
 
 ## Row Dispositions
 
@@ -91,6 +91,7 @@ Schema models without a current usable pricing key: **4**; pricing-only runtime 
 | `kling-4.0/reference-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `kling-4.0/keyframe-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `nano-banana-2-1`                      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `gpt-image-2-6/sunburst-text-to-image` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `seedream/5-flash-text-to-image`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `seedream/5-flash-image-to-image`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `seedream/5-flash-layer-decomposition` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |

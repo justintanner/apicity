@@ -125,6 +125,16 @@ function numericVariant(
     return undefined;
   }
 
+  // GPT Image 2.6 GIF frame sizes are `auto` or WIDTHxHEIGHT, never a
+  // numeric-only value.
+  if (schema.pattern === /^(?:auto|\d+x\d+)$/.source) return undefined;
+
+  // GPT Image 2.6 SVG author models are `gpt-<version>-<name>` chat ids,
+  // never a numeric-only value.
+  if (schema.pattern === /^gpt-\d+(?:\.\d+)?-[a-z]+$/.source) {
+    return undefined;
+  }
+
   if (
     typeof schema.pattern === "string" &&
     !REVIEWED_NUMERIC_STRING_PATTERNS.has(schema.pattern)

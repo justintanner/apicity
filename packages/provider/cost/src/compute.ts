@@ -1349,6 +1349,29 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
             "kie: only standard processing is priced; tier, batch or regional uplifts are not bundled",
           ]);
         }
+        // GPT Image 2.6 bills text and image tokens at different rates, so,
+        // like OpenAI's per-modality rows, it is priced only from declared
+        // modality usage (the image counts are subsets of the totals).
+        if (entry.modalityRates !== undefined) {
+          const result = evaluateDeclaredUsage(
+            "kie",
+            pricingKey as string,
+            req.payload,
+            req.costHints,
+            entry
+          );
+          const input = req.payload.input;
+          if (
+            typeof input === "object" &&
+            input !== null &&
+            (input as Record<string, unknown>).output_format === "svg"
+          ) {
+            result.warnings.push(
+              "kie: SVG output also bills the svg.model author's input and output tokens, which this estimate does not include"
+            );
+          }
+          return result;
+        }
         const result = evaluateDeclaredTokens(
           "kie",
           pricingKey as string,

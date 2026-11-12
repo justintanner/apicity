@@ -68,15 +68,17 @@ const KieMediaNanoBananaModelAliasSchema = z
 // kie's GPT Image ids are `gpt-image`, a `/` or `-` separator, a version
 // whose parts are joined by `.` or `-` (`1.5`, `2`, `2-5`), then optional
 // lowercase variant segments (`flare`, `sunburst`), then a required
-// `-text-to-image` or `-image-to-image` task suffix. The suffix is anchored
-// because the family now ships variant segments: without the anchor,
-// `gpt-image-2-5-flare` (version plus one segment) would read as a model.
-// The anchor also keeps truncations and kie's unrelated `gpt-5-5` responses
-// id off this field.
+// `-text-to-image` or `-image-to-image` task suffix. Since 2.6 a `/` may
+// separate the version from the first variant segment instead of a `-`
+// (`gpt-image-2-6/sunburst-text-to-image`).
+// The suffix is anchored because the family ships variant segments: without
+// the anchor, `gpt-image-2-5-flare` (version plus one segment) would read as a
+// model. The anchor also keeps truncations and kie's unrelated `gpt-5-5`
+// responses id off this field.
 const KieMediaGptImageModelAliasSchema = z
   .string()
   .regex(
-    /^gpt-image(?:\/|-)\d+(?:[.-]\d+)*(?:-[a-z][a-z0-9]*)*-(?:text|image)-to-image$/,
+    /^gpt-image(?:\/|-)\d+(?:[.-]\d+)*(?:\/[a-z][a-z0-9]*)?(?:-[a-z][a-z0-9]*)*-(?:text|image)-to-image$/,
     "Expected a listed model or a kie GPT Image alias (e.g. gpt-image-3-text-to-image)"
   );
 
@@ -262,6 +264,8 @@ export const KIE_MEDIA_MODELS = [
   "gpt-image-2-5-flare-text-to-image",
   "gpt-image-2-5-sunburst-image-to-image",
   "gpt-image-2-5-sunburst-text-to-image",
+  // GPT Image 2.6. Docs under https://docs.kie.ai/market/gpt/.
+  "gpt-image-2-6/sunburst-text-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
@@ -4164,6 +4168,185 @@ export const GptImage25SunburstImageToImageRequestSchema = z
     }),
   })
   .superRefine(refineGptImage25Resolution);
+
+// GPT Image 2.6 (Sunburst, Flare), from the docs OpenAPI read on 2026-11-12.
+// kie spells the 2.6 ids version-first with a `/` before the tier and task
+// (`gpt-image-2-6/sunburst-text-to-image`), where 2.5 joined everything with
+// dashes. The Sunburst and Flare pages are identical apart from their names.
+// The models bill tokens: text input, image input and image output, plus the
+// SVG author model's tokens for `svg` output.
+export const GptImage26AspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "3:2",
+  "2:3",
+  "4:3",
+  "3:4",
+  "5:4",
+  "4:5",
+  "16:9",
+  "9:16",
+  "2:1",
+  "1:2",
+  "21:9",
+  "9:21",
+  "3:1",
+  "1:3",
+]);
+export const GptImage26ResolutionSchema = z.enum(["1K", "2K", "4K"]);
+export const GptImage26QualitySchema = z.enum([
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+  "auto",
+]);
+export const GptImage26BackgroundSchema = z.enum([
+  "transparent",
+  "opaque",
+  "auto",
+]);
+export const GptImage26OutputFormatSchema = z.enum([
+  "png",
+  "jpeg",
+  "webp",
+  "gif",
+  "svg",
+]);
+export const GptImage26ComplexitySchema = z.enum(["low", "medium", "high"]);
+export const GptImage26ModerationSchema = z.enum(["auto", "low"]);
+
+// `svg.model` names the kie chat model that writes the SVG. kie adds chat
+// models on its own cadence, so the three documented ids stay enumerated and
+// the alias admits the same `gpt-<version>-<name>` grammar (`gpt-6-sol`,
+// `gpt-5.6-luna`), as fal's GPT Image 2.6 `svg_model` does.
+export const GptImage26SvgModelSchema = z
+  .enum(["gpt-6-sol", "gpt-5.6-luna", "gpt-5.6-terra"])
+  .or(
+    z
+      .string()
+      .regex(
+        /^gpt-\d+(?:\.\d+)?-[a-z]+$/,
+        "Expected a listed SVG author model or a kie GPT chat id (e.g. gpt-6-luna)"
+      )
+  );
+export const GptImage26SvgSchema = z.object({
+  model: GptImage26SvgModelSchema.default("gpt-5.6-luna"),
+});
+
+// The GIF per-frame size: `auto` (currently 512x512) or WIDTHxHEIGHT with both
+// edges multiples of 16. The sprite-sheet limits (each side at most 3840, at
+// most 8,294,400 pixels, a long/short ratio of at most 3:1) depend on
+// `frame_count`; kie answers 400 when a sheet breaks them.
+export const GptImage26GifSizeSchema = z
+  .string()
+  .regex(/^(?:auto|\d+x\d+)$/, "Expected auto or WIDTHxHEIGHT (e.g. 512x512)")
+  .refine(
+    (value) =>
+      value === "auto" ||
+      value.split("x").every((edge) => Number(edge) % 16 === 0),
+    "GIF frame width and height must both be multiples of 16"
+  );
+
+// Format-conditional fields, as the pages state them: a transparent
+// background needs png, webp or gif (the image-to-image page says so in all
+// three places; one text-to-image line omits gif); output_compression is for
+// jpeg and webp only; size, frame_count and frame_duration_ms are GIF fields;
+// the svg object is sent only for svg output.
+const GPT_IMAGE_26_TRANSPARENT_FORMATS: ReadonlySet<string> = new Set([
+  "png",
+  "webp",
+  "gif",
+]);
+const GPT_IMAGE_26_COMPRESSED_FORMATS: ReadonlySet<string> = new Set([
+  "jpeg",
+  "webp",
+]);
+const GPT_IMAGE_26_GIF_FIELDS = [
+  "size",
+  "frame_count",
+  "frame_duration_ms",
+] as const;
+const refineGptImage26Output = (
+  value: {
+    input: {
+      output_format: string;
+      background: string;
+      output_compression?: number;
+      size?: string;
+      frame_count?: number;
+      frame_duration_ms?: number;
+      svg?: unknown;
+    };
+  },
+  ctx: z.RefinementCtx
+) => {
+  const { input } = value;
+  const format = input.output_format;
+  if (
+    input.background === "transparent" &&
+    !GPT_IMAGE_26_TRANSPARENT_FORMATS.has(format)
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "background transparent needs output_format png, webp or gif",
+      path: ["input", "background"],
+    });
+  }
+  if (
+    input.output_compression !== undefined &&
+    !GPT_IMAGE_26_COMPRESSED_FORMATS.has(format)
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "output_compression applies to jpeg and webp only; omit it for other formats",
+      path: ["input", "output_compression"],
+    });
+  }
+  if (format !== "gif") {
+    for (const field of GPT_IMAGE_26_GIF_FIELDS) {
+      if (input[field] !== undefined) {
+        ctx.addIssue({
+          code: "custom",
+          message: `${field} is a GIF field; send it only with output_format gif`,
+          path: ["input", field],
+        });
+      }
+    }
+  }
+  if (input.svg !== undefined && format !== "svg") {
+    ctx.addIssue({
+      code: "custom",
+      message: "svg is sent only with output_format svg",
+      path: ["input", "svg"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-text-to-image
+export const GptImage26SunburstTextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-6/sunburst-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(32000),
+      aspect_ratio: GptImage26AspectRatioSchema.default("auto"),
+      resolution: GptImage26ResolutionSchema.default("1K"),
+      quality: GptImage26QualitySchema.default("medium"),
+      background: GptImage26BackgroundSchema.default("auto"),
+      output_format: GptImage26OutputFormatSchema.default("png"),
+      complexity: GptImage26ComplexitySchema.default("high"),
+      moderation: GptImage26ModerationSchema.default("low"),
+      output_compression: z.number().int().min(0).max(100).optional(),
+      size: GptImage26GifSizeSchema.optional(),
+      frame_count: z.number().int().min(2).max(16).optional(),
+      frame_duration_ms: z.number().int().min(20).max(2000).optional(),
+      svg: GptImage26SvgSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage26Output);
 
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
@@ -8845,6 +9028,7 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage25FlareTextToImageRequestSchema,
   GptImage25SunburstImageToImageRequestSchema,
   GptImage25SunburstTextToImageRequestSchema,
+  GptImage26SunburstTextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -9762,6 +9946,24 @@ export type GptImage25SunburstImageToImageRequestInput =
   GptImage25SunburstImageToImageRequest;
 export type GptImage25SunburstImageToImageParsedRequest = z.output<
   typeof GptImage25SunburstImageToImageRequestSchema
+>;
+export type GptImage26AspectRatio = z.infer<typeof GptImage26AspectRatioSchema>;
+export type GptImage26Resolution = z.infer<typeof GptImage26ResolutionSchema>;
+export type GptImage26Quality = z.infer<typeof GptImage26QualitySchema>;
+export type GptImage26Background = z.infer<typeof GptImage26BackgroundSchema>;
+export type GptImage26OutputFormat = z.infer<
+  typeof GptImage26OutputFormatSchema
+>;
+export type GptImage26Complexity = z.infer<typeof GptImage26ComplexitySchema>;
+export type GptImage26Moderation = z.infer<typeof GptImage26ModerationSchema>;
+export type GptImage26SvgModel = z.infer<typeof GptImage26SvgModelSchema>;
+export type GptImage26SunburstTextToImageRequest = z.input<
+  typeof GptImage26SunburstTextToImageRequestSchema
+>;
+export type GptImage26SunburstTextToImageRequestInput =
+  GptImage26SunburstTextToImageRequest;
+export type GptImage26SunburstTextToImageParsedRequest = z.output<
+  typeof GptImage26SunburstTextToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema

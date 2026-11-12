@@ -1519,13 +1519,15 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     // The 2026-11-07 feed added these beside the chat rows. The clause after
     // "SVG output" names the text model, and that name is a pricing key, so
     // the row was read as a move on gpt-5-6-luna, gpt-6-sol, or gpt-5-6-terra.
-    // The chat cells still match the chat rows. gpt-image-2-6 has no pricing
-    // key, same as its text-to-image and image-to-image rows.
+    // The chat cells still match the chat rows. The gpt-image-2-6 pricing
+    // keys carry the image product's own text and image token rates; the SVG
+    // author's tokens bill on top and have no cell, so these rows stay
+    // unmapped.
     family: "gpt-image-2-6-svg",
     matches: (description) =>
       /^gpt-image-2-6-[^,]+,\s*SVG output,/i.test(description),
     message:
-      "gpt-image-2-6 SVG output names a chat model as its text model. Those token rates are not that chat model's, and gpt-image-2-6 has no ApiCity pricing key, so the row stays unmapped like the rest of that image product.",
+      "gpt-image-2-6 SVG output names a chat model as its text model. Those token rates are not that chat model's, and they bill on top of the image tokens; the gpt-image-2-6 ApiCity pricing keys carry only the image product's own text and image token rates, so the row stays unmapped.",
   },
 ]);
 

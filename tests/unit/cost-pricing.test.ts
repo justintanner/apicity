@@ -366,8 +366,9 @@ describe("PRICING data", () => {
         expect(entry.rate.cacheWrite, label).toBeUndefined();
         expect(entry.rate.cacheWrite5m, label).toBeUndefined();
         if (
-          provider === "openai" &&
-          ["gpt-image-1-mini", "chatgpt-image-latest"].includes(model)
+          (provider === "openai" &&
+            ["gpt-image-1-mini", "chatgpt-image-latest"].includes(model)) ||
+          (provider === "kie" && model.startsWith("gpt-image-2-6/"))
         ) {
           expect(entry.modalityRates.image?.output, label).toBeGreaterThan(0);
         } else expect(entry.modalityRates.image?.output, label).toBeUndefined();

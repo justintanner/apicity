@@ -1452,6 +1452,22 @@ export const kie: Record<string, ModelPricing> = {
     ),
   },
 
+  // Kling 4.0 Flash keyframe-to-video bills the output seconds (3-20, default
+  // 5) at its only resolution, 720p: 17 credits ($0.085) per second (feed row
+  // "kling 4.0 flash, keyframe-to-video, 720P" and the pricingDesc, read
+  // 2026-11-12). The docs callback examples (285 credits for 10 s) are copies
+  // of the non-Flash page's, not Flash bills. A recorded 3 s clip billed 51
+  // credits at submission (task 62fe12784956c0a508180622b41b5933; evidence in
+  // tests/fixtures/kie-pricing-evidence/kling-40-flash-keyframe-to-video-2026-11-12.json).
+  "kling-4.0/flash-keyframe-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.085 },
+    "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-keyframe-to-video",
+    "720p",
+    "2026-11-12",
+    kling40Seconds
+  ),
+
   // Kling 3.0 Turbo: 2 tiers by resolution. The 2026-11-05 feed prints 720p =
   // 20.2 credits/s ($0.101) and 1080p = 25.2 credits/s ($0.126).
   "kling/v3-turbo-image-to-video": {

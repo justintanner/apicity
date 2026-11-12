@@ -340,6 +340,11 @@ describe("modelSlug", () => {
       slug: "mmh3i",
       display: "MiniMax H3 Image Edit",
     },
+    {
+      model: "kling-4.0/flash-keyframe-to-video",
+      slug: "kling4f",
+      display: "Kling 4.0 Flash Keyframe-to-Video",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

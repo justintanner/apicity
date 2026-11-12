@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Kling 4.0 Flash keyframe-to-video (`kling-4.0/flash-keyframe-to-video`)
+  is priced per output second at its only resolution, 720p: 0.085 USD (17
+  credits), on the wire duration (default 5 s). A recorded 3 s clip billed 51
+  credits, USD 0.255 (ac-ye4q12).
+
 - KIE MiniMax H3 Image edit (`minimax-h3/image-edit`) is priced as
   text-to-image (per output image by tier or custom size) plus 0.0025 USD
   for every reference image, the first included. A recorded 1K edit of one

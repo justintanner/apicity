@@ -1155,12 +1155,31 @@ const miniMaxH3ImageTier = (p: Record<string, unknown>): string | undefined => {
   return pixels <= 4_500_000 ? "2K" : "4K";
 };
 
-const miniMaxH3ImagePage = (url: string): ModelPricing => ({
+// Image edit also bills every reference image, the first included: 0.5
+// credits ($0.0025) each (feed row "MiniMax H3 Image, image edit, reference
+// image (each)" and the pricingDesc, read 2026-11-12). The schema takes one to
+// sixteen image_urls; any other shape fails closed.
+const miniMaxH3ImageEditExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const images = asObject(p.input)?.image_urls;
+  if (!Array.isArray(images) || images.length === 0 || images.length > 16) {
+    return undefined;
+  }
+  if (images.some((image) => typeof image !== "string")) return undefined;
+  return images.length * 0.0025;
+};
+
+const miniMaxH3ImagePage = (
+  url: string,
+  extra?: (p: Record<string, unknown>) => number | undefined
+): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: () => 1,
   select: [{ name: "resolution", required: true, pick: miniMaxH3ImageTier }],
   rates: { "1K": 0.009, "2K": 0.009, "4K": 0.0275 },
+  ...(extra ? { extra } : {}),
   source: pricePage(url, "2026-11-12"),
 });
 
@@ -2166,6 +2185,18 @@ export const kie: Record<string, ModelPricing> = {
   // tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json).
   "minimax-h3/text-to-image": miniMaxH3ImagePage(
     "https://kie.ai/minimax-h3-image?model=minimax-h3%2Ftext-to-image"
+  ),
+
+  // MiniMax H3 Image edit: per output image by tier or custom size, as
+  // text-to-image, plus 0.5 credits ($0.0025) per reference image, the first
+  // included (feed rows "MiniMax H3 Image, image edit, ...", read
+  // 2026-11-12). The docs callback example carries no bill; a recorded 1K
+  // edit of cat1.jpg billed 2.3 = 1.8 + 0.5 credits at submission (task
+  // 2a2f03ba4ff0c11320da534dc10d0817; evidence in
+  // tests/fixtures/kie-pricing-evidence/minimax-h3-image-edit-2026-11-12.json).
+  "minimax-h3/image-edit": miniMaxH3ImagePage(
+    "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit",
+    miniMaxH3ImageEditExtra
   ),
 
   // ---------------------------------------------------------------------

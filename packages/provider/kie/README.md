@@ -716,9 +716,33 @@ console.log(tiered.data?.taskId, custom.data?.taskId);
 Each image bills by its total pixels: 1.8 credits ($0.009) up to 4.5 MP,
 which covers 1K and 2K, and 5.5 ($0.0275) up to 20 MP (4K). A custom size
 takes its tier from its pixels: up to 1.2 MP as 1K, up to 4.5 MP as 2K,
-and larger as 4K, so 1920 x 1080 costs 1.8 credits. See KIE's
+and larger as 4K, so 1920 x 1080 costs 1.8 credits.
+
+`minimax-h3/image-edit` takes the same fields plus 1-16 reference
+`image_urls` (public http(s) URLs, each at most 20 MB and 64 MP), which the
+prompt names `<Picture 1>`, `<Picture 2>` and so on, in order. Its
+`aspect_ratio` `"auto"` follows the first reference image.
+
+```typescript
+declare const reference: string;
+
+const edited = await kie.post.api.v1.jobs.createTask({
+  model: "minimax-h3/image-edit",
+  input: {
+    prompt: "Add a small red scarf to the cat in <Picture 1>.",
+    image_urls: [reference],
+    resolution: "1K",
+  },
+});
+
+console.log(edited.data?.taskId);
+```
+
+Every reference image adds 0.5 credits ($0.0025), the first included, so a
+1K edit of one image costs 2.3 credits. See KIE's
 [text-to-image](https://docs.kie.ai/market/minimax-h3/text-to-image.md)
-page.
+and [image edit](https://docs.kie.ai/market/minimax-h3/image-edit.md)
+pages.
 
 ## Seedance 2.5 audio
 

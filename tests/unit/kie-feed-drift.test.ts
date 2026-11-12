@@ -594,6 +594,73 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // MiniMax H3 Image edit bills each output image by tier and every
+  // reference image on top. The reference-image row is the extra for one
+  // image, not a tier cell (2026-11-12 feed, ac-urxhp1).
+  it("compares the minimax-h3 image-edit reference-image row with the per-image extra", async () => {
+    const anchor =
+      "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit";
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "image",
+        provider: "Hailuo",
+        creditPrice,
+        creditUnit: "per image",
+        usdPrice,
+        anchor,
+      },
+    });
+    const tiers = [
+      row("MiniMax H3 Image, image edit, 1K / 2K (≤4.5 MP)", "1.8", "0.009"),
+      row("MiniMax H3 Image, image edit, 4K (≤20 MP)", "5.5", "0.0275"),
+    ];
+    const referenceRow = (creditPrice: string, usdPrice: string) =>
+      row(
+        "MiniMax H3 Image, image edit, reference image (each)",
+        creditPrice,
+        usdPrice
+      );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([...tiers, referenceRow("0.5", "0.0025")]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(3);
+      expect(result.compared).toBe(3);
+
+      const moved = await write([...tiers, referenceRow("1", "0.005")]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "minimax-h3/image-edit",
+          variant: "extra",
+          tableUsd: 0.0025,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

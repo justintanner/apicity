@@ -200,6 +200,53 @@ const miniMaxH3MediaAddressItem = {
   description: "HTTP, HTTPS, or OSS media URL",
 } as const;
 
+// Fields both MiniMax H3 Image models describe in the same words.
+const miniMaxH3ImageResolutionField = {
+  type: "string",
+  enum: MiniMaxH3ImageResolutionSchema.options,
+  default: "2K",
+  description:
+    "Output size tier (1K about 1 MP, 2K about 4 MP, 4K about 16 MP); documented upstream default 2K, not synthesized locally when omitted. Sets the price: 1K and 2K cost the same, 4K more. Not with width/height",
+} as const;
+
+const miniMaxH3ImageSeedField = {
+  type: "integer",
+  minimum: 0,
+  maximum: 2147483647,
+  description:
+    "Random seed (0-2147483647); omitting it selects a random seed, which the result returns. Reproducible only with expand_prompt false",
+} as const;
+
+const miniMaxH3ImageExpandPromptField = {
+  type: "boolean",
+  default: true,
+  description:
+    "Rewrite the prompt into a detailed English description before generating (default true, recommended)",
+} as const;
+
+const miniMaxH3ImageOutputFormatField = {
+  type: "string",
+  enum: MiniMaxH3ImageOutputFormatSchema.options,
+  default: "png",
+  description: "Output image format (default png); jpeg is much smaller",
+} as const;
+
+const miniMaxH3ImageWidthField = {
+  type: "integer",
+  minimum: 1,
+  maximum: 8192,
+  description:
+    "Custom output width in pixels (1-8192), set together with height and never with resolution or aspect_ratio. width x height must total 655,360-20,000,000 pixels at a width : height of 1:3 to 3:1, and bills by its total pixels: up to 1.2 MP as 1K, up to 4.5 MP as 2K, larger as 4K",
+} as const;
+
+const miniMaxH3ImageHeightField = {
+  type: "integer",
+  minimum: 1,
+  maximum: 8192,
+  description:
+    "Custom output height in pixels (1-8192), set together with width; see width for the limits and billing",
+} as const;
+
 function miniMaxH3ReferenceClipWindow(window: {
   minimum: number;
   maximum: number;
@@ -6971,46 +7018,49 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "Output aspect ratio; documented upstream default auto (the prompt rewriter picks the ratio, or 1:1 with expand_prompt false), not synthesized locally when omitted. Not with width/height",
       },
-      resolution: {
+      resolution: miniMaxH3ImageResolutionField,
+      seed: miniMaxH3ImageSeedField,
+      expand_prompt: miniMaxH3ImageExpandPromptField,
+      output_format: miniMaxH3ImageOutputFormatField,
+      width: miniMaxH3ImageWidthField,
+      height: miniMaxH3ImageHeightField,
+    },
+  },
+
+  // https://docs.kie.ai/market/minimax-h3/image-edit
+  "minimax-h3/image-edit": {
+    type: "image",
+    fields: {
+      prompt: {
         type: "string",
-        enum: MiniMaxH3ImageResolutionSchema.options,
-        default: "2K",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
         description:
-          "Output size tier (1K about 1 MP, 2K about 4 MP, 4K about 16 MP); documented upstream default 2K, not synthesized locally when omitted. Sets the price: 1K and 2K cost the same, 4K more. Not with width/height",
+          "Editing instruction (1-5000 characters); refer to the reference images as <Picture 1>, <Picture 2>, ... in image_urls order",
       },
-      seed: {
-        type: "integer",
-        minimum: 0,
-        maximum: 2147483647,
-        description:
-          "Random seed (0-2147483647); omitting it selects a random seed, which the result returns. Reproducible only with expand_prompt false",
-      },
-      expand_prompt: {
-        type: "boolean",
-        default: true,
-        description:
-          "Rewrite the prompt into a detailed English description before generating (default true, recommended)",
-      },
-      output_format: {
+      aspect_ratio: {
         type: "string",
-        enum: MiniMaxH3ImageOutputFormatSchema.options,
-        default: "png",
-        description: "Output image format (default png); jpeg is much smaller",
-      },
-      width: {
-        type: "integer",
-        minimum: 1,
-        maximum: 8192,
+        enum: MiniMaxH3ImageAspectRatioSchema.options,
+        default: "auto",
         description:
-          "Custom output width in pixels (1-8192), set together with height and never with resolution or aspect_ratio. width x height must total 655,360-20,000,000 pixels at a width : height of 1:3 to 3:1, and bills by its total pixels: up to 1.2 MP as 1K, up to 4.5 MP as 2K, larger as 4K",
+          "Output aspect ratio; documented upstream default auto (follows the first reference image, any ratio from 1:3 to 3:1), not synthesized locally when omitted. Not with width/height",
       },
-      height: {
-        type: "integer",
-        minimum: 1,
-        maximum: 8192,
+      resolution: miniMaxH3ImageResolutionField,
+      seed: miniMaxH3ImageSeedField,
+      expand_prompt: miniMaxH3ImageExpandPromptField,
+      output_format: miniMaxH3ImageOutputFormatField,
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 16,
         description:
-          "Custom output height in pixels (1-8192), set together with width; see width for the limits and billing",
+          "Reference image URLs (1-16 public http(s) URLs; each at most 20 MB and 64 MP; JPG, PNG, WEBP, HEIC or BMP, transparency filled with white). Each one bills 0.5 credits on top of the output image, the first included",
+        items: { type: "string" },
       },
+      width: miniMaxH3ImageWidthField,
+      height: miniMaxH3ImageHeightField,
     },
   },
 

@@ -1,0 +1,116 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit",
+  "models": ["minimax-h3/image-edit"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit and the live GET /api/v1/models pricingDesc agree: each output image bills by its total pixels, 1.8 credits (0.009 USD) up to 4.5 MP, which covers the 1K and 2K tiers, and 5.5 credits (0.0275 USD) up to 20 MP (4K), plus 0.5 credits (0.0025 USD) for each reference image, the first included. The docs map a custom width x height to a tier by its total pixels: up to 1,200,000 as 1K, up to 4,500,000 as 2K, anything larger as 4K. The docs callback example carries no creditsConsumed figure. The recording below billed 2.3 = 1.8 + 0.5 at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T15:36:06Z",
+    "rows": [
+      {
+        "modelDescription": "MiniMax H3 Image, image edit, reference image (each)",
+        "interfaceType": "image",
+        "provider": "Hailuo",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "falPrice": "0.0065",
+        "discountRate": 61.54,
+        "anchor": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "MiniMax H3 Image, image edit, 4K (≤20 MP)",
+        "interfaceType": "image",
+        "provider": "Hailuo",
+        "creditPrice": "5.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0275",
+        "falPrice": "0.06879",
+        "discountRate": 60.02,
+        "anchor": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "MiniMax H3 Image, image edit, 1K / 2K (≤4.5 MP)",
+        "interfaceType": "image",
+        "provider": "Hailuo",
+        "creditPrice": "1.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.009",
+        "falPrice": "0.02179",
+        "discountRate": 58.7,
+        "anchor": "https://kie.ai/minimax-h3-image?model=minimax-h3%2Fimage-edit",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T15:36:10Z",
+    "entry": {
+      "model": "minimax-h3/image-edit",
+      "slug": "minimax-h3/image-edit",
+      "title": "MiniMax H3 Image Edit",
+      "provider": "Hailuo",
+      "taskType": ["Image Editing"],
+      "description": "",
+      "pricingDesc": "Billed per image by total output pixels: 1.8 credits ($0.009) up to 4.5 MP (1K / 2K) and 5.5 credits ($0.0275) up to 20 MP (4K), plus 0.5 credits ($0.0025) for each reference image, including the first — about 60% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "minimax-h3/image-edit",
+      "url": "https://docs.kie.ai/market/minimax-h3/image-edit.md",
+      "fetchedAt": "2026-11-12T15:36:04Z",
+      "sha256": "dda36ef82dc4c2ba180c31bbef62e6ca9604973e7bd84816ac50949cc7c5a609",
+      "callbackExamples": [
+        {
+          "taskId": "e456034b56036f9e976eeecb0fbb49b4",
+          "state": "success",
+          "creditsConsumed": null,
+          "request": {
+            "aspect_ratio": "auto",
+            "resolution": "2K",
+            "output_format": "png",
+            "image_urls": 1
+          },
+          "note": "no billing figure: the example omits creditsConsumed, and its task id repeats other KIE docs pages' example, so it is a template"
+        }
+      ],
+      "tierRule": "width x height: up to 1,200,000 pixels -> 1K, up to 4,500,000 -> 2K, above -> 4K; plus 0.5 credits per reference image, the first included"
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "minimax-h3/image-edit",
+      "har": "tests/recordings/kie_2079838932/minimax-h3-image-edit_3759437557/recording.har",
+      "request": {
+        "prompt": "Add a small red scarf to the cat in <Picture 1>.",
+        "image_urls": [
+          "<tests/fixtures/cat1.jpg, 768x1024, 370463 bytes, via kie file-stream-upload>"
+        ],
+        "resolution": "1K",
+        "aspect_ratio": "auto",
+        "output_format": "jpeg"
+      },
+      "taskId": "2a2f03ba4ff0c11320da534dc10d0817",
+      "creditsConsumed": 2.3,
+      "creditsConsumedWhileWaiting": [2.3, 2.3, 2.3, 2.3],
+      "usd": 0.0115,
+      "seed": 838955410,
+      "output": {
+        "format": "jpeg",
+        "width": 880,
+        "height": 1184,
+        "bytes": 425385
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1130.8,
+    "after": 1128.5
+  },
+  "observedTotalUsd": 0.0115
+}

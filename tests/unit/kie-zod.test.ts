@@ -1883,6 +1883,7 @@ const MINIMAX_H3_EXACT_ONLY_MODELS = [
   "minimax-h3/image-to-video",
   "minimax-h3/reference-to-video",
   "minimax-h3/text-to-image",
+  "minimax-h3/image-edit",
 ] as const;
 
 const MINIMAX_H3_REJECTED_MODELS = [

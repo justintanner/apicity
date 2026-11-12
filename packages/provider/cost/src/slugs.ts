@@ -92,6 +92,7 @@ export const MODEL_SLUGS = {
 
     // Image — MiniMax H3 Image
     "minimax-h3/text-to-image": "mmh3i",
+    "minimax-h3/image-edit": "mmh3i",
 
     // Video — Hailuo 02 / 2.3 (MiniMax). Standard and Pro are separate price
     // ladders, so the tier letter trails the family slug (s / p); t2v and i2v
@@ -1181,6 +1182,7 @@ export const MODEL_DISPLAY = {
     "minimax-h3/image-to-video": "MiniMax H3",
     "minimax-h3/reference-to-video": "MiniMax H3",
     "minimax-h3/text-to-image": "MiniMax H3 Image",
+    "minimax-h3/image-edit": "MiniMax H3 Image Edit",
 
     "hailuo/02-text-to-video-standard": "Hailuo 02",
     "hailuo/02-image-to-video-standard": "Hailuo 02",

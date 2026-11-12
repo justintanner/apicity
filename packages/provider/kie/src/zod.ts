@@ -196,13 +196,15 @@ const KieMediaPixverseModelAliasSchema = z
 // version grammar or authorize arbitrary future task slugs.
 //
 // Google market ids (`google/gemini-*-tts`, `google/imagen4*`,
-// `google/nano-banana*`, `google/gemini-omni-flash-1-1`) stay enum-only. The
-// five imagen/nano-banana ids, the two TTS models and the Gemini Omni 1.1
-// Flash model do not establish a safe open `google/…` alias grammar — the
-// product segments (imagen4, nano-banana, gemini-*-tts) are not a versioned
-// family that would justify an open hatch, and one Gemini Omni id is not a
-// grammar either: a `google/gemini-omni-*` hatch would be exactly the
-// wildcard this file avoids.
+// `google/nano-banana*`, `google/gemini-omni-flash-1-1`,
+// `google/gemini-omni-flash-1-2`) stay enum-only. The five imagen/nano-banana
+// ids, the two TTS models and the Gemini Omni Flash models do not establish a
+// safe open `google/…` alias grammar — the product segments (imagen4,
+// nano-banana, gemini-*-tts) are not a versioned family that would justify an
+// open hatch. Gemini Omni Flash 1.1 and 1.2 do share a version spelling, but
+// 1.2 rewrote the request contract (integer duration, plain video_list URLs,
+// no audio_ids), so a `google/gemini-omni-flash-*` hatch would admit ids whose
+// contract no schema here describes; each release is added explicitly.
 // Topaz likewise stays enum-only: `topaz/image-upscale` and
 // `topaz/video-upscale` are the only two ids kie documents for the vendor, and
 // the task segment (`image-upscale` / `video-upscale`) is not a versioned
@@ -375,8 +377,9 @@ export const KIE_MEDIA_MODELS = [
   "google/gemini-3-1-flash-tts",
   "google/gemini-3-8-flash-tts",
   "google/gemini-3-8-flash-lite-tts",
-  // Gemini Omni 1.1 Flash — google/ namespaced, enum-only (no alias).
+  // Gemini Omni Flash 1.1 and 1.2 — google/ namespaced, enum-only (no alias).
   "google/gemini-omni-flash-1-1",
+  "google/gemini-omni-flash-1-2",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
   "google/imagen4",
   "google/imagen4-fast",
@@ -5050,6 +5053,107 @@ export const GoogleGeminiOmniFlash11RequestSchema = z
     }
   });
 
+// Gemini Omni 1.2 Flash, from the docs OpenAPI re-read on 2026-11-12. One id
+// serves four modes, chosen by the inputs: text / reference images /
+// characters, first frame only, first and last frame, and video edit
+// (`video_list`). 1.2 is not 1.1's contract: `duration` is an integer, 3-15
+// (3-10 with first and last frame), and is not sent in video-edit mode, where
+// the output follows the input video; `video_list` holds plain URLs; `seeds`
+// replaces `seed`; `aspect_ratio` adds `auto` (16:9 without a reference
+// image); `audio_ids` is gone and `character_ids` takes at most 2, outside the
+// 7-slot quota (1 per reference image, 2 for a video). The resolution values
+// are 1.1's.
+export const GoogleGeminiOmniFlash12AspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "auto",
+]);
+
+// Docs: https://docs.kie.ai/market/google/gemini-omni-flash-1-2
+export const GoogleGeminiOmniFlash12RequestSchema = z
+  .object({
+    model: z.literal("google/gemini-omni-flash-1-2"),
+    callBackUrl: z.string().url().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      duration: z.number().int().min(3).max(15).optional(),
+      aspect_ratio: GoogleGeminiOmniFlash12AspectRatioSchema.default("16:9"),
+      resolution: GoogleGeminiOmniFlash11ResolutionSchema.default("720p"),
+      seeds: z.number().int().min(10000).max(99999).optional(),
+      image_urls: z.array(z.string().url()).max(6).optional(),
+      character_ids: z.array(z.string().min(1)).max(2).optional(),
+      first_frame_url: z.string().url().optional(),
+      last_frame_url: z.string().url().optional(),
+      video_list: z.array(z.string().url()).max(1).optional(),
+    }),
+  })
+  .superRefine((value, ctx) => {
+    const { input } = value;
+    const hasElements = (values: readonly unknown[] | undefined) =>
+      values !== undefined && values.length > 0;
+    const firstFrame = input.first_frame_url !== undefined;
+    const lastFrame = input.last_frame_url !== undefined;
+    const videoEdit = hasElements(input.video_list);
+
+    if (lastFrame && !firstFrame) {
+      ctx.addIssue({
+        code: "custom",
+        message: "last_frame_url requires first_frame_url",
+        path: ["input", "last_frame_url"],
+      });
+    }
+
+    if (firstFrame || lastFrame) {
+      for (const field of [
+        "image_urls",
+        "video_list",
+        "character_ids",
+      ] as const) {
+        if (hasElements(input[field])) {
+          ctx.addIssue({
+            code: "custom",
+            message: `${field} cannot be combined with first_frame_url or last_frame_url`,
+            path: ["input", field],
+          });
+        }
+      }
+    }
+
+    if (videoEdit) {
+      if (input.duration !== undefined) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "duration is not sent with video_list: the output follows the input video",
+          path: ["input", "duration"],
+        });
+      }
+    } else if (input.duration === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: "duration is required unless video_list is set",
+        path: ["input", "duration"],
+      });
+    } else if (firstFrame && lastFrame && input.duration > 10) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "duration must be 3-10 with first_frame_url and last_frame_url",
+        path: ["input", "duration"],
+      });
+    }
+
+    const quotaSlots = (input.image_urls?.length ?? 0) + (videoEdit ? 2 : 0);
+    if (quotaSlots > 7) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "google/gemini-omni-flash-1-2 quota exceeded: image_urls + 2 for a video_list entry must be <= 7",
+        path: ["input", "image_urls"],
+      });
+    }
+  });
+
 export const ElevenLabsTextToSpeechNumericContract = {
   stability: { minimum: 0, maximum: 1, default: 0.5 },
   similarity_boost: { minimum: 0, maximum: 1, default: 0.75 },
@@ -9210,6 +9314,7 @@ export const MediaGenerationRequestSchema = z.union([
   VolcengineVideoToVideoLipSyncRequestSchema,
   GeminiOmniVideoRequestSchema,
   GoogleGeminiOmniFlash11RequestSchema,
+  GoogleGeminiOmniFlash12RequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -9417,6 +9522,9 @@ export type GeminiOmniVideoResolution = z.infer<
 >;
 export type GoogleGeminiOmniFlash11Resolution = z.infer<
   typeof GoogleGeminiOmniFlash11ResolutionSchema
+>;
+export type GoogleGeminiOmniFlash12AspectRatio = z.infer<
+  typeof GoogleGeminiOmniFlash12AspectRatioSchema
 >;
 export type Seedance2MiniResolution = z.infer<
   typeof Seedance2MiniResolutionSchema
@@ -10745,6 +10853,14 @@ export type GoogleGeminiOmniFlash11RequestInput =
   GoogleGeminiOmniFlash11Request;
 export type GoogleGeminiOmniFlash11ParsedRequest = z.output<
   typeof GoogleGeminiOmniFlash11RequestSchema
+>;
+export type GoogleGeminiOmniFlash12Request = z.input<
+  typeof GoogleGeminiOmniFlash12RequestSchema
+>;
+export type GoogleGeminiOmniFlash12RequestInput =
+  GoogleGeminiOmniFlash12Request;
+export type GoogleGeminiOmniFlash12ParsedRequest = z.output<
+  typeof GoogleGeminiOmniFlash12RequestSchema
 >;
 export type ElevenLabsAudioIsolationRequest = z.input<
   typeof ElevenLabsAudioIsolationRequestSchema

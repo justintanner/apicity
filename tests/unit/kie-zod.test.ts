@@ -1898,16 +1898,18 @@ const GOOGLE_GEMINI_TTS_REJECTED_MODELS = [
   "GOOGLE/GEMINI-2-5-PRO-TTS",
 ] as const;
 
-// Gemini Omni 1.1 Flash: one exact market id, no open alias hatch (one id is
-// not a version grammar). A dedicated pair rather than MEDIA_SINGLETON_MODELS,
+// Gemini Omni Flash 1.1 and 1.2: exact market ids, no open alias hatch (1.2
+// rewrote 1.1's request contract, so a version grammar would admit ids no
+// schema describes). A dedicated pair rather than MEDIA_SINGLETON_MODELS,
 // whose comment says each of its entries is its vendor's only model — this is
 // a `google/` sibling of a versioned family (gemini-omni-video), not that.
 const GOOGLE_GEMINI_OMNI_EXACT_ONLY_MODELS = [
   "google/gemini-omni-flash-1-1",
+  "google/gemini-omni-flash-1-2",
 ] as const;
 
 const GOOGLE_GEMINI_OMNI_REJECTED_MODELS = [
-  "google/gemini-omni-flash-1-2",
+  "google/gemini-omni-flash-1-3",
   "gemini-omni-flash-1-1",
   "google/gemini-omni-flash",
   "GOOGLE/GEMINI-OMNI-FLASH-1-1",

@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 166,
-      "pricingKeys": 231,
-      "slugKeys": 233,
-      "displayKeys": 233,
+      "models": 167,
+      "pricingKeys": 232,
+      "slugKeys": 234,
+      "displayKeys": 234,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:f753c8c89848484d6ed2b872d52b11eaad40796991578869a371b888f552dc9a",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:2f8fbcd6dc478ff32083dbd127aa23a2340c9bf71581bf9370df82174e51de37",
-      "packages/provider/kie/src/kie.ts": "sha256:68d10858350d38e617713b8a326003049693d064915eaa4ad7ed3ffa98c6e8c8",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:fd0295665cb31c606ee243ff2453e1b380e6535e84b8f3c61a281509104bbee3",
-      "packages/provider/cost/src/slugs.ts": "sha256:54222c61f99bc8c41ac0d9abd49ab1be2072304ac61284ae9e0ea3651ccdfb69",
+      "packages/provider/kie/src/zod.ts": "sha256:4c0473f5c81479450e3b000a7bbb4d78a681b9b53ae1f6c9279152498112f483",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:f27cc559ce25f163d9712fd7ee20acfb5484da307a07a5c74373b4957280f5ae",
+      "packages/provider/kie/src/kie.ts": "sha256:e44f83d8dcb76201fb35a7d88f155cb387185997264dd577f8540da37a7ce9b6",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:c2189bd8b4b0cb305bc866a80857adf461800a642f3a3b666f64ad10f7936b22",
+      "packages/provider/cost/src/slugs.ts": "sha256:db0a6dbb99fd649c6d14c857ff87433d8e88eab87187bc01d6a6275480111c76",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -22864,6 +22864,15 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "google/gemini-omni-flash-1-2",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "google/gemini-omni-flash-1-2",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "google/imagen4",
         "descriptor": true,
         "guard": true,
@@ -25584,6 +25593,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "google/gemini-omni-flash-1-2",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "google/gemini-2-5-pro-tts",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26271,6 +26286,10 @@
       },
       {
         "key": "google/gemini-omni-flash-1-1",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
         "disposition": "supported"
       },
       {
@@ -27205,6 +27224,10 @@
       },
       {
         "key": "google/gemini-omni-flash-1-1",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
         "disposition": "supported"
       },
       {
@@ -28434,16 +28457,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 166,
-        "descriptors": 166,
-        "guards": 166,
+        "count": 167,
+        "descriptors": 167,
+        "guards": 167,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 67
+          "upstream-unmappable": 68
         },
         "unclassified": 0
       },
@@ -28461,20 +28484,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 231,
+        "count": 232,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 81
+          "upstream-unmappable": 82
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 233,
+        "count": 234,
         "dispositionCounts": {
-          "supported": 233,
+          "supported": 234,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28483,9 +28506,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 233,
+        "count": 234,
         "dispositionCounts": {
-          "supported": 233,
+          "supported": 234,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29027,6 +29050,34 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/omnihuman-2-0-2026-10-25.json: feed row and https://kie.ai/omnihuman-2-0 read 2026-10-25: 14 credits = 0.07 USD per output second",
         "rationale": "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
+        "variant": "360p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json: feed rows and the GET /api/v1/models pricingDesc read 2026-11-12: 4/9/10/22 credits = 0.02/0.045/0.05/0.11 USD per output second at 360p/720p/1080p/4k",
+        "rationale": "Gemini Omni Flash 1.2 was added after the frozen September catalog; the dated feed capture supplies the rates, and the billed recording confirms the 360p cell."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json: feed rows and the GET /api/v1/models pricingDesc read 2026-11-12: 4/9/10/22 credits = 0.02/0.045/0.05/0.11 USD per output second at 360p/720p/1080p/4k",
+        "rationale": "Gemini Omni Flash 1.2 was added after the frozen September catalog; the dated feed capture supplies the rates, and the billed recording confirms the 360p cell."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json: feed rows and the GET /api/v1/models pricingDesc read 2026-11-12: 4/9/10/22 credits = 0.02/0.045/0.05/0.11 USD per output second at 360p/720p/1080p/4k",
+        "rationale": "Gemini Omni Flash 1.2 was added after the frozen September catalog; the dated feed capture supplies the rates, and the billed recording confirms the 360p cell."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-2",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json: feed rows and the GET /api/v1/models pricingDesc read 2026-11-12: 4/9/10/22 credits = 0.02/0.045/0.05/0.11 USD per output second at 360p/720p/1080p/4k",
+        "rationale": "Gemini Omni Flash 1.2 was added after the frozen September catalog; the dated feed capture supplies the rates, and the billed recording confirms the 360p cell."
       },
       {
         "key": "pixverse-v6-max/text-to-video",

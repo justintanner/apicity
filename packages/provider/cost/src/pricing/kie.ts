@@ -3518,6 +3518,25 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/gemini-omni-1-1-flash", "2026-09-11"),
   },
 
+  // google/gemini-omni-flash-1-2 bills per second of output by resolution:
+  // the feed rows ("google/gemini-omni-flash-1-2, video, <res>", read
+  // 2026-11-12) print 4 / 9 / 10 / 22 credits per second at 360p / 720p /
+  // 1080p / 4k, at $0.005/credit, and the models API pricingDesc agrees. Text,
+  // image and first/last-frame requests bill the selected duration. Video edit
+  // (`video_list`) sends no duration and bills the input video's length at the
+  // same rates, so callers declare that length as costHints.durationSeconds.
+  // The docs callback example (1.23 credits) is a template, not a bill. A
+  // recorded 3 s 360p text-to-video billed 12 credits at submission, the 360p
+  // row exactly (task c6c161fdcbe9accdadd137823bf9470c; evidence in
+  // tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json).
+  "google/gemini-omni-flash-1-2": tieredVideoPage(
+    "resolution",
+    { "360p": 0.02, "720p": 0.045, "1080p": 0.05, "4k": 0.11 },
+    "https://kie.ai/gemini-omni-1-2-flash",
+    "720p",
+    "2026-11-12"
+  ),
+
   // The two other OTP pay-gated Gemini Omni routes — `api.v1.omni.audio.create`
   // and `api.v1.omni.character.create` (paid-endpoints.ts) — are INTENTIONALLY
   // unpriced: the 2026-08-06 pull publishes no rate for either (0 of 404 rows;

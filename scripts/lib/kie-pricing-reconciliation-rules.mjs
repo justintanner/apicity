@@ -205,6 +205,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it.",
   },
 
+  ...["360p", "720p", "1080p", "4k"].map((variant) => ({
+    key: "google/gemini-omni-flash-1-2",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-2026-11-12.json: feed rows and the GET /api/v1/models pricingDesc read 2026-11-12: 4/9/10/22 credits = 0.02/0.045/0.05/0.11 USD per output second at 360p/720p/1080p/4k",
+    rationale:
+      "Gemini Omni Flash 1.2 was added after the frozen September catalog; the dated feed capture supplies the rates, and the billed recording confirms the 360p cell.",
+  })),
+
   ...[
     "pixverse-v6-max/text-to-video",
     "pixverse-v6-max/image-to-video",

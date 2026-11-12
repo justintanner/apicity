@@ -310,6 +310,11 @@ describe("modelSlug", () => {
       slug: "geminiomni1p1f",
       display: "Gemini Omni 1.1 Flash",
     },
+    {
+      model: "google/gemini-omni-flash-1-2",
+      slug: "geminiomni1p2f",
+      display: "Gemini Omni 1.2 Flash",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

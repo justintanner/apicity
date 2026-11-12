@@ -68,7 +68,13 @@
       "modelId": "gpt-image-2.5-flare"
     }
   ],
-  "Seedream 5.5": [],
+  "Seedream 5.5": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "seedream/5-5-image-to-image"
+    }
+  ],
   "Krea 3 (Ultra)": [
     {
       "provider": "fal",

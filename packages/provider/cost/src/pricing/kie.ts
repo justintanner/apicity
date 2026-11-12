@@ -421,6 +421,20 @@ const seedreamProEditExtra = (
   return Math.max(0, images.length - 1) * 0.0025;
 };
 
+// Seedream 5.5 bills every input image at 1.44 credits ($0.0072), the first
+// included, unlike Seedream 5 Pro's after-the-first rule. The request schema
+// takes one to ten image_urls; any other shape fails closed.
+const seedream55InputImageExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const images = asObject(p.input)?.image_urls;
+  if (!Array.isArray(images) || images.length === 0 || images.length > 10) {
+    return undefined;
+  }
+  if (images.some((image) => typeof image !== "string")) return undefined;
+  return images.length * 0.0072;
+};
+
 // Qwen 3 image-to-image publishes a separate $0.0025 "input" row per image
 // with no "first image free" qualifier. Charge every reference image rather
 // than borrowing Seedream's after-the-first rule. The request schemas require
@@ -2905,6 +2919,25 @@ export const kie: Record<string, ModelPricing> = {
     undefined,
     "2026-08-11",
     seedreamProEditExtra
+  ),
+
+  // Seedream 5.5 image-to-image bills per output image by size, plus every
+  // input image (feed rows "seedream 5.5, Image to image, <size>" and
+  // "seedream 5.5, input image, Image to image / layer decomposition", read
+  // 2026-11-12): 3.6 credits ($0.018) at 1K and 1.5K, 6.3 ($0.0315) at the
+  // 2K default, plus 1.44 credits ($0.0072) per input image. The docs
+  // callback example (task e456034b56036f9e976eeecb0fbb49b4) billed 7.74 =
+  // 6.3 + 1.44 for a 2K edit of one image, and a recorded 1K edit of cat1.jpg
+  // billed 5.04 = 3.6 + 1.44 at submission (task
+  // 837dc178693fcc0b79511e0e2c44da89; evidence in
+  // tests/fixtures/kie-pricing-evidence/seedream-5-5-image-to-image-2026-11-12.json).
+  "seedream/5-5-image-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315 },
+    "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+    "2K",
+    "2026-11-12",
+    seedream55InputImageExtra
   ),
 
   // Seedream 5 Pro layer decomposition — per returned image by output

@@ -11,6 +11,9 @@ import {
   GoogleGeminiTtsVoiceNameSchema,
   GoogleGeminiOmniFlash11ResolutionSchema,
   GoogleGeminiOmniFlash12AspectRatioSchema,
+  Seedream55BackgroundSchema,
+  Seedream55OutputFormatSchema,
+  Seedream55SizeSchema,
   GptImage25AspectRatioSchema,
   GptImage25BackgroundSchema,
   GptImage25ResolutionSchema,
@@ -3622,6 +3625,71 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       nsfw_checker: {
         type: "boolean",
         description: "Content safety filter",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/5-5-image-to-image
+  "seedream/5-5-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 5,
+        maxLength: 5000,
+        description: "Editing instruction (5-5000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "Input image URLs (1-10, publicly accessible; JPEG, PNG or WEBP, at most 10 MB each). Each input image is billed on top of the output image.",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "4:3",
+          "3:4",
+          "16:9",
+          "9:16",
+          "2:3",
+          "3:2",
+          "21:9",
+          "auto",
+        ],
+        default: "auto",
+        description: "Output aspect ratio (default auto, decided by the model)",
+      },
+      size: {
+        type: "string",
+        enum: Seedream55SizeSchema.options,
+        default: "2K",
+        description:
+          "Output resolution tier (default 2K); sets the price: 1K and 1.5K cost less than 2K",
+      },
+      output_format: {
+        type: "string",
+        enum: Seedream55OutputFormatSchema.options,
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      background: {
+        type: "string",
+        enum: Seedream55BackgroundSchema.options,
+        default: "auto",
+        description:
+          "Output background (default auto, decided by the model); transparent only with output_format png",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "Content filter (default false: results come back unfiltered)",
       },
     },
   },

@@ -205,6 +205,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it.",
   },
 
+  ...["1K", "1.5K", "2K"].map((variant) => ({
+    key: "seedream/5-5-image-to-image",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/seedream-5-5-image-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per image at 1K/1.5K/2K, plus 1.44 credits per input image",
+    rationale:
+      "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates, the docs callback example (7.74 credits for a 2K edit of one image) matches them, and the billed recording confirms the 1K cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,
@@ -1035,6 +1045,15 @@ const PAYLOAD_RULES = Object.freeze([
       input.image_urls = /input image/i.test(text)
         ? ["https://example.com/a.png", "https://example.com/b.png"]
         : ["https://example.com/a.png"];
+    },
+  },
+  {
+    // Seedream 5.5 bills every input image, the first included, so its
+    // input-image row prices the extra for exactly one image.
+    family: "seedream-5-5-image-inputs",
+    matches: (key) => key === "seedream/5-5-image-to-image",
+    apply: (input) => {
+      input.image_urls = ["https://example.com/a.png"];
     },
   },
   {

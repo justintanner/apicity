@@ -526,6 +526,74 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // Seedream 5.5 image-to-image bills each output image by size and every
+  // input image on top. The input-image row is the extra for one image, not a
+  // size cell (2026-11-12 feed, ac-7z7wn9).
+  it("compares the seedream 5.5 input-image row with the per-image extra", async () => {
+    const anchor =
+      "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image";
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "image",
+        provider: "ByteDance",
+        creditPrice,
+        creditUnit: "per image",
+        usdPrice,
+        anchor,
+      },
+    });
+    const sizes = [
+      row("seedream 5.5, Image to image, 1K", "3.6", "0.018"),
+      row("seedream 5.5, Image to image, 1.5K", "3.6", "0.018"),
+      row("seedream 5.5, Image to image, 2K", "6.3", "0.0315"),
+    ];
+    const inputRow = (creditPrice: string, usdPrice: string) =>
+      row(
+        "seedream 5.5, input image, Image to image / layer decomposition",
+        creditPrice,
+        usdPrice
+      );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([...sizes, inputRow("1.44", "0.0072")]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(4);
+      expect(result.compared).toBe(4);
+
+      const moved = await write([...sizes, inputRow("2", "0.01")]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "seedream/5-5-image-to-image",
+          variant: "extra",
+          tableUsd: 0.0072,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

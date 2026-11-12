@@ -85,11 +85,14 @@ const KieMediaGptImageModelAliasSchema = z
 // Seedream is namespaced, version-first, then tier and task segments:
 // `seedream/<version>-<tier>-<task>`. Requiring the leading digit after the
 // slash is what separates it from ByteDance's other line in this catalogue —
-// `bytedance/seedance-2` is one character away and a different family.
+// `bytedance/seedance-2` is one character away and a different family. kie
+// writes a minor version with a dot (`seedream/4.5-edit`) or, from 5.5, a dash
+// (`seedream/5-5-image-to-image`); a version segment is digits only, so
+// `seedream/5-pro-*` still reads as version 5 and the `pro` tier.
 const KieMediaSeedreamModelAliasSchema = z
   .string()
   .regex(
-    /^seedream\/\d+(?:\.\d+)*(?:-[a-z][a-z0-9]*)+$/,
+    /^seedream\/\d+(?:[.-]\d+)*(?:-[a-z][a-z0-9]*)+$/,
     "Expected a listed model or a kie Seedream alias (e.g. seedream/6-pro-text-to-image)"
   );
 
@@ -279,6 +282,9 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-flash-image-to-image",
   "seedream/5-pro-layer-decomposition",
   "seedream/5-flash-layer-decomposition",
+  // Seedream 5.5 (kie dashes the minor version). Docs under
+  // https://docs.kie.ai/market/seedream/.
+  "seedream/5-5-image-to-image",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -4601,6 +4607,64 @@ export const SeedreamFlashLayerDecompositionRequestSchema = z.object({
     nsfw_checker: z.boolean().optional(),
   }),
 });
+
+// Seedream 5.5, from the docs OpenAPI read on 2026-11-12. The 5.5 models take
+// a `size` tier (1K | 1.5K | 2K, default 2K) that sets the price, png or jpeg
+// output, and a `background` whose `transparent` needs png. Each input image
+// bills on top of the output image.
+export const Seedream55SizeSchema = z.enum(["1K", "1.5K", "2K"]);
+export const Seedream55OutputFormatSchema = z.enum(["png", "jpeg"]);
+export const Seedream55BackgroundSchema = z.enum([
+  "auto",
+  "transparent",
+  "opaque",
+]);
+
+const refineSeedream55Background = (
+  value: { input: { background: string; output_format: string } },
+  ctx: z.RefinementCtx
+) => {
+  if (
+    value.input.background === "transparent" &&
+    value.input.output_format !== "png"
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "background transparent is available only with output_format png",
+      path: ["input", "background"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/seedream/5-5-image-to-image
+export const Seedream55ImageToImageRequestSchema = z
+  .object({
+    model: z.literal("seedream/5-5-image-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(5).max(5000),
+      image_urls: z.array(z.string().url()).min(1).max(10),
+      aspect_ratio: z
+        .enum([
+          "1:1",
+          "4:3",
+          "3:4",
+          "16:9",
+          "9:16",
+          "2:3",
+          "3:2",
+          "21:9",
+          "auto",
+        ])
+        .default("auto"),
+      size: Seedream55SizeSchema.default("2K"),
+      output_format: Seedream55OutputFormatSchema.default("png"),
+      background: Seedream55BackgroundSchema.default("auto"),
+      nsfw_checker: z.boolean().default(false),
+    }),
+  })
+  .superRefine(refineSeedream55Background);
 
 // seedream/4.5-text-to-image is a catalogued Seedream id: a KIE_MEDIA_MODELS
 // entry whose createTask request member is guarded by CREATE_TASK_GUARDS, so
@@ -9254,6 +9318,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
   SeedreamFlashLayerDecompositionRequestSchema,
+  Seedream55ImageToImageRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -11055,6 +11120,19 @@ export type SeedreamFlashLayerDecompositionRequestInput =
   SeedreamFlashLayerDecompositionRequest;
 export type SeedreamFlashLayerDecompositionParsedRequest = z.output<
   typeof SeedreamFlashLayerDecompositionRequestSchema
+>;
+
+export type Seedream55Size = z.infer<typeof Seedream55SizeSchema>;
+export type Seedream55OutputFormat = z.infer<
+  typeof Seedream55OutputFormatSchema
+>;
+export type Seedream55Background = z.infer<typeof Seedream55BackgroundSchema>;
+export type Seedream55ImageToImageRequest = z.input<
+  typeof Seedream55ImageToImageRequestSchema
+>;
+export type Seedream55ImageToImageRequestInput = Seedream55ImageToImageRequest;
+export type Seedream55ImageToImageParsedRequest = z.output<
+  typeof Seedream55ImageToImageRequestSchema
 >;
 
 export type GoogleGemini38FlashTtsRequest = z.input<

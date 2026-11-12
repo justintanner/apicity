@@ -599,6 +599,39 @@ to `@apicity/cost` as `costHints.durationSeconds`. See KIE's
 [Gemini Omni 1.2 Flash](https://docs.kie.ai/market/google/gemini-omni-flash-1-2.md)
 page.
 
+## Seedream 5.5 models
+
+KIE serves Seedream 5.5 through the shared
+`kie.post.api.v1.jobs.createTask` endpoint as
+`seedream/5-5-image-to-image`. KIE spells the 5.5 ids with a dash
+(`seedream/5-5-...`), where 4.5 used a dot (`seedream/4.5-edit`); the
+Seedream model alias reads both. Image-to-image requires `prompt` (5-5,000
+characters) and 1-10 `image_urls`. The defaults are `aspect_ratio`
+`"auto"`, `size` `"2K"`, `output_format` `"png"`, `background` `"auto"`
+and `nsfw_checker` `false`, and a transparent background needs png
+output.
+
+```typescript
+declare const reference: string;
+
+const task = await kie.post.api.v1.jobs.createTask({
+  model: "seedream/5-5-image-to-image",
+  input: {
+    prompt: "Add a small red scarf to the cat.",
+    image_urls: [reference],
+    size: "1K",
+  },
+});
+
+console.log(task.data?.taskId);
+```
+
+Each output image bills by `size`: 3.6 credits ($0.018) at 1K and 1.5K,
+6.3 ($0.0315) at 2K. Every input image adds 1.44 credits ($0.0072), the
+first included, so a 1K edit of one image costs 5.04 credits. See KIE's
+[image-to-image](https://docs.kie.ai/market/seedream/5-5-image-to-image.md)
+page.
+
 ## Seedance 2.5 audio
 
 The exported schema defaults `bytedance/seedance-2-5` `generate_audio` to

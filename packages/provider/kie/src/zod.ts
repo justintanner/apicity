@@ -286,6 +286,7 @@ export const KIE_MEDIA_MODELS = [
   // https://docs.kie.ai/market/seedream/.
   "seedream/5-5-image-to-image",
   "seedream/5-5-text-to-image",
+  "seedream/5-5-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -4693,6 +4694,26 @@ export const Seedream55TextToImageRequestSchema = z
     }),
   })
   .superRefine(refineSeedream55Background);
+
+// Docs: https://docs.kie.ai/market/seedream/5-5-layer-decomposition
+// One source image splits into a base image plus separated layers. `size`
+// adds `auto` (keep the input size, clamped to 1K-2K; billed at the 2K rate),
+// `output_format` sets only the base image (layers are always transparent
+// PNG), and `max_images` caps the returned images, the base included. KIE
+// bills the images it actually returns. There is no `background` field.
+export const Seedream55LayerDecompositionRequestSchema = z.object({
+  model: z.literal("seedream/5-5-layer-decomposition"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    image_url: z.string().url(),
+    prompt: z.string().max(2000).optional(),
+    size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
+    output_format: Seedream55OutputFormatSchema.default("png"),
+    max_images: z.number().int().min(2).max(100).default(30),
+    text_recognition: z.boolean().default(false),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
 
 // seedream/4.5-text-to-image is a catalogued Seedream id: a KIE_MEDIA_MODELS
 // entry whose createTask request member is guarded by CREATE_TASK_GUARDS, so
@@ -9348,6 +9369,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamFlashLayerDecompositionRequestSchema,
   Seedream55ImageToImageRequestSchema,
   Seedream55TextToImageRequestSchema,
+  Seedream55LayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -11169,6 +11191,14 @@ export type Seedream55TextToImageRequest = z.input<
 export type Seedream55TextToImageRequestInput = Seedream55TextToImageRequest;
 export type Seedream55TextToImageParsedRequest = z.output<
   typeof Seedream55TextToImageRequestSchema
+>;
+export type Seedream55LayerDecompositionRequest = z.input<
+  typeof Seedream55LayerDecompositionRequestSchema
+>;
+export type Seedream55LayerDecompositionRequestInput =
+  Seedream55LayerDecompositionRequest;
+export type Seedream55LayerDecompositionParsedRequest = z.output<
+  typeof Seedream55LayerDecompositionRequestSchema
 >;
 
 export type GoogleGemini38FlashTtsRequest = z.input<

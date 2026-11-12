@@ -325,6 +325,11 @@ describe("modelSlug", () => {
       slug: "sd5p5",
       display: "Seedream 5.5",
     },
+    {
+      model: "seedream/5-5-layer-decomposition",
+      slug: "sd5p5",
+      display: "Seedream 5.5 Layer Decomposition",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

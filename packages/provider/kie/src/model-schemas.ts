@@ -3740,6 +3740,58 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/5-5-layer-decomposition
+  "seedream/5-5-layer-decomposition": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "URL of the image to decompose: exactly one publicly accessible JPEG, PNG or WEBP, at most 10 MB. It is billed on top of the output images.",
+      },
+      prompt: {
+        type: "string",
+        maxLength: 2000,
+        description:
+          "Optional: which elements to separate (0-2000 chars). Without a prompt, the model picks the main elements; <bbox>x1 y1 x2 y2</bbox> marks positions with coordinates normalized to 0-1000.",
+      },
+      size: {
+        type: "string",
+        enum: ["auto", "1K", "1.5K", "2K"],
+        default: "auto",
+        description:
+          "Output resolution tier (default auto: keeps the input size, clamped to 1K-2K, and bills at the 2K rate)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description:
+          "Base-image format (default png); separated layers are always transparent PNG",
+      },
+      max_images: {
+        type: "integer",
+        minimum: 2,
+        maximum: 100,
+        default: 30,
+        description:
+          "Maximum output images, base image included (2-100, default 30). Billing counts the images actually returned.",
+      },
+      text_recognition: {
+        type: "boolean",
+        default: false,
+        description: "Recognize text in the layers (default false)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "Content filter (default false: results come back unfiltered)",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/5-pro-layer-decomposition
   "seedream/5-pro-layer-decomposition": {
     type: "image",

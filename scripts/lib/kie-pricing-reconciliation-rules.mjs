@@ -225,6 +225,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates, the docs callback example (6.3 credits at the 2K default) matches them, and the billed recording confirms the 1K cell.",
   })),
 
+  ...["1K", "1.5K", "2K"].map((variant) => ({
+    key: "seedream/5-5-layer-decomposition",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per returned image at 1K/1.5K/2K",
+    rationale:
+      "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,

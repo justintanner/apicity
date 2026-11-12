@@ -116,7 +116,9 @@ export interface CostHints {
   // Only ElevenLabs project/chapter conversion routes read this hint.
   model?: string;
   // Billable output images for requests whose result count cannot be known
-  // from the input, such as KIE Seedream 5 Flash layer decomposition.
+  // from the input, such as KIE Seedream 5 Flash layer decomposition. KIE
+  // Seedream 5.5 layer decomposition reads it within its max_images cap and,
+  // without it, quotes the cap as an upper bound with a warning.
   // Cost-only: never merged into the generation request.
   outputImages?: number;
   durationSeconds?: number;

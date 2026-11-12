@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Video Upscale (`video/upscale`) is priced per second of input video by
+  its `resolution` box: 0.0075 USD at 1080P, 0.015 at 2K (the default) and
+  0.03 at 4K, on the clip length declared as `costHints.durationSeconds`. A
+  recorded 3 s upscale at 1080P billed 4.5 credits, USD 0.0225 (ac-ggy4a4).
+
 - KIE Image Upscale (`kie/image-upscale`) is priced per task by its output
   pixels, the input size times `upscale_factor` squared: 0.0075 USD up to
   4.19 MP (2K), 0.02 up to 16.78 MP (4K) and 0.06 up to 67.11 MP (8K). New

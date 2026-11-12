@@ -843,6 +843,36 @@ pass it to `@apicity/cost` as `costHints.inputWidth` and
 an upper bound and warns. See KIE's
 [Image Upscale](https://docs.kie.ai/market/kie/image-upscale.md) page.
 
+## KIE Video Upscale
+
+KIE's video upscaler is `video/upscale` on the same endpoint. It takes one
+public http(s) `video_url` (MP4, MOV or MKV, at most 50 MB and 60 s; KIE
+checks both after download, so an over-limit video fails the task rather
+than the submit) and a `resolution` output box of `"1080P"`, `"2K"` or
+`"4K"` (uppercase, exactly as written; default `"2K"`): 1920 x 1080,
+2560 x 1440 or 3840 x 2160, rotated for portrait. The source is fitted
+inside the box with its aspect ratio kept and nothing cropped, so a 720 x
+960 clip at 1080P comes back 1080 x 1440. A larger source is scaled down
+and enhanced. The output keeps the frame rate, frame count and audio.
+
+```typescript
+declare const clip: string;
+
+const video = await kie.post.api.v1.jobs.createTask({
+  model: "video/upscale",
+  input: { video_url: clip, resolution: "1080P" },
+});
+
+console.log(video.data?.taskId);
+```
+
+Each second of input video bills at the box's rate: 1.5 credits
+($0.0075) at 1080P, 3 ($0.015) at 2K and 6 ($0.03) at 4K, so a 3 s clip
+at 1080P costs 4.5 credits. The request has no duration, so pass the
+clip's length to `@apicity/cost` as `costHints.durationSeconds`. See
+KIE's [Video Upscale](https://docs.kie.ai/market/kie/video-upscale.md)
+page.
+
 ## Seedance 2.5 audio
 
 The exported schema defaults `bytedance/seedance-2-5` `generate_audio` to

@@ -217,6 +217,8 @@ const KieMediaPixverseModelAliasSchema = z
 // KIE's own `kie/image-upscale`, the first `kie/` market id, is enum-only too:
 // one id is not a grammar, so no pattern could tell a future `kie/…` tool from
 // a typo of this one.
+// KIE's `video/upscale`, its video upscaler and the first `video/` market id,
+// is enum-only for the same reason: one id is not a grammar.
 // Unversioned Qwen v1 (`qwen/text-to-image`, `qwen/image-edit`,
 // `qwen/image-to-image`) is also enum-only: the Qwen alias requires a digit
 // before `/` for `qwen2/*` (and future versioned) ids, and was deliberately
@@ -410,6 +412,9 @@ export const KIE_MEDIA_MODELS = [
   // KIE's own image upscaler — enum-only (one id, no `kie/` alias). Docs under
   // https://docs.kie.ai/market/kie/.
   "kie/image-upscale",
+  // KIE's own video upscaler — enum-only (one id, no `video/` alias). Docs:
+  // https://docs.kie.ai/market/kie/video-upscale.
+  "video/upscale",
   // Singleton vendor ids (no alias hatch yet).
   "infinitalk/from-audio",
   "z-image",
@@ -7000,6 +7005,34 @@ export const KieImageUpscaleRequestSchema = z.object({
   }),
 });
 
+// KIE Video Upscale, KIE's own video upscaler, from the docs OpenAPI read on
+// 2026-11-12. `resolution` is an output box (landscape 1080P 1920x1080, 2K
+// 2560x1440, 4K 3840x2160; portrait boxes rotated): the source is fitted
+// inside it with its aspect ratio kept and nothing cropped, a larger source
+// is scaled down and enhanced, and one already at the box is only enhanced.
+// The output keeps the frame rate, frame count and audio. KIE checks the
+// 50 MB and 60 s limits after download, so an over-limit video fails the
+// task, not the submit. The enum is uppercase, exactly as the docs write it.
+export const KieVideoUpscaleResolutionSchema = z.enum(["1080P", "2K", "4K"]);
+
+// Docs: https://docs.kie.ai/market/kie/video-upscale
+export const KieVideoUpscaleRequestSchema = z.object({
+  model: z.literal("video/upscale"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    video_url: z
+      .string()
+      .url()
+      .regex(/^https?:\/\/.+/, "Expected a public http(s) URL")
+      .describe(
+        "URL of the video to upscale. Required. Must be a publicly downloadable HTTP(S) URL, at most 50 MB and 60 seconds, in MP4, MOV or MKV; use a file URL after upload, not the file content itself. KIE checks the size and length after download, so an over-limit video fails the task rather than the submit."
+      ),
+    resolution: KieVideoUpscaleResolutionSchema.default("2K").describe(
+      "Target output box. Optional: 1080P, 2K or 4K (uppercase, exactly as shown), default 2K. The source is fitted into the box with its aspect ratio kept and nothing cropped: a source larger than the box is scaled down to it and enhanced, and one already at the box is only enhanced. Landscape boxes are 1080P 1920x1080, 2K 2560x1440 and 4K 3840x2160; portrait boxes are rotated 90 degrees. Each second of input video bills at this box's rate."
+    ),
+  }),
+});
+
 // Infinitalk talking-head video from a portrait + audio drive.
 // Docs: https://docs.kie.ai/market/infinitalk/from-audio
 export const InfinitalkFromAudioResolutionSchema = z.enum(["480p", "720p"]);
@@ -9863,6 +9896,7 @@ export const MediaGenerationRequestSchema = z.union([
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
   KieImageUpscaleRequestSchema,
+  KieVideoUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
   ZImageRequestSchema,
   Flux3KleinTextToImageRequestSchema,
@@ -11029,6 +11063,16 @@ export type KieImageUpscaleRequest = z.input<
 export type KieImageUpscaleRequestInput = KieImageUpscaleRequest;
 export type KieImageUpscaleParsedRequest = z.output<
   typeof KieImageUpscaleRequestSchema
+>;
+export type KieVideoUpscaleResolution = z.infer<
+  typeof KieVideoUpscaleResolutionSchema
+>;
+export type KieVideoUpscaleRequest = z.input<
+  typeof KieVideoUpscaleRequestSchema
+>;
+export type KieVideoUpscaleRequestInput = KieVideoUpscaleRequest;
+export type KieVideoUpscaleParsedRequest = z.output<
+  typeof KieVideoUpscaleRequestSchema
 >;
 export type InfinitalkFromAudioResolution = z.infer<
   typeof InfinitalkFromAudioResolutionSchema

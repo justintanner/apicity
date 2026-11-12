@@ -345,6 +345,9 @@ export const MODEL_SLUGS = {
     // Image — KIE's own upscaler
     "kie/image-upscale": "kieimgup",
 
+    // Video — KIE's own upscaler
+    "video/upscale": "kievidup",
+
     // Image — Qwen Image (matches fal's "qwenimg" for the same model; the
     // edit variant shares it per the modality rule, as it does on fal)
     "qwen/text-to-image": "qwenimg",
@@ -1381,6 +1384,7 @@ export const MODEL_DISPLAY = {
     "topaz/image-upscale": "Topaz Image Upscale",
 
     "kie/image-upscale": "KIE Image Upscale",
+    "video/upscale": "KIE Video Upscale",
 
     "qwen/text-to-image": "Qwen Image",
     "qwen/image-to-image": "Qwen Image",

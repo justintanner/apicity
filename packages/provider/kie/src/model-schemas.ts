@@ -7489,6 +7489,26 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/kie/video-upscale
+  "video/upscale": {
+    type: "video",
+    fields: {
+      video_url: {
+        type: "string",
+        required: true,
+        description:
+          "URL of the video to upscale: one publicly downloadable http(s) MP4, MOV or MKV, at most 50 MB and 60 s (checked after download, so an over-limit video fails the task)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1080P", "2K", "4K"],
+        default: "2K",
+        description:
+          "Output box, uppercase exactly as shown (default 2K): 1080P 1920x1080, 2K 2560x1440, 4K 3840x2160, rotated for portrait. The source is fitted inside with its aspect ratio kept and nothing cropped. Bills each second of input video: 1080P 1.5 credits, 2K 3, 4K 6",
+      },
+    },
+  },
+
   // - https://docs.kie.ai/market/infinitalk/from-audio
   "infinitalk/from-audio": {
     type: "video",

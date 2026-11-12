@@ -835,6 +835,11 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
       slug: "kieimgup",
       display: "KIE Image Upscale",
     },
+    {
+      model: "video/upscale",
+      slug: "kievidup",
+      display: "KIE Video Upscale",
+    },
     { model: "qwen/text-to-image", slug: "qwenimg", display: "Qwen Image" },
     { model: "qwen/image-to-image", slug: "qwenimg", display: "Qwen Image" },
     {

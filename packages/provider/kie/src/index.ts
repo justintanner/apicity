@@ -445,6 +445,8 @@ export {
   MiniMaxH3ImageTaskResultJsonSchema,
   KieImageUpscaleFactorSchema,
   KieImageUpscaleRequestSchema,
+  KieVideoUpscaleResolutionSchema,
+  KieVideoUpscaleRequestSchema,
 } from "./zod";
 
 // Export error class
@@ -577,6 +579,10 @@ export type {
   KieImageUpscaleRequest,
   KieImageUpscaleRequestInput,
   KieImageUpscaleParsedRequest,
+  KieVideoUpscaleResolution,
+  KieVideoUpscaleRequest,
+  KieVideoUpscaleRequestInput,
+  KieVideoUpscaleParsedRequest,
   PixverseV6MaxTextToVideoInput,
   PixverseV6MaxTextToVideoParsedInput,
   PixverseV6MaxTextToVideoRequest,

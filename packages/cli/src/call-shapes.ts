@@ -6008,15 +6008,6 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
-  "kie\tGET\tapi.v1.mj.recordInfo": {
-    provider: "kie",
-    method: "GET",
-    dotPath: "api.v1.mj.recordInfo",
-    positional: [{ placeholder: "taskId", param: "taskId", optional: false }],
-    fields: [],
-    injected: [],
-    derived: [],
-  },
   "kie\tGET\tapi.v1.models.modelSchema": {
     provider: "kie",
     method: "GET",

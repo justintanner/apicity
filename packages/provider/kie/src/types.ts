@@ -769,20 +769,6 @@ export type {
   Gpt4oImageGenerateParsedRequest,
   Gpt4oImageSize,
   Gpt4oImageFallbackModel,
-  MjGenerateRequest,
-  MjGenerateRequestInput,
-  MjGenerateParsedRequest,
-  MjTaskType,
-  MjSpeed,
-  MjVersion,
-  MjAspectRatio,
-  MjMotion,
-  MjRecordInfoRequest,
-  MjRecordInfoRequestInput,
-  MjRecordInfoSuccessFlag,
-  MjRecordInfoResultInfo,
-  MjRecordInfoData,
-  MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayGenerateRequestInput,
   RunwayGenerateParsedRequest,
@@ -1024,9 +1010,6 @@ import type {
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
-  MjGenerateRequest,
-  MjRecordInfoRequest,
-  MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayExtendRequest,
   FluxKontextRecordInfoRequest,
@@ -1102,17 +1085,6 @@ interface KieGpt4oImageGenerateMethod {
     approval?: KieApproval
   ): Promise<TaskResponse>;
   schema: ApicitySchema<Gpt4oImageGenerateRequest>;
-}
-
-interface KieMjGenerateMethod {
-  (req: MjGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
-  schema: ApicitySchema<MjGenerateRequest>;
-}
-
-interface KieMjRecordInfoMethod {
-  (taskId: string): Promise<MjRecordInfoResponse>;
-  schema: ApicitySchema<MjRecordInfoRequest>;
-  responseSchema: ApicitySchema<MjRecordInfoResponse>;
 }
 
 interface KieRecordInfoMethod {
@@ -1211,9 +1183,6 @@ interface KiePostApiNamespace {
     gpt4oImage: {
       generate: KieGpt4oImageGenerateMethod;
       downloadUrl: KieGpt4oImageDownloadUrlMethod;
-    };
-    mj: {
-      generate: KieMjGenerateMethod;
     };
     runway: {
       generate: KieRunwayGenerateMethod;
@@ -1402,7 +1371,6 @@ interface KieGetApiNamespace {
   v1: {
     jobs: { recordInfo: KieRecordInfoMethod };
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
-    mj: { recordInfo: KieMjRecordInfoMethod };
     runway: { recordDetail: KieRunwayRecordDetailMethod };
     flux: {
       kontext: {

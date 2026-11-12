@@ -866,6 +866,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** the KIE `api.v1.mj.generate` entry of `PAID_ENDPOINTS`, and the
+  `api.v1.mj.generate` and `api.v1.mj.recordInfo` billing rows, because KIE
+  withdrew Midjourney and `@apicity/kie` no longer exposes those routes.
+  `isPaidEndpoint("kie", "POST", "api.v1.mj.generate")` now returns `false`,
+  `lookupPaidEndpoint` returns `undefined`, and `endpointBilling` reports both
+  dot paths as unpriced with no reviewed record. `PAID_ENDPOINTS` drops from 28
+  to 27 entries. There was no slug or `PRICING.kie` rate to remove
+  (ac-3b4swu).
+
 - **Breaking:** the Fireworks `inference.v1.workflows.textToImage`, `kontext` and
   `getResult` billing rows, because those routes left `@apicity/fireworks`.
   `endpointBilling` now reports them as unpriced with no reviewed record. The four

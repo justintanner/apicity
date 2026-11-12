@@ -1807,7 +1807,7 @@
       "displayKeys": 243,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
-      "endpoints": 81
+      "endpoints": 79
     }
   },
   "source": {
@@ -1820,12 +1820,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:13ab651ec61b3720f93c4d7e6e702f4d6ddef6df1d3248bba3e8a0f225c01a77",
+      "packages/provider/kie/src/zod.ts": "sha256:0bb9e22cea5180b1bbed9df8dff513b9b5322018d6ded3d66cf32fee18948d80",
       "packages/provider/kie/src/model-schemas.ts": "sha256:6c84544f72f68c0f1d1f150a8bac6cc964d03968cb3722db085c2155429628f7",
-      "packages/provider/kie/src/kie.ts": "sha256:a8f4fadf16e6023a29ad8a5b26e77ed9ac4221d2829977257ac9b076c42370fa",
+      "packages/provider/kie/src/kie.ts": "sha256:b445bef9e23220340ff83241459972c4b473adabb6fabb30c9de1ae43cd67c26",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:6dcef0cedb50468cf536b0fcb34c4b9b7c4f78e97424b68a505948758a242e9b",
       "packages/provider/cost/src/slugs.ts": "sha256:75ad56275330e83c1107f2f31719706034e3215cc03f9f429c470ccc6e9f513d",
-      "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
+      "scripts/endpoint-docs.tsv": "sha256:ab28078d00dabe4c8243fa4bfb9259fcb5c2b194a114068b24199904f2287f27"
     }
   },
   "rows": [
@@ -23591,26 +23591,6 @@
       },
       {
         "provider": "kie",
-        "dotPath": "api.v1.mj.generate",
-        "method": "POST",
-        "fullUrl": "https://api.kie.ai/api/v1/mj/generate",
-        "docsUrl": "https://docs.kie.ai/mj-api/generate-mj-image",
-        "linkedPricingKeys": [],
-        "disposition": "supported",
-        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
-      },
-      {
-        "provider": "kie",
-        "dotPath": "api.v1.mj.recordInfo",
-        "method": "GET",
-        "fullUrl": "https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}",
-        "docsUrl": "https://docs.kie.ai/mj-api/get-mj-task-details",
-        "linkedPricingKeys": [],
-        "disposition": "free-nonbillable",
-        "rationale": "Documented transport or account operation has no Kie model-pricing estimator key."
-      },
-      {
-        "provider": "kie",
         "dotPath": "api.v1.models",
         "method": "GET",
         "fullUrl": "https://api.kie.ai/api/v1/models",
@@ -28678,12 +28658,12 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 81,
-        "POST": 56,
-        "GET": 25,
+        "count": 79,
+        "POST": 55,
+        "GET": 24,
         "dispositionCounts": {
-          "supported": 57,
-          "free-nonbillable": 24,
+          "supported": 56,
+          "free-nonbillable": 23,
           "unsupported-endpoint": 0,
           "token-billed": 0,
           "upstream-unmappable": 0

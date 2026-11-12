@@ -17,7 +17,7 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
 | Schema model IDs                 |      127 |   176 | descriptors 176; guards 176      |
-| Documented endpoints             |       71 |    81 | 56 POST; 25 GET                  |
+| Documented endpoints             |       71 |    79 | 55 POST; 24 GET                  |
 | Runtime pricing keys             |      135 |   241 | current Kie table                |
 | Schema-without-pricing inventory |       23 |     4 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    69 | explicit runtime-key memberships |

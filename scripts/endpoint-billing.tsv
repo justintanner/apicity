@@ -933,7 +933,6 @@ kie	api.v1.gpt4oImage.recordInfo	GET	followup		Poll or result; data.creditsConsu
 kie	api.v1.jobs.recordInfo	GET	followup		Poll or result; data.creditsConsumed states the final bill	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.lyrics.recordInfo	GET	followup		Poll or result; data.creditsConsumed states the final bill	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.midi.recordInfo	GET	followup		Poll or result; data.creditsConsumed states the final bill	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	api.v1.mj.recordInfo	GET	followup		Poll or result; data.creditsConsumed states the final bill	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.models	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.models.modelSchema	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.models.price	GET	free		Balance or catalog read; no charge	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
@@ -972,7 +971,6 @@ kie	api.v1.gpt4oImage.generate	POST	metered	per-model		https://api.kie.ai/client
 kie	api.v1.jobs.createTask	POST	metered	per-model	Most media rows exist; the feed also lists models with no row (gaps-by-child.md section P4). Settles on recordInfo.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.lyrics	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.midi.generate	POST	metered	per-model	The feed lists 0 credits for this call today.	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
-kie	api.v1.mj.generate	POST	metered	per-model	PAID_ENDPOINTS lists it, but the feed has no Midjourney row and no bundled row exists	https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.mp4.generate	POST	metered	per-model		https://api.kie.ai/client/v1/model-pricing/page	2026-11-04
 kie	api.v1.omni.audio.create	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/market/gemini-omni-audio.md	2026-11-04
 kie	api.v1.omni.character.create	POST	free		Docs: this endpoint is free. PAID_ENDPOINTS still lists it, so R1's guard needs a named exception (see gaps-by-child.md section R1).	https://docs.kie.ai/market/gemini-omni-character.md	2026-11-04

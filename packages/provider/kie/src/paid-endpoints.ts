@@ -132,19 +132,6 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
-      dotPath: "api.v1.mj.generate",
-    },
-    info: {
-      reason:
-        "Midjourney image/video generation task that incurs direct marginal compute cost",
-      estimatorId: "kie-per-unit",
-      costNotes: "Billed per generation based on task type, speed, and version",
-    },
-  },
-  {
-    key: {
-      provider: "kie",
-      method: "POST",
       dotPath: "api.v1.runway.generate",
     },
     info: {

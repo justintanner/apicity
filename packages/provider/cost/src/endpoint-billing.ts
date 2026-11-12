@@ -3020,7 +3020,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "GET api.v1.jobs.recordInfo",
       "GET api.v1.lyrics.recordInfo",
       "GET api.v1.midi.recordInfo",
-      "GET api.v1.mj.recordInfo",
       "GET api.v1.mp4.recordInfo",
       "GET api.v1.runway.recordDetail",
       "GET api.v1.suno.cover.recordInfo",
@@ -3062,20 +3061,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["POST api.v1.jobs.createTask"]
-  ),
-  ...rows(
-    "kie",
-    {
-      kind: "metered",
-      unit: "per-model",
-      reason:
-        "PAID_ENDPOINTS lists it, but the feed has no Midjourney row and no bundled row exists",
-      source: {
-        url: "https://api.kie.ai/client/v1/model-pricing/page",
-        asOf: "2026-11-04",
-      },
-    },
-    ["POST api.v1.mj.generate"]
   ),
   ...rows(
     "kie",

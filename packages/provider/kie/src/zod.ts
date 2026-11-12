@@ -214,6 +214,9 @@ const KieMediaPixverseModelAliasSchema = z
 // `topaz/video-upscale` are the only two ids kie documents for the vendor, and
 // the task segment (`image-upscale` / `video-upscale`) is not a versioned
 // grammar that would justify an open alias hatch.
+// KIE's own `kie/image-upscale`, the first `kie/` market id, is enum-only too:
+// one id is not a grammar, so no pattern could tell a future `kie/…` tool from
+// a typo of this one.
 // Unversioned Qwen v1 (`qwen/text-to-image`, `qwen/image-edit`,
 // `qwen/image-to-image`) is also enum-only: the Qwen alias requires a digit
 // before `/` for `qwen2/*` (and future versioned) ids, and was deliberately
@@ -404,6 +407,9 @@ export const KIE_MEDIA_MODELS = [
   "google/nano-banana-edit",
   "topaz/image-upscale",
   "topaz/video-upscale",
+  // KIE's own image upscaler — enum-only (one id, no `kie/` alias). Docs under
+  // https://docs.kie.ai/market/kie/.
+  "kie/image-upscale",
   // Singleton vendor ids (no alias hatch yet).
   "infinitalk/from-audio",
   "z-image",
@@ -6965,6 +6971,35 @@ export const TopazVideoUpscaleRequestSchema = z.object({
   }),
 });
 
+// KIE Image Upscale, KIE's own upscaler, from the docs OpenAPI read on
+// 2026-11-12. `upscale_factor` multiplies the width and the height ("1" is a
+// same-size enhancement), and each task bills one tier by its total output
+// pixels. The output must stay within 67,108,864 pixels and 16,384 px per
+// side: KIE checks input width x height x factor squared at submission and
+// answers 422, with no task and no charge, when it is over. The request does
+// not carry the input's size, so that check stays upstream's. The page also
+// says numbers are accepted, but it declares a string enum and its example
+// sends a string, so the schema keeps the declared strings, as Topaz does.
+export const KieImageUpscaleFactorSchema = z.enum(["1", "2", "4", "8"]);
+
+// Docs: https://docs.kie.ai/market/kie/image-upscale
+export const KieImageUpscaleRequestSchema = z.object({
+  model: z.literal("kie/image-upscale"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_url: z
+      .string()
+      .url()
+      .regex(/^https?:\/\/.+/, "Expected a public http(s) URL")
+      .describe(
+        "URL of the image to upscale. Required. Must be a publicly downloadable HTTP(S) URL, at most 20 MB, in JPG, PNG, WEBP or GIF (only the first frame is used); use a file URL after upload, not the file content itself."
+      ),
+    upscale_factor: KieImageUpscaleFactorSchema.default("2").describe(
+      'Upscale factor applied to both width and height, keeping the aspect ratio. Optional: "1", "2", "4" or "8", default "2". 1 is a same-size quality enhancement (denoise, sharpen, preserve text) that keeps the dimensions; 2, 4 and 8 multiply the input width and height. The output must stay within 67 MP (about 8192 x 8192) and 16,384 px per side, or KIE rejects the request with 422 and does not charge it. The billing tier (2K, 4K or 8K) follows the total output pixels.'
+    ),
+  }),
+});
+
 // Infinitalk talking-head video from a portrait + audio drive.
 // Docs: https://docs.kie.ai/market/infinitalk/from-audio
 export const InfinitalkFromAudioResolutionSchema = z.enum(["480p", "720p"]);
@@ -9827,6 +9862,7 @@ export const MediaGenerationRequestSchema = z.union([
   GoogleNanoBananaEditRequestSchema,
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
+  KieImageUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
   ZImageRequestSchema,
   Flux3KleinTextToImageRequestSchema,
@@ -10985,6 +11021,14 @@ export type TopazVideoUpscaleRequest = z.input<
 export type TopazVideoUpscaleRequestInput = TopazVideoUpscaleRequest;
 export type TopazVideoUpscaleParsedRequest = z.output<
   typeof TopazVideoUpscaleRequestSchema
+>;
+export type KieImageUpscaleFactor = z.infer<typeof KieImageUpscaleFactorSchema>;
+export type KieImageUpscaleRequest = z.input<
+  typeof KieImageUpscaleRequestSchema
+>;
+export type KieImageUpscaleRequestInput = KieImageUpscaleRequest;
+export type KieImageUpscaleParsedRequest = z.output<
+  typeof KieImageUpscaleRequestSchema
 >;
 export type InfinitalkFromAudioResolution = z.infer<
   typeof InfinitalkFromAudioResolutionSchema

@@ -275,6 +275,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (docs callback examples are non-Flash copies), and the billed recording confirms the no-video cell.",
   })),
 
+  ...["2K", "4K", "8K"].map((variant) => ({
+    key: "kie/image-upscale",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kie-image-upscale-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 1.5/4/12 credits = 0.0075/0.02/0.06 USD per image at the 2K/4K/8K output tiers",
+    rationale:
+      "KIE Image Upscale was added after the frozen September catalog; the dated feed capture supplies the rates, the tier follows the output pixels (input width x height x upscale_factor squared, from costHints.inputWidth and inputHeight), and the billed recording confirms the 2K cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,
@@ -1115,6 +1125,22 @@ const PAYLOAD_RULES = Object.freeze([
     matches: (key) => key === "seedream/5-5-image-to-image",
     apply: (input) => {
       input.image_urls = ["https://example.com/a.png"];
+    },
+  },
+  {
+    // KIE Image Upscale rows name an output tier ("2K (≤4.19 MP)"). The docs
+    // table reaches each tier from a 1024 x 1024 input at factor 2, 4 and 8;
+    // the reconciliation declares that input size as cost hints, so the row's
+    // factor selects its tier.
+    family: "kie-image-upscale-factor",
+    matches: (key) => key === "kie/image-upscale",
+    apply: (input, text) => {
+      const tier = text.match(/(?:^|[-,\s])(2K|4K|8K)(?:$|[-,\s])/i);
+      if (tier) {
+        input.upscale_factor = { "2k": "2", "4k": "4", "8k": "8" }[
+          tier[1].toLowerCase()
+        ];
+      }
     },
   },
   {

@@ -1183,6 +1183,90 @@ const miniMaxH3ImagePage = (
   source: pricePage(url, "2026-11-12"),
 });
 
+// KIE Image Upscale bills one tier per task by its total OUTPUT pixels: the
+// input width x height times upscale_factor squared (factor "1" keeps the
+// input size). The payload cannot show that product, because the request
+// carries only the image's URL, so the size comes from costHints.inputWidth
+// and costHints.inputHeight. The tier edges are the docs table's own outputs
+// (1024 x 1024 at factor 2, 4 and 8): up to 2048 x 2048 = 4,194,304 pixels
+// ("≤ 4.19 MP") is 2K, up to 4096 x 4096 = 16,777,216 ("≤ 16.78 MP") is 4K,
+// and up to 8192 x 8192 = 67,108,864 ("≤ 67.11 MP"), KIE's output cap, is 8K.
+// Without a declared size the estimate quotes 8K, the most a task can bill, and
+// warns. Fails closed on a factor outside "1" | "2" | "4" | "8", on a lone or
+// non-integer hint, and on a size KIE answers with 422 and no charge (over
+// 67,108,864 output pixels or 16,384 px per side).
+const KIE_IMAGE_UPSCALE_FACTORS = new Set(["1", "2", "4", "8"]);
+const KIE_IMAGE_UPSCALE_TIERS = [
+  ["2K", 2048 * 2048],
+  ["4K", 4096 * 4096],
+  ["8K", 8192 * 8192],
+] as const;
+const KIE_IMAGE_UPSCALE_MAX_SIDE = 16_384;
+
+type KieImageUpscaleSize =
+  | { kind: "declared"; tier: string }
+  | { kind: "undeclared" }
+  | { kind: "invalid"; reason: string };
+
+const isPositiveInteger = (value: unknown): value is number =>
+  typeof value === "number" && Number.isSafeInteger(value) && value > 0;
+
+const kieImageUpscaleSize = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): KieImageUpscaleSize => {
+  const declared = asObject(p.input)?.upscale_factor;
+  const factor = declared === undefined ? "2" : declared;
+  if (typeof factor !== "string" || !KIE_IMAGE_UPSCALE_FACTORS.has(factor)) {
+    return {
+      kind: "invalid",
+      reason: 'upscale_factor must be the string "1", "2", "4" or "8"',
+    };
+  }
+  const width = hints?.inputWidth;
+  const height = hints?.inputHeight;
+  if (width === undefined && height === undefined) {
+    return { kind: "undeclared" };
+  }
+  if (!isPositiveInteger(width) || !isPositiveInteger(height)) {
+    return {
+      kind: "invalid",
+      reason:
+        "costHints.inputWidth and costHints.inputHeight must both be positive integers",
+    };
+  }
+  const outWidth = width * Number(factor);
+  const outHeight = height * Number(factor);
+  const pixels = outWidth * outHeight;
+  const tier = KIE_IMAGE_UPSCALE_TIERS.find(([, max]) => pixels <= max)?.[0];
+  if (
+    tier === undefined ||
+    outWidth > KIE_IMAGE_UPSCALE_MAX_SIDE ||
+    outHeight > KIE_IMAGE_UPSCALE_MAX_SIDE
+  ) {
+    return {
+      kind: "invalid",
+      reason: `a ${outWidth} x ${outHeight} output is over KIE's limits (67,108,864 pixels, 16,384 px per side), which KIE answers with 422 and no charge`,
+    };
+  }
+  return { kind: "declared", tier };
+};
+
+const kieImageUpscaleWarnings = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): string[] => {
+  const size = kieImageUpscaleSize(p, hints);
+  if (size.kind === "undeclared") {
+    return [
+      "kie 'kie/image-upscale' bills one tier by its output pixels (input width x height x upscale_factor squared), which the request cannot show; without costHints.inputWidth and costHints.inputHeight this estimate quotes the 8K tier, an upper bound.",
+    ];
+  }
+  return size.kind === "invalid"
+    ? [`kie 'kie/image-upscale': ${size.reason}.`]
+    : [];
+};
+
 export const kie: Record<string, ModelPricing> = {
   // Vidu Q4 bills output seconds; audio does not change the rate.
   // HAR (2026-10-14): 3 s at 540p, audio omitted, creditsConsumed=21.6
@@ -3440,6 +3524,35 @@ export const kie: Record<string, ModelPricing> = {
         "fails closed",
     ],
     source: pricePage("https://kie.ai/topaz-image-upscale"),
+  },
+
+  // KIE Image Upscale — one image per task, billed by its total output pixels
+  // (feed rows "Kie Image Upscale, image-upscale, 2K (≤4.19 MP)", "4K (≤16.78
+  // MP)" and "8K (≤67.11 MP)", and the GET /api/v1/models pricingDesc, read
+  // 2026-11-12): 1.5 credits ($0.0075), 4 ($0.02) and 12 ($0.06). Unlike
+  // Topaz above, KIE documents how a request maps to a tier, but the tier is
+  // not payload-derived: it follows the input's size times upscale_factor
+  // squared, and the request carries only the image's URL, so the size is the
+  // caller's costHints.inputWidth / inputHeight (see kieImageUpscaleSize).
+  "kie/image-upscale": {
+    kind: "perUnit",
+    unit: "images",
+    units: (p, hints) =>
+      kieImageUpscaleSize(p, hints).kind === "invalid" ? undefined : 1,
+    select: [
+      {
+        name: "tier",
+        required: true,
+        pick: (p, hints) => {
+          const size = kieImageUpscaleSize(p, hints);
+          if (size.kind === "undeclared") return "8K";
+          return size.kind === "declared" ? size.tier : undefined;
+        },
+      },
+    ],
+    rates: { "2K": 0.0075, "4K": 0.02, "8K": 0.06 },
+    warn: kieImageUpscaleWarnings,
+    source: pricePage("https://kie.ai/image-upscaler", "2026-11-12"),
   },
 
   // Qwen Image — text-to-image and image-edit bill a FIXED number of credits

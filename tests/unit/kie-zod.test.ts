@@ -1556,7 +1556,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
-// gemini-omni, recraft, topaz, infinitalk, z-image), Flux-2
+// gemini-omni, recraft, topaz, infinitalk, z-image, kie's own upscaler), Flux-2
 // (four exact modes), Ideogram (six exact modes), Hailuo (six exact modes),
 // the exact Vidu Q4 modes, the exact MiniMax H3 video and image modes, the Google market enum set (two TTS + five
 // Imagen/Nano Banana), and unversioned Qwen v1 stay enumerated with no alias
@@ -1856,8 +1856,9 @@ const MEDIA_MODEL_FAMILIES = [
   },
 ] as const;
 
-// The four ids that deliberately carry no alias: each is the only model kie
-// lists for its vendor, and one sample cannot establish a family grammar.
+// The ids that deliberately carry no alias: each is the only model kie lists
+// for its product, and one sample cannot establish a family grammar.
+// `kie/image-upscale` is the first id under kie's own `kie/` namespace.
 const MEDIA_SINGLETON_MODELS = [
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
@@ -1866,6 +1867,7 @@ const MEDIA_SINGLETON_MODELS = [
   "recraft/remove-background",
   "infinitalk/from-audio",
   "z-image",
+  "kie/image-upscale",
 ] as const;
 
 const VIDU_Q4_EXACT_ONLY_MODELS = [

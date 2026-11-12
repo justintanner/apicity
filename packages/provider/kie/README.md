@@ -810,6 +810,39 @@ Every reference image adds 0.5 credits ($0.0025), the first included, so a
 and [image edit](https://docs.kie.ai/market/minimax-h3/image-edit.md)
 pages.
 
+## KIE Image Upscale
+
+KIE's own upscaler is `kie/image-upscale` on the shared
+`kie.post.api.v1.jobs.createTask` endpoint. It takes one public http(s)
+`image_url` (JPG, PNG, WEBP, or GIF, of which only the first frame is used;
+at most 20 MB) and an `upscale_factor` of `"1"`, `"2"`, `"4"` or `"8"`
+(default `"2"`) that multiplies the width and the height; `"1"` enhances
+the image at its own size. The output must stay within 67,108,864 pixels
+and 16,384 px per side: KIE checks the input's width x height x factor
+squared at submission and answers 422, with no task and no charge, when
+it is over. JPG and WEBP keep their format, and anything else comes back
+as PNG.
+
+```typescript
+declare const photo: string;
+
+const upscaled = await kie.post.api.v1.jobs.createTask({
+  model: "kie/image-upscale",
+  input: { image_url: photo, upscale_factor: "2" },
+});
+
+console.log(upscaled.data?.taskId);
+```
+
+Each task bills one tier by its total output pixels: 1.5 credits ($0.0075)
+up to 4.19 MP (2K), 4 ($0.02) up to 16.78 MP (4K) and 12 ($0.06) up to
+67.11 MP (8K), so a 768 x 1024 photo at the default factor (1536 x 2048
+out) costs 1.5 credits. The request does not carry the input's size, so
+pass it to `@apicity/cost` as `costHints.inputWidth` and
+`costHints.inputHeight`; without them the estimate quotes the 8K tier as
+an upper bound and warns. See KIE's
+[Image Upscale](https://docs.kie.ai/market/kie/image-upscale.md) page.
+
 ## Seedance 2.5 audio
 
 The exported schema defaults `bytedance/seedance-2-5` `generate_audio` to

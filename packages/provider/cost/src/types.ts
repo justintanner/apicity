@@ -121,6 +121,17 @@ export interface CostHints {
   // without it, quotes the cap as an upper bound with a warning.
   // Cost-only: never merged into the generation request.
   outputImages?: number;
+  // The source image's width and height in pixels, for kie
+  // `kie/image-upscale`. It bills one tier per task by its OUTPUT pixels,
+  // the input width x height times upscale_factor squared, and its request
+  // carries only the image's URL. Declare both, as positive integers. Without
+  // them the estimate quotes the top (8K) tier, an upper bound, and warns. A
+  // lone value, a value that is not a positive integer, or a size KIE rejects
+  // (over 67,108,864 output pixels or 16,384 px per side) fails closed.
+  // Cost-only, like the rest of CostHints: never merged into payload, never
+  // canonicalHash'd, never signed.
+  inputWidth?: number;
+  inputHeight?: number;
   durationSeconds?: number;
   // Declared total length, in seconds, of the request's video INPUTS, for the
   // kie entries that bill (input video duration + output video duration) x

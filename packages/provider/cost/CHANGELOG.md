@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Image Upscale (`kie/image-upscale`) is priced per task by its output
+  pixels, the input size times `upscale_factor` squared: 0.0075 USD up to
+  4.19 MP (2K), 0.02 up to 16.78 MP (4K) and 0.06 up to 67.11 MP (8K). New
+  optional cost hints `inputWidth` and `inputHeight` declare the source
+  image's size; without them the estimate quotes the 8K tier as an upper
+  bound and warns, and a size KIE rejects fails closed. A recorded 2x upscale
+  billed 1.5 credits, USD 0.0075 (ac-s2rue4).
+
 - KIE Kling 4.0 Flash reference-to-video (`kling-4.0/flash-reference-to-video`)
   is priced at 720p: 0.085 USD per output second without video input, and
   0.0565 USD per second on output + max(output, input) seconds with it (the

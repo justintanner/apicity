@@ -282,6 +282,7 @@ export const MODEL_SLUGS = {
     "seedream/5-pro-layer-decomposition": "sd5p",
     "seedream/5-flash-layer-decomposition": "sd5fl",
     "seedream/5-5-image-to-image": "sd5p5",
+    "seedream/5-5-text-to-image": "sd5p5",
     "seedream/4.5-text-to-image": "sd4p5",
     "seedream/4.5-edit": "sd4p5",
 
@@ -1325,6 +1326,7 @@ export const MODEL_DISPLAY = {
     "seedream/5-pro-layer-decomposition": "Seedream 5 Pro Layer Decomposition",
     "seedream/5-flash-layer-decomposition": "Seedream 5 Flash Layers",
     "seedream/5-5-image-to-image": "Seedream 5.5 Edit",
+    "seedream/5-5-text-to-image": "Seedream 5.5",
     "seedream/4.5-text-to-image": "Seedream 4.5",
     "seedream/4.5-edit": "Seedream 4.5 Edit",
     "bytedance/seedream": "Seedream 3",

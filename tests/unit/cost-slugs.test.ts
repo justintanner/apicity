@@ -320,6 +320,11 @@ describe("modelSlug", () => {
       slug: "sd5p5",
       display: "Seedream 5.5 Edit",
     },
+    {
+      model: "seedream/5-5-text-to-image",
+      slug: "sd5p5",
+      display: "Seedream 5.5",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

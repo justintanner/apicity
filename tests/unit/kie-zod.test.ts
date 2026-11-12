@@ -1687,6 +1687,7 @@ const MEDIA_MODEL_FAMILIES = [
       "seedream/5-pro-layer-decomposition",
       "seedream/5-flash-layer-decomposition",
       "seedream/5-5-image-to-image",
+      "seedream/5-5-text-to-image",
       "seedream/4.5-text-to-image",
       "seedream/4.5-edit",
     ],

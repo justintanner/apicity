@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Seedream 5.5 text-to-image (`seedream/5-5-text-to-image`) is priced
+  per output image by size (0.018 USD at 1K and 1.5K, 0.0315 at the 2K
+  default), with no input-image extra. A recorded 1K generation billed 3.6
+  credits, USD 0.018 (ac-uaqxxs).
+
 - KIE Seedream 5.5 image-to-image (`seedream/5-5-image-to-image`) is priced
   per output image by size (0.018 USD at 1K and 1.5K, 0.0315 at the 2K
   default) plus 0.0072 USD for every input image, the first included. A

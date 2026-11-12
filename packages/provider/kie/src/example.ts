@@ -307,20 +307,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.mj.generate": {
-    "source": "kie/mj-generate",
-    "payload": {
-      "taskType": "mj_txt2img",
-      "prompt": "A sci-fi themed fighter jet in a beautiful sky, computer wallpaper",
-      "speed": "relaxed",
-      "aspectRatio": "16:9",
-      "version": "7",
-      "stylization": 100,
-      "weirdness": 0
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.omni.audio.create": {
     "source": "kie/audio/gemini-omni-audio-create",
     "payload": {

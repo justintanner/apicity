@@ -25,14 +25,12 @@ import {
   KieTaskInfo,
   KieXaiModelsResponse,
   Gpt4oImageRecordInfo,
-  MjRecordInfoResponse,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateResponse,
   GeminiOmniCharacterCreateRequest,
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
-  MjGenerateRequest,
   RunwayGenerateRequest,
   RunwayExtendRequest,
   RunwayRecordDetail,
@@ -54,9 +52,6 @@ import {
   GeminiOmniCharacterCreateResponseSchema,
   FluxKontextGenerateRequestSchema,
   Gpt4oImageGenerateRequestSchema,
-  MjGenerateRequestSchema,
-  MjRecordInfoRequestSchema,
-  MjRecordInfoResponseSchema,
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
@@ -798,30 +793,6 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
-  // POST https://api.kie.ai/api/v1/mj/generate
-  // Docs: https://docs.kie.ai/mj-api/generate-mj-image
-  async function mjGenerate(req: MjGenerateRequest): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(transport, {
-      method: "POST",
-      path: "/api/v1/mj/generate",
-      body: req,
-    });
-  }
-
-  // GET https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}
-  // Docs: https://docs.kie.ai/mj-api/get-mj-task-details
-  async function mjRecordInfo(taskId: string): Promise<MjRecordInfoResponse> {
-    return kieRequest<MjRecordInfoResponse>(
-      `${baseURL}/api/v1/mj/record-info?taskId=${encodeURIComponent(taskId)}`,
-      {
-        method: "GET",
-        apiKey: opts.apiKey,
-        doFetch,
-        timeout,
-      }
-    );
-  }
-
   // POST https://api.kie.ai/api/v1/runway/generate
   // Docs: https://docs.kie.ai/runway-api/generate-ai-video
   async function runwayGenerate(
@@ -1092,11 +1063,6 @@ export function createKie(opts: KieOptions): KieProvider {
                     schema: Gpt4oImageDownloadUrlRequestSchema,
                   }),
                 },
-                mj: {
-                  generate: Object.assign(mjGenerate, {
-                    schema: MjGenerateRequestSchema,
-                  }),
-                },
                 runway: {
                   generate: Object.assign(runwayGenerate, {
                     schema: RunwayGenerateRequestSchema,
@@ -1139,12 +1105,6 @@ export function createKie(opts: KieOptions): KieProvider {
                 recordInfo: Object.assign(gpt4oImageRecordInfo, {
                   schema: RecordInfoRequestSchema,
                   responseSchema: Gpt4oImageRecordInfoResponseSchema,
-                }),
-              },
-              mj: {
-                recordInfo: Object.assign(mjRecordInfo, {
-                  schema: MjRecordInfoRequestSchema,
-                  responseSchema: MjRecordInfoResponseSchema,
                 }),
               },
               runway: {

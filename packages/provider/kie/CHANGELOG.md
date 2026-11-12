@@ -147,6 +147,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** `post.api.v1.mj.generate` and `get.api.v1.mj.recordInfo`,
+  because KIE withdrew Midjourney. On 2026-11-12 both docs pages
+  (`mj-api/generate-mj-image` and `mj-api/get-mj-task-details`) and their
+  `/old-model/` copies served the same soft 404 as a made-up page, Midjourney
+  was absent from the 251 models of `GET /api/v1/models`, and the public price
+  feed had no Midjourney row (none since at least 2026-09-11). KIE offers no
+  replacement. Every `Mj*` schema and type goes with them:
+  `MjGenerateRequestSchema`, `MjTaskTypeSchema`, `MjSpeedSchema`,
+  `MjVersionSchema`, `MjAspectRatioSchema`, `MjMotionSchema`,
+  `MjRecordInfoRequestSchema`, `MjRecordInfoResponseSchema`,
+  `MjRecordInfoDataSchema`, `MjRecordInfoResultInfoSchema`,
+  `MjRecordInfoSuccessFlagSchema`, and the `MjGenerateRequest`,
+  `MjGenerateRequestInput`, `MjGenerateParsedRequest`, `MjTaskType`,
+  `MjSpeed`, `MjVersion`, `MjAspectRatio` and `MjMotion` types. No call was
+  billed to confirm it. This removal ships in 0.28.0 (ac-3b4swu).
+
 - **Breaking:** `gemini25Pro.post.v1.chat.completions`,
   `gemini35FlashOpenai.post.v1.chat.completions`, and
   `gemini.post.v1.models.gemini35Flash.streamGenerateContent`, because KIE

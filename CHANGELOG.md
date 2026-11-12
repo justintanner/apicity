@@ -482,6 +482,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** withdrawn KIE Midjourney. `@apicity/kie` no longer exports
+  `post.api.v1.mj.generate` or `get.api.v1.mj.recordInfo`, nor the `Mj*`
+  schemas and types. On 2026-11-12 KIE's Midjourney docs pages served the same
+  soft 404 as a made-up page, and Midjourney was absent from
+  `GET /api/v1/models` and the public price feed. KIE offers no replacement.
+  The matching `@apicity/cost` `PAID_ENDPOINTS` entry and billing rows are
+  gone. Ships in 0.28.0 (ac-3b4swu).
+
 - **Breaking:** retired Fireworks image workflows. `@apicity/fireworks` no longer
   exports `inference.v1.workflows.textToImage`, `kontext` or `getResult`, nor the
   `FireworksTextToImage*`, `FireworksKontext*` and `FireworksGetResult*` schemas

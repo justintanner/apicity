@@ -58,7 +58,6 @@ export const PAID_OTP_HELPERS = Object.fromEntries(
     ],
     ["kie", "mintKieFluxKontextOtp", false, ["api.v1.flux.kontext.generate"]],
     ["kie", "mintKieGpt4oImageOtp", false, ["api.v1.gpt4oImage.generate"]],
-    ["kie", "mintKieMjOtp", false, ["api.v1.mj.generate"]],
     [
       "kie",
       "mintKieRunwayOtp",

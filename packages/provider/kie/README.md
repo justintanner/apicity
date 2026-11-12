@@ -1375,7 +1375,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-68 endpoints across 32 groups. Each method mirrors an upstream URL path.
+67 endpoints across 31 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -2003,25 +2003,6 @@ const res = await kie.suno.post.api.v1.midi.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### mj
-
-<details>
-<summary><code>GET</code> <b><code>kie.get.api.v1.mj.recordInfo</code></b></summary>
-
-<code>GET https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/mj-api/get-mj-task-details)
-
-```typescript
-const res = await kie.get.api.v1.mj.recordInfo({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 

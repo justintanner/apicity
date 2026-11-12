@@ -345,6 +345,11 @@ describe("modelSlug", () => {
       slug: "kling4f",
       display: "Kling 4.0 Flash Keyframe-to-Video",
     },
+    {
+      model: "kling-4.0/flash-reference-to-video",
+      slug: "kling4f",
+      display: "Kling 4.0 Flash Reference-to-Video",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

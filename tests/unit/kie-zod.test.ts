@@ -1595,6 +1595,7 @@ const MEDIA_MODEL_FAMILIES = [
       "kling-4.0/reference-to-video",
       "kling-4.0/keyframe-to-video",
       "kling-4.0/flash-keyframe-to-video",
+      "kling-4.0/flash-reference-to-video",
     ],
     aliases: ["kling-3.5/video", "kling/v4-turbo-text-to-video"],
     rejected: ["kling", "kling-3.0", "kling3.0/video", "Kling-3.0/video"],

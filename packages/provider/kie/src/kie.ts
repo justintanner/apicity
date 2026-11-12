@@ -179,6 +179,7 @@ import {
   Kling40ReferenceToVideoRequestSchema,
   Kling40KeyframeToVideoRequestSchema,
   Kling40FlashKeyframeToVideoRequestSchema,
+  Kling40FlashReferenceToVideoRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
   NanoBanana21RequestSchema,
@@ -324,6 +325,8 @@ export const CREATE_TASK_GUARDS = {
   "kling-4.0/reference-to-video": Kling40ReferenceToVideoRequestSchema,
   "kling-4.0/keyframe-to-video": Kling40KeyframeToVideoRequestSchema,
   "kling-4.0/flash-keyframe-to-video": Kling40FlashKeyframeToVideoRequestSchema,
+  "kling-4.0/flash-reference-to-video":
+    Kling40FlashReferenceToVideoRequestSchema,
   "grok-imagine/text-to-image": GrokTextToImageRequestSchema,
   "grok-imagine/image-to-image": GrokImageToImageRequestSchema,
   "grok-imagine/text-to-video": GrokTextToVideoRequestSchema,

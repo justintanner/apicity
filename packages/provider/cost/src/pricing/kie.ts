@@ -316,28 +316,28 @@ const kling40ReferenceSeconds: SecondsResolver = (p, hints) => {
 
 // Names the missing declaration only when the input side is what fails the
 // estimate closed, as inputDurationWarning does for reference_video_urls.
-const kling40ReferenceWarning = (
-  p: Record<string, unknown>,
-  hints?: CostHints
-): string[] => {
-  if (kling40Seconds(p) === undefined) return [];
-  const video = kling40VideoInput(p);
-  if (video === undefined) {
-    return [
-      "kie 'kling-4.0/reference-to-video': video_urls or elements is not an " +
-        "array, so the video input cannot be read; pass both as arrays",
-    ];
-  }
-  if (video && hintInputSeconds(hints) === undefined) {
-    return [
-      "kie 'kling-4.0/reference-to-video': reference videos and video " +
-        "elements carry no duration in the request and the page bills " +
-        "rate x (output + max(output, input)) seconds; declare the input " +
-        "clips' total length as costHints.inputDurationSeconds",
-    ];
-  }
-  return [];
-};
+// Shared by the Kling 4.0 reference model and its Flash tier.
+const kling40ReferenceWarning =
+  (key: string) =>
+  (p: Record<string, unknown>, hints?: CostHints): string[] => {
+    if (kling40Seconds(p) === undefined) return [];
+    const video = kling40VideoInput(p);
+    if (video === undefined) {
+      return [
+        `kie '${key}': video_urls or elements is not an ` +
+          "array, so the video input cannot be read; pass both as arrays",
+      ];
+    }
+    if (video && hintInputSeconds(hints) === undefined) {
+      return [
+        `kie '${key}': reference videos and video ` +
+          "elements carry no duration in the request and the page bills " +
+          "rate x (output + max(output, input)) seconds; declare the input " +
+          "clips' total length as costHints.inputDurationSeconds",
+      ];
+    }
+    return [];
+  };
 
 // Both Wan 3.0 entries: resolution-tiered per second on the (input + output)
 // rule. Mirrors tieredVideoPage's `resolution` picker and `1080P` default byte
@@ -1434,7 +1434,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p": 0.2125,
       "1080p|video": 0.1275,
     },
-    warn: kling40ReferenceWarning,
+    warn: kling40ReferenceWarning("kling-4.0/reference-to-video"),
     source: pricePage(
       "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
       "2026-10-25"
@@ -1467,6 +1467,35 @@ export const kie: Record<string, ModelPricing> = {
     "2026-11-12",
     kling40Seconds
   ),
+
+  // Kling 4.0 Flash reference-to-video bills at 720p, its only resolution: 17
+  // credits ($0.085) per output second without video input, and with video
+  // input (video_urls or a video element) 11.3 credits ($0.0565) per second
+  // on output + max(output, input) seconds, as Kling 4.0's reference model
+  // bills (feed rows "kling 4.0 flash, reference-to-video, 720P ..." and the
+  // pricingDesc, read 2026-11-12). The docs callback examples (425 credits for
+  // 10 s) are copies of the non-Flash page's, not Flash bills. A recorded 3 s
+  // clip from one reference image billed 51 credits at submission (task
+  // a62dde4a03c2eb1942edd41800ec4e8b; evidence in
+  // tests/fixtures/kie-pricing-evidence/kling-40-flash-reference-to-video-2026-11-12.json).
+  "kling-4.0/flash-reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: kling40ReferenceSeconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "video",
+        pick: (p) => (kling40VideoInput(p) ? "video" : undefined),
+      },
+    ],
+    rates: { "720p": 0.085, "720p|video": 0.0565 },
+    warn: kling40ReferenceWarning("kling-4.0/flash-reference-to-video"),
+    source: pricePage(
+      "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+      "2026-11-12"
+    ),
+  },
 
   // Kling 3.0 Turbo: 2 tiers by resolution. The 2026-11-05 feed prints 720p =
   // 20.2 credits/s ($0.101) and 1080p = 25.2 credits/s ($0.126).

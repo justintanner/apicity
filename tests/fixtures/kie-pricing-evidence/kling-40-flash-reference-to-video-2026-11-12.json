@@ -1,0 +1,107 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+  "models": ["kling-4.0/flash-reference-to-video"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video and the live GET /api/v1/models pricingDesc agree: at 720p, the only resolution, 17 credits (0.085 USD) per output second without video input, and 11.3 credits (0.0565 USD) per billed second with video input (reference videos or video elements), where the billed seconds are output x 2 while the summed input is no longer than the output and input + output past that (the pricingDesc's worked example: 10 s output + 5 s input = 20 s; with a 15 s input, 25 s). The docs callback examples (425 credits for 10 s) repeat the non-Flash Kling 4.0 page's examples, so they are not Flash bills. The recording below billed 51 credits for 3 s without video input, at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T17:19:51Z",
+    "rows": [
+      {
+        "modelDescription": "kling 4.0 flash, reference-to-video, 720P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "11.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0565",
+        "falPrice": "0.063",
+        "discountRate": 10.32,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0 flash, reference-to-video, 720P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T17:19:54Z",
+    "entry": {
+      "model": "kling-4.0/flash-reference-to-video",
+      "slug": "kling-4.0/flash-reference-to-video",
+      "title": "Kling 4.0 Flash Reference to Video",
+      "provider": "Kling",
+      "taskType": ["Text to Video", "Image to Video"],
+      "description": "",
+      "pricingDesc": "720P: 11.3 credits/s ($0.0565/s, with video) | 17 credits/s ($0.085/s, no video)\n\n🔸Note🔸: Video input has a lower per-second rate because the input duration is billed as well.\n\n- No video input (text, images or image elements only): rate × output duration\n- With video input (reference videos or video elements): rate × (output × 2) when total input duration ≤ output duration; rate × (input + output) when input is longer. Multiple input videos are summed. Example: 10 s output + 5 s input = 20 s; with a 15 s input, 25 s.\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "kling-4.0/flash-reference-to-video",
+      "url": "https://docs.kie.ai/market/kling/v4-flash-reference-to-video.md",
+      "fetchedAt": "2026-11-12T17:19:48Z",
+      "sha256": "1fd919311b80255320caec1bb4d307427e43df11848a558fcf946cbdf1c2e7d3",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 425,
+          "note": "not a Flash bill: 425 credits for 10 s is the non-Flash 1080p no-video rate (42.5 credits/s), and the example reuses the non-Flash Kling 4.0 page's task ids"
+        }
+      ],
+      "pricingExamples": [
+        {
+          "outputSeconds": 10,
+          "inputSeconds": 5,
+          "billedSeconds": 20
+        },
+        {
+          "outputSeconds": 10,
+          "inputSeconds": 15,
+          "billedSeconds": 25
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "kling-4.0/flash-reference-to-video",
+      "har": "tests/recordings/kie_2079838932/kling-40-flash-reference-to-video_863179358/recording.har",
+      "request": {
+        "prompt": "@image_1 The cat turns its head toward the camera.",
+        "duration": 3,
+        "resolution": "720p",
+        "image_urls": [
+          "<tests/fixtures/cat1.jpg, 768x1024, 370463 bytes, via kie file-stream-upload>"
+        ]
+      },
+      "taskId": "a62dde4a03c2eb1942edd41800ec4e8b",
+      "creditsConsumed": 51,
+      "creditsConsumedInFlight": [51, 51, 51, 51, 51],
+      "usd": 0.255,
+      "output": {
+        "format": "mp4",
+        "width": 1280,
+        "height": 720,
+        "videoSeconds": 3.0417,
+        "audioSeconds": 3.0881,
+        "bytes": 2386537
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1077.5,
+    "after": 1026.5
+  },
+  "observedTotalUsd": 0.255
+}

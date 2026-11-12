@@ -256,6 +256,7 @@ export const KIE_MEDIA_MODELS = [
   "kling-4.0/keyframe-to-video",
   // Kling 4.0 Flash: 720p-only. The Kling alias already reads the id.
   "kling-4.0/flash-keyframe-to-video",
+  "kling-4.0/flash-reference-to-video",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -2870,6 +2871,139 @@ export const Kling40FlashKeyframeToVideoRequestSchema = z.object({
     })
     .strict(),
 });
+
+// Docs: https://docs.kie.ai/market/kling/v4-flash-reference-to-video
+// Flash reference-to-video differs from Kling 4.0's in four ways: duration
+// 3-20, 720p only, no standalone voices, and an element `type` (image |
+// video, default image) that must match the subject's media. The input is
+// strict, so `voices` and any other undocumented field fail locally.
+export const Kling40FlashElementSchema = Kling40ElementSchema.extend({
+  type: z
+    .enum(["image", "video"])
+    .default("image")
+    .describe(
+      "Subject type, default image: an image subject takes 2-4 image_urls and no video_url; a video subject takes one video_url (3-8 s, single shot) and no image_urls, and is always a character"
+    ),
+});
+
+export const Kling40FlashReferenceToVideoRequestSchema = z
+  .object({
+    model: z.literal("kling-4.0/flash-reference-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: z
+      .object({
+        prompt: Kling40PromptSchema.describe(
+          "Video description, 1-8000 characters. Mention assets as @image_1, @image_2, ... (image_urls, in order), @video_1, @video_2, ... (video_urls) and @name (elements); every mention must match an asset in this request, otherwise the request is rejected."
+        ),
+        duration: Kling40FlashDurationSchema.default(5).describe(
+          "Output video duration in seconds. Integer from 3 to 20. Default: 5."
+        ),
+        resolution: Kling40FlashResolutionSchema.default("720p").describe(
+          "Output resolution. Kling 4.0 Flash only supports 720p. Default: 720p."
+        ),
+        aspect_ratio: Kling40AspectRatioSchema.optional().describe(
+          "Output aspect ratio. Optional: if omitted, upstream uses auto when any reference asset is provided and 16:9 when none is."
+        ),
+        image_urls: z
+          .array(Kling40MediaUrlSchema)
+          .max(10)
+          .default([])
+          .describe(
+            "Reference images, up to 10 public URLs, mentioned as @image_1, @image_2, ... in array order."
+          ),
+        video_urls: z
+          .array(Kling40MediaUrlSchema)
+          .max(5)
+          .default([])
+          .describe(
+            "Reference videos, up to 5 public URLs, mentioned as @video_1, @video_2, .... Reference videos plus video subjects in elements cannot exceed 5, and their combined duration must be 2-20 seconds (upstream fails the task at completion otherwise; URLs are not inspected locally). Video input bills the output and the input seconds."
+          ),
+        keep_original_sound: z
+          .boolean()
+          .default(false)
+          .describe(
+            "Keep the reference videos' original audio; takes effect only with video_urls. Default false; without a reference video, native audio is always generated."
+          ),
+        elements: z
+          .array(Kling40FlashElementSchema)
+          .max(7)
+          .default([])
+          .describe(
+            "Subjects used only for this task, up to 7, at most 3 of them video subjects, mentioned as @name. image_urls, video_urls and elements together cannot exceed 15 items. Standalone voices are not supported on Kling 4.0 Flash."
+          ),
+      })
+      .strict(),
+  })
+  .superRefine((value, ctx) => {
+    const { input } = value;
+    const issue = (message: string, path: Array<string | number>) =>
+      ctx.addIssue({ code: "custom", message, path: ["input", ...path] });
+
+    input.elements.forEach((element, index) => {
+      const isVideo = element.type === "video";
+      const mediaMatches = isVideo
+        ? element.video_url !== undefined && element.image_urls === undefined
+        : element.image_urls !== undefined && element.video_url === undefined;
+      if (!mediaMatches) {
+        issue(
+          isVideo
+            ? "A video element takes one video_url and no image_urls"
+            : "An image element (the default type) takes 2-4 image_urls and no video_url",
+          ["elements", index]
+        );
+      }
+      if (element.tag === undefined || element.tag === "character") return;
+      if (isVideo) {
+        issue("A video element is always a character subject", [
+          "elements",
+          index,
+          "tag",
+        ]);
+      } else if (element.voice_url !== undefined) {
+        issue("voice_url binds only to a character subject", [
+          "elements",
+          index,
+          "voice_url",
+        ]);
+      }
+    });
+
+    const videoElements = input.elements.filter(
+      (element) => element.type === "video"
+    ).length;
+    if (videoElements > 3) {
+      issue("At most 3 elements can be video subjects", ["elements"]);
+    }
+    if (input.video_urls.length + videoElements > 5) {
+      issue("video_urls and video elements together cannot exceed 5", [
+        "video_urls",
+      ]);
+    }
+    if (
+      input.image_urls.length +
+        input.video_urls.length +
+        input.elements.length >
+      15
+    ) {
+      issue("image_urls, video_urls and elements together cannot exceed 15", [
+        "elements",
+      ]);
+    }
+
+    const seen = new Set<string>();
+    input.elements.forEach((element, index) => {
+      const path = ["elements", index, "name"];
+      if (KLING_40_RESERVED_NAME.test(element.name)) {
+        issue(`${element.name} is a reserved material name`, path);
+      } else if (seen.has(element.name.toLowerCase())) {
+        issue(
+          `${element.name} repeats a name in elements (case-insensitive)`,
+          path
+        );
+      }
+      seen.add(element.name.toLowerCase());
+    });
+  });
 
 export const GrokTextToImageRequestSchema = z.object({
   model: z.literal("grok-imagine/text-to-image"),
@@ -9561,6 +9695,7 @@ export const MediaGenerationRequestSchema = z.union([
   Kling40ReferenceToVideoRequestSchema,
   Kling40KeyframeToVideoRequestSchema,
   Kling40FlashKeyframeToVideoRequestSchema,
+  Kling40FlashReferenceToVideoRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -9921,6 +10056,7 @@ export type Kling40Element = z.input<typeof Kling40ElementSchema>;
 export type Kling40Voice = z.input<typeof Kling40VoiceSchema>;
 export type Kling40TaskResultJson = z.infer<typeof Kling40TaskResultJsonSchema>;
 export type Kling40FlashDuration = z.infer<typeof Kling40FlashDurationSchema>;
+export type Kling40FlashElement = z.infer<typeof Kling40FlashElementSchema>;
 export type Kling40FlashResolution = z.infer<
   typeof Kling40FlashResolutionSchema
 >;
@@ -10141,6 +10277,14 @@ export type Kling40FlashKeyframeToVideoRequestInput =
   Kling40FlashKeyframeToVideoRequest;
 export type Kling40FlashKeyframeToVideoParsedRequest = z.output<
   typeof Kling40FlashKeyframeToVideoRequestSchema
+>;
+export type Kling40FlashReferenceToVideoRequest = z.input<
+  typeof Kling40FlashReferenceToVideoRequestSchema
+>;
+export type Kling40FlashReferenceToVideoRequestInput =
+  Kling40FlashReferenceToVideoRequest;
+export type Kling40FlashReferenceToVideoParsedRequest = z.output<
+  typeof Kling40FlashReferenceToVideoRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

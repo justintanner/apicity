@@ -196,8 +196,9 @@ const KieMediaPixverseModelAliasSchema = z
 // Vidu Q4 stays enum-only: documented operations do not establish a version grammar.
 // MiniMax H3 also stays enum-only across its video and image task variants.
 // The approved surface is exactly these H3 ids: neither the video task slugs
-// nor the MiniMax H3 Image ones (`minimax-h3/text-to-image`) establish a
-// version grammar or authorize arbitrary future task slugs.
+// nor the MiniMax H3 Image ones (`minimax-h3/text-to-image`,
+// `minimax-h3/image-edit`) establish a version grammar or authorize arbitrary
+// future task slugs.
 //
 // Google market ids (`google/gemini-*-tts`, `google/imagen4*`,
 // `google/nano-banana*`, `google/gemini-omni-flash-1-1`,
@@ -384,6 +385,7 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   // MiniMax H3 Image. Docs under https://docs.kie.ai/market/minimax-h3/.
   "minimax-h3/text-to-image",
+  "minimax-h3/image-edit",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
   "google/gemini-3-8-flash-tts",
@@ -6398,6 +6400,23 @@ const refineMiniMaxH3ImageSize = (
   }
 };
 
+// The fields both MiniMax H3 Image models describe in the same words.
+const miniMaxH3ImageSeedField = MiniMaxH3ImageSeedSchema.optional().describe(
+  "Random seed, 0-2147483647. Optional; a random seed is used when omitted, and the actual seed is returned with the result. With prompt expansion on, the rewritten prompt differs each time, so results are only reproducible when expand_prompt is false."
+);
+const miniMaxH3ImageOutputFormatField =
+  MiniMaxH3ImageOutputFormatSchema.default("png").describe(
+    "Output image format. Optional, default png. JPEG uses quality 95 and is much smaller; 4K PNG files are very large, so use JPEG when you need smaller files."
+  );
+const miniMaxH3ImageWidthField =
+  MiniMaxH3ImageDimensionSchema.optional().describe(
+    "Custom output width in pixels, 1-8192. Optional. width and height must be set together; when they are set, do not pass resolution or aspect_ratio. Total pixels (width x height) must be between 655,360 and 20,000,000, and width : height between 1:3 and 3:1; the output is exactly this size. Billing tier by total pixels: up to 1,200,000 -> 1K, up to 4,500,000 -> 2K, above -> 4K."
+  );
+const miniMaxH3ImageHeightField =
+  MiniMaxH3ImageDimensionSchema.optional().describe(
+    "Custom output height in pixels, 1-8192. Optional, but must be set together with width. See width for limits, priority and billing."
+  );
+
 // Docs: https://docs.kie.ai/market/minimax-h3/text-to-image
 export const MiniMaxH3TextToImageRequestSchema = z
   .object({
@@ -6414,24 +6433,56 @@ export const MiniMaxH3TextToImageRequestSchema = z
         resolution: MiniMaxH3ImageResolutionSchema.optional().describe(
           "Output size tier. Optional, default 2K. 1K: about 1 MP; 2K: about 4 MP; 4K: about 16 MP, the officially recommended quality tier. Each image is billed by this tier. Do not pass together with width/height; with a custom size, billing follows its total pixels."
         ),
-        seed: MiniMaxH3ImageSeedSchema.optional().describe(
-          "Random seed, 0-2147483647. Optional; a random seed is used when omitted, and the actual seed is returned with the result. With prompt expansion on, the rewritten prompt differs each time, so results are only reproducible when expand_prompt is false."
-        ),
+        seed: miniMaxH3ImageSeedField,
         expand_prompt: z
           .boolean()
           .default(true)
           .describe(
             "Whether to rewrite the prompt into a detailed English description before generating. Optional, default true (recommended for better image quality); with aspect_ratio auto, the rewriter also chooses the ratio. false: the prompt is used as-is."
           ),
-        output_format: MiniMaxH3ImageOutputFormatSchema.default("png").describe(
-          "Output image format. Optional, default png. JPEG uses quality 95 and is much smaller; 4K PNG files are very large, so use JPEG when you need smaller files."
+        output_format: miniMaxH3ImageOutputFormatField,
+        width: miniMaxH3ImageWidthField,
+        height: miniMaxH3ImageHeightField,
+      })
+      .strict(),
+  })
+  .superRefine(refineMiniMaxH3ImageSize);
+
+// Docs: https://docs.kie.ai/market/minimax-h3/image-edit
+// Image edit adds 1-16 reference images, each billed; `auto` follows the
+// first reference image's aspect ratio rather than the prompt rewriter's.
+export const MiniMaxH3ImageEditRequestSchema = z
+  .object({
+    model: z.literal("minimax-h3/image-edit"),
+    callBackUrl: z.string().url().optional(),
+    input: z
+      .object({
+        prompt: MiniMaxH3ImagePromptSchema.describe(
+          "Editing instruction, 1-5000 characters; Chinese and English are both supported. Refer to reference images as <Picture 1>, <Picture 2>, ... (in image_urls order)."
         ),
-        width: MiniMaxH3ImageDimensionSchema.optional().describe(
-          "Custom output width in pixels, 1-8192. Optional. width and height must be set together; when they are set, do not pass resolution or aspect_ratio. Total pixels (width x height) must be between 655,360 and 20,000,000, and width : height between 1:3 and 3:1; the output is exactly this size. Billing tier by total pixels: up to 1,200,000 -> 1K, up to 4,500,000 -> 2K, above -> 4K."
+        aspect_ratio: MiniMaxH3ImageAspectRatioSchema.optional().describe(
+          "Aspect ratio of the output image. Optional, defaults to auto: follows the aspect ratio of the first reference image (any ratio between 1:3 and 3:1). Do not pass together with width/height."
         ),
-        height: MiniMaxH3ImageDimensionSchema.optional().describe(
-          "Custom output height in pixels, 1-8192. Optional, but must be set together with width. See width for limits, priority and billing."
+        resolution: MiniMaxH3ImageResolutionSchema.optional().describe(
+          "Output size tier. Optional, default 2K. 1K: about 1 MP; 2K: about 4 MP; 4K: about 16 MP, the officially recommended quality tier. Each image is billed by this tier, plus a charge for each reference image. Do not pass together with width/height; with a custom size, billing follows its total pixels."
         ),
+        seed: miniMaxH3ImageSeedField,
+        expand_prompt: z
+          .boolean()
+          .default(true)
+          .describe(
+            "Whether to rewrite the prompt into a detailed English description before generating. Optional, default true (recommended for better image quality). false: the prompt is used as-is."
+          ),
+        output_format: miniMaxH3ImageOutputFormatField,
+        image_urls: z
+          .array(z.string().regex(/^https?:\/\/.+/))
+          .min(1)
+          .max(16)
+          .describe(
+            "Reference image URLs (publicly accessible http(s):// URLs, not file content), 1-16; the order defines <Picture 1>, <Picture 2>, ... Each image is at most 20 MB and 64 MP; JPG, PNG, WEBP, HEIC or BMP (transparent backgrounds are filled with white). Every reference image is billed, the first included."
+          ),
+        width: miniMaxH3ImageWidthField,
+        height: miniMaxH3ImageHeightField,
       })
       .strict(),
   })
@@ -9589,6 +9640,7 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3ImageToVideoRequestSchema,
   MiniMaxH3ReferenceToVideoRequestSchema,
   MiniMaxH3TextToImageRequestSchema,
+  MiniMaxH3ImageEditRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
   GoogleGemini38FlashTtsRequestSchema,
@@ -10651,6 +10703,13 @@ export type MiniMaxH3TextToImageRequest = z.input<
 export type MiniMaxH3TextToImageRequestInput = MiniMaxH3TextToImageRequest;
 export type MiniMaxH3TextToImageParsedRequest = z.output<
   typeof MiniMaxH3TextToImageRequestSchema
+>;
+export type MiniMaxH3ImageEditRequest = z.input<
+  typeof MiniMaxH3ImageEditRequestSchema
+>;
+export type MiniMaxH3ImageEditRequestInput = MiniMaxH3ImageEditRequest;
+export type MiniMaxH3ImageEditParsedRequest = z.output<
+  typeof MiniMaxH3ImageEditRequestSchema
 >;
 export type MiniMaxH3ImageTaskResultJson = z.infer<
   typeof MiniMaxH3ImageTaskResultJsonSchema

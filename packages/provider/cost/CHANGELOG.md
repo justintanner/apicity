@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE MiniMax H3 Image edit (`minimax-h3/image-edit`) is priced as
+  text-to-image (per output image by tier or custom size) plus 0.0025 USD
+  for every reference image, the first included. A recorded 1K edit of one
+  image billed 2.3 credits, USD 0.0115 (ac-urxhp1).
+
 - KIE MiniMax H3 Image text-to-image (`minimax-h3/text-to-image`) is priced
   per output image by its total pixels: 0.009 USD up to 4.5 MP (the 1K and
   the default 2K tier) and 0.0275 USD up to 20 MP (4K). A custom `width` x

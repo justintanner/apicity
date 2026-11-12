@@ -379,8 +379,13 @@ describe("KIE MiniMax H3 modelInputSchemas metadata (REQ-007)", () => {
       (model) => model.startsWith("minimax-h3/")
     );
     // The MiniMax H3 Image ids follow the video ones; their descriptors are
-    // covered in tests/unit/kie-minimax-h3-text-to-image.test.ts.
-    expect(miniMaxModels).toEqual([...MODELS, "minimax-h3/text-to-image"]);
+    // covered in tests/unit/kie-minimax-h3-text-to-image.test.ts and
+    // tests/unit/kie-minimax-h3-image-edit.test.ts.
+    expect(miniMaxModels).toEqual([
+      ...MODELS,
+      "minimax-h3/text-to-image",
+      "minimax-h3/image-edit",
+    ]);
 
     const expectedFields = {
       "minimax-h3/text-to-video": [

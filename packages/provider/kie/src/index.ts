@@ -436,6 +436,7 @@ export {
   MiniMaxH3ImageSeedSchema,
   MiniMaxH3ImageDimensionSchema,
   MiniMaxH3TextToImageRequestSchema,
+  MiniMaxH3ImageEditRequestSchema,
   MiniMaxH3ImageTaskResultJsonSchema,
 } from "./zod";
 
@@ -892,6 +893,9 @@ export type {
   MiniMaxH3TextToImageRequest,
   MiniMaxH3TextToImageRequestInput,
   MiniMaxH3TextToImageParsedRequest,
+  MiniMaxH3ImageEditRequest,
+  MiniMaxH3ImageEditRequestInput,
+  MiniMaxH3ImageEditParsedRequest,
   MiniMaxH3ImageTaskResultJson,
   GoogleGeminiTtsInput,
   GoogleGeminiTtsParsedInput,

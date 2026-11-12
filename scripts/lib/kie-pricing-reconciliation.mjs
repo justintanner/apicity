@@ -1127,6 +1127,12 @@ function classifyRawRow(raw, inventories, live = false) {
     ) {
       result.billingComponent = "extra";
     }
+    if (
+      key === "minimax-h3/image-edit" &&
+      /reference image/i.test(String(official.modelDescription ?? ""))
+    ) {
+      result.billingComponent = "extra";
+    }
     result.rateBasis = {
       kind: "official-usd-price",
       creditPrice: official.creditPrice,

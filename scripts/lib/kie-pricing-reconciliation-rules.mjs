@@ -265,6 +265,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rate (the docs callback examples are non-Flash copies), and the billed recording confirms it.",
   },
 
+  ...["720p", "720p|video"].map((variant) => ({
+    key: "kling-4.0/flash-reference-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-40-flash-reference-to-video-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 17 / 11.3 credits = 0.085 / 0.0565 USD per billed second at 720p without / with video input",
+    rationale:
+      "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (docs callback examples are non-Flash copies), and the billed recording confirms the no-video cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,
@@ -1052,7 +1062,8 @@ const PAYLOAD_RULES = Object.freeze([
     family: "kling-video-input",
     matches: (key) =>
       key === "kling-3.0-omni/reference-to-video" ||
-      key === "kling-4.0/reference-to-video",
+      key === "kling-4.0/reference-to-video" ||
+      key === "kling-4.0/flash-reference-to-video",
     apply: (input, text) => {
       if (/with video input/i.test(text)) {
         input.video_urls = ["https://example.com/a.mp4"];

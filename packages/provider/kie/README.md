@@ -452,9 +452,40 @@ console.log(flashTask.data?.taskId);
 
 It bills the output seconds at 17 credits ($0.085) per second, so a 3 s
 clip costs 51 credits. The docs page's callback examples (285 credits for
-10 s) are copies of the non-Flash page's, not Flash bills. See KIE's
+10 s) are copies of the non-Flash page's, not Flash bills.
+
+`kling-4.0/flash-reference-to-video` takes the same `prompt`, `duration`
+and `resolution`, an optional `aspect_ratio` that also accepts `"auto"`,
+and reference materials as Kling 4.0 reference-to-video does:
+`image_urls` (up to 10), `video_urls` (up to 5, 2-20 s combined with
+video elements), `keep_original_sound` and `elements` (up to 7, at most
+3 video subjects; 15 materials in all). Flash has no standalone `voices`,
+and each element takes a `type`: `"image"` (the default) with 2-4
+`image_urls`, or `"video"` with one `video_url`.
+
+```typescript
+declare const catImage: string;
+
+const referenceTask = await kie.post.api.v1.jobs.createTask({
+  model: "kling-4.0/flash-reference-to-video",
+  input: {
+    prompt: "@image_1 The cat turns its head toward the camera.",
+    duration: 3,
+    image_urls: [catImage],
+  },
+});
+
+console.log(referenceTask.data?.taskId);
+```
+
+Without video input it bills 17 credits per output second. With video
+input (`video_urls` or a video element) it bills 11.3 credits ($0.0565)
+per second on output + max(output, input) seconds, so pass the summed
+input clip length to `@apicity/cost` as `costHints.inputDurationSeconds`.
+See KIE's
 [Flash keyframe-to-video](https://docs.kie.ai/market/kling/v4-flash-keyframe-to-video.md)
-page.
+and [Flash reference-to-video](https://docs.kie.ai/market/kling/v4-flash-reference-to-video.md)
+pages.
 
 ## PixVerse V6 Max text and image models
 

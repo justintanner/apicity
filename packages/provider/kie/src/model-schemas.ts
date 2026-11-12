@@ -448,6 +448,21 @@ const kling40ElementItem = {
   },
 } as const;
 
+// Flash elements add a `type` that must match the subject's media.
+const kling40FlashElementItem = {
+  type: "object",
+  properties: {
+    ...kling40ElementItem.properties,
+    type: {
+      type: "string",
+      enum: ["image", "video"],
+      default: "image",
+      description:
+        "Subject type, default image: image takes 2-4 image_urls, video takes one video_url and is always a character",
+    },
+  },
+} as const;
+
 const kling40VoiceItem = {
   type: "object",
   properties: {
@@ -1497,6 +1512,59 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         pattern: "^https?://.+",
         description:
           "Optional first-frame image URL, mentioned as @first_frame; without it the request is text-to-video",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/kling/v4-flash-reference-to-video
+  "kling-4.0/flash-reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 8000,
+        description:
+          "Video prompt (1-8000 characters). Mention assets as @image_1, @video_1 or @name; every mention must match an asset in this request",
+      },
+      duration: kling40FlashDurationField,
+      resolution: kling40FlashResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: Kling40AspectRatioSchema.options,
+        description:
+          "Output aspect ratio; upstream uses auto when any asset is provided and 16:9 otherwise",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 10,
+        default: [],
+        description:
+          "Reference images, mentioned as @image_1, @image_2, ... in order",
+        items: kling40MediaUrlItem,
+      },
+      video_urls: {
+        type: "array",
+        maxItems: 5,
+        default: [],
+        description:
+          "Reference videos, mentioned as @video_1, @video_2, ...; at most 5 together with video elements, 2-20 s combined. Video input bills the output and the input seconds",
+        items: kling40MediaUrlItem,
+      },
+      keep_original_sound: {
+        type: "boolean",
+        default: false,
+        description:
+          "Keep the reference videos' audio; applies only with video_urls, otherwise native audio is generated",
+      },
+      elements: {
+        type: "array",
+        maxItems: 7,
+        default: [],
+        description:
+          "Subjects for this task, at most 3 of them video subjects; image_urls, video_urls and elements total at most 15. No standalone voices on Flash",
+        items: kling40FlashElementItem,
       },
     },
   },

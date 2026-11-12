@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 173,
-      "pricingKeys": 238,
-      "slugKeys": 240,
-      "displayKeys": 240,
+      "models": 174,
+      "pricingKeys": 239,
+      "slugKeys": 241,
+      "displayKeys": 241,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:8b588a328dd353bba683295c5032c91b633b8c97a45345c4c6a7467666087f83",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:939b336d6eb914baa66b175aeb0fa53bc3f35a6bce1d4bf69ccec49edf31ac5b",
-      "packages/provider/kie/src/kie.ts": "sha256:b7e0085e9066b03c0402df5865524723638f6d0840b0f5e89b4c705e0626258d",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:ca62e4da5a3c0050d65e546b5b48bb2c317b76ea87f4194523f61af7d4d6ac50",
-      "packages/provider/cost/src/slugs.ts": "sha256:fd6dcce2b1171fe3edb4f41817ece6fa9467dfc7c537e36f4395f009332a1bd3",
+      "packages/provider/kie/src/zod.ts": "sha256:a9766f01b6541f0fd09c044d2a9eba7f1a1c666b0ba5ca6fa43d5d7e353fb44f",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:880ac8b80226e9edf759cdb03c138bfec383eae57514d026b89b2b882bf54bd9",
+      "packages/provider/kie/src/kie.ts": "sha256:9f5223e22c7a27663a40852c27246e20bcf4288b1396ffd9b20322d4f5721bf8",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:a83d6d873ee3afb455aacde982ad88fc7f24c3464999a48bc9a4c856d157670f",
+      "packages/provider/cost/src/slugs.ts": "sha256:08aa4a1ef48214b3c3cc2391f1d5a89bd2e1edba8d3f1a21b304750760c2cb2f",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -21542,6 +21542,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "kling-4.0/flash-reference-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4.0/flash-reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -24211,6 +24220,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "kling-4.0/flash-reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26103,6 +26118,10 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-4.0/flash-reference-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -27062,6 +27081,10 @@
       },
       {
         "key": "kling-4.0/flash-keyframe-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4.0/flash-reference-to-video",
         "disposition": "supported"
       },
       {
@@ -28595,16 +28618,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 173,
-        "descriptors": 173,
-        "guards": 173,
+        "count": 174,
+        "descriptors": 174,
+        "guards": 174,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 74
+          "upstream-unmappable": 75
         },
         "unclassified": 0
       },
@@ -28622,20 +28645,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 238,
+        "count": 239,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 88
+          "upstream-unmappable": 89
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 240,
+        "count": 241,
         "dispositionCounts": {
-          "supported": 240,
+          "supported": 241,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28644,9 +28667,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 240,
+        "count": 241,
         "dispositionCounts": {
-          "supported": 240,
+          "supported": 241,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29300,6 +29323,20 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/kling-40-flash-keyframe-to-video-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 17 credits = 0.085 USD per output second at 720p (the only resolution)",
         "rationale": "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rate (the docs callback examples are non-Flash copies), and the billed recording confirms it."
+      },
+      {
+        "key": "kling-4.0/flash-reference-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-40-flash-reference-to-video-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 17 / 11.3 credits = 0.085 / 0.0565 USD per billed second at 720p without / with video input",
+        "rationale": "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (docs callback examples are non-Flash copies), and the billed recording confirms the no-video cell."
+      },
+      {
+        "key": "kling-4.0/flash-reference-to-video",
+        "variant": "720p|video",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-40-flash-reference-to-video-2026-11-12.json: feed rows and models pricingDesc read 2026-11-12: 17 / 11.3 credits = 0.085 / 0.0565 USD per billed second at 720p without / with video input",
+        "rationale": "Kling 4.0 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (docs callback examples are non-Flash copies), and the billed recording confirms the no-video cell."
       },
       {
         "key": "google/gemini-omni-flash-1-2",

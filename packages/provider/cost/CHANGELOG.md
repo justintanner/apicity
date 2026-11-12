@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Kling 4.0 Flash reference-to-video (`kling-4.0/flash-reference-to-video`)
+  is priced at 720p: 0.085 USD per output second without video input, and
+  0.0565 USD per second on output + max(output, input) seconds with it (the
+  input side from `costHints.inputDurationSeconds`). A recorded 3 s clip
+  billed 51 credits, USD 0.255 (ac-xfuy6c).
+
 - KIE Kling 4.0 Flash keyframe-to-video (`kling-4.0/flash-keyframe-to-video`)
   is priced per output second at its only resolution, 720p: 0.085 USD (17
   credits), on the wire duration (default 5 s). A recorded 3 s clip billed 51

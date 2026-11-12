@@ -68,6 +68,27 @@ describe("kie GPT Image 2.6 token pricing", () => {
     );
   });
 
+  it("prices Flare text-to-image from its own feed rows, at Sunburst's rates", () => {
+    const flare = "gpt-image-2-6/flare-text-to-image";
+    expect(PRICING.kie[flare]).toMatchObject({
+      kind: "tokens",
+      rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+      modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+      source: {
+        url: "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        asOf: "2026-11-12",
+      },
+    });
+    const estimate = computeEstimate({
+      provider: "kie",
+      payload: { model: flare, input: { prompt: "A red balloon." } },
+      costHints: usage,
+    });
+    // 20 text input tokens at 4.50 plus 800 image output tokens at 27.00.
+    expect(estimate.usd).toBeCloseTo((20 * 4.5 + 800 * 27) / 1e6, 12);
+    expect(estimate.warnings).toEqual([]);
+  });
+
   it("prices Flare image-to-image from its own feed rows, at Sunburst's rates", () => {
     const edit = "gpt-image-2-6/flare-image-to-image";
     expect(PRICING.kie[edit]).toMatchObject({

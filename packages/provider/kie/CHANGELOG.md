@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `gpt-image-2-6/flare-text-to-image` (GPT Image 2.6 Flare) with the Sunburst text-to-image model's typed inputs, defaults and format rules, since KIE documents the two identically, with a recorded generation.
+
 - Added `gpt-image-2-6/flare-image-to-image` (GPT Image 2.6 Flare image-to-image) with the Sunburst image-to-image model's typed inputs, defaults and rules, since KIE documents the two identically, with a recorded edit.
 
 - Added `gpt-image-2-6/sunburst-image-to-image` (GPT Image 2.6 Sunburst image-to-image) with typed inputs: 1-16 `input_urls`, an inpaint `mask_url` or a `markup` overlay (exclusive; no mask with gif or svg output), and the text-to-image model's enums, defaults and format rules, with a recorded edit.

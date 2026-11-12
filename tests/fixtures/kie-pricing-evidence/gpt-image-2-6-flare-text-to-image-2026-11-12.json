@@ -1,0 +1,240 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+  "models": ["gpt-image-2-6/flare-text-to-image"],
+  "basis": "Flare's own live pricing-feed rows ('gpt-image-2-6-flare, text-to-image / image-to-image', anchored on this tab) and the live GET /api/v1/models pricingDesc agree on five token rates per 1M tokens, the same as Sunburst's: text input 900 credits (4.50 USD), cached text input 225 (1.125), image input 1,440 (7.20), cached image input 360 (1.80), image output 5,400 (27.00). The SVG rows add the author model's tokens, also as Sunburst's. The docs page equals the Sunburst text-to-image page apart from its names and example ids. The recording below billed 4.46 credits at success and 0.0 while waiting, the same as the Sunburst text-to-image recording at the same settings.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T09:17:08Z",
+    "pages": [
+      {
+        "pageNum": 1,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 2,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 3,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 4,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 5,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 6,
+        "code": 200,
+        "count": 100,
+        "total": 665
+      },
+      {
+        "pageNum": 7,
+        "code": 200,
+        "count": 65,
+        "total": 665
+      }
+    ],
+    "rows": [
+      {
+        "modelDescription": "gpt-image-2-6-flare, text-to-image / image-to-image, Image Output",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "5400",
+        "creditUnit": "per million tokens",
+        "usdPrice": "27",
+        "falPrice": "30",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, text-to-image / image-to-image, Cached Image Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "360",
+        "creditUnit": "per million tokens",
+        "usdPrice": "1.8",
+        "falPrice": "2",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, text-to-image / image-to-image, Image Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "1440",
+        "creditUnit": "per million tokens",
+        "usdPrice": "7.2",
+        "falPrice": "8",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, text-to-image / image-to-image, Cached Text Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "225",
+        "creditUnit": "per million tokens",
+        "usdPrice": "1.125",
+        "falPrice": "1.25",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, text-to-image / image-to-image, Text Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "900",
+        "creditUnit": "per million tokens",
+        "usdPrice": "4.5",
+        "falPrice": "5",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-5.6-luna Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "36",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.18",
+        "falPrice": "0.2",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-5.6-luna Output",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "216",
+        "creditUnit": "per million tokens",
+        "usdPrice": "1.08",
+        "falPrice": "1.2",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-6-sol Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "360",
+        "creditUnit": "per million tokens",
+        "usdPrice": "1.8",
+        "falPrice": "2",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-6-sol Output",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "1800",
+        "creditUnit": "per million tokens",
+        "usdPrice": "9",
+        "falPrice": "10",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-5.6-terra Input",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "360",
+        "creditUnit": "per million tokens",
+        "usdPrice": "1.8",
+        "falPrice": "2",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt-image-2-6-flare, SVG output, gpt-5.6-terra Output",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "2160",
+        "creditUnit": "per million tokens",
+        "usdPrice": "10.8",
+        "falPrice": "12",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T09:17:08Z",
+    "entry": {
+      "model": "gpt-image-2-6/flare-text-to-image",
+      "slug": "gpt-image-2-6/flare-text-to-image",
+      "title": "GPT Image 2.6 Flare Text to Image",
+      "provider": "OpenAI",
+      "taskType": ["Text to Image"],
+      "description": "",
+      "pricingDesc": "Text input 900 credits / 1M tokens ($4.50), cached text input 225 ($1.125), image input 1,440 ($7.20), cached image input 360 ($1.80), image output 5,400 ($27.00) — 10% below official pricing. SVG output: image tokens as above, plus the SVG author model's tokens — gpt-5.6-luna (default): input 36 credits / 1M tokens ($0.18), output 216 ($1.08); gpt-6-sol: input 360 ($1.80), output 1,800 ($9.00); gpt-5.6-terra: input 360 ($1.80), output 2,160 ($10.80). High-tier top-ups (+10% bonus) bring effective pricing down to ~10% off the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "gpt-image-2-6/flare-text-to-image",
+      "url": "https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-text-to-image.md",
+      "fetchedAt": "2026-11-12T09:16:54Z",
+      "sha256": "21a623b06fdcad95adc1ac76eb0054d07ca70edd60d2a9e9b91ee4e516a48619",
+      "callbackExamples": []
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "gpt-image-2-6/flare-text-to-image",
+      "har": "tests/recordings/kie_2079838932/gpt-image-2-6-flare-text-to-image_1265807457/recording.har",
+      "request": {
+        "prompt": "A red balloon.",
+        "quality": "low",
+        "complexity": "low",
+        "resolution": "1K",
+        "aspect_ratio": "1:1",
+        "output_format": "jpeg"
+      },
+      "taskId": "cb76d3eac9e7f8aa7b662257e40e644a",
+      "creditsConsumed": 4.46,
+      "creditsConsumedWhileWaiting": [0.0, 0.0],
+      "usd": 0.0223,
+      "output": {
+        "format": "jpeg",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 58257
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1166.34,
+    "after": 1161.88
+  },
+  "observedTotalUsd": 0.0223
+}

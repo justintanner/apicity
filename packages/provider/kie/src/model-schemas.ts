@@ -3202,6 +3202,106 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "gpt-image-2-6/flare-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 32000,
+        description:
+          "Text description of the image to generate (1-32,000 characters). Put any text that should appear in the image in quotes.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GptImage26AspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Aspect ratio (default auto). For static images the pixel size comes from aspect_ratio and resolution; GIF frames use size instead.",
+      },
+      resolution: {
+        type: "string",
+        enum: GptImage26ResolutionSchema.options,
+        default: "1K",
+        description:
+          "Resolution tier (default 1K). 1:1 and auto render 1024x1024, 2048x2048 or 2880x2880; the docs table lists every ratio. GIF frames use size instead.",
+      },
+      quality: {
+        type: "string",
+        enum: GptImage26QualitySchema.options,
+        default: "medium",
+        description: "Quality (default medium)",
+      },
+      background: {
+        type: "string",
+        enum: GptImage26BackgroundSchema.options,
+        default: "auto",
+        description:
+          "Background (default auto). transparent needs output_format png, webp or gif.",
+      },
+      output_format: {
+        type: "string",
+        enum: GptImage26OutputFormatSchema.options,
+        default: "png",
+        description:
+          "Output format (default png). gif takes size, frame_count and frame_duration_ms; svg takes the svg object.",
+      },
+      complexity: {
+        type: "string",
+        enum: GptImage26ComplexitySchema.options,
+        default: "high",
+        description: "Planning complexity (default high)",
+      },
+      moderation: {
+        type: "string",
+        enum: GptImage26ModerationSchema.options,
+        default: "low",
+        description: "Moderation strength (default low)",
+      },
+      output_compression: {
+        type: "integer",
+        minimum: 0,
+        maximum: 100,
+        description:
+          "JPEG / WebP compression, 0-100. Send only with output_format jpeg or webp.",
+      },
+      size: {
+        type: "string",
+        pattern: "^(?:auto|\\d+x\\d+)$",
+        description:
+          "GIF per-frame pixel size: auto (currently 512x512) or WIDTHxHEIGHT, both multiples of 16. GIF only. The packed sprite sheet must stay within 3840 per side, 8,294,400 pixels and a 3:1 ratio, or kie answers 400.",
+      },
+      frame_count: {
+        type: "integer",
+        minimum: 2,
+        maximum: 16,
+        description: "GIF frame count, 2-16 (upstream default 9). GIF only.",
+      },
+      frame_duration_ms: {
+        type: "integer",
+        minimum: 20,
+        maximum: 2000,
+        description:
+          "Milliseconds per GIF frame, 20-2000, rounded to 10 ms (upstream default 200). GIF only.",
+      },
+      svg: {
+        type: "object",
+        description:
+          "SVG options; send only with output_format svg. SVG output also bills the author model's tokens.",
+        properties: {
+          model: {
+            type: "string",
+            enum: ["gpt-6-sol", "gpt-5.6-luna", "gpt-5.6-terra"],
+            default: "gpt-5.6-luna",
+            description:
+              "Text model that writes the SVG (default gpt-5.6-luna); kie may add newer GPT chat ids",
+          },
+        },
+      },
+    },
+  },
+
   "gpt-image-2-6/flare-image-to-image": {
     type: "image",
     fields: {

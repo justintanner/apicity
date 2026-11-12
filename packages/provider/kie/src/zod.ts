@@ -267,6 +267,7 @@ export const KIE_MEDIA_MODELS = [
   // GPT Image 2.6. Docs under https://docs.kie.ai/market/gpt/.
   "gpt-image-2-6/sunburst-text-to-image",
   "gpt-image-2-6/sunburst-image-to-image",
+  "gpt-image-2-6/flare-text-to-image",
   "gpt-image-2-6/flare-image-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
@@ -4406,8 +4407,31 @@ export const GptImage26SunburstImageToImageRequestSchema = z
   .superRefine(refineGptImage26Output)
   .superRefine(refineGptImage26Edit);
 
-// The Flare page equals the Sunburst page apart from its names, so the edit
-// inputs and rules are the same.
+// The Flare pages equal the Sunburst pages apart from their names, so each
+// Flare schema repeats its Sunburst twin's fields and rules.
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-text-to-image
+export const GptImage26FlareTextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-6/flare-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(32000),
+      aspect_ratio: GptImage26AspectRatioSchema.default("auto"),
+      resolution: GptImage26ResolutionSchema.default("1K"),
+      quality: GptImage26QualitySchema.default("medium"),
+      background: GptImage26BackgroundSchema.default("auto"),
+      output_format: GptImage26OutputFormatSchema.default("png"),
+      complexity: GptImage26ComplexitySchema.default("high"),
+      moderation: GptImage26ModerationSchema.default("low"),
+      output_compression: z.number().int().min(0).max(100).optional(),
+      size: GptImage26GifSizeSchema.optional(),
+      frame_count: z.number().int().min(2).max(16).optional(),
+      frame_duration_ms: z.number().int().min(20).max(2000).optional(),
+      svg: GptImage26SvgSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage26Output);
+
 // Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-image-to-image
 export const GptImage26FlareImageToImageRequestSchema = z
   .object({
@@ -9116,6 +9140,7 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage25SunburstTextToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema,
   GptImage26SunburstImageToImageRequestSchema,
+  GptImage26FlareTextToImageRequestSchema,
   GptImage26FlareImageToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
@@ -10060,6 +10085,14 @@ export type GptImage26SunburstImageToImageRequestInput =
   GptImage26SunburstImageToImageRequest;
 export type GptImage26SunburstImageToImageParsedRequest = z.output<
   typeof GptImage26SunburstImageToImageRequestSchema
+>;
+export type GptImage26FlareTextToImageRequest = z.input<
+  typeof GptImage26FlareTextToImageRequestSchema
+>;
+export type GptImage26FlareTextToImageRequestInput =
+  GptImage26FlareTextToImageRequest;
+export type GptImage26FlareTextToImageParsedRequest = z.output<
+  typeof GptImage26FlareTextToImageRequestSchema
 >;
 export type GptImage26FlareImageToImageRequest = z.input<
   typeof GptImage26FlareImageToImageRequestSchema

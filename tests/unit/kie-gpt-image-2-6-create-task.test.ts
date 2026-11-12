@@ -2,11 +2,15 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
   GptImage26FlareImageToImageRequestSchema as RootGptImage26FlareImageToImageRequestSchema,
+  GptImage26FlareTextToImageRequestSchema as RootGptImage26FlareTextToImageRequestSchema,
   GptImage26SunburstImageToImageRequestSchema as RootGptImage26SunburstImageToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema as RootGptImage26SunburstTextToImageRequestSchema,
   type GptImage26FlareImageToImageParsedRequest,
   type GptImage26FlareImageToImageRequest,
   type GptImage26FlareImageToImageRequestInput,
+  type GptImage26FlareTextToImageParsedRequest,
+  type GptImage26FlareTextToImageRequest,
+  type GptImage26FlareTextToImageRequestInput,
   type GptImage26SunburstImageToImageParsedRequest,
   type GptImage26SunburstImageToImageRequest,
   type GptImage26SunburstImageToImageRequestInput,
@@ -17,6 +21,7 @@ import {
 import {
   CreateTaskRequestSchema,
   GptImage26FlareImageToImageRequestSchema,
+  GptImage26FlareTextToImageRequestSchema,
   GptImage26SunburstImageToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema,
   KIE_MEDIA_MODELS,
@@ -106,6 +111,42 @@ const GPT_IMAGE_26_CONTRACTS = [
     },
   },
   {
+    model: "gpt-image-2-6/flare-text-to-image",
+    schema: GptImage26FlareTextToImageRequestSchema,
+    request: {
+      model: "gpt-image-2-6/flare-text-to-image",
+      callBackUrl: "https://your-domain.com/api/callback",
+      input: {
+        prompt:
+          'A cinematic product photo of a red maple leaf on dark stone, soft side light, shallow depth of field, with a small paper tag that reads "BATCH 07".',
+        aspect_ratio: "16:9",
+        resolution: "1K",
+        quality: "medium",
+        background: "auto",
+        output_format: "png",
+      },
+    } satisfies GptImage26FlareTextToImageRequest,
+    gif: {
+      model: "gpt-image-2-6/flare-text-to-image",
+      input: {
+        prompt: "a waving flag",
+        output_format: "gif",
+        size: "512x512",
+        frame_count: 9,
+        frame_duration_ms: 200,
+      },
+    } satisfies GptImage26FlareTextToImageRequest,
+    svg: {
+      model: "gpt-image-2-6/flare-text-to-image",
+      input: {
+        prompt: "a simple maple leaf icon",
+        output_format: "svg",
+        svg: { model: "gpt-5.4-mini" },
+      },
+    } satisfies GptImage26FlareTextToImageRequest,
+    minimal: { prompt: "A red balloon." },
+  },
+  {
     model: "gpt-image-2-6/flare-image-to-image",
     schema: GptImage26FlareImageToImageRequestSchema,
     request: {
@@ -146,8 +187,11 @@ const GPT_IMAGE_26_CONTRACTS = [
 
 const GPT_IMAGE_26_MODELS = GPT_IMAGE_26_CONTRACTS.map(({ model }) => model);
 
-// The Sunburst and Flare image-to-image pages are the same apart from their
-// names, so every edit rule runs against both.
+// The Sunburst and Flare pages are the same apart from their names, so every
+// rule runs against both tiers.
+const TEXT_TO_IMAGE_CONTRACTS = GPT_IMAGE_26_CONTRACTS.filter(({ model }) =>
+  model.endsWith("-text-to-image")
+);
 const IMAGE_TO_IMAGE_CONTRACTS = GPT_IMAGE_26_CONTRACTS.filter(({ model }) =>
   model.endsWith("-image-to-image")
 );
@@ -202,145 +246,156 @@ describe("Kie GPT Image 2.6 request contracts", () => {
   });
 
   it("defaults svg.model to gpt-5.6-luna and keeps the author-model id open", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    const parsed = contract.schema.parse({
-      model: contract.model,
-      input: { prompt: "an icon", output_format: "svg", svg: {} },
-    });
-    expect(parsed.input.svg?.model).toBe("gpt-5.6-luna");
-    for (const model of ["gpt-6-sol", "gpt-5.6-terra", "gpt-6-luna"]) {
-      const result = contract.schema.safeParse({
+    expect(TEXT_TO_IMAGE_CONTRACTS.map(({ model }) => model)).toEqual([
+      "gpt-image-2-6/sunburst-text-to-image",
+      "gpt-image-2-6/flare-text-to-image",
+    ]);
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      const parsed = contract.schema.parse({
         model: contract.model,
-        input: { prompt: "an icon", output_format: "svg", svg: { model } },
+        input: { prompt: "an icon", output_format: "svg", svg: {} },
       });
-      expect(result.success, model).toBe(true);
-    }
-    for (const model of ["gpt6-sol", "claude-opus-5", "gpt-5-6"]) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { prompt: "an icon", output_format: "svg", svg: { model } },
-      });
-      expect(result.success, model).toBe(false);
-      expect(issueAt(result, ["input", "svg", "model"]), model).toBe(true);
+      expect(parsed.input.svg?.model).toBe("gpt-5.6-luna");
+      for (const model of ["gpt-6-sol", "gpt-5.6-terra", "gpt-6-luna"]) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "an icon", output_format: "svg", svg: { model } },
+        });
+        expect(result.success, model).toBe(true);
+      }
+      for (const model of ["gpt6-sol", "claude-opus-5", "gpt-5-6"]) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "an icon", output_format: "svg", svg: { model } },
+        });
+        expect(result.success, model).toBe(false);
+        expect(issueAt(result, ["input", "svg", "model"]), model).toBe(true);
+      }
     }
   });
 
   it("rejects an empty or oversized prompt and unknown enum values", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    const cases: Array<[string, Record<string, unknown>]> = [
-      ["prompt", { prompt: "" }],
-      ["prompt", { prompt: "x".repeat(32001) }],
-      ["aspect_ratio", { aspect_ratio: "27:16" }],
-      ["resolution", { resolution: "8K" }],
-      ["quality", { quality: "ultra" }],
-      ["background", { background: "blurred" }],
-      ["output_format", { output_format: "jpg" }],
-      ["complexity", { complexity: "max" }],
-      ["moderation", { moderation: "high" }],
-    ];
-    for (const [field, patch] of cases) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { ...contract.request.input, ...patch },
-      });
-      expect(result.success, field).toBe(false);
-      expect(issueAt(result, ["input", field]), field).toBe(true);
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      const cases: Array<[string, Record<string, unknown>]> = [
+        ["prompt", { prompt: "" }],
+        ["prompt", { prompt: "x".repeat(32001) }],
+        ["aspect_ratio", { aspect_ratio: "27:16" }],
+        ["resolution", { resolution: "8K" }],
+        ["quality", { quality: "ultra" }],
+        ["background", { background: "blurred" }],
+        ["output_format", { output_format: "jpg" }],
+        ["complexity", { complexity: "max" }],
+        ["moderation", { moderation: "high" }],
+      ];
+      for (const [field, patch] of cases) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { ...contract.request.input, ...patch },
+        });
+        expect(result.success, field).toBe(false);
+        expect(issueAt(result, ["input", field]), field).toBe(true);
+      }
     }
   });
 
   it("keeps a transparent background to png, webp and gif", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    for (const output_format of ["png", "webp", "gif"] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: {
-          prompt: "a sticker",
-          background: "transparent",
-          output_format,
-        },
-      });
-      expect(result.success, output_format).toBe(true);
-    }
-    for (const output_format of ["jpeg", "svg"] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: {
-          prompt: "a sticker",
-          background: "transparent",
-          output_format,
-        },
-      });
-      expect(result.success, output_format).toBe(false);
-      expect(issueAt(result, ["input", "background"]), output_format).toBe(
-        true
-      );
-    }
-  });
-
-  it("accepts output_compression 0-100 for jpeg and webp only", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    for (const output_format of ["jpeg", "webp"] as const) {
-      for (const output_compression of [0, 100]) {
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      for (const output_format of ["png", "webp", "gif"] as const) {
         const result = contract.schema.safeParse({
           model: contract.model,
-          input: { prompt: "a photo", output_format, output_compression },
+          input: {
+            prompt: "a sticker",
+            background: "transparent",
+            output_format,
+          },
         });
-        expect(result.success, `${output_format} ${output_compression}`).toBe(
+        expect(result.success, output_format).toBe(true);
+      }
+      for (const output_format of ["jpeg", "svg"] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: {
+            prompt: "a sticker",
+            background: "transparent",
+            output_format,
+          },
+        });
+        expect(result.success, output_format).toBe(false);
+        expect(issueAt(result, ["input", "background"]), output_format).toBe(
           true
         );
       }
     }
-    for (const [patch, label] of [
-      [{ output_format: "png", output_compression: 50 }, "png"],
-      [{ output_format: "jpeg", output_compression: 101 }, "101"],
-      [{ output_format: "jpeg", output_compression: 50.5 }, "50.5"],
-    ] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { prompt: "a photo", ...patch },
-      });
-      expect(result.success, label).toBe(false);
-      expect(issueAt(result, ["input", "output_compression"]), label).toBe(
-        true
-      );
+  });
+
+  it("accepts output_compression 0-100 for jpeg and webp only", () => {
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      for (const output_format of ["jpeg", "webp"] as const) {
+        for (const output_compression of [0, 100]) {
+          const result = contract.schema.safeParse({
+            model: contract.model,
+            input: { prompt: "a photo", output_format, output_compression },
+          });
+          expect(result.success, `${output_format} ${output_compression}`).toBe(
+            true
+          );
+        }
+      }
+      for (const [patch, label] of [
+        [{ output_format: "png", output_compression: 50 }, "png"],
+        [{ output_format: "jpeg", output_compression: 101 }, "101"],
+        [{ output_format: "jpeg", output_compression: 50.5 }, "50.5"],
+      ] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "a photo", ...patch },
+        });
+        expect(result.success, label).toBe(false);
+        expect(issueAt(result, ["input", "output_compression"]), label).toBe(
+          true
+        );
+      }
     }
   });
 
   it("allows the GIF fields only with gif output, within their documented bounds", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    for (const [field, value] of [
-      ["size", "512x512"],
-      ["frame_count", 9],
-      ["frame_duration_ms", 200],
-    ] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { prompt: "a flag", output_format: "png", [field]: value },
-      });
-      expect(result.success, field).toBe(false);
-      expect(issueAt(result, ["input", field]), field).toBe(true);
-    }
-    for (const [field, value] of [
-      ["size", "500x500"],
-      ["size", "1:1"],
-      ["frame_count", 1],
-      ["frame_count", 17],
-      ["frame_duration_ms", 10],
-      ["frame_duration_ms", 2001],
-    ] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { prompt: "a flag", output_format: "gif", [field]: value },
-      });
-      expect(result.success, `${field} ${value}`).toBe(false);
-      expect(issueAt(result, ["input", field]), `${field} ${value}`).toBe(true);
-    }
-    for (const size of ["auto", "768x768", "512x1024"]) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { prompt: "a flag", output_format: "gif", size },
-      });
-      expect(result.success, size).toBe(true);
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      for (const [field, value] of [
+        ["size", "512x512"],
+        ["frame_count", 9],
+        ["frame_duration_ms", 200],
+      ] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "a flag", output_format: "png", [field]: value },
+        });
+        expect(result.success, field).toBe(false);
+        expect(issueAt(result, ["input", field]), field).toBe(true);
+      }
+      for (const [field, value] of [
+        ["size", "500x500"],
+        ["size", "1:1"],
+        ["frame_count", 1],
+        ["frame_count", 17],
+        ["frame_duration_ms", 10],
+        ["frame_duration_ms", 2001],
+      ] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "a flag", output_format: "gif", [field]: value },
+        });
+        expect(result.success, `${field} ${value}`).toBe(false);
+        expect(issueAt(result, ["input", field]), `${field} ${value}`).toBe(
+          true
+        );
+      }
+      for (const size of ["auto", "768x768", "512x1024"]) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "a flag", output_format: "gif", size },
+        });
+        expect(result.success, size).toBe(true);
+      }
     }
   });
 
@@ -443,17 +498,18 @@ describe("Kie GPT Image 2.6 request contracts", () => {
   });
 
   it("sends the svg object only with svg output", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[0];
-    const result = contract.schema.safeParse({
-      model: contract.model,
-      input: {
-        prompt: "an icon",
-        output_format: "png",
-        svg: { model: "gpt-5.6-luna" },
-      },
-    });
-    expect(result.success).toBe(false);
-    expect(issueAt(result, ["input", "svg"])).toBe(true);
+    for (const contract of TEXT_TO_IMAGE_CONTRACTS) {
+      const result = contract.schema.safeParse({
+        model: contract.model,
+        input: {
+          prompt: "an icon",
+          output_format: "png",
+          svg: { model: "gpt-5.6-luna" },
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(issueAt(result, ["input", "svg"])).toBe(true);
+    }
   });
 });
 
@@ -500,7 +556,10 @@ describe("Kie GPT Image 2.6 registries and descriptors", () => {
     }
   });
 
-  it("describes the Flare edit fields exactly as the Sunburst ones", () => {
+  it("describes the Flare fields exactly as the Sunburst ones", () => {
+    expect(modelInputSchemas["gpt-image-2-6/flare-text-to-image"]).toEqual(
+      modelInputSchemas["gpt-image-2-6/sunburst-text-to-image"]
+    );
     expect(modelInputSchemas["gpt-image-2-6/flare-image-to-image"]).toEqual(
       modelInputSchemas["gpt-image-2-6/sunburst-image-to-image"]
     );
@@ -570,6 +629,9 @@ describe("Kie GPT Image 2.6 public exports", () => {
     expect(RootGptImage26SunburstImageToImageRequestSchema).toBe(
       GptImage26SunburstImageToImageRequestSchema
     );
+    expect(RootGptImage26FlareTextToImageRequestSchema).toBe(
+      GptImage26FlareTextToImageRequestSchema
+    );
     expect(RootGptImage26FlareImageToImageRequestSchema).toBe(
       GptImage26FlareImageToImageRequestSchema
     );
@@ -594,10 +656,19 @@ describe("Kie GPT Image 2.6 public exports", () => {
     expectTypeOf<
       GptImage26SunburstImageToImageRequest["model"]
     >().toEqualTypeOf<"gpt-image-2-6/sunburst-image-to-image">();
+    expectTypeOf<GptImage26FlareTextToImageRequestInput>().toEqualTypeOf<GptImage26FlareTextToImageRequest>();
+    expectTypeOf(
+      GptImage26FlareTextToImageRequestSchema.parse(
+        GPT_IMAGE_26_CONTRACTS[2].request
+      )
+    ).toEqualTypeOf<GptImage26FlareTextToImageParsedRequest>();
+    expectTypeOf<
+      GptImage26FlareTextToImageRequest["model"]
+    >().toEqualTypeOf<"gpt-image-2-6/flare-text-to-image">();
     expectTypeOf<GptImage26FlareImageToImageRequestInput>().toEqualTypeOf<GptImage26FlareImageToImageRequest>();
     expectTypeOf(
       GptImage26FlareImageToImageRequestSchema.parse(
-        GPT_IMAGE_26_CONTRACTS[2].request
+        GPT_IMAGE_26_CONTRACTS[3].request
       )
     ).toEqualTypeOf<GptImage26FlareImageToImageParsedRequest>();
     expectTypeOf<

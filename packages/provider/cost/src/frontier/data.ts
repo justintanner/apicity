@@ -867,6 +867,16 @@ export const FRONTIER = {
             dotPath: "api.v3.alibaba.wan3p0.videoEdit",
             pricingKey: "alibaba/wan-3.0/video-edit",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "wan/3-0-video",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "wan/3-0-video-prime",
+          },
         ],
       },
       {
@@ -915,6 +925,11 @@ export const FRONTIER = {
             dotPath: "api.v3.bytedance.seedance2p5.videoEdit",
             pricingKey: "bytedance/seedance-2.5/video-edit",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "bytedance/seedance-2-5",
+          },
         ],
       },
       {
@@ -937,6 +952,11 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.google.geminiOmni1p1Flash.videoEdit",
             pricingKey: "google/gemini-omni-1.1-flash/video-edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "google/gemini-omni-flash-1-1",
           },
         ],
       },
@@ -986,6 +1006,11 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.bytedance.seedance2p0.videoEdit",
             pricingKey: "bytedance/seedance-2.0/video-edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "bytedance/seedance-2",
           },
         ],
       },

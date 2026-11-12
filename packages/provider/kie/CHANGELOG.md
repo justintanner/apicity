@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `gpt-image-2-6/sunburst-image-to-image` (GPT Image 2.6 Sunburst image-to-image) with typed inputs: 1-16 `input_urls`, an inpaint `mask_url` or a `markup` overlay (exclusive; no mask with gif or svg output), and the text-to-image model's enums, defaults and format rules, with a recorded edit.
+
 - Added `gpt-image-2-6/sunburst-text-to-image` (GPT Image 2.6 Sunburst) with typed inputs: the documented enums and defaults for aspect ratio, resolution, quality, background, output format, planning complexity and moderation; the format rules for `output_compression` (jpeg, webp), the GIF fields `size`, `frame_count` and `frame_duration_ms`, and the `svg` object; an open `svg.model` author id; and a recorded generation. The GPT Image model alias accepts the 2.6 spelling (`gpt-image-2-6/<tier>-<task>`).
 
 - `grok-imagine-video-1-5-preview` accepts `resolution: "1080p"` with exactly one `image_urls` entry, as KIE's docs now list it, with a recorded 1 s 1080p generation (8 credits). 480p and 720p still accept more than one image.

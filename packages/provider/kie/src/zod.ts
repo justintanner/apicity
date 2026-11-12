@@ -266,6 +266,7 @@ export const KIE_MEDIA_MODELS = [
   "gpt-image-2-5-sunburst-text-to-image",
   // GPT Image 2.6. Docs under https://docs.kie.ai/market/gpt/.
   "gpt-image-2-6/sunburst-text-to-image",
+  "gpt-image-2-6/sunburst-image-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
@@ -4347,6 +4348,62 @@ export const GptImage26SunburstTextToImageRequestSchema = z
     }),
   })
   .superRefine(refineGptImage26Output);
+
+// Image-to-image adds the edit inputs: up to 16 reference images, an inpaint
+// `mask_url`, or `markup` (a transparent PNG overlaid on the first reference).
+// The page: mask_url and markup "cannot be used together", and mask_url is
+// not sent with gif or svg output. There is no GIF `size` field here.
+const refineGptImage26Edit = (
+  value: {
+    input: { output_format: string; mask_url?: string; markup?: string };
+  },
+  ctx: z.RefinementCtx
+) => {
+  const { input } = value;
+  if (input.mask_url !== undefined && input.markup !== undefined) {
+    ctx.addIssue({
+      code: "custom",
+      message: "mask_url and markup cannot be used together",
+      path: ["input", "markup"],
+    });
+  }
+  if (
+    input.mask_url !== undefined &&
+    (input.output_format === "gif" || input.output_format === "svg")
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "mask_url is not sent with gif or svg output",
+      path: ["input", "mask_url"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-image-to-image
+export const GptImage26SunburstImageToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-6/sunburst-image-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(32000),
+      input_urls: z.array(z.string()).min(1).max(16),
+      mask_url: z.string().optional(),
+      markup: z.string().optional(),
+      aspect_ratio: GptImage26AspectRatioSchema.default("auto"),
+      resolution: GptImage26ResolutionSchema.default("1K"),
+      quality: GptImage26QualitySchema.default("medium"),
+      background: GptImage26BackgroundSchema.default("auto"),
+      output_format: GptImage26OutputFormatSchema.default("png"),
+      complexity: GptImage26ComplexitySchema.default("high"),
+      moderation: GptImage26ModerationSchema.default("low"),
+      output_compression: z.number().int().min(0).max(100).optional(),
+      frame_count: z.number().int().min(2).max(16).optional(),
+      frame_duration_ms: z.number().int().min(20).max(2000).optional(),
+      svg: GptImage26SvgSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage26Output)
+  .superRefine(refineGptImage26Edit);
 
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
@@ -9029,6 +9086,7 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage25SunburstImageToImageRequestSchema,
   GptImage25SunburstTextToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema,
+  GptImage26SunburstImageToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -9964,6 +10022,14 @@ export type GptImage26SunburstTextToImageRequestInput =
   GptImage26SunburstTextToImageRequest;
 export type GptImage26SunburstTextToImageParsedRequest = z.output<
   typeof GptImage26SunburstTextToImageRequestSchema
+>;
+export type GptImage26SunburstImageToImageRequest = z.input<
+  typeof GptImage26SunburstImageToImageRequestSchema
+>;
+export type GptImage26SunburstImageToImageRequestInput =
+  GptImage26SunburstImageToImageRequest;
+export type GptImage26SunburstImageToImageParsedRequest = z.output<
+  typeof GptImage26SunburstImageToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema

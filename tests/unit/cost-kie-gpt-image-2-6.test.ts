@@ -34,6 +34,40 @@ describe("kie GPT Image 2.6 token pricing", () => {
     });
   });
 
+  it("prices image-to-image at the same rates, its references as image input", () => {
+    const edit = "gpt-image-2-6/sunburst-image-to-image";
+    expect(PRICING.kie[edit]).toMatchObject({
+      kind: "tokens",
+      rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+      modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+      source: {
+        url: "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fsunburst-image-to-image",
+        asOf: "2026-11-12",
+      },
+    });
+    const estimate = computeEstimate({
+      provider: "kie",
+      payload: {
+        model: edit,
+        input: {
+          prompt: "Add a small red scarf to the cat.",
+          input_urls: ["https://example.com/cat.jpg"],
+        },
+      },
+      costHints: {
+        ...usage,
+        inputTokens: 1020,
+        imageInputTokens: 1000,
+      },
+    });
+    // 20 text tokens at 4.50, 1000 reference-image tokens at 7.20 and 800
+    // image output tokens at 27.00.
+    expect(estimate.usd).toBeCloseTo(
+      (20 * 4.5 + 1000 * 7.2 + 800 * 27) / 1e6,
+      12
+    );
+  });
+
   it("quotes nothing without declared usage", () => {
     const estimate = computeEstimate({ provider: "kie", payload: payload() });
     expect(estimate.usd).toBe(0);

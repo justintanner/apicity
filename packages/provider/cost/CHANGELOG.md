@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE GPT Image 2.6 Sunburst image-to-image
+  (`gpt-image-2-6/sunburst-image-to-image`) is priced at the text-to-image
+  model's five token rates from declared usage; the reference images bill as
+  image input (7.20 USD per 1M tokens). A recorded 1K low-quality edit
+  billed 5.58 credits, USD 0.0279 (ac-fahshl).
+
 - KIE GPT Image 2.6 Sunburst (`gpt-image-2-6/sunburst-text-to-image`) is
   priced from kie's token rates: text input 4.50, cached text input 1.125,
   image input 7.20, cached image input 1.80 and image output 27.00 USD per

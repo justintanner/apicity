@@ -2724,6 +2724,20 @@ export const kie: Record<string, ModelPricing> = {
       "2026-11-12"
     ),
   },
+  // Image-to-image shares the text-to-image feed rows ("text-to-image /
+  // image-to-image") and rates; the reference images bill as image input. A
+  // recorded edit of cat1.jpg at the same settings billed 5.58 credits, 1.12
+  // more than text-to-image (task 849d4463ce7bab4426141e3addc56aa3; evidence
+  // in tests/fixtures/kie-pricing-evidence/gpt-image-2-6-sunburst-image-to-image-2026-11-12.json).
+  "gpt-image-2-6/sunburst-image-to-image": {
+    kind: "tokens",
+    rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+    modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+    source: pricePage(
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fsunburst-image-to-image",
+      "2026-11-12"
+    ),
+  },
   "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
   "wan/2-7-image-pro": flatImage(
     0.06,

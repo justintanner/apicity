@@ -10,6 +10,7 @@ import {
   GoogleGeminiTtsTemperatureContract,
   GoogleGeminiTtsVoiceNameSchema,
   GoogleGeminiOmniFlash11ResolutionSchema,
+  GoogleGeminiOmniFlash12AspectRatioSchema,
   GptImage25AspectRatioSchema,
   GptImage25BackgroundSchema,
   GptImage25ResolutionSchema,
@@ -6632,6 +6633,79 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: GoogleGeminiOmniFlash11ResolutionSchema.options,
         default: "720p",
         description: "Output resolution (default 720p)",
+      },
+    },
+  },
+
+  // Source: https://docs.kie.ai/market/google/gemini-omni-flash-1-2
+  "google/gemini-omni-flash-1-2": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "Video prompt (1-20000 chars). Describe the scene, action, camera, and sound.",
+      },
+      duration: {
+        type: "integer",
+        minimum: 3,
+        maximum: 15,
+        description:
+          "Output seconds. Required, 3-15, for text / reference images / characters and first frame only; 3-10 with first and last frame. Do not send with video_list: the output follows the input video.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GoogleGeminiOmniFlash12AspectRatioSchema.options,
+        default: "16:9",
+        description:
+          "Aspect ratio (default 16:9). auto is treated as 16:9 when no reference image is provided.",
+      },
+      resolution: {
+        type: "string",
+        enum: GoogleGeminiOmniFlash11ResolutionSchema.options,
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      seeds: {
+        type: "integer",
+        minimum: 10000,
+        maximum: 99999,
+        description:
+          "Random seed, 10000-99999; one integer. Generated when omitted.",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 6,
+        description:
+          "Reference image URLs (max 6, each up to 20MB; 1 quota slot each). Two images are not first/last frames. Not with first_frame_url or last_frame_url.",
+        items: { type: "string" },
+      },
+      character_ids: {
+        type: "array",
+        maxItems: 2,
+        description:
+          "Character IDs from /api/v1/omni/character/create (max 2; your own characters only; outside the image quota). Not with first_frame_url or last_frame_url.",
+        items: { type: "string" },
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First-frame image URL. Not with image_urls, video_list or character_ids.",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last-frame image URL; requires first_frame_url, and duration is then 3-10.",
+      },
+      video_list: {
+        type: "array",
+        maxItems: 1,
+        description:
+          "Video URL to edit (max 1, MP4 recommended, at most 15 seconds; 2 quota slots). Selects video-edit mode: do not send duration. Combines with image_urls and character_ids; not with first/last frames. Billed for the input video's length.",
+        items: { type: "string" },
       },
     },
   },

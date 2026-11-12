@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Gemini Omni Flash 1.2 (`google/gemini-omni-flash-1-2`) is priced per
+  output second by resolution from the feed: 0.02, 0.045, 0.05 and 0.11 USD at
+  360p, 720p, 1080p and 4k, with 720p as the documented default. A video edit
+  bills the input video's length, declared as `costHints.durationSeconds`. A
+  recorded 3 s 360p text-to-video billed 12 credits, USD 0.06 (ac-mnn08e).
+
 - KIE GPT Image 2.6 Flare (`gpt-image-2-6/flare-text-to-image`) is priced
   from Flare's own feed rows, which carry Sunburst's five token rates, from
   declared usage. A recorded 1K low-quality square jpeg billed 4.46 credits,

@@ -154,6 +154,7 @@ export const MODEL_SLUGS = {
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
     "google/gemini-omni-flash-1-1": "geminiomni1p1f",
+    "google/gemini-omni-flash-1-2": "geminiomni1p2f",
 
     // Audio — Gemini TTS. Token billed ($14/M audio output, $0.70/M input);
     // the counts arrive through costHints, never from a character heuristic
@@ -1218,6 +1219,7 @@ export const MODEL_DISPLAY = {
 
     "gemini-omni-video": "Gemini Omni",
     "google/gemini-omni-flash-1-1": "Gemini Omni 1.1 Flash",
+    "google/gemini-omni-flash-1-2": "Gemini Omni 1.2 Flash",
 
     "google/gemini-2-5-pro-tts": "Gemini 2.5 Pro TTS",
     "google/gemini-3-1-flash-tts": "Gemini 3.1 Flash TTS",

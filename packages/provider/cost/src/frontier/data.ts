@@ -599,6 +599,11 @@ export const FRONTIER = {
             dotPath: "geminiOmniFlash.v1p2.textToVideo",
             pricingKey: "google/gemini-omni-flash/v1.2/text-to-video",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "google/gemini-omni-flash-1-2",
+          },
         ],
       },
       {
@@ -863,6 +868,11 @@ export const FRONTIER = {
             dotPath: "geminiOmniFlash.v1p2.edit",
             pricingKey: "google/gemini-omni-flash/v1.2/edit",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "google/gemini-omni-flash-1-2",
+          },
         ],
       },
       {
@@ -1126,6 +1136,11 @@ export const FRONTIER = {
             provider: "fal",
             dotPath: "geminiOmniFlash.v1p2.referenceToVideo",
             pricingKey: "google/gemini-omni-flash/v1.2/reference-to-video",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "google/gemini-omni-flash-1-2",
           },
         ],
       },

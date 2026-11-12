@@ -387,7 +387,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 166 ids of
+  // The list is the point, not the number. It now holds all 167 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -396,8 +396,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 166-entry pin when the guarded model set changes"
-    ).toHaveLength(166);
+      "Update this deliberate 167-entry pin when the guarded model set changes"
+    ).toHaveLength(167);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -537,6 +537,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "google/gemini-3-8-flash-tts",
         "google/gemini-3-8-flash-lite-tts",
         "google/gemini-omni-flash-1-1",
+        "google/gemini-omni-flash-1-2",
         "google/imagen4",
         "google/imagen4-fast",
         "google/imagen4-ultra",

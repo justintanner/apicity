@@ -11,6 +11,11 @@
       "provider": "fal",
       "dotPath": "geminiOmniFlash.v1p2.edit",
       "pricingKey": "google/gemini-omni-flash/v1.2/edit"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "google/gemini-omni-flash-1-2"
     }
   ],
   "Hyperflow H3": [],

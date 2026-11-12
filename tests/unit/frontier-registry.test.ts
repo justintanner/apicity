@@ -1456,6 +1456,7 @@ describe("frontier video snapshots", () => {
       "minimax-h3/text-to-video",
       "bytedance/seedance-2-5",
       "google/gemini-omni-flash-1-1",
+      "google/gemini-omni-flash-1-2",
     ]) {
       expect(text.has(id), id).toBe(true);
     }
@@ -1472,6 +1473,7 @@ describe("frontier video snapshots", () => {
       "happyhorse/video-edit",
       "wan/2-7-videoedit",
       "kling-3.0-omni/transformation",
+      "google/gemini-omni-flash-1-2",
     ]) {
       expect(edit.has(id), id).toBe(true);
     }
@@ -1488,6 +1490,7 @@ describe("frontier video snapshots", () => {
       "happyhorse-1-1/reference-to-video",
       "wan/3-0-video",
       "google/gemini-omni-flash-1-1",
+      "google/gemini-omni-flash-1-2",
     ]) {
       expect(reference.has(id), id).toBe(true);
     }

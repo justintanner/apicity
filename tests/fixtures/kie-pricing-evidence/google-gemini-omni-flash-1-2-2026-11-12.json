@@ -1,0 +1,127 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/gemini-omni-1-2-flash",
+  "models": ["google/gemini-omni-flash-1-2"],
+  "basis": "The live pricing-feed rows ('google/gemini-omni-flash-1-2, video, <res>', anchored on https://kie.ai/gemini-omni-1-2-flash) and the live GET /api/v1/models pricingDesc agree on per-second rates by resolution: 360p 4 credits (0.02 USD), 720p 9 (0.045), 1080p 10 (0.05), 4k 22 (0.11). Text, image and first/last-frame requests bill the selected duration; video edit bills the input video's length at the same rates. The docs callback examples (1.23 and 0 credits, task_example_video_webhook_001) are templates, not billing records. The docs page moved after the survey's 06:10Z read: it added character_ids (max 2, outside the 7-slot quota) and spelled out the quota. The recording below billed 12 credits at submission, the 3 s x 4 credits the 360p row states.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T10:10:29Z",
+    "rows": [
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2, video, 4k",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "22",
+        "creditUnit": "per second",
+        "usdPrice": "0.11",
+        "falPrice": "0.209",
+        "discountRate": 47.37,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2, video, 1080p",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "10",
+        "creditUnit": "per second",
+        "usdPrice": "0.05",
+        "falPrice": "0.104",
+        "discountRate": 51.92,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2, video, 720p",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "9",
+        "creditUnit": "per second",
+        "usdPrice": "0.045",
+        "falPrice": "0.07",
+        "discountRate": 35.71,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2, video, 360p",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.02",
+        "falPrice": "0.023",
+        "discountRate": 13.04,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T10:10:29Z",
+    "entry": {
+      "model": "google/gemini-omni-flash-1-2",
+      "slug": "google/gemini-omni-flash-1-2",
+      "title": "Gemini Omni Flash 1.2",
+      "provider": "Google",
+      "taskType": ["Text to Video", "Image to Video", "Video to Video"],
+      "description": "",
+      "pricingDesc": "- 360P: 4 credits/s ($0.02)\n - 720P: 9 credits/s ($0.045)\n - 1080P: 10 credits/s ($0.05)\n - 4K: 22 credits/s ($0.11)\n\nBilled per second of output. Text, image and first/last-frame requests are billed for the selected duration; video editing is billed for the length of the input video at the same rates.\n\nHigh-tier top-ups include 10% bonus credits, making the effective cost approximately 90% of the listed prices."
+    }
+  },
+  "docs": [
+    {
+      "model": "google/gemini-omni-flash-1-2",
+      "url": "https://docs.kie.ai/market/google/gemini-omni-flash-1-2.md",
+      "fetchedAt": "2026-11-12T10:09:14Z",
+      "sha256": "647a2c5bf98ea31dcbd2674c527c4c55b10fbcfc8cd7d259358b007cbe8a58bb",
+      "surveyCopySha256": "387f44dc0518b0058cea3986c5b0e10b20a8ceb3f751ce7d7a6c3de089978fee",
+      "callbackExamples": [
+        {
+          "taskId": "task_example_video_webhook_001",
+          "state": "success",
+          "creditsConsumed": 1.23,
+          "note": "template (example task id), not a billing record"
+        },
+        {
+          "taskId": "task_example_video_webhook_001",
+          "state": "fail",
+          "creditsConsumed": 0,
+          "note": "template (example task id), not a billing record"
+        }
+      ],
+      "surveyCopyFetchedAt": "2026-11-12T06:10Z"
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "google/gemini-omni-flash-1-2",
+      "har": "tests/recordings/kie_2079838932/google-gemini-omni-flash-1-2_3228076290/recording.har",
+      "request": {
+        "prompt": "A red panda waves once, then holds still.",
+        "duration": 3,
+        "resolution": "360p",
+        "aspect_ratio": "16:9"
+      },
+      "taskId": "c6c161fdcbe9accdadd137823bf9470c",
+      "creditsConsumed": 12.0,
+      "creditsConsumedWhileWaiting": [12.0, 12.0, 12.0, 12.0],
+      "usd": 0.06,
+      "output": {
+        "format": "mp4",
+        "width": 640,
+        "height": 360,
+        "videoSeconds": 3.0,
+        "audio": "aac",
+        "bytes": 1396541
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1161.88,
+    "after": 1149.88
+  },
+  "observedTotalUsd": 0.06
+}

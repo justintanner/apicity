@@ -68,6 +68,44 @@ describe("kie GPT Image 2.6 token pricing", () => {
     );
   });
 
+  it("prices Flare image-to-image from its own feed rows, at Sunburst's rates", () => {
+    const edit = "gpt-image-2-6/flare-image-to-image";
+    expect(PRICING.kie[edit]).toMatchObject({
+      kind: "tokens",
+      rate: { input: 4.5, output: 0, cacheRead: 1.125 },
+      modalityRates: { image: { input: 7.2, output: 27, cacheRead: 1.8 } },
+      source: {
+        url: "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
+        asOf: "2026-11-12",
+      },
+    });
+    const estimate = computeEstimate({
+      provider: "kie",
+      payload: {
+        model: edit,
+        input: {
+          prompt: "Add a small red scarf to the cat.",
+          input_urls: ["https://example.com/cat.jpg"],
+          output_format: "svg",
+        },
+      },
+      costHints: {
+        ...usage,
+        inputTokens: 1020,
+        imageInputTokens: 1000,
+      },
+    });
+    // The same declared usage prices the same as Sunburst, and SVG output
+    // still warns about the author model's tokens.
+    expect(estimate.usd).toBeCloseTo(
+      (20 * 4.5 + 1000 * 7.2 + 800 * 27) / 1e6,
+      12
+    );
+    expect(estimate.warnings).toEqual([
+      "kie: SVG output also bills the svg.model author's input and output tokens, which this estimate does not include",
+    ]);
+  });
+
   it("quotes nothing without declared usage", () => {
     const estimate = computeEstimate({ provider: "kie", payload: payload() });
     expect(estimate.usd).toBe(0);

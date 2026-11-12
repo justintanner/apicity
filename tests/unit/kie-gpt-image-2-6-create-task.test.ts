@@ -1,8 +1,12 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
+  GptImage26FlareImageToImageRequestSchema as RootGptImage26FlareImageToImageRequestSchema,
   GptImage26SunburstImageToImageRequestSchema as RootGptImage26SunburstImageToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema as RootGptImage26SunburstTextToImageRequestSchema,
+  type GptImage26FlareImageToImageParsedRequest,
+  type GptImage26FlareImageToImageRequest,
+  type GptImage26FlareImageToImageRequestInput,
   type GptImage26SunburstImageToImageParsedRequest,
   type GptImage26SunburstImageToImageRequest,
   type GptImage26SunburstImageToImageRequestInput,
@@ -12,6 +16,7 @@ import {
 } from "@apicity/kie";
 import {
   CreateTaskRequestSchema,
+  GptImage26FlareImageToImageRequestSchema,
   GptImage26SunburstImageToImageRequestSchema,
   GptImage26SunburstTextToImageRequestSchema,
   KIE_MEDIA_MODELS,
@@ -100,9 +105,52 @@ const GPT_IMAGE_26_CONTRACTS = [
       input_urls: ["https://example.com/a.png"],
     },
   },
+  {
+    model: "gpt-image-2-6/flare-image-to-image",
+    schema: GptImage26FlareImageToImageRequestSchema,
+    request: {
+      model: "gpt-image-2-6/flare-image-to-image",
+      callBackUrl: "https://your-domain.com/api/callback",
+      input: {
+        prompt: "restyle as cinematic still",
+        input_urls: ["https://example.com/a.png"],
+        resolution: "1K",
+        output_format: "png",
+      },
+    } satisfies GptImage26FlareImageToImageRequest,
+    gif: {
+      model: "gpt-image-2-6/flare-image-to-image",
+      input: {
+        prompt: "a waving flag",
+        input_urls: ["https://example.com/a.png"],
+        output_format: "gif",
+        frame_count: 9,
+        frame_duration_ms: 200,
+      },
+    } satisfies GptImage26FlareImageToImageRequest,
+    svg: {
+      model: "gpt-image-2-6/flare-image-to-image",
+      input: {
+        prompt: "a simple maple leaf icon",
+        input_urls: ["https://example.com/a.png"],
+        output_format: "svg",
+        svg: { model: "gpt-5.6-luna" },
+      },
+    } satisfies GptImage26FlareImageToImageRequest,
+    minimal: {
+      prompt: "Add a small red scarf to the cat.",
+      input_urls: ["https://example.com/a.png"],
+    },
+  },
 ] as const;
 
 const GPT_IMAGE_26_MODELS = GPT_IMAGE_26_CONTRACTS.map(({ model }) => model);
+
+// The Sunburst and Flare image-to-image pages are the same apart from their
+// names, so every edit rule runs against both.
+const IMAGE_TO_IMAGE_CONTRACTS = GPT_IMAGE_26_CONTRACTS.filter(({ model }) =>
+  model.endsWith("-image-to-image")
+);
 
 function issueAt(
   result: { success: boolean; error?: { issues: unknown[] } },
@@ -297,91 +345,100 @@ describe("Kie GPT Image 2.6 request contracts", () => {
   });
 
   it("requires 1-16 input_urls on image-to-image", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[1];
-    for (const input_urls of [
-      undefined,
-      [],
-      Array.from({ length: 17 }, (_, i) => `https://example.com/${i}.png`),
-    ]) {
-      const result = contract.schema.safeParse({
+    expect(IMAGE_TO_IMAGE_CONTRACTS.map(({ model }) => model)).toEqual([
+      "gpt-image-2-6/sunburst-image-to-image",
+      "gpt-image-2-6/flare-image-to-image",
+    ]);
+    for (const contract of IMAGE_TO_IMAGE_CONTRACTS) {
+      for (const input_urls of [
+        undefined,
+        [],
+        Array.from({ length: 17 }, (_, i) => `https://example.com/${i}.png`),
+      ]) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { prompt: "an edit", input_urls },
+        });
+        expect(result.success, String(input_urls?.length)).toBe(false);
+        expect(issueAt(result, ["input", "input_urls"])).toBe(true);
+      }
+      const sixteen = contract.schema.safeParse({
         model: contract.model,
-        input: { prompt: "an edit", input_urls },
+        input: {
+          prompt: "an edit",
+          input_urls: Array.from(
+            { length: 16 },
+            (_, i) => `https://example.com/${i}.png`
+          ),
+        },
       });
-      expect(result.success, String(input_urls?.length)).toBe(false);
-      expect(issueAt(result, ["input", "input_urls"])).toBe(true);
+      expect(sixteen.success).toBe(true);
     }
-    const sixteen = contract.schema.safeParse({
-      model: contract.model,
-      input: {
-        prompt: "an edit",
-        input_urls: Array.from(
-          { length: 16 },
-          (_, i) => `https://example.com/${i}.png`
-        ),
-      },
-    });
-    expect(sixteen.success).toBe(true);
   });
 
   it("keeps mask_url and markup apart, and mask_url off gif and svg", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[1];
-    const base = {
-      prompt: "an edit",
-      input_urls: ["https://example.com/a.png"],
-    };
-    for (const patch of [
-      { mask_url: "https://example.com/mask.png" },
-      { markup: "https://example.com/markup.png" },
-      { markup: "https://example.com/markup.png", output_format: "gif" },
-    ]) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { ...base, ...patch },
-      });
-      expect(result.success, JSON.stringify(patch)).toBe(true);
-    }
-    const both = contract.schema.safeParse({
-      model: contract.model,
-      input: {
-        ...base,
-        mask_url: "https://example.com/mask.png",
-        markup: "https://example.com/markup.png",
-      },
-    });
-    expect(both.success).toBe(false);
-    expect(issueAt(both, ["input", "markup"])).toBe(true);
-    for (const output_format of ["gif", "svg"] as const) {
-      const result = contract.schema.safeParse({
+    for (const contract of IMAGE_TO_IMAGE_CONTRACTS) {
+      const base = {
+        prompt: "an edit",
+        input_urls: ["https://example.com/a.png"],
+      };
+      for (const patch of [
+        { mask_url: "https://example.com/mask.png" },
+        { markup: "https://example.com/markup.png" },
+        { markup: "https://example.com/markup.png", output_format: "gif" },
+      ]) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { ...base, ...patch },
+        });
+        expect(result.success, JSON.stringify(patch)).toBe(true);
+      }
+      const both = contract.schema.safeParse({
         model: contract.model,
         input: {
           ...base,
           mask_url: "https://example.com/mask.png",
-          output_format,
+          markup: "https://example.com/markup.png",
         },
       });
-      expect(result.success, output_format).toBe(false);
-      expect(issueAt(result, ["input", "mask_url"]), output_format).toBe(true);
+      expect(both.success).toBe(false);
+      expect(issueAt(both, ["input", "markup"])).toBe(true);
+      for (const output_format of ["gif", "svg"] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: {
+            ...base,
+            mask_url: "https://example.com/mask.png",
+            output_format,
+          },
+        });
+        expect(result.success, output_format).toBe(false);
+        expect(issueAt(result, ["input", "mask_url"]), output_format).toBe(
+          true
+        );
+      }
     }
   });
 
   it("applies the shared format rules to image-to-image", () => {
-    const contract = GPT_IMAGE_26_CONTRACTS[1];
-    const base = {
-      prompt: "an edit",
-      input_urls: ["https://example.com/a.png"],
-    };
-    for (const [field, patch] of [
-      ["background", { background: "transparent", output_format: "jpeg" }],
-      ["output_compression", { output_compression: 50 }],
-      ["frame_count", { frame_count: 9 }],
-      ["svg", { svg: { model: "gpt-5.6-luna" } }],
-    ] as const) {
-      const result = contract.schema.safeParse({
-        model: contract.model,
-        input: { ...base, ...patch },
-      });
-      expect(result.success, field).toBe(false);
-      expect(issueAt(result, ["input", field]), field).toBe(true);
+    for (const contract of IMAGE_TO_IMAGE_CONTRACTS) {
+      const base = {
+        prompt: "an edit",
+        input_urls: ["https://example.com/a.png"],
+      };
+      for (const [field, patch] of [
+        ["background", { background: "transparent", output_format: "jpeg" }],
+        ["output_compression", { output_compression: 50 }],
+        ["frame_count", { frame_count: 9 }],
+        ["svg", { svg: { model: "gpt-5.6-luna" } }],
+      ] as const) {
+        const result = contract.schema.safeParse({
+          model: contract.model,
+          input: { ...base, ...patch },
+        });
+        expect(result.success, field).toBe(false);
+        expect(issueAt(result, ["input", field]), field).toBe(true);
+      }
     }
   });
 
@@ -407,7 +464,7 @@ describe("Kie GPT Image 2.6 model ids", () => {
     }
     for (const model of [
       "gpt-image-2-7/sunburst-text-to-image",
-      "gpt-image-2-6/flare-image-to-image",
+      "gpt-image-2-6/ember-image-to-image",
       "gpt-image-3/economy-text-to-image",
     ]) {
       expect(KieMediaModelSchema.safeParse(model).success, model).toBe(true);
@@ -441,6 +498,12 @@ describe("Kie GPT Image 2.6 registries and descriptors", () => {
     for (const contract of GPT_IMAGE_26_CONTRACTS) {
       expect(CREATE_TASK_GUARDS[contract.model]).toBe(contract.schema);
     }
+  });
+
+  it("describes the Flare edit fields exactly as the Sunburst ones", () => {
+    expect(modelInputSchemas["gpt-image-2-6/flare-image-to-image"]).toEqual(
+      modelInputSchemas["gpt-image-2-6/sunburst-image-to-image"]
+    );
   });
 
   it("describes every image-to-image field, with prompt and input_urls required", () => {
@@ -507,6 +570,9 @@ describe("Kie GPT Image 2.6 public exports", () => {
     expect(RootGptImage26SunburstImageToImageRequestSchema).toBe(
       GptImage26SunburstImageToImageRequestSchema
     );
+    expect(RootGptImage26FlareImageToImageRequestSchema).toBe(
+      GptImage26FlareImageToImageRequestSchema
+    );
   });
 
   it("preserves request aliases, parsed outputs, and model literals", () => {
@@ -528,5 +594,14 @@ describe("Kie GPT Image 2.6 public exports", () => {
     expectTypeOf<
       GptImage26SunburstImageToImageRequest["model"]
     >().toEqualTypeOf<"gpt-image-2-6/sunburst-image-to-image">();
+    expectTypeOf<GptImage26FlareImageToImageRequestInput>().toEqualTypeOf<GptImage26FlareImageToImageRequest>();
+    expectTypeOf(
+      GptImage26FlareImageToImageRequestSchema.parse(
+        GPT_IMAGE_26_CONTRACTS[2].request
+      )
+    ).toEqualTypeOf<GptImage26FlareImageToImageParsedRequest>();
+    expectTypeOf<
+      GptImage26FlareImageToImageRequest["model"]
+    >().toEqualTypeOf<"gpt-image-2-6/flare-image-to-image">();
   });
 });

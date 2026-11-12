@@ -677,6 +677,49 @@ and
 [layer decomposition](https://docs.kie.ai/market/seedream/5-5-layer-decomposition.md)
 pages.
 
+## MiniMax H3 Image
+
+KIE serves MiniMax H3 Image through the shared
+`kie.post.api.v1.jobs.createTask` endpoint as `minimax-h3/text-to-image`.
+`prompt` (1-5,000 characters, Chinese or English) is required, and each
+task returns one image. Size it with a tier and a ratio: `resolution`
+(`"1K"`, `"2K"` or `"4K"`, about 1, 4 or 16 MP; default `"2K"`) and one
+of eleven `aspect_ratio` values (default `"auto"`, which lets the prompt
+rewriter choose). Or give a custom `width` and `height`: 1-8,192 pixels
+each, 655,360-20,000,000 in total, between 1:3 and 3:1. The schema
+rejects a custom size sent with `resolution` or `aspect_ratio`, as KIE
+does, and a lone `width` or `height`. `expand_prompt` (default `true`)
+rewrites the prompt into a detailed English description, and `seed`
+(0-2,147,483,647) reproduces a result only with `expand_prompt: false`.
+`output_format` is `"png"` (default) or `"jpeg"`. The result returns the
+seed it used beside the image URL (`MiniMaxH3ImageTaskResultJsonSchema`).
+
+```typescript
+const tiered = await kie.post.api.v1.jobs.createTask({
+  model: "minimax-h3/text-to-image",
+  input: {
+    prompt: "A red balloon.",
+    aspect_ratio: "1:1",
+    resolution: "1K",
+    output_format: "jpeg",
+  },
+});
+
+const custom = await kie.post.api.v1.jobs.createTask({
+  model: "minimax-h3/text-to-image",
+  input: { prompt: "A red balloon.", width: 1920, height: 1080 },
+});
+
+console.log(tiered.data?.taskId, custom.data?.taskId);
+```
+
+Each image bills by its total pixels: 1.8 credits ($0.009) up to 4.5 MP,
+which covers 1K and 2K, and 5.5 ($0.0275) up to 20 MP (4K). A custom size
+takes its tier from its pixels: up to 1.2 MP as 1K, up to 4.5 MP as 2K,
+and larger as 4K, so 1920 x 1080 costs 1.8 credits. See KIE's
+[text-to-image](https://docs.kie.ai/market/minimax-h3/text-to-image.md)
+page.
+
 ## Seedance 2.5 audio
 
 The exported schema defaults `bytedance/seedance-2-5` `generate_audio` to

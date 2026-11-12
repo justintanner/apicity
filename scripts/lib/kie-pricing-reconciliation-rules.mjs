@@ -235,6 +235,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell.",
   })),
 
+  ...["1K", "2K", "4K"].map((variant) => ({
+    key: "minimax-h3/text-to-image",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 1.8/1.8/5.5 credits = 0.009/0.009/0.0275 USD per image at 1K/2K/4K",
+    rationale:
+      "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, a custom size bills by its pixels), and the billed recording confirms the 1K cell.",
+  })),
+
   ...["360p", "720p", "1080p", "4k"].map((variant) => ({
     key: "google/gemini-omni-flash-1-2",
     variant,

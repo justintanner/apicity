@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 170,
-      "pricingKeys": 235,
-      "slugKeys": 237,
-      "displayKeys": 237,
+      "models": 171,
+      "pricingKeys": 236,
+      "slugKeys": 238,
+      "displayKeys": 238,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 81
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:7ed4ac897bc5fead19a6336dc0bf46970e418e0b38f14b3477586f3405d7ad3d",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:150a9d37dfd18cae3c25afd3708f6c16242c1eb566d8de8f85f831e8f6ec0bae",
-      "packages/provider/kie/src/kie.ts": "sha256:ee3920d188593636505d0718b9a05852858a4763a2818ee10427784f3831d514",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:41f88c65a9cea8e377294fd48e1619ab73235be02c37482ba70dc7a123e09c4b",
-      "packages/provider/cost/src/slugs.ts": "sha256:af98b873e5272a91536614e86e99d337e47f8b9ec3cc53fdc1d2f1c88e9ef317",
+      "packages/provider/kie/src/zod.ts": "sha256:8afcd0f9c0fea786ef8ef923f7fd7fa319660e37e307e3974e24f220598560eb",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:27d4ff52b7cd59e80e223f3bd50b7f432d72eb5e5c4eb81814b03c0084d12456",
+      "packages/provider/kie/src/kie.ts": "sha256:a3a463605232a88ced53e1c77ce6f2599aa4fcc22c7036c7a4314ca8fba5f14c",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:7517e90e0c9020cfb3c27302a5d829fb4e63946d6aeb659199534de1661b5ed3",
+      "packages/provider/cost/src/slugs.ts": "sha256:6d777a03db7459e2605851dcd6ae3d2ff21f5bd0f11d0424965fecbbd02b1a41",
       "scripts/endpoint-docs.tsv": "sha256:c8524ca1615203982ef841c3b896a2908382ecfe465fea0d4da0467cbbeda150"
     }
   },
@@ -22825,6 +22825,15 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "minimax-h3/text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "minimax-h3/text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "google/gemini-2-5-pro-tts",
         "descriptor": true,
         "guard": true,
@@ -24597,6 +24606,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "minimax-h3/text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "hailuo/02-text-to-video-pro",
         "linkedRows": [
           "sha256:dc9d3f91057a914e63c83d6aa45bd35244b21e1c7674d3af76675f755ef55ba5#1"
@@ -26186,6 +26201,10 @@
         "disposition": "supported"
       },
       {
+        "key": "minimax-h3/text-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "hailuo/02-text-to-video-standard",
         "disposition": "supported"
       },
@@ -27133,6 +27152,10 @@
       },
       {
         "key": "minimax-h3/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "minimax-h3/text-to-image",
         "disposition": "supported"
       },
       {
@@ -28526,16 +28549,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 170,
-        "descriptors": 170,
-        "guards": 170,
+        "count": 171,
+        "descriptors": 171,
+        "guards": 171,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 71
+          "upstream-unmappable": 72
         },
         "unclassified": 0
       },
@@ -28553,20 +28576,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 235,
+        "count": 236,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 85
+          "upstream-unmappable": 86
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 237,
+        "count": 238,
         "dispositionCounts": {
-          "supported": 237,
+          "supported": 238,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28575,9 +28598,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 237,
+        "count": 238,
         "dispositionCounts": {
-          "supported": 237,
+          "supported": 238,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29182,6 +29205,27 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per returned image at 1K/1.5K/2K",
         "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates (auto bills at 2K), the docs callback example (20.34 credits = 1.44 + 3 x 6.3 at auto) matches them, and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "minimax-h3/text-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 1.8/1.8/5.5 credits = 0.009/0.009/0.0275 USD per image at 1K/2K/4K",
+        "rationale": "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, a custom size bills by its pixels), and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "minimax-h3/text-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 1.8/1.8/5.5 credits = 0.009/0.009/0.0275 USD per image at 1K/2K/4K",
+        "rationale": "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, a custom size bills by its pixels), and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "minimax-h3/text-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/minimax-h3-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 1.8/1.8/5.5 credits = 0.009/0.009/0.0275 USD per image at 1K/2K/4K",
+        "rationale": "MiniMax H3 Image was added after the frozen September catalog; the dated feed capture supplies the rates (1K and 2K share the 4.5 MP cell, a custom size bills by its pixels), and the billed recording confirms the 1K cell."
       },
       {
         "key": "google/gemini-omni-flash-1-2",

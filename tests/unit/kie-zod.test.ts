@@ -1558,7 +1558,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
 // gemini-omni, recraft, topaz, infinitalk, z-image), Flux-2
 // (four exact modes), Ideogram (six exact modes), Hailuo (six exact modes),
-// the exact Vidu Q4 modes, the three exact MiniMax H3 modes, the Google market enum set (two TTS + five
+// the exact Vidu Q4 modes, the exact MiniMax H3 video and image modes, the Google market enum set (two TTS + five
 // Imagen/Nano Banana), and unversioned Qwen v1 stay enumerated with no alias
 // at all.
 //
@@ -1882,11 +1882,13 @@ const MINIMAX_H3_EXACT_ONLY_MODELS = [
   "minimax-h3/text-to-video",
   "minimax-h3/image-to-video",
   "minimax-h3/reference-to-video",
+  "minimax-h3/text-to-image",
 ] as const;
 
 const MINIMAX_H3_REJECTED_MODELS = [
   "minimax-h4/text-to-video",
   "minimax-h3/audio-to-video",
+  "minimax-h3-image/text-to-image",
   "minimaxh3/text-to-video",
   "minimax_h3/text_to_video",
   "MINIMAX-H3/TEXT-TO-VIDEO",

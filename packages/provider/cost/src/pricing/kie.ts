@@ -493,6 +493,24 @@ const seedream55LayerInputExtra = (
 ): number | undefined =>
   typeof asObject(p.input)?.image_url === "string" ? 0.0072 : undefined;
 
+// GPT Image 2.6 economy returns one image per task. Only png output has a
+// published price; gif, or any other format, fails closed.
+const gptImage26EconomyImages = (
+  p: Record<string, unknown>
+): number | undefined =>
+  (asString(asObject(p.input)?.output_format) ?? "png") === "png"
+    ? 1
+    : undefined;
+
+const gptImage26EconomyWarnings =
+  (model: string) =>
+  (p: Record<string, unknown>): string[] =>
+    gptImage26EconomyImages(p) === undefined
+      ? [
+          `${model} has a published price for png output only; kie does not say what a gif costs.`,
+        ]
+      : [];
+
 // Qwen 3 image-to-image publishes a separate $0.0025 "input" row per image
 // with no "first image free" qualifier. Charge every reference image rather
 // than borrowing Seedream's after-the-first rule. The request schemas require
@@ -2841,6 +2859,21 @@ export const kie: Record<string, ModelPricing> = {
       "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Fflare-text-to-image",
       "2026-11-12"
     ),
+  },
+  // GPT Image 2.6 through kie's economy channel bills a flat 5 credits
+  // ($0.025) per 1K image, the only size it serves (feed row
+  // "gpt-image-2-6-economy, text-to-image, 1K" and the models API
+  // pricingDesc, read 2026-11-12). The pages do not say whether a GIF costs
+  // the same, so only png output is priced: a gif request fails closed and
+  // says why.
+  "gpt-image-2-6/economy-text-to-image": {
+    ...flatImagePricePage(
+      0.025,
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-text-to-image",
+      "2026-11-12",
+      gptImage26EconomyImages
+    ),
+    warn: gptImage26EconomyWarnings("gpt-image-2-6/economy-text-to-image"),
   },
   "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
   "wan/2-7-image-pro": flatImage(

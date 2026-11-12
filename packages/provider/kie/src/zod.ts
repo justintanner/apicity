@@ -274,6 +274,7 @@ export const KIE_MEDIA_MODELS = [
   "gpt-image-2-6/sunburst-image-to-image",
   "gpt-image-2-6/flare-text-to-image",
   "gpt-image-2-6/flare-image-to-image",
+  "gpt-image-2-6/economy-text-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
@@ -4468,6 +4469,78 @@ export const GptImage26FlareImageToImageRequestSchema = z
   })
   .superRefine(refineGptImage26Output)
   .superRefine(refineGptImage26Edit);
+
+// GPT Image 2.6 through kie's economy channel, from the docs OpenAPI read on
+// 2026-11-12. kie: "Same GPT Image 2.6 model, served through our economy
+// channel at a flat per-image price, 1K only". The contract is narrower than
+// Sunburst and Flare, so it has its own blocks: eight aspect ratios, no
+// quality, resolution or complexity, png or gif only, and a string-valued
+// `frame_count`. `frame_count` and `frame_duration_ms` default to `auto`
+// (the docs example sends both with png) and take an explicit value only with
+// gif output.
+export const GptImage26EconomyAspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "16:9",
+  "9:16",
+  "3:2",
+  "2:3",
+  "21:9",
+  "4:3",
+]);
+export const GptImage26EconomyOutputFormatSchema = z.enum(["png", "gif"]);
+export const GptImage26EconomyFrameCountSchema = z.enum([
+  "auto",
+  "4",
+  "9",
+  "16",
+  "25",
+  "36",
+  "64",
+]);
+// Any integer from 20 to 2000 ms (kie rounds it to a multiple of 10), or auto.
+export const GptImage26EconomyFrameDurationSchema = z.union([
+  z.literal("auto"),
+  z.number().int().min(20).max(2000),
+]);
+
+const refineGptImage26Economy = (
+  value: {
+    input: {
+      output_format: string;
+      frame_count: string;
+      frame_duration_ms: number | "auto";
+    };
+  },
+  ctx: z.RefinementCtx
+) => {
+  if (value.input.output_format === "gif") return;
+  for (const field of ["frame_count", "frame_duration_ms"] as const) {
+    if (value.input[field] !== "auto") {
+      ctx.addIssue({
+        code: "custom",
+        message: `${field} is a GIF field; leave it auto unless output_format is gif`,
+        path: ["input", field],
+      });
+    }
+  }
+};
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image
+export const GptImage26EconomyTextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-6/economy-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      aspect_ratio: GptImage26EconomyAspectRatioSchema.default("auto"),
+      background: GptImage26BackgroundSchema.default("auto"),
+      output_format: GptImage26EconomyOutputFormatSchema.default("png"),
+      frame_count: GptImage26EconomyFrameCountSchema.default("auto"),
+      frame_duration_ms: GptImage26EconomyFrameDurationSchema.default("auto"),
+    }),
+  })
+  .superRefine(refineGptImage26Economy);
 
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
@@ -9359,6 +9432,7 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage26SunburstImageToImageRequestSchema,
   GptImage26FlareTextToImageRequestSchema,
   GptImage26FlareImageToImageRequestSchema,
+  GptImage26EconomyTextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -10325,6 +10399,23 @@ export type GptImage26FlareImageToImageRequestInput =
   GptImage26FlareImageToImageRequest;
 export type GptImage26FlareImageToImageParsedRequest = z.output<
   typeof GptImage26FlareImageToImageRequestSchema
+>;
+export type GptImage26EconomyAspectRatio = z.infer<
+  typeof GptImage26EconomyAspectRatioSchema
+>;
+export type GptImage26EconomyOutputFormat = z.infer<
+  typeof GptImage26EconomyOutputFormatSchema
+>;
+export type GptImage26EconomyFrameCount = z.infer<
+  typeof GptImage26EconomyFrameCountSchema
+>;
+export type GptImage26EconomyTextToImageRequest = z.input<
+  typeof GptImage26EconomyTextToImageRequestSchema
+>;
+export type GptImage26EconomyTextToImageRequestInput =
+  GptImage26EconomyTextToImageRequest;
+export type GptImage26EconomyTextToImageParsedRequest = z.output<
+  typeof GptImage26EconomyTextToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema

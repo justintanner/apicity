@@ -194,6 +194,7 @@ import {
   GptImage26SunburstImageToImageRequestSchema,
   GptImage26FlareTextToImageRequestSchema,
   GptImage26FlareImageToImageRequestSchema,
+  GptImage26EconomyTextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Seedream45TextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
@@ -347,6 +348,8 @@ export const CREATE_TASK_GUARDS = {
   "gpt-image-2-6/flare-text-to-image": GptImage26FlareTextToImageRequestSchema,
   "gpt-image-2-6/flare-image-to-image":
     GptImage26FlareImageToImageRequestSchema,
+  "gpt-image-2-6/economy-text-to-image":
+    GptImage26EconomyTextToImageRequestSchema,
   "seedream/5-lite-image-to-image": SeedreamImageToImageRequestSchema,
   "seedream/5-lite-text-to-image": SeedreamTextToImageRequestSchema,
   "seedream/5-pro-image-to-image": SeedreamProImageToImageRequestSchema,

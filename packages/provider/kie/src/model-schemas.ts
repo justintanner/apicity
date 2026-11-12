@@ -3419,6 +3419,58 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image
+  "gpt-image-2-6/economy-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "Text description of the image to generate (1-20,000 characters): subject, setting, composition, lighting and style. Put any text that should appear in the image in quotes.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["auto", "1:1", "16:9", "9:16", "3:2", "2:3", "21:9", "4:3"],
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto: the model picks the frame that fits the prompt). Economy supports these eight only.",
+      },
+      background: {
+        type: "string",
+        enum: ["transparent", "opaque", "auto"],
+        default: "auto",
+        description:
+          "transparent (cut-outs, icons, stickers), opaque (always a solid background) or auto (default: the model decides)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "gif"],
+        default: "png",
+        description:
+          "Output image format (default png); economy supports png and gif only. Only png has a published price.",
+      },
+      frame_count: {
+        type: "string",
+        enum: ["auto", "4", "9", "16", "25", "36", "64"],
+        default: "auto",
+        description:
+          "GIF only: number of frames, as a string (default auto: the model chooses)",
+      },
+      frame_duration_ms: {
+        type: "integer",
+        acceptedTypes: ["integer", "string"],
+        minimum: 20,
+        maximum: 2000,
+        default: "auto",
+        description:
+          'GIF only: milliseconds per frame, "auto" (default: the model chooses) or an integer 20-2000, rounded to a multiple of 10',
+      },
+    },
+  },
+
   "seedream/5-lite-image-to-image": {
     type: "image",
     fields: {

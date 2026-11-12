@@ -1,0 +1,113 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+  "models": ["seedream/5-5-text-to-image"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image and the live GET /api/v1/models pricingDesc agree: 3.6 credits (0.018 USD) per output image at 1K and 1.5K, 6.3 (0.0315) at 2K. Text-to-image takes no input image, so there is no input-image extra. The docs callback example (task b0e3febbf194d27a345de523d3321555, a 2K 16:9 generation) billed 6.3. The recording below billed 3.6 at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T12:24:21Z",
+    "rows": [
+      {
+        "modelDescription": "seedream 5.5, Text to image, 2K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "6.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.0315",
+        "falPrice": "0.035",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 1.5K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 1K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T12:24:31Z",
+    "entry": {
+      "model": "seedream/5-5-text-to-image",
+      "slug": "seedream/5-5-text-to-image",
+      "title": "Seedream 5.5 Text to Image",
+      "provider": "ByteDance",
+      "taskType": ["Text to Image"],
+      "description": "",
+      "pricingDesc": "1K and 1.5K images: 3.6 credits per image ($0.018); 2K images: 6.3 credits per image ($0.0315) — 10% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "seedream/5-5-text-to-image",
+      "url": "https://docs.kie.ai/market/seedream/5-5-text-to-image.md",
+      "fetchedAt": "2026-11-12T12:24:18Z",
+      "sha256": "72643cde09be6064b4c931d8beddbec496f38a080c1da4957d88d00127da7a29",
+      "callbackExamples": [
+        {
+          "taskId": "b0e3febbf194d27a345de523d3321555",
+          "state": "success",
+          "creditsConsumed": 6.3,
+          "request": {
+            "aspect_ratio": "16:9",
+            "size": "2K",
+            "output_format": "png",
+            "background": "auto",
+            "nsfw_checker": false
+          },
+          "costTime": 165,
+          "note": "matches the feed's 2K cell: 6.3 credits per output image"
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "seedream/5-5-text-to-image",
+      "har": "tests/recordings/kie_2079838932/seedream-5-5-text-to-image_2599082857/recording.har",
+      "request": {
+        "prompt": "A red balloon floating over a quiet street.",
+        "aspect_ratio": "1:1",
+        "size": "1K",
+        "output_format": "jpeg"
+      },
+      "taskId": "d4232162cc61d531f375fd036fca4cda",
+      "creditsConsumed": 3.6,
+      "creditsConsumedWhileWaiting": [3.6, 3.6, 3.6],
+      "usd": 0.018,
+      "output": {
+        "format": "jpeg",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 214487
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1144.84,
+    "after": 1141.24
+  },
+  "observedTotalUsd": 0.018
+}

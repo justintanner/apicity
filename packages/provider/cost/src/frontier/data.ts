@@ -294,7 +294,13 @@ export const FRONTIER = {
         model: "Seedream 5.5",
         creator: "ByteDance Seed",
         elo: 1135,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "seedream/5-5-text-to-image",
+          },
+        ],
       },
     ],
   },

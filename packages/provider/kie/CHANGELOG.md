@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `seedream/5-5-text-to-image` (Seedream 5.5 text-to-image) with typed inputs: a required `aspect_ratio` (eight ratios, no auto), the documented `size`, `output_format`, `background` and `nsfw_checker` defaults, a transparent background only with png, and a recorded generation. It reuses the shared Seedream 5.5 schemas, and `Seedream55TextToImageRequestSchema` is exported.
+
 - Added `seedream/5-5-image-to-image` (Seedream 5.5 image-to-image) with typed inputs: 1-10 `image_urls`, the documented `aspect_ratio`, `size`, `output_format`, `background` and `nsfw_checker` defaults, a transparent background only with png, and a recorded edit. The shared `Seedream55SizeSchema`, `Seedream55OutputFormatSchema` and `Seedream55BackgroundSchema` are exported, and the Seedream model alias accepts kie's dashed minor version (`seedream/5-5-*`).
 
 - Added `google/gemini-omni-flash-1-2` (Gemini Omni Flash 1.2) with typed inputs for its four modes: text with up to 6 reference images and 2 characters, first frame, first and last frame, and a video edit; an integer `duration` required except in a video edit, the documented `aspect_ratio` and `resolution` defaults, `seeds`, the frame exclusions and the 7-slot quota; and a recorded text-to-video. `GoogleGeminiOmniFlash12AspectRatioSchema` is exported for its `aspect_ratio` values.

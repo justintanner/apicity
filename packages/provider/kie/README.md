@@ -603,18 +603,29 @@ page.
 
 KIE serves Seedream 5.5 through the shared
 `kie.post.api.v1.jobs.createTask` endpoint as
-`seedream/5-5-image-to-image`. KIE spells the 5.5 ids with a dash
-(`seedream/5-5-...`), where 4.5 used a dot (`seedream/4.5-edit`); the
-Seedream model alias reads both. Image-to-image requires `prompt` (5-5,000
-characters) and 1-10 `image_urls`. The defaults are `aspect_ratio`
-`"auto"`, `size` `"2K"`, `output_format` `"png"`, `background` `"auto"`
-and `nsfw_checker` `false`, and a transparent background needs png
-output.
+`seedream/5-5-text-to-image` and `seedream/5-5-image-to-image`. KIE
+spells the 5.5 ids with a dash (`seedream/5-5-...`), where 4.5 used a dot
+(`seedream/4.5-edit`); the Seedream model alias reads both. Both models
+require `prompt` (5-5,000 characters). Text-to-image also requires
+`aspect_ratio`, one of eight ratios with no `"auto"`. Image-to-image
+requires 1-10 `image_urls` and defaults `aspect_ratio` to `"auto"`. Both
+default `size` to `"2K"`, `output_format` to `"png"`, `background` to
+`"auto"` and `nsfw_checker` to `false`, and a transparent background
+needs png output.
 
 ```typescript
 declare const reference: string;
 
-const task = await kie.post.api.v1.jobs.createTask({
+const generated = await kie.post.api.v1.jobs.createTask({
+  model: "seedream/5-5-text-to-image",
+  input: {
+    prompt: "A red balloon floating over a quiet street.",
+    aspect_ratio: "1:1",
+    size: "1K",
+  },
+});
+
+const edited = await kie.post.api.v1.jobs.createTask({
   model: "seedream/5-5-image-to-image",
   input: {
     prompt: "Add a small red scarf to the cat.",
@@ -623,14 +634,17 @@ const task = await kie.post.api.v1.jobs.createTask({
   },
 });
 
-console.log(task.data?.taskId);
+console.log(generated.data?.taskId, edited.data?.taskId);
 ```
 
 Each output image bills by `size`: 3.6 credits ($0.018) at 1K and 1.5K,
-6.3 ($0.0315) at 2K. Every input image adds 1.44 credits ($0.0072), the
-first included, so a 1K edit of one image costs 5.04 credits. See KIE's
+6.3 ($0.0315) at 2K, so a 1K text-to-image costs 3.6 credits. In
+image-to-image, every input image adds 1.44 credits ($0.0072), the first
+included, so a 1K edit of one image costs 5.04 credits. See KIE's
+[text-to-image](https://docs.kie.ai/market/seedream/5-5-text-to-image.md)
+and
 [image-to-image](https://docs.kie.ai/market/seedream/5-5-image-to-image.md)
-page.
+pages.
 
 ## Seedance 2.5 audio
 

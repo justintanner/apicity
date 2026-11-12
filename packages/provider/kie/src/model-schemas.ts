@@ -3694,6 +3694,52 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/5-5-text-to-image
+  "seedream/5-5-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 5,
+        maxLength: 5000,
+        description: "Text prompt (5-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        description: "Aspect ratio of the output image (required; no auto)",
+      },
+      size: {
+        type: "string",
+        enum: Seedream55SizeSchema.options,
+        default: "2K",
+        description:
+          "Output resolution tier (default 2K); sets the price: 1K and 1.5K cost less than 2K",
+      },
+      output_format: {
+        type: "string",
+        enum: Seedream55OutputFormatSchema.options,
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      background: {
+        type: "string",
+        enum: Seedream55BackgroundSchema.options,
+        default: "auto",
+        description:
+          "Output background (default auto, decided by the model); transparent only with output_format png",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "Content filter (default false: results come back unfiltered)",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/5-pro-layer-decomposition
   "seedream/5-pro-layer-decomposition": {
     type: "image",

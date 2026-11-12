@@ -2940,6 +2940,21 @@ export const kie: Record<string, ModelPricing> = {
     seedream55InputImageExtra
   ),
 
+  // Seedream 5.5 text-to-image bills per output image by size (feed rows
+  // "seedream 5.5, Text to image, <size>", read 2026-11-12): 3.6 credits
+  // ($0.018) at 1K and 1.5K, 6.3 ($0.0315) at the 2K default. The docs
+  // callback example (task b0e3febbf194d27a345de523d3321555) billed 6.3 at
+  // 2K, and a recorded 1K generation billed 3.6 at submission (task
+  // d4232162cc61d531f375fd036fca4cda; evidence in
+  // tests/fixtures/kie-pricing-evidence/seedream-5-5-text-to-image-2026-11-12.json).
+  "seedream/5-5-text-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315 },
+    "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+    "2K",
+    "2026-11-12"
+  ),
+
   // Seedream 5 Pro layer decomposition — per returned image by output
   // size. The callable schema exposes auto|1K|1.5K|2K and defaults to auto;
   // KIE only publishes priced 1K/1.5K/2K cells, so auto remains an explicit

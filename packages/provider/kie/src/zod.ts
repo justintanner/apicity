@@ -285,6 +285,7 @@ export const KIE_MEDIA_MODELS = [
   // Seedream 5.5 (kie dashes the minor version). Docs under
   // https://docs.kie.ai/market/seedream/.
   "seedream/5-5-image-to-image",
+  "seedream/5-5-text-to-image",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -4658,6 +4659,33 @@ export const Seedream55ImageToImageRequestSchema = z
           "auto",
         ])
         .default("auto"),
+      size: Seedream55SizeSchema.default("2K"),
+      output_format: Seedream55OutputFormatSchema.default("png"),
+      background: Seedream55BackgroundSchema.default("auto"),
+      nsfw_checker: z.boolean().default(false),
+    }),
+  })
+  .superRefine(refineSeedream55Background);
+
+// Docs: https://docs.kie.ai/market/seedream/5-5-text-to-image
+// Text-to-image requires `aspect_ratio` and has no `auto` value; the other
+// fields share image-to-image's enums, defaults and background rule.
+export const Seedream55TextToImageRequestSchema = z
+  .object({
+    model: z.literal("seedream/5-5-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(5).max(5000),
+      aspect_ratio: z.enum([
+        "1:1",
+        "4:3",
+        "3:4",
+        "16:9",
+        "9:16",
+        "2:3",
+        "3:2",
+        "21:9",
+      ]),
       size: Seedream55SizeSchema.default("2K"),
       output_format: Seedream55OutputFormatSchema.default("png"),
       background: Seedream55BackgroundSchema.default("auto"),
@@ -9319,6 +9347,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamProLayerDecompositionRequestSchema,
   SeedreamFlashLayerDecompositionRequestSchema,
   Seedream55ImageToImageRequestSchema,
+  Seedream55TextToImageRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -11133,6 +11162,13 @@ export type Seedream55ImageToImageRequest = z.input<
 export type Seedream55ImageToImageRequestInput = Seedream55ImageToImageRequest;
 export type Seedream55ImageToImageParsedRequest = z.output<
   typeof Seedream55ImageToImageRequestSchema
+>;
+export type Seedream55TextToImageRequest = z.input<
+  typeof Seedream55TextToImageRequestSchema
+>;
+export type Seedream55TextToImageRequestInput = Seedream55TextToImageRequest;
+export type Seedream55TextToImageParsedRequest = z.output<
+  typeof Seedream55TextToImageRequestSchema
 >;
 
 export type GoogleGemini38FlashTtsRequest = z.input<

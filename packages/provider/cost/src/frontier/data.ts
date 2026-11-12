@@ -311,6 +311,11 @@ export const FRONTIER = {
             dotPath: "openai.gptImage2p6.sunburst.edit",
             pricingKey: "openai/gpt-image-2.6/sunburst/edit",
           },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-6/sunburst-image-to-image",
+          },
         ],
       },
       {

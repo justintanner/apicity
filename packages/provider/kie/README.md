@@ -473,24 +473,30 @@ Both models bill output seconds by quality and audio, from 4.8 credits
 and [image-to-video](https://docs.kie.ai/market/pixverse/v6-max-image-to-video.md)
 pages.
 
-## GPT Image 2.6 Sunburst text-to-image
+## GPT Image 2.6 Sunburst models
 
 KIE serves GPT Image 2.6 Sunburst through the shared
 `kie.post.api.v1.jobs.createTask` endpoint as
-`gpt-image-2-6/sunburst-text-to-image`. KIE spells the 2.6 ids
+`gpt-image-2-6/sunburst-text-to-image` and
+`gpt-image-2-6/sunburst-image-to-image`. KIE spells the 2.6 ids
 version-first, with a `/` before the tier (2.5 used
-`gpt-image-2-5-sunburst-text-to-image`). Only `prompt` (1-32,000
-characters) is required. The defaults are `aspect_ratio` `"auto"`,
-`resolution` `"1K"`, `quality` `"medium"`, `complexity` `"high"`,
+`gpt-image-2-5-sunburst-text-to-image`). `prompt` (1-32,000
+characters) is required, and image-to-image also requires 1-16
+`input_urls`. The defaults are `aspect_ratio` `"auto"`, `resolution`
+`"1K"`, `quality` `"medium"`, `complexity` `"high"`,
 `moderation` `"low"`, `background` `"auto"` and `output_format`
-`"png"`. The schema enforces the page's format rules:
-`output_compression` (0-100) goes with jpeg or webp, `size`,
-`frame_count` and `frame_duration_ms` with gif, and the `svg` object
-(`svg.model`, default `"gpt-5.6-luna"`) with svg. A transparent
-background needs png, webp or gif.
+`"png"`. The schemas enforce the pages' format rules:
+`output_compression` (0-100) goes with jpeg or webp, the GIF fields
+(`frame_count`, `frame_duration_ms`, and `size` on text-to-image) with
+gif, and the `svg` object (`svg.model`, default `"gpt-5.6-luna"`) with
+svg. A transparent background needs png, webp or gif. Image-to-image
+takes an inpaint `mask_url` or a `markup` overlay, never both, and no
+mask with gif or svg output.
 
 ```typescript
-const task = await kie.post.api.v1.jobs.createTask({
+declare const reference: string;
+
+const textTask = await kie.post.api.v1.jobs.createTask({
   model: "gpt-image-2-6/sunburst-text-to-image",
   input: {
     prompt: "A red balloon.",
@@ -501,17 +507,27 @@ const task = await kie.post.api.v1.jobs.createTask({
   },
 });
 
-console.log(task.data?.taskId);
+const editTask = await kie.post.api.v1.jobs.createTask({
+  model: "gpt-image-2-6/sunburst-image-to-image",
+  input: {
+    prompt: "Add a small red scarf to the cat.",
+    input_urls: [reference],
+    quality: "low",
+  },
+});
+
+console.log(textTask.data?.taskId, editTask.data?.taskId);
 ```
 
-The model bills tokens, not images: per million tokens, 900 credits
-($4.50) for text input, 1,440 ($7.20) for image input, 5,400 ($27.00) for
-image output, and cached input at a quarter of those rates. SVG output
-also bills the `svg.model` author's tokens. No request shows the
-generated image's tokens, so `@apicity/cost` prices it from the usage you
-declare. See KIE's
+Both models bill tokens, not images: per million tokens, 900 credits
+($4.50) for text input, 1,440 ($7.20) for image input, including the
+reference images, 5,400 ($27.00) for image output, and cached input at a
+quarter of those rates. SVG output also bills the `svg.model` author's
+tokens. No request shows the generated image's tokens, so
+`@apicity/cost` prices them from the usage you declare. See KIE's
 [text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-text-to-image.md)
-page.
+and [image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-sunburst-image-to-image.md)
+pages.
 
 ## Seedance 2.5 audio
 

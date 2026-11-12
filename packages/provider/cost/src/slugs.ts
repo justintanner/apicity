@@ -249,6 +249,7 @@ export const MODEL_SLUGS = {
     // Image — GPT Image 2.6 (token-billed; kie spells the ids version-first
     // with a slash before the tier).
     "gpt-image-2-6/sunburst-text-to-image": "gi2p6sb",
+    "gpt-image-2-6/sunburst-image-to-image": "gi2p6sb",
 
     // Image — Wan 2.7
     "wan/2-7-image": "wan2p7",
@@ -1294,6 +1295,7 @@ export const MODEL_DISPLAY = {
     "gpt-image-2-5-sunburst-image-to-image": "GPT Image 2.5 Sunburst Edit",
 
     "gpt-image-2-6/sunburst-text-to-image": "GPT Image 2.6 Sunburst",
+    "gpt-image-2-6/sunburst-image-to-image": "GPT Image 2.6 Sunburst Edit",
 
     "wan/2-7-image": "Wan 2.7",
     "wan/2-7-image-pro": "Wan 2.7 Pro",

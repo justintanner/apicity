@@ -16,13 +16,13 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
-| Schema model IDs                 |      127 |   163 | descriptors 163; guards 163      |
+| Schema model IDs                 |      127 |   164 | descriptors 164; guards 164      |
 | Documented endpoints             |       71 |    81 | 56 POST; 25 GET                  |
-| Runtime pricing keys             |      135 |   228 | current Kie table                |
+| Runtime pricing keys             |      135 |   229 | current Kie table                |
 | Schema-without-pricing inventory |       23 |     4 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    69 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   230 | Kie model metadata               |
-| Display keys                     |      137 |   230 | Kie model metadata               |
+| Slug keys                        |      137 |   231 | Kie model metadata               |
+| Display keys                     |      137 |   231 | Kie model metadata               |
 
 ## Row Dispositions
 
@@ -67,72 +67,73 @@ The mandatory four official cells are executable against the integrated WI6 cost
 
 Schema models without a current usable pricing key: **4**; pricing-only runtime keys: **69**.
 
-| Model                                  | Disposition         | Technical blocker                                                                                                | Follow-up |
-| -------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |
-| `kling-3.0/video`                      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-3.0/motion-control`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v3-turbo-image-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v3-turbo-text-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-2.6/image-to-video`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-2.6/motion-control`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-2.6/text-to-video`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/ai-avatar-pro`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/ai-avatar-standard`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-1-master-image-to-video`     | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-1-master-text-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-1-pro`                       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-1-standard`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-5-turbo-image-to-video-pro`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling/v2-5-turbo-text-to-video-pro`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-3.0-omni/text-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-3.0-omni/image-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-3.0-omni/reference-to-video`    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-3.0-omni/transformation`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-4.0/reference-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `kling-4.0/keyframe-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `nano-banana-2-1`                      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `gpt-image-2-6/sunburst-text-to-image` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `seedream/5-flash-text-to-image`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `seedream/5-flash-image-to-image`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `seedream/5-flash-layer-decomposition` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `grok-imagine/upscale`                 | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `grok-imagine-image-2-0/segment-map`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `grok-imagine-image-2-0/segment-edit`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen2-1/text-to-image`                | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen2-1/image-to-image`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen/text-to-image`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen/image-edit`                      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen/image-to-image`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/seedance-2-5-draft`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/seedream`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/seedream-v4-edit`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/seedream-v4-text-to-image`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/v1-lite-image-to-video`     | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/v1-lite-text-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/v1-pro-fast-image-to-video` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/v1-pro-image-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `bytedance/v1-pro-text-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `wan/2-6-flash-image-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `wan/2-6-flash-video-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `omnihuman-1-5/human-identification`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `omnihuman-1-5/subject-detection`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `omnihuman-2-0`                        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `elevenlabs/audio-isolation`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `elevenlabs/sound-effect-v2`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `pixverse-v6/image-to-video`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `pixverse-v6/transition`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `pixverse-v6/reference-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `pixverse-v6-max/text-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `pixverse-v6-max/image-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `google/gemini-2-5-pro-tts`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `google/gemini-3-1-flash-tts`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `google/gemini-3-8-flash-tts`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `google/gemini-3-8-flash-lite-tts`     | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `topaz/image-upscale`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `flux-3/klein-text-to-image`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `flux-3/klein-edit-image`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `vidu-q4/image-to-video`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `vidu-q4/reference-to-video`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| Model                                   | Disposition         | Technical blocker                                                                                                | Follow-up |
+| --------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |
+| `kling-3.0/video`                       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-3.0/motion-control`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v3-turbo-image-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v3-turbo-text-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-2.6/image-to-video`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-2.6/motion-control`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-2.6/text-to-video`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/ai-avatar-pro`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/ai-avatar-standard`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-1-master-image-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-1-master-text-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-1-pro`                        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-1-standard`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-5-turbo-image-to-video-pro`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling/v2-5-turbo-text-to-video-pro`    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-3.0-omni/text-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-3.0-omni/image-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-3.0-omni/reference-to-video`     | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-3.0-omni/transformation`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-4.0/reference-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `kling-4.0/keyframe-to-video`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `nano-banana-2-1`                       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `gpt-image-2-6/sunburst-text-to-image`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `gpt-image-2-6/sunburst-image-to-image` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `seedream/5-flash-text-to-image`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `seedream/5-flash-image-to-image`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `seedream/5-flash-layer-decomposition`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `grok-imagine/upscale`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `grok-imagine-image-2-0/segment-map`    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `grok-imagine-image-2-0/segment-edit`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `qwen2-1/text-to-image`                 | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `qwen2-1/image-to-image`                | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `qwen/text-to-image`                    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `qwen/image-edit`                       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `qwen/image-to-image`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/seedance-2-5-draft`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/seedream`                    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/seedream-v4-edit`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/seedream-v4-text-to-image`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/v1-lite-image-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/v1-lite-text-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/v1-pro-fast-image-to-video`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/v1-pro-image-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/v1-pro-text-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `wan/2-6-flash-image-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `wan/2-6-flash-video-to-video`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `omnihuman-1-5/human-identification`    | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `omnihuman-1-5/subject-detection`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `omnihuman-2-0`                         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `elevenlabs/audio-isolation`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `elevenlabs/sound-effect-v2`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `pixverse-v6/image-to-video`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `pixverse-v6/transition`                | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `pixverse-v6/reference-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `pixverse-v6-max/text-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `pixverse-v6-max/image-to-video`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `google/gemini-2-5-pro-tts`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `google/gemini-3-1-flash-tts`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `google/gemini-3-8-flash-tts`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `google/gemini-3-8-flash-lite-tts`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `topaz/image-upscale`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `flux-3/klein-text-to-image`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `flux-3/klein-edit-image`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `vidu-q4/image-to-video`                | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `vidu-q4/reference-to-video`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 
 ### Ideogram V3 Reframe pricing rows
 

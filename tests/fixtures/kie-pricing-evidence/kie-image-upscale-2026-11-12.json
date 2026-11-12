@@ -1,0 +1,145 @@
+{
+  "capturedAt": "2026-11-12",
+  "source": "https://kie.ai/image-upscaler",
+  "models": ["kie/image-upscale"],
+  "basis": "The live pricing-feed rows anchored on https://kie.ai/image-upscaler and the live GET /api/v1/models pricingDesc agree: each task bills one image by its total output pixels, 1.5 credits (0.0075 USD) up to 4.19 MP (2K), 4 credits (0.02 USD) up to 16.78 MP (4K) and 12 credits (0.06 USD) up to 67.11 MP (8K); upscale_factor 1 (same-size enhancement) is tiered by the input size. The docs page gives the output as input width x height x upscale_factor squared, and its table reaches each tier edge from a 1024 x 1024 input at factor 2, 4 and 8 (2048 x 2048, 4096 x 4096, 8192 x 8192). The docs callback example carries no creditsConsumed figure. The recording below billed 1.5 credits at submission, the 2K tier.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-12T18:19:31Z",
+    "rows": [
+      {
+        "modelDescription": "Kie Image Upscale, image-upscale, 2K (≤4.19 MP)",
+        "interfaceType": "image",
+        "provider": "Kie",
+        "creditPrice": "1.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0075",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/image-upscaler",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "Kie Image Upscale, image-upscale, 4K (≤16.78 MP)",
+        "interfaceType": "image",
+        "provider": "Kie",
+        "creditPrice": "4",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/image-upscaler",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "Kie Image Upscale, image-upscale, 8K (≤67.11 MP)",
+        "interfaceType": "image",
+        "provider": "Kie",
+        "creditPrice": "12",
+        "creditUnit": "per image",
+        "usdPrice": "0.06",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/image-upscaler",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-12T18:19:45Z",
+    "entry": {
+      "model": "kie/image-upscale",
+      "slug": "kie/image-upscale",
+      "title": "Kie Image Upscale",
+      "provider": "Kie",
+      "taskType": ["Image Editing"],
+      "description": "",
+      "pricingDesc": "KIE Image Upscale: billed per image by total output pixels — 2K (≤4.19 MP, ~2048×2048) 1.5 credits ($0.0075), 4K (≤16.78 MP, ~4096×4096) 4 credits ($0.02), 8K (≤67.11 MP, ~8192×8192) 12 credits ($0.06). 1x same-size enhancement is tiered by input size.\nHigh-tier top-ups (+10% bonus) bring it down to ~$0.0068 / $0.0182 / $0.0545 per image."
+    }
+  },
+  "docs": [
+    {
+      "model": "kie/image-upscale",
+      "url": "https://docs.kie.ai/market/kie/image-upscale.md",
+      "fetchedAt": "2026-11-12T18:19:29Z",
+      "sha256": "dab03aaf98d1f3c08e17d66655e22973860ffb31a8f3f96c508cff09f95ba49b",
+      "callbackExamples": [
+        {
+          "taskId": "task_example_image_webhook_001",
+          "state": "success",
+          "creditsConsumed": null,
+          "request": {
+            "upscale_factor": "2"
+          },
+          "note": "no billing figure: the example omits creditsConsumed, and its task id is a placeholder"
+        }
+      ],
+      "tierTable": [
+        {
+          "input": "1024x1024",
+          "upscale_factor": "1",
+          "output": "1024x1024",
+          "outputMegapixels": 1.05
+        },
+        {
+          "input": "1024x1024",
+          "upscale_factor": "2",
+          "output": "2048x2048",
+          "outputMegapixels": 4.19
+        },
+        {
+          "input": "1024x1024",
+          "upscale_factor": "4",
+          "output": "4096x4096",
+          "outputMegapixels": 16.78
+        },
+        {
+          "input": "1024x1024",
+          "upscale_factor": "8",
+          "output": "8192x8192",
+          "outputMegapixels": 67.11
+        },
+        {
+          "input": "1646x1646",
+          "upscale_factor": "8",
+          "output": null,
+          "outputMegapixels": 173,
+          "result": "422, no task and no charge"
+        }
+      ],
+      "tierRule": "output pixels = input width x height x upscale_factor squared: up to 4,194,304 (2048 x 2048) -> 2K, up to 16,777,216 (4096 x 4096) -> 4K, up to 67,108,864 (8192 x 8192) -> 8K; over that, or over 16,384 px per side, KIE answers 422 at submission with no task and no charge"
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "kie/image-upscale",
+      "har": "tests/recordings/kie_2079838932/kie-image-upscale_495184440/recording.har",
+      "request": {
+        "image_url": "<tests/fixtures/cat1.jpg, 768x1024, 370463 bytes, via kie file-stream-upload>",
+        "upscale_factor": "2"
+      },
+      "costHints": {
+        "inputWidth": 768,
+        "inputHeight": 1024
+      },
+      "taskId": "43710c0d1f6cb221c1bb64052251bc8e",
+      "creditsConsumed": 1.5,
+      "creditsConsumedWhileWaiting": [1.5, 1.5],
+      "usd": 0.0075,
+      "costTimeSeconds": 6,
+      "output": {
+        "format": "jpeg",
+        "width": 1536,
+        "height": 2048,
+        "bytes": 1269069
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 1026.5,
+    "after": 1025
+  },
+  "observedTotalUsd": 0.0075
+}

@@ -830,6 +830,11 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
       slug: "topazimg",
       display: "Topaz Image Upscale",
     },
+    {
+      model: "kie/image-upscale",
+      slug: "kieimgup",
+      display: "KIE Image Upscale",
+    },
     { model: "qwen/text-to-image", slug: "qwenimg", display: "Qwen Image" },
     { model: "qwen/image-to-image", slug: "qwenimg", display: "Qwen Image" },
     {

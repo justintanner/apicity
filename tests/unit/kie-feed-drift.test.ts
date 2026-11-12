@@ -661,6 +661,79 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // Kie Image Upscale bills one tier by output pixels, which the request
+  // cannot carry. Each row's representative case is the docs table's 1024 x
+  // 1024 input at the factor that reaches its tier, so every row compares
+  // with its own cell rather than the default factor's (2026-11-12 feed,
+  // ac-s2rue4).
+  it("compares each kie/image-upscale tier row with its own tier cell", async () => {
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "image",
+        provider: "Kie",
+        creditPrice,
+        creditUnit: "per image",
+        usdPrice,
+        anchor: "https://kie.ai/image-upscaler",
+      },
+    });
+    const twoK = row(
+      "Kie Image Upscale, image-upscale, 2K (≤4.19 MP)",
+      "1.5",
+      "0.0075"
+    );
+    const fourK = row(
+      "Kie Image Upscale, image-upscale, 4K (≤16.78 MP)",
+      "4",
+      "0.02"
+    );
+    const eightK = (creditPrice: string, usdPrice: string) =>
+      row(
+        "Kie Image Upscale, image-upscale, 8K (≤67.11 MP)",
+        creditPrice,
+        usdPrice
+      );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([twoK, fourK, eightK("12", "0.06")]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(3);
+      expect(result.compared).toBe(3);
+
+      const moved = await write([twoK, fourK, eightK("13", "0.065")]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "kie/image-upscale",
+          variant: "8K",
+          tableUsd: 0.06,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

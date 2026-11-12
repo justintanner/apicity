@@ -7469,6 +7469,26 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/kie/image-upscale
+  "kie/image-upscale": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "URL of the image to upscale: one publicly downloadable http(s) JPG, PNG, WEBP or GIF (first frame only), at most 20 MB",
+      },
+      upscale_factor: {
+        type: "string",
+        enum: ["1", "2", "4", "8"],
+        default: "2",
+        description:
+          'Multiplies width and height as the exact string "1", "2", "4" or "8" (default "2"); "1" enhances at the same size. The output must stay within 67,108,864 pixels and 16,384 px per side, or KIE answers 422 and charges nothing. Bills one tier by total output pixels: 2K up to 4.19 MP, 4K up to 16.78 MP, 8K up to 67.11 MP',
+      },
+    },
+  },
+
   // - https://docs.kie.ai/market/infinitalk/from-audio
   "infinitalk/from-audio": {
     type: "video",

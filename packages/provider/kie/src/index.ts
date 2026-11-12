@@ -443,6 +443,8 @@ export {
   MiniMaxH3TextToImageRequestSchema,
   MiniMaxH3ImageEditRequestSchema,
   MiniMaxH3ImageTaskResultJsonSchema,
+  KieImageUpscaleFactorSchema,
+  KieImageUpscaleRequestSchema,
 } from "./zod";
 
 // Export error class
@@ -571,6 +573,10 @@ export type {
   Kling40FlashReferenceToVideoRequest,
   Kling40FlashReferenceToVideoRequestInput,
   Kling40FlashReferenceToVideoParsedRequest,
+  KieImageUpscaleFactor,
+  KieImageUpscaleRequest,
+  KieImageUpscaleRequestInput,
+  KieImageUpscaleParsedRequest,
   PixverseV6MaxTextToVideoInput,
   PixverseV6MaxTextToVideoParsedInput,
   PixverseV6MaxTextToVideoRequest,

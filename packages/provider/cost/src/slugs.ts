@@ -342,6 +342,9 @@ export const MODEL_SLUGS = {
     // Image — Topaz
     "topaz/image-upscale": "topazimg",
 
+    // Image — KIE's own upscaler
+    "kie/image-upscale": "kieimgup",
+
     // Image — Qwen Image (matches fal's "qwenimg" for the same model; the
     // edit variant shares it per the modality rule, as it does on fal)
     "qwen/text-to-image": "qwenimg",
@@ -1376,6 +1379,8 @@ export const MODEL_DISPLAY = {
     "recraft/remove-background": "Recraft Remove Background",
 
     "topaz/image-upscale": "Topaz Image Upscale",
+
+    "kie/image-upscale": "KIE Image Upscale",
 
     "qwen/text-to-image": "Qwen Image",
     "qwen/image-to-image": "Qwen Image",

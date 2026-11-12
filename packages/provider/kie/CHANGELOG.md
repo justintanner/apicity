@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `kie/image-upscale` (KIE Image Upscale, KIE's own upscaler) with typed inputs: one required http(s) `image_url` and an `upscale_factor` string enum (`"1"`, `"2"`, `"4"`, `"8"`, default `"2"`), and a recorded upscale. `KieImageUpscaleFactorSchema` and `KieImageUpscaleRequestSchema` are exported.
+
 - Added `kling-4.0/flash-reference-to-video` (Kling 4.0 Flash reference-to-video) with typed inputs: Kling 4.0 reference materials under the Flash limits, an element `type` that must match its media, no standalone voices (strict input), and a recorded clip. `Kling40FlashElementSchema` and `Kling40FlashReferenceToVideoRequestSchema` are exported.
 
 - Added `kling-4.0/flash-keyframe-to-video` (Kling 4.0 Flash keyframe-to-video) with typed inputs: a 1-8,000 character prompt, `duration` 3-20 (default 5), `resolution` 720p only, an optional `first_frame_url`, and `aspect_ratio` without auto; a strict input that rejects middle and last frames, and a recorded clip. `Kling40FlashDurationSchema`, `Kling40FlashResolutionSchema` and `Kling40FlashKeyframeToVideoRequestSchema` are exported.

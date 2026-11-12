@@ -845,6 +845,13 @@ function representativeCostHints(key, inventories, auditedUnit, payload) {
   ) {
     hints.outputImages = 1;
   }
+  // KIE Image Upscale bills by output pixels, input size x upscale_factor
+  // squared, and the request carries no size: the representative input is
+  // the docs table's 1024 x 1024 (see the kie-image-upscale-factor rule).
+  if (key === "kie/image-upscale") {
+    hints.inputWidth = 1024;
+    hints.inputHeight = 1024;
+  }
   return Object.keys(hints).length ? hints : undefined;
 }
 

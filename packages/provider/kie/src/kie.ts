@@ -204,6 +204,7 @@ import {
   SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
   SeedreamFlashLayerDecompositionRequestSchema,
+  Seedream55ImageToImageRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   Qwen21TextToImageRequestSchema,
@@ -354,6 +355,7 @@ export const CREATE_TASK_GUARDS = {
     SeedreamProLayerDecompositionRequestSchema,
   "seedream/5-flash-layer-decomposition":
     SeedreamFlashLayerDecompositionRequestSchema,
+  "seedream/5-5-image-to-image": Seedream55ImageToImageRequestSchema,
   "seedream/4.5-text-to-image": Seedream45TextToImageRequestSchema,
   "seedream/4.5-edit": Seedream45EditRequestSchema,
   "grok-imagine/extend": GrokVideoExtendRequestSchema,

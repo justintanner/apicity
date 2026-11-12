@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Seedream 5.5 image-to-image (`seedream/5-5-image-to-image`) is priced
+  per output image by size (0.018 USD at 1K and 1.5K, 0.0315 at the 2K
+  default) plus 0.0072 USD for every input image, the first included. A
+  recorded 1K edit of one image billed 5.04 credits, USD 0.0252 (ac-7z7wn9).
+
 - KIE Gemini Omni Flash 1.2 (`google/gemini-omni-flash-1-2`) is priced per
   output second by resolution from the feed: 0.02, 0.045, 0.05 and 0.11 USD at
   360p, 720p, 1080p and 4k, with 720p as the documented default. A video edit

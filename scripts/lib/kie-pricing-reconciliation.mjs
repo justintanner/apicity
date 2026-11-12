@@ -1114,7 +1114,8 @@ function classifyRawRow(raw, inventories, live = false) {
       result.billingComponent = "extra";
     }
     if (
-      key === "seedream/5-pro-image-to-image" &&
+      (key === "seedream/5-pro-image-to-image" ||
+        key === "seedream/5-5-image-to-image") &&
       /input image/i.test(String(official.modelDescription ?? ""))
     ) {
       result.billingComponent = "extra";

@@ -315,6 +315,11 @@ describe("modelSlug", () => {
       slug: "geminiomni1p2f",
       display: "Gemini Omni 1.2 Flash",
     },
+    {
+      model: "seedream/5-5-image-to-image",
+      slug: "sd5p5",
+      display: "Seedream 5.5 Edit",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

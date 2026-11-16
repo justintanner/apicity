@@ -30,6 +30,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedPredictionStatusSchema,
@@ -1872,6 +1873,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
     expect(Object.keys(wavespeed.api.v3.openai)).toEqual([
+      "gptImage2p6Flare",
       "gptImage2p6Sunburst",
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
@@ -1989,6 +1991,59 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/edit", () => {
           ...RECORDED,
           [field]: value,
         }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2.6-flare/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-6-flare-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Flare)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.openai.gptImage2p6Flare.textToImage.schema).toBe(
+      WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("takes every documented option and rejects values off the grid", () => {
+    const schema = WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema;
+    expect(
+      schema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "1:3",
+        resolution: "4k",
+        quality: "xhigh",
+        complexity: "medium",
+        output_format: "svg",
+      }).success
+    ).toBe(true);
+    for (const [field, value] of [
+      ["resolution", "8k"],
+      ["quality", "ultra"],
+      ["output_format", "tiff"],
+      ["frame_count", 17],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        schema.safeParse({ ...RECORDED, [field]: value }).success,
         field
       ).toBe(false);
     }

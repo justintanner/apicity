@@ -1095,6 +1095,7 @@ export const MODEL_SLUGS = {
     "kwaivgi/kling-video-o3-pro/video-edit": "klingo3",
     "alibaba/happyhorse-1.1/reference-to-video": "hh11",
     "openai/gpt-image-2.6-sunburst/text-to-image": "gi2p6sb",
+    "openai/gpt-image-2.6-sunburst/edit": "gi2p6sb",
   },
 } as const;
 
@@ -2200,6 +2201,7 @@ export const MODEL_DISPLAY = {
     "kwaivgi/kling-video-o3-pro/video-edit": "Kling o3 Pro Edit",
     "alibaba/happyhorse-1.1/reference-to-video": "Happy Horse 1.1",
     "openai/gpt-image-2.6-sunburst/text-to-image": "GPT Image 2.6 Sunburst",
+    "openai/gpt-image-2.6-sunburst/edit": "GPT Image 2.6 Sunburst Edit",
   },
 } as const;
 

@@ -33,6 +33,7 @@ wavespeed	api.v3.xAi.grokImagineVideoV1p5.referenceToVideo	POST	https://api.wave
 wavespeed	api.v3.kwaivgi.klingVideoO3Pro.videoEdit	POST	https://api.wavespeed.ai/api/v3/kwaivgi/kling-video-o3-pro/video-edit	https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit
 wavespeed	api.v3.alibaba.happyhorse1p1.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/happyhorse-1.1/reference-to-video	https://wavespeed.ai/models/alibaba/happyhorse-1.1/reference-to-video
 wavespeed	api.v3.openai.gptImage2p6Sunburst.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.6-sunburst/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/text-to-image
+wavespeed	api.v3.openai.gptImage2p6Sunburst.edit	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.6-sunburst/edit	https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

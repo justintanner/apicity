@@ -5140,6 +5140,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.openai.gptImage2p6Sunburst.textToImage"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.openai.gptImage2p6Sunburst.edit"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

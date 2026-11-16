@@ -1332,3 +1332,87 @@ export const WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema =
         "GIF only: milliseconds per frame, 20-2000. WaveSpeed default: 200."
       ),
   });
+
+// openai/gpt-image-2.6-sunburst/edit, from the request schema on WaveSpeed's
+// model page (read 2026-11-16).
+export const WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  images: z
+    .array(z.string())
+    .max(16)
+    .describe("Public URLs of 1-16 input images to edit."),
+  mask_image: z
+    .string()
+    .optional()
+    .describe(
+      "Mask for the first input image: white marks the area to edit, black the area to keep (a PNG whose transparent area marks the edit is also accepted). Use either `mask_image` or `markup_image`."
+    ),
+  markup_image: z
+    .string()
+    .optional()
+    .describe(
+      "Transparent PNG of annotations (circles, arrows, notes) drawn over the first input image to show where and how to edit it. Use either `mask_image` or `markup_image`."
+    ),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe(
+      "Aspect ratio of the image. When omitted, it follows the input image."
+    ),
+  resolution: z
+    .enum(["1k", "2k", "4k"])
+    .optional()
+    .describe("Resolution of the image. WaveSpeed default: `1k`."),
+  quality: z
+    .enum(["low", "medium", "high", "xhigh", "max"])
+    .optional()
+    .describe(
+      "Rendering quality. Higher tiers add detail and cost more. WaveSpeed default: `medium`."
+    ),
+  complexity: z
+    .enum(["low", "medium", "high"])
+    .optional()
+    .describe(
+      "How much planning the model does before drawing. It does not change the price. WaveSpeed default: `high`."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp", "gif"])
+    .optional()
+    .describe(
+      "Format of the output. `gif` returns an animation. WaveSpeed default: `png`."
+    ),
+  frame_count: z
+    .number()
+    .int()
+    .min(2)
+    .max(16)
+    .optional()
+    .describe(
+      "GIF only: number of animation frames, 2-16. WaveSpeed default: 9."
+    ),
+  frame_duration_ms: z
+    .number()
+    .int()
+    .min(20)
+    .max(2000)
+    .optional()
+    .describe(
+      "GIF only: milliseconds per frame, 20-2000. WaveSpeed default: 200."
+    ),
+});

@@ -29,6 +29,7 @@ import type {
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
+  WaveSpeedOpenaiGptImage2p6SunburstEditRequest,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequest,
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
@@ -67,6 +68,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
@@ -804,6 +806,23 @@ export function createWaveSpeed(
                 schema:
                   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
               }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2.6-sunburst/edit
+            // Docs: https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedOpenaiGptImage2p6SunburstEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/openai/gpt-image-2.6-sunburst/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema }
             ),
           },
         },

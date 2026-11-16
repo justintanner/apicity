@@ -1421,3 +1421,8 @@ export const WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema = z.object({
 // gives it the same request schema as the Sunburst model.
 export const WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema =
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema;
+
+// openai/gpt-image-2.6-flare/edit: the model page (read 2026-11-16) gives it
+// the same request schema as the Sunburst model.
+export const WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema =
+  WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema;

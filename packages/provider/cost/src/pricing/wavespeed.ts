@@ -150,6 +150,14 @@ const svgSurcharge = (p: Record<string, unknown>): number | undefined => {
   return format === "svg" ? 0.02 : 0;
 };
 
+// A GPT Image 2.6 edit adds 0.015 USD per input image, and 0.015 USD once
+// when a mask_image or a markup_image is sent.
+const editSurcharge = (p: Record<string, unknown>): number | undefined => {
+  if (!Array.isArray(p.images)) return undefined;
+  const guided = p.mask_image !== undefined || p.markup_image !== undefined;
+  return 0.015 * p.images.length + (guided ? 0.015 : 0);
+};
+
 export const wavespeed: Record<string, ModelPricing> = {
   // base_price 100000 micros, discount_rate 95 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "1080p" ? 2 :
@@ -818,11 +826,7 @@ export const wavespeed: Record<string, ModelPricing> = {
     units: () => 1,
     select: gptImage2p6Select,
     rates: GPT_IMAGE_2P6_RATES,
-    extra: (p) => {
-      if (!Array.isArray(p.images)) return undefined;
-      const guided = p.mask_image !== undefined || p.markup_image !== undefined;
-      return 0.015 * p.images.length + (guided ? 0.015 : 0);
-    },
+    extra: editSurcharge,
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit",
       asOf: "2026-11-16",
@@ -840,6 +844,22 @@ export const wavespeed: Record<string, ModelPricing> = {
     extra: svgSurcharge,
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.6-flare/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 65000 micros, discount_rate 90 on 2026-11-16. No formula on the
+  // model page. Free quotes read 2026-11-16 match the Sunburst edit at every
+  // quality and resolution, for 2 and 4 input images, and for a mask, a
+  // markup image, and both.
+  "openai/gpt-image-2.6-flare/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P6_RATES,
+    extra: editSurcharge,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.6-flare/edit",
       asOf: "2026-11-16",
     },
   },

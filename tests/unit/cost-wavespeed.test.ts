@@ -1714,3 +1714,76 @@ describe("wavespeed openai/gpt-image-2.6-flare/text-to-image", () => {
     ).toBeCloseTo(0.87, 9);
   });
 });
+
+describe("wavespeed openai/gpt-image-2.6-flare/edit", () => {
+  const model = "openai/gpt-image-2.6-flare/edit";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.045 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.045, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution for one input image", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.045, 0.075, 0.115],
+      medium: [0.065, 0.115, 0.195],
+      high: [0.075, 0.135, 0.225],
+      xhigh: [0.125, 0.225, 0.395],
+      max: [0.265, 0.485, 0.865],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, {
+            prompt: PROMPT,
+            images: [image],
+            quality,
+            resolution,
+          }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("adds 0.015 USD per input image and once for a mask or markup", () => {
+    const base = { prompt: PROMPT, images: [image] };
+    expect(
+      estimate(model, { prompt: PROMPT, images: [image, image] }).usd
+    ).toBeCloseTo(0.08, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, images: Array(4).fill(image) }).usd
+    ).toBeCloseTo(0.11, 9);
+    expect(estimate(model, { ...base, mask_image: image }).usd).toBeCloseTo(
+      0.08,
+      9
+    );
+    expect(
+      estimate(model, { ...base, mask_image: image, markup_image: image }).usd
+    ).toBeCloseTo(0.08, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image, image],
+        quality: "max",
+        resolution: "4k",
+      }).usd
+    ).toBeCloseTo(0.88, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

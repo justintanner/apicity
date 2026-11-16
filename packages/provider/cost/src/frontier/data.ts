@@ -187,6 +187,11 @@ export const FRONTIER = {
             dotPath: "v1.images.generations",
             modelId: "gpt-image-2.5-flare",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.openai.gptImage2p5Flare.textToImage",
+            pricingKey: "openai/gpt-image-2.5-flare/text-to-image",
+          },
         ],
       },
       {

@@ -32,6 +32,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
@@ -1880,6 +1881,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
       "gptImage2p6Flare",
       "gptImage2p6Sunburst",
       "gptImage2p5Sunburst",
+      "gptImage2p5Flare",
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
       "textToImage",
@@ -2270,5 +2272,35 @@ describe("wavespeed openai/gpt-image-2.5-sunburst/text-to-image", () => {
         field
       ).toBe(false);
     }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-5-flare-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the Sunburst schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.openai.gptImage2p5Flare)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.openai.gptImage2p5Flare.textToImage.schema).toBe(
+      WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema
+    );
+    expect(WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema).toBe(
+      WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
   });
 });

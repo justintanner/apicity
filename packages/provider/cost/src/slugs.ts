@@ -1101,6 +1101,7 @@ export const MODEL_SLUGS = {
     "google/nano-banana-2.1/text-to-image": "nb21",
     "google/nano-banana-2.1/edit": "nb21",
     "openai/gpt-image-2.5-sunburst/text-to-image": "gi2p5sb",
+    "openai/gpt-image-2.5-flare/text-to-image": "gi2p5fl",
   },
 } as const;
 
@@ -2212,6 +2213,7 @@ export const MODEL_DISPLAY = {
     "google/nano-banana-2.1/text-to-image": "Nano Banana 2.1",
     "google/nano-banana-2.1/edit": "Nano Banana 2.1 Edit",
     "openai/gpt-image-2.5-sunburst/text-to-image": "GPT Image 2.5 Sunburst",
+    "openai/gpt-image-2.5-flare/text-to-image": "GPT Image 2.5 Flare",
   },
 } as const;
 

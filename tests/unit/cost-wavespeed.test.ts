@@ -1965,3 +1965,36 @@ describe("wavespeed openai/gpt-image-2.5-sunburst/text-to-image", () => {
     ).toBeCloseTo(0.024, 9);
   });
 });
+
+describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
+  const model = "openai/gpt-image-2.5-flare/text-to-image";
+
+  it("prices the recorded payload at the 0.01 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.01, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price: the
+  // Sunburst rates at every quality and resolution.
+  it("bills the Sunburst rates", () => {
+    const sunburst = "openai/gpt-image-2.5-sunburst/text-to-image";
+    for (const quality of ["low", "medium", "high", "xhigh", "max"]) {
+      for (const resolution of ["1k", "2k", "4k"]) {
+        const payload = { prompt: PROMPT, quality, resolution };
+        expect(estimate(model, payload).usd, `${quality} ${resolution}`).toBe(
+          estimate(sunburst, payload).usd
+        );
+      }
+    }
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.024, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, quality: "max", resolution: "4k" }).usd
+    ).toBeCloseTo(1, 9);
+  });
+});

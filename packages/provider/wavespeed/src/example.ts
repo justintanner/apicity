@@ -341,6 +341,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.openai.gptImage2p6Sunburst.textToImage": {
+    "source": "wavespeed/openai-gpt-image-2-6-sunburst-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "quality": "low",
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.runwayml.aleph2": {
     "source": "wavespeed/runwayml-aleph-2",
     "payload": {

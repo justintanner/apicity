@@ -752,4 +752,47 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.07, "720p": 0.14, "1080p": 0.18 },
     source: source("alibaba/happyhorse-1.1/reference-to-video"),
   },
+  // base_price 50000 micros, discount_rate 90 on 2026-11-16. The model page
+  // carries no formula for this model, only its price inputs (output_format,
+  // quality, resolution), so the rates are the list prices of free quotes
+  // (POST /api/v3/model/price) read 2026-11-16: every quality at every
+  // resolution. svg adds 0.02 USD (quoted at medium 1k and at max 4k); jpeg,
+  // webp and gif price as png, whatever the gif frame count. aspect_ratio and
+  // complexity add nothing. One request returns one image.
+  "openai/gpt-image-2.6-sunburst/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: {
+      "low|1k": 0.03,
+      "low|2k": 0.06,
+      "low|4k": 0.1,
+      "medium|1k": 0.05,
+      "medium|2k": 0.1,
+      "medium|4k": 0.18,
+      "high|1k": 0.06,
+      "high|2k": 0.12,
+      "high|4k": 0.21,
+      "xhigh|1k": 0.11,
+      "xhigh|2k": 0.21,
+      "xhigh|4k": 0.38,
+      "max|1k": 0.25,
+      "max|2k": 0.47,
+      "max|4k": 0.85,
+    },
+    extra: (p) => {
+      if (p.output_format === undefined) return 0;
+      const format = asString(p.output_format);
+      if (format === undefined) return undefined;
+      return format === "svg" ? 0.02 : 0;
+    },
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
 };

@@ -205,6 +205,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
   billed 0.0217 USD (ac-pns6xz).
 
+- WaveSpeed GPT Image 2.6 Flare edit (`openai/gpt-image-2.6-flare/edit`) bills
+  at the Sunburst edit rates: the text-to-image rate for the quality and
+  resolution, plus 0.015 USD per input image, plus 0.015 USD once for a mask or
+  markup image, from free quotes (list price, read 2026-11-16).
+  `MODEL_SLUGS.wavespeed` shares the family slug `gi2p6fl` (ac-y3hr3z).
 - WaveSpeed GPT Image 2.6 Flare text-to-image
   (`openai/gpt-image-2.6-flare/text-to-image`) bills one image per request at
   the Sunburst rates, 0.03 USD (low, 1k) to 0.85 USD (max, 4k), svg +0.02 USD,

@@ -67,6 +67,7 @@ pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts fr
 pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
 pnpm run gen:frontier            # Regenerate the frontier registry from scripts/frontier
 pnpm run gen:frontier:check      # Check the frontier registry for drift (part of ci:local)
+pnpm run fetch:frontier          # Download the frontier leaderboards into scripts/frontier (manual; not in CI)
 pnpm run gen:endpoint-pricing-keys # Regenerate endpoint-to-pricing-key bindings
 pnpm run gen:endpoint-pricing-keys:check # Check endpoint pricing bindings for drift
 pnpm run gen:kie-pricing-manifest # Regenerate the committed KIE pricing manifest

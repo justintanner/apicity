@@ -1,14 +1,14 @@
 {
   "leaderboardId": "AA-Video-T2V v2.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-  "capturedOn": "2026-11-11",
+  "capturedOn": "2026-11-16",
   "methodology": "Elo from blind comparisons by validated private evaluators.",
   "entries": [
     {
       "rank": 1,
       "model": "Wan 3.0",
       "creator": "Alibaba",
-      "elo": 1175
+      "elo": 1174
     },
     {
       "rank": 2,
@@ -20,49 +20,49 @@
       "rank": 3,
       "model": "MiniMax H3 (768p)",
       "creator": "MiniMax",
-      "elo": 1161
+      "elo": 1159
     },
     {
       "rank": 4,
       "model": "Dreamina Seedance 2.5",
       "creator": "ByteDance Seed",
-      "elo": 1155
+      "elo": 1156
     },
     {
       "rank": 5,
       "model": "FLUX 3 Max",
       "creator": "Fal",
-      "elo": 1155
+      "elo": 1152
     },
     {
       "rank": 6,
       "model": "Gemini Omni Flash 1.2",
       "creator": "Google",
-      "elo": 1154
+      "elo": 1151
     },
     {
       "rank": 7,
       "model": "HeyGen Video 1",
       "creator": "HeyGen",
-      "elo": 1153
+      "elo": 1149
     },
     {
       "rank": 8,
       "model": "MiniMax H3 Max",
       "creator": "Fal",
-      "elo": 1147
+      "elo": 1143
     },
     {
       "rank": 9,
-      "model": "SkyReels V4",
-      "creator": "Skywork AI",
-      "elo": 1138
+      "model": "FLUX 3",
+      "creator": "Black Forest Labs",
+      "elo": 1136
     },
     {
       "rank": 10,
-      "model": "FLUX 3",
-      "creator": "Black Forest Labs",
-      "elo": 1138
+      "model": "SkyReels V4",
+      "creator": "Skywork AI",
+      "elo": 1134
     }
   ]
 }

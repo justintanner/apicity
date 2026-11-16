@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Image-T2I v2.1",
   "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-  "capturedOn": "2026-11-11",
+  "capturedOn": "2026-11-16",
   "methodology": "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
   "entries": [
     {
@@ -20,7 +20,7 @@
       "rank": 3,
       "model": "GPT Image 2.6 Flare (max)",
       "creator": "OpenAI",
-      "elo": 1226
+      "elo": 1227
     },
     {
       "rank": 4,
@@ -32,37 +32,37 @@
       "rank": 5,
       "model": "GPT Image 2 (high)",
       "creator": "OpenAI",
-      "elo": 1190
+      "elo": 1192
     },
     {
       "rank": 6,
+      "model": "Kling Image 4.0 (preview)",
+      "creator": "KlingAI",
+      "elo": 1180
+    },
+    {
+      "rank": 7,
       "model": "Nano Banana 2.1",
       "creator": "Google",
       "elo": 1176
     },
     {
-      "rank": 7,
+      "rank": 8,
       "model": "MAI-Image-2.6",
       "creator": "Microsoft AI",
-      "elo": 1170
-    },
-    {
-      "rank": 8,
-      "model": "Grok Imagine Image 2.0",
-      "creator": "SpaceXAI",
       "elo": 1168
     },
     {
       "rank": 9,
-      "model": "Nano Banana 2 (Gemini 3.1 Flash Image)",
-      "creator": "Google",
-      "elo": 1143
+      "model": "Grok Imagine Image 2.0",
+      "creator": "SpaceXAI",
+      "elo": 1167
     },
     {
       "rank": 10,
-      "model": "Seedream 5.5",
-      "creator": "ByteDance Seed",
-      "elo": 1135
+      "model": "Canva Craft",
+      "creator": "Canva",
+      "elo": 1158
     }
   ]
 }

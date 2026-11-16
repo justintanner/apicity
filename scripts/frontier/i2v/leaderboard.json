@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Video-I2V v2.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-  "capturedOn": "2026-11-11",
+  "capturedOn": "2026-11-16",
   "methodology": "Elo from blind comparisons by validated private evaluators.",
   "entries": [
     {
@@ -20,13 +20,13 @@
       "rank": 3,
       "model": "Dreamina Seedance 2.0",
       "creator": "ByteDance Seed",
-      "elo": 1140
+      "elo": 1141
     },
     {
       "rank": 4,
       "model": "MiniMax H3 (768p)",
       "creator": "MiniMax",
-      "elo": 1133
+      "elo": 1134
     },
     {
       "rank": 5,
@@ -44,19 +44,19 @@
       "rank": 7,
       "model": "Hyperflow H3",
       "creator": "Video Rebirth",
-      "elo": 1120
+      "elo": 1119
     },
     {
       "rank": 8,
       "model": "P-Video-2-Pro",
       "creator": "Pruna AI",
-      "elo": 1116
+      "elo": 1117
     },
     {
       "rank": 9,
       "model": "MiniMax H3 Max",
       "creator": "Fal",
-      "elo": 1115
+      "elo": 1116
     },
     {
       "rank": 10,

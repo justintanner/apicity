@@ -68,6 +68,7 @@
       "modelId": "gpt-image-2.5-flare"
     }
   ],
+  "Kling Image 4.0 (preview)": [],
   "Seedream 5.5": [
     {
       "provider": "kie",
@@ -99,6 +100,5 @@
       "modelId": "Nano-Banana-2.1"
     }
   ],
-  "MAI-Image-2.6": [],
-  "MAI-Image-2.6-Flash": []
+  "MAI-Image-2.6": []
 }

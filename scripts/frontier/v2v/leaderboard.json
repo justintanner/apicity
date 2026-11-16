@@ -1,68 +1,68 @@
 {
   "leaderboardId": "AA-Video-Editing v1.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/video-editing",
-  "capturedOn": "2026-11-11",
+  "capturedOn": "2026-11-16",
   "methodology": "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
   "entries": [
     {
       "rank": 1,
       "model": "Wan 3.0",
       "creator": "Alibaba",
-      "elo": 1192
+      "elo": 1197
     },
     {
       "rank": 2,
       "model": "Gemini Omni Flash 1.2",
       "creator": "Google",
-      "elo": 1164
+      "elo": 1166
     },
     {
       "rank": 3,
       "model": "Hyperflow H3",
       "creator": "Video Rebirth",
-      "elo": 1149
+      "elo": 1156
     },
     {
       "rank": 4,
       "model": "Dreamina Seedance 2.5",
       "creator": "ByteDance Seed",
-      "elo": 1147
+      "elo": 1152
     },
     {
       "rank": 5,
       "model": "Gemini Omni Flash 1.1",
       "creator": "Google",
-      "elo": 1146
+      "elo": 1150
     },
     {
       "rank": 6,
       "model": "MiniMax H3 (768p)",
       "creator": "MiniMax",
-      "elo": 1119
+      "elo": 1126
     },
     {
       "rank": 7,
       "model": "HappyHorse-1.0",
       "creator": "Alibaba-ATH",
-      "elo": 1085
+      "elo": 1087
     },
     {
       "rank": 8,
       "model": "Dreamina Seedance 2.0",
       "creator": "ByteDance Seed",
-      "elo": 1076
+      "elo": 1077
     },
     {
       "rank": 9,
       "model": "Wan 2.7",
       "creator": "Alibaba",
-      "elo": 1071
+      "elo": 1074
     },
     {
       "rank": 10,
-      "model": "Aleph 2.0",
-      "creator": "Runway",
-      "elo": 1006
+      "model": "Pika H3 Flex",
+      "creator": "Pika Art",
+      "elo": 1045
     }
   ]
 }

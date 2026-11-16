@@ -205,6 +205,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
   billed 0.0217 USD (ac-pns6xz).
 
+- WaveSpeed GPT Image 2.5 Sunburst text-to-image
+  (`openai/gpt-image-2.5-sunburst/text-to-image`) bills one image per request by
+  quality and resolution, from 0.01 USD (low, 1k) to 1 USD (max, 4k) and
+  0.024 USD at the medium 1k default. The model page gives no formula, so the
+  rates are free quotes (list price, read 2026-11-16). `MODEL_SLUGS.wavespeed`
+  shares the family slug `gi2p5sb` (ac-3zf6m7).
 - WaveSpeed Nano Banana 2.1 edit (`google/nano-banana-2.1/edit`) bills the
   text-to-image rate for the resolution and searches, plus 0.002 USD per input
   image, from free quotes (list price, read 2026-11-16). An estimate without an

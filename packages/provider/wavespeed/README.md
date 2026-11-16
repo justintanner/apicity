@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-39 endpoints across 12 groups. Each method mirrors an upstream URL path.
+40 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -558,6 +558,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### openai
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.openai.gptImage2p5Sunburst.textToImage</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-sunburst/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image)
+
+```typescript
+const res = await wavespeed.api.v3.openai.gptImage2p5Sunburst.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.openai.gptImage2p6Flare.edit</code></b></summary>

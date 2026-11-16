@@ -142,6 +142,27 @@ const gptImage2p6Select: PerUnitPricing["select"] = [
   { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
 ];
 
+// GPT Image 2.5 on WaveSpeed, Sunburst and Flare alike: USD per image by
+// quality and resolution, from free quotes (POST /api/v3/model/price) read
+// 2026-11-16, list price. The output format and aspect ratio add nothing.
+const GPT_IMAGE_2P5_RATES: Record<string, number> = {
+  "low|1k": 0.01,
+  "low|2k": 0.02,
+  "low|4k": 0.03,
+  "medium|1k": 0.024,
+  "medium|2k": 0.04,
+  "medium|4k": 0.07,
+  "high|1k": 0.09,
+  "high|2k": 0.15,
+  "high|4k": 0.27,
+  "xhigh|1k": 0.16,
+  "xhigh|2k": 0.27,
+  "xhigh|4k": 0.48,
+  "max|1k": 0.36,
+  "max|2k": 0.6,
+  "max|4k": 1,
+};
+
 // svg adds 0.02 USD to a GPT Image 2.6 text-to-image request.
 const svgSurcharge = (p: Record<string, unknown>): number | undefined => {
   if (p.output_format === undefined) return 0;
@@ -913,6 +934,22 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     source: {
       url: "https://wavespeed.ai/models/google/nano-banana-2.1/edit",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 24000 micros, discount_rate 100 on 2026-11-16. The model page
+  // carries no formula, only its price inputs (quality, resolution), so the
+  // rates are the list prices of free quotes read 2026-11-16 at every quality
+  // and resolution, with the GPT Image 2.6 defaults (medium, 1k). One request
+  // returns one image.
+  "openai/gpt-image-2.5-sunburst/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P5_RATES,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image",
       asOf: "2026-11-16",
     },
   },

@@ -5200,6 +5200,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.google.nanoBanana2p1.edit"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.openai.gptImage2p5Sunburst.textToImage"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

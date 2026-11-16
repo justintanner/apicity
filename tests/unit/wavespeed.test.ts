@@ -32,6 +32,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
@@ -1878,6 +1879,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
     expect(Object.keys(wavespeed.api.v3.openai)).toEqual([
       "gptImage2p6Flare",
       "gptImage2p6Sunburst",
+      "gptImage2p5Sunburst",
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
       "textToImage",
@@ -2207,6 +2209,64 @@ describe("wavespeed google/nano-banana-2.1/edit", () => {
     ] as const) {
       expect(
         schema.safeParse({ ...RECORDED, [field]: value }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2.5-sunburst/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-5-sunburst-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.openai.gptImage2p5Sunburst)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.openai.gptImage2p5Sunburst.textToImage.schema).toBe(
+      WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "9:21",
+        resolution: "4k",
+        quality: "max",
+        output_format: "webp",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid and the GPT Image 2.6 extras", () => {
+    for (const [field, value] of [
+      ["resolution", "8k"],
+      ["quality", "ultra"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "svg"],
+      ["output_format", "gif"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
         field
       ).toBe(false);
     }

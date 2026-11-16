@@ -456,6 +456,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "Nano-Banana-2.1",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.nanoBanana2p1.edit",
+            pricingKey: "google/nano-banana-2.1/edit",
+          },
         ],
       },
       {

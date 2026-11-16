@@ -23,6 +23,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
+  WaveSpeedGoogleNanoBanana2p1EditRequest,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
@@ -65,6 +66,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -705,6 +707,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/edit
+            // Docs: https://wavespeed.ai/models/google/nano-banana-2.1/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedGoogleNanoBanana2p1EditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/nano-banana-2.1/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedGoogleNanoBanana2p1EditRequestSchema }
             ),
           },
         },

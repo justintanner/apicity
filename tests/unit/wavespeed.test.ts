@@ -24,6 +24,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -2122,6 +2123,7 @@ describe("wavespeed google/nano-banana-2.1/text-to-image", () => {
 
     expect(Object.keys(wavespeed.api.v3.google.nanoBanana2p1)).toEqual([
       "textToImage",
+      "edit",
     ]);
     expect(wavespeed.api.v3.google.nanoBanana2p1.textToImage.schema).toBe(
       WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema
@@ -2149,6 +2151,58 @@ describe("wavespeed google/nano-banana-2.1/text-to-image", () => {
       ["aspect_ratio", "1:2"],
       ["output_format", "webp"],
       ["enable_web_search", "yes"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        schema.safeParse({ ...RECORDED, [field]: value }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/nano-banana-2.1/edit", () => {
+  // The payload
+  // tests/integration/wavespeed-google-nano-banana-2-1-edit.test.ts recorded.
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.google.nanoBanana2p1.edit.schema).toBe(
+      WaveSpeedGoogleNanoBanana2p1EditRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleNanoBanana2p1EditRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("takes every documented option and rejects values off the grid", () => {
+    const schema = WaveSpeedGoogleNanoBanana2p1EditRequestSchema;
+    const url = "https://example.com/ref.png";
+    expect(
+      schema.safeParse({
+        prompt: "Swap the sky",
+        images: Array(14).fill(url),
+        aspect_ratio: "1:8",
+        resolution: "4k",
+        output_format: "jpeg",
+        enable_web_search: true,
+        enable_image_search: false,
+      }).success
+    ).toBe(true);
+    for (const [field, value] of [
+      ["resolution", "8k"],
+      ["aspect_ratio", "1:2"],
+      ["output_format", "webp"],
+      ["images", Array(15).fill(url)],
+      ["images", undefined],
       ["prompt", undefined],
     ] as const) {
       expect(

@@ -22,6 +22,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
@@ -516,7 +517,20 @@ export interface WaveSpeedGoogleNanoBanana2p1TextToImageMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema;
 }
+export type WaveSpeedGoogleNanoBanana2p1EditRequest = z.input<
+  typeof WaveSpeedGoogleNanoBanana2p1EditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleNanoBanana2p1EditMethod {
+  (
+    request: WaveSpeedGoogleNanoBanana2p1EditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleNanoBanana2p1EditRequestSchema;
+}
 export interface WaveSpeedGoogleNanoBanana2p1Namespace {
+  edit: WaveSpeedGoogleNanoBanana2p1EditMethod;
   textToImage: WaveSpeedGoogleNanoBanana2p1TextToImageMethod;
 }
 export interface WaveSpeedGoogleNamespace {

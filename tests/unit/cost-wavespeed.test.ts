@@ -1917,3 +1917,51 @@ describe("wavespeed google/nano-banana-2.1/edit", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed openai/gpt-image-2.5-sunburst/text-to-image", () => {
+  const model = "openai/gpt-image-2.5-sunburst/text-to-image";
+
+  it("prices the recorded payload at the 0.01 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.01, 9);
+  });
+
+  it("bills one medium 1k image by default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.024, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.01, 0.02, 0.03],
+      medium: [0.024, 0.04, 0.07],
+      high: [0.09, 0.15, 0.27],
+      xhigh: [0.16, 0.27, 0.48],
+      max: [0.36, 0.6, 1],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("adds nothing for the output format or aspect ratio", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        output_format: "webp",
+        aspect_ratio: "21:9",
+      }).usd
+    ).toBeCloseTo(0.024, 9);
+  });
+});

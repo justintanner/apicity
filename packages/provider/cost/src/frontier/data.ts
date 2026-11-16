@@ -131,6 +131,11 @@ export const FRONTIER = {
             dotPath: "v1.images.generations",
             modelId: "gpt-image-2.5-sunburst",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.openai.gptImage2p5Sunburst.textToImage",
+            pricingKey: "openai/gpt-image-2.5-sunburst/text-to-image",
+          },
         ],
       },
       {

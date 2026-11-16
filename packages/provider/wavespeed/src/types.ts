@@ -30,6 +30,7 @@ import type {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
@@ -688,9 +689,25 @@ export interface WaveSpeedOpenaiGptImage2p6FlareNamespace {
   edit: WaveSpeedOpenaiGptImage2p6FlareEditMethod;
   textToImage: WaveSpeedOpenaiGptImage2p6FlareTextToImageMethod;
 }
+export type WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest = z.input<
+  typeof WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedOpenaiGptImage2p5SunburstTextToImageMethod {
+  (
+    request: WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema;
+}
+export interface WaveSpeedOpenaiGptImage2p5SunburstNamespace {
+  textToImage: WaveSpeedOpenaiGptImage2p5SunburstTextToImageMethod;
+}
 export interface WaveSpeedOpenaiNamespace {
   gptImage2p6Flare: WaveSpeedOpenaiGptImage2p6FlareNamespace;
   gptImage2p6Sunburst: WaveSpeedOpenaiGptImage2p6SunburstNamespace;
+  gptImage2p5Sunburst: WaveSpeedOpenaiGptImage2p5SunburstNamespace;
 }
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;

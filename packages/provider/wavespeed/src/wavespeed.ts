@@ -31,6 +31,7 @@ import type {
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
+  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
   WaveSpeedOpenaiGptImage2p6FlareEditRequest,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequest,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequest,
@@ -74,6 +75,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
@@ -905,6 +907,28 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema }
+            ),
+          },
+          gptImage2p5Sunburst: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-sunburst/text-to-image
+            // Docs: https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/openai/gpt-image-2.5-sunburst/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
+              }
             ),
           },
         },

@@ -1522,3 +1522,45 @@ export const WaveSpeedGoogleNanoBanana2p1EditRequestSchema = z.object({
       "Let the model use image search for real-time information. Costs more. WaveSpeed default: false."
     ),
 });
+
+// openai/gpt-image-2.5-sunburst/text-to-image, from the request schema on
+// WaveSpeed's model page (read 2026-11-16). Unlike GPT Image 2.6 it has no
+// `complexity`, no gif or svg output and no frame controls.
+export const WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema =
+  z.object({
+    prompt: z.string().describe("The positive prompt for the generation."),
+    aspect_ratio: z
+      .enum([
+        "1:1",
+        "1:2",
+        "2:1",
+        "1:3",
+        "3:1",
+        "2:3",
+        "3:2",
+        "3:4",
+        "4:3",
+        "4:5",
+        "5:4",
+        "9:16",
+        "16:9",
+        "9:21",
+        "21:9",
+      ])
+      .optional()
+      .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+    resolution: z
+      .enum(["1k", "2k", "4k"])
+      .optional()
+      .describe("Resolution of the image. WaveSpeed default: `1k`."),
+    quality: z
+      .enum(["low", "medium", "high", "xhigh", "max"])
+      .optional()
+      .describe(
+        "Rendering quality. Higher tiers add detail and cost more. WaveSpeed default: `medium`."
+      ),
+    output_format: z
+      .enum(["png", "jpeg", "webp"])
+      .optional()
+      .describe("Format of the output image. WaveSpeed default: `png`."),
+  });

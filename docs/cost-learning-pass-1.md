@@ -105,6 +105,15 @@ must equal the billed units at the price read today.
 | fal `fal-ai/nano-banana`, `/edit`                                                                           | 0.039                            | 0.0398            | Card and price list, 1 unit on each recording                                                         |
 | kie `pixverse-v6/reference-to-video`                                                                        | 0.0225-0.1035                    | 0.02-0.092        | Today's feed prints the shared ladder. `pixverse-v6-reference-to-video_2396754018` billed 4 credits/s |
 
+On 2026-11-16 `ac-cukhhs` re-read the MiniMax H3 Max cards. The November
+promotion had ended, and those five rows now hold the card's standard rates
+(0.05/0.08/0.16 and 0.025/0.04/0.08 USD/s). `GET /v1/models/pricing` that day
+returned 0.0375 and 0.01875 USD/s, 25% under the published 480P floors and not
+on the card; the table keeps the published rates. `fal-ai/vidu/q4` still holds
+list rates through its promotion ending 2026-11-30. The card prose that day
+quoted the promotional per-second prices, and the pricing API still reported
+0.0035 USD per unit.
+
 **The hand-written KIE cassettes.** `kling-v3-turbo-text-to-video_1058703467` and
 `kling-v3-turbo-text-to-video-1080p_717102705` were written by hand in 4467fd2a: their
 task ids end in `_apicity`, their results are on example.com, and the poll is in the

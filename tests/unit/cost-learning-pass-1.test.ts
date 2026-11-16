@@ -80,37 +80,6 @@ describe("fal corrections, at header units x the price on 2026-11-04", () => {
       `${FAL}/minimax-h3-t2v-trainer_2342852863`,
       0.005,
     ],
-    // The October promotion ended, and these are November's rates.
-    [
-      "minimax/h3-max/text-to-video",
-      "minimax.h3Max.textToVideo",
-      `${FAL}/minimax-h3-max-text-to-video_447311577`,
-      0.035,
-    ],
-    [
-      "minimax/h3-max/image-to-video",
-      "minimax.h3Max.imageToVideo",
-      `${FAL}/minimax-h3-max-image-to-video_2398423055`,
-      0.035,
-    ],
-    [
-      "minimax/h3-max/camera-controls",
-      "minimax.h3Max.cameraControls",
-      `${FAL}/minimax-h3-max-camera-controls_1794456208`,
-      0.035,
-    ],
-    [
-      "minimax/h3-max-turbo/text-to-video",
-      "minimax.h3MaxTurbo.textToVideo",
-      `${FAL}/minimax-h3-max-turbo-text-to-video_3773243928`,
-      0.0175,
-    ],
-    [
-      "minimax/h3-max-turbo/image-to-video",
-      "minimax.h3MaxTurbo.imageToVideo",
-      `${FAL}/minimax-h3-max-turbo-image-to-video_2916983732`,
-      0.0175,
-    ],
     // HeyGen's 50% promotion ended on 2026-10-31.
     [
       "heygen/heygen-video/text-to-video",
@@ -197,6 +166,80 @@ describe("fal corrections, at header units x the price on 2026-11-04", () => {
         "mureka-9.5|prompt": 0.5,
       },
     });
+  });
+});
+
+// ac-cukhhs re-read these cards on 2026-11-16. The November promotion had
+// ended. Header units still come from the promotional recording; the price is
+// the published list rate that day. Vidu Q4 stays on list rates through
+// 2026-11-30 and is pinned in its own tests.
+describe("fal MiniMax H3 Max list rates, read 2026-11-16", () => {
+  it.each([
+    [
+      "minimax/h3-max/text-to-video",
+      "minimax.h3Max.textToVideo",
+      `${FAL}/minimax-h3-max-text-to-video_447311577`,
+      0.05,
+    ],
+    [
+      "minimax/h3-max/image-to-video",
+      "minimax.h3Max.imageToVideo",
+      `${FAL}/minimax-h3-max-image-to-video_2398423055`,
+      0.05,
+    ],
+    [
+      "minimax/h3-max/camera-controls",
+      "minimax.h3Max.cameraControls",
+      `${FAL}/minimax-h3-max-camera-controls_1794456208`,
+      0.05,
+    ],
+    [
+      "minimax/h3-max-turbo/text-to-video",
+      "minimax.h3MaxTurbo.textToVideo",
+      `${FAL}/minimax-h3-max-turbo-text-to-video_3773243928`,
+      0.025,
+    ],
+    [
+      "minimax/h3-max-turbo/image-to-video",
+      "minimax.h3MaxTurbo.imageToVideo",
+      `${FAL}/minimax-h3-max-turbo-image-to-video_2916983732`,
+      0.025,
+    ],
+  ])("%s", (key, dotPath, recording, price) => {
+    const har = read(recording);
+    const estimate = estimateEndpoint({
+      provider: "fal",
+      method: "POST",
+      dotPath,
+      payload: payloadOf(har, /fal\.run|fal\.ai/),
+    });
+    expect(estimate.status).toBe("priced");
+    expect(estimate.usd).toBeCloseTo(billableUnits(har) * price, 6);
+    expect(PRICING.fal[key]!.source?.asOf).toBe("2026-11-16");
+    expect(PRICING.fal[key]).toMatchObject({
+      rates:
+        price === 0.05
+          ? { "480P": 0.05, "768P": 0.08, "1080P": 0.16 }
+          : { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    });
+  });
+
+  it("keeps fal-ai/vidu/q4 on list rates through 2026-11-30", () => {
+    for (const key of [
+      "fal-ai/vidu/q4/image-to-video",
+      "fal-ai/vidu/q4/reference-to-video",
+    ]) {
+      expect(PRICING.fal[key]).toMatchObject({
+        rates: {
+          "540p": 0.045,
+          "720p": 0.095,
+          "1080p": 0.12,
+          "2K": 0.19,
+          "4K": 0.39,
+        },
+        source: { asOf: "2026-11-16" },
+      });
+    }
   });
 });
 

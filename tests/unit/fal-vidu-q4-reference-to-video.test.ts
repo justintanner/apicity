@@ -291,7 +291,7 @@ describe("Vidu Q4 reference-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/fal-ai/vidu/q4/reference-to-video",
-      asOf: "2026-10-15",
+      asOf: "2026-11-16",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "viduq4"

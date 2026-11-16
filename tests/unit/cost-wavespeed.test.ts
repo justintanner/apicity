@@ -1787,3 +1787,72 @@ describe("wavespeed openai/gpt-image-2.6-flare/edit", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed google/nano-banana-2.1/text-to-image", () => {
+  const model = "google/nano-banana-2.1/text-to-image";
+
+  it("prices the recorded payload at the 0.04 USD list quote", () => {
+    const result = estimate(model, { prompt: PROMPT, resolution: "1k" });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.04, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills by resolution, 1k by default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.04, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "2k" }).usd
+    ).toBeCloseTo(0.06, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "4k" }).usd
+    ).toBeCloseTo(0.135, 9);
+  });
+
+  it("adds 0.014 USD for each enabled search", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, enable_web_search: true }).usd
+    ).toBeCloseTo(0.054, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, enable_image_search: true }).usd
+    ).toBeCloseTo(0.054, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        enable_web_search: true,
+        enable_image_search: true,
+      }).usd
+    ).toBeCloseTo(0.068, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        resolution: "4k",
+        enable_web_search: true,
+        enable_image_search: true,
+      }).usd
+    ).toBeCloseTo(0.163, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, enable_web_search: false }).usd
+    ).toBeCloseTo(0.04, 9);
+  });
+
+  it("adds nothing for format or aspect ratio", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        output_format: "jpeg",
+        aspect_ratio: "8:1",
+      }).usd
+    ).toBeCloseTo(0.04, 9);
+  });
+
+  it("fails closed on a search flag that is not a boolean", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      enable_web_search: "true",
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

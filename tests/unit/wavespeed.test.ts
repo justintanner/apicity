@@ -24,6 +24,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
@@ -2097,6 +2098,57 @@ describe("wavespeed openai/gpt-image-2.6-flare/edit", () => {
       ["output_format", "svg"],
       ["images", Array(17).fill(url)],
       ["images", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        schema.safeParse({ ...RECORDED, [field]: value }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/nano-banana-2.1/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-google-nano-banana-2-1-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.google.nanoBanana2p1)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.google.nanoBanana2p1.textToImage.schema).toBe(
+      WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option and rejects values off the grid", () => {
+    const schema = WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema;
+    expect(
+      schema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "8:1",
+        resolution: "4k",
+        output_format: "jpeg",
+        enable_web_search: true,
+        enable_image_search: true,
+      }).success
+    ).toBe(true);
+    for (const [field, value] of [
+      ["resolution", "8k"],
+      ["aspect_ratio", "1:2"],
+      ["output_format", "webp"],
+      ["enable_web_search", "yes"],
       ["prompt", undefined],
     ] as const) {
       expect(

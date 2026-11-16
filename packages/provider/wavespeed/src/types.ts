@@ -22,6 +22,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
@@ -503,8 +504,24 @@ export interface WaveSpeedGoogleGeminiOmni1p1FlashNamespace {
   videoEdit: WaveSpeedGoogleGeminiOmni1p1FlashVideoEditMethod;
   referenceToVideo: WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoMethod;
 }
+export type WaveSpeedGoogleNanoBanana2p1TextToImageRequest = z.input<
+  typeof WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleNanoBanana2p1TextToImageMethod {
+  (
+    request: WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema;
+}
+export interface WaveSpeedGoogleNanoBanana2p1Namespace {
+  textToImage: WaveSpeedGoogleNanoBanana2p1TextToImageMethod;
+}
 export interface WaveSpeedGoogleNamespace {
   geminiOmni1p1Flash: WaveSpeedGoogleGeminiOmni1p1FlashNamespace;
+  nanoBanana2p1: WaveSpeedGoogleNanoBanana2p1Namespace;
 }
 
 export type WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest = z.input<

@@ -1662,3 +1662,55 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/edit", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed openai/gpt-image-2.6-flare/text-to-image", () => {
+  const model = "openai/gpt-image-2.6-flare/text-to-image";
+
+  it("prices the recorded payload at the 0.03 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.03, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.03, 0.06, 0.1],
+      medium: [0.05, 0.1, 0.18],
+      high: [0.06, 0.12, 0.21],
+      xhigh: [0.11, 0.21, 0.38],
+      max: [0.25, 0.47, 0.85],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("bills the medium 1k default, and 0.02 USD more for svg", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.05, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, output_format: "gif" }).usd
+    ).toBeCloseTo(0.05, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, output_format: "svg" }).usd
+    ).toBeCloseTo(0.07, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        quality: "max",
+        resolution: "4k",
+        output_format: "svg",
+      }).usd
+    ).toBeCloseTo(0.87, 9);
+  });
+});

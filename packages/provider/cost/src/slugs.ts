@@ -1096,6 +1096,7 @@ export const MODEL_SLUGS = {
     "alibaba/happyhorse-1.1/reference-to-video": "hh11",
     "openai/gpt-image-2.6-sunburst/text-to-image": "gi2p6sb",
     "openai/gpt-image-2.6-sunburst/edit": "gi2p6sb",
+    "openai/gpt-image-2.6-flare/text-to-image": "gi2p6fl",
   },
 } as const;
 
@@ -2202,6 +2203,7 @@ export const MODEL_DISPLAY = {
     "alibaba/happyhorse-1.1/reference-to-video": "Happy Horse 1.1",
     "openai/gpt-image-2.6-sunburst/text-to-image": "GPT Image 2.6 Sunburst",
     "openai/gpt-image-2.6-sunburst/edit": "GPT Image 2.6 Sunburst Edit",
+    "openai/gpt-image-2.6-flare/text-to-image": "GPT Image 2.6 Flare",
   },
 } as const;
 

@@ -116,6 +116,40 @@ const referenceVideosWarn =
         ]
       : [];
 
+// GPT Image 2.6 on WaveSpeed, Sunburst and Flare alike: USD per image by
+// quality and resolution, from free quotes (POST /api/v3/model/price) read
+// 2026-11-16, list price.
+const GPT_IMAGE_2P6_RATES: Record<string, number> = {
+  "low|1k": 0.03,
+  "low|2k": 0.06,
+  "low|4k": 0.1,
+  "medium|1k": 0.05,
+  "medium|2k": 0.1,
+  "medium|4k": 0.18,
+  "high|1k": 0.06,
+  "high|2k": 0.12,
+  "high|4k": 0.21,
+  "xhigh|1k": 0.11,
+  "xhigh|2k": 0.21,
+  "xhigh|4k": 0.38,
+  "max|1k": 0.25,
+  "max|2k": 0.47,
+  "max|4k": 0.85,
+};
+
+const gptImage2p6Select: PerUnitPricing["select"] = [
+  { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
+  { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+];
+
+// svg adds 0.02 USD to a GPT Image 2.6 text-to-image request.
+const svgSurcharge = (p: Record<string, unknown>): number | undefined => {
+  if (p.output_format === undefined) return 0;
+  const format = asString(p.output_format);
+  if (format === undefined) return undefined;
+  return format === "svg" ? 0.02 : 0;
+};
+
 export const wavespeed: Record<string, ModelPricing> = {
   // base_price 100000 micros, discount_rate 95 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "1080p" ? 2 :
@@ -763,33 +797,9 @@ export const wavespeed: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "images",
     units: () => 1,
-    select: [
-      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
-      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
-    ],
-    rates: {
-      "low|1k": 0.03,
-      "low|2k": 0.06,
-      "low|4k": 0.1,
-      "medium|1k": 0.05,
-      "medium|2k": 0.1,
-      "medium|4k": 0.18,
-      "high|1k": 0.06,
-      "high|2k": 0.12,
-      "high|4k": 0.21,
-      "xhigh|1k": 0.11,
-      "xhigh|2k": 0.21,
-      "xhigh|4k": 0.38,
-      "max|1k": 0.25,
-      "max|2k": 0.47,
-      "max|4k": 0.85,
-    },
-    extra: (p) => {
-      if (p.output_format === undefined) return 0;
-      const format = asString(p.output_format);
-      if (format === undefined) return undefined;
-      return format === "svg" ? 0.02 : 0;
-    },
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P6_RATES,
+    extra: svgSurcharge,
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/text-to-image",
       asOf: "2026-11-16",
@@ -806,27 +816,8 @@ export const wavespeed: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "images",
     units: () => 1,
-    select: [
-      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
-      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
-    ],
-    rates: {
-      "low|1k": 0.03,
-      "low|2k": 0.06,
-      "low|4k": 0.1,
-      "medium|1k": 0.05,
-      "medium|2k": 0.1,
-      "medium|4k": 0.18,
-      "high|1k": 0.06,
-      "high|2k": 0.12,
-      "high|4k": 0.21,
-      "xhigh|1k": 0.11,
-      "xhigh|2k": 0.21,
-      "xhigh|4k": 0.38,
-      "max|1k": 0.25,
-      "max|2k": 0.47,
-      "max|4k": 0.85,
-    },
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P6_RATES,
     extra: (p) => {
       if (!Array.isArray(p.images)) return undefined;
       const guided = p.mask_image !== undefined || p.markup_image !== undefined;
@@ -834,6 +825,21 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 50000 micros, discount_rate 90 on 2026-11-16. No formula on the
+  // model page. Free quotes read 2026-11-16 match the Sunburst model at every
+  // quality and resolution, and svg adds the same 0.02 USD.
+  "openai/gpt-image-2.6-flare/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P6_RATES,
+    extra: svgSurcharge,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.6-flare/text-to-image",
       asOf: "2026-11-16",
     },
   },

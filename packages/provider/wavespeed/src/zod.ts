@@ -1416,3 +1416,8 @@ export const WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema = z.object({
       "GIF only: milliseconds per frame, 20-2000. WaveSpeed default: 200."
     ),
 });
+
+// openai/gpt-image-2.6-flare/text-to-image: the model page (read 2026-11-16)
+// gives it the same request schema as the Sunburst model.
+export const WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema =
+  WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema;

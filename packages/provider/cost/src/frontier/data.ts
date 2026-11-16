@@ -149,6 +149,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-6/flare-text-to-image",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.openai.gptImage2p6Flare.textToImage",
+            pricingKey: "openai/gpt-image-2.6-flare/text-to-image",
+          },
         ],
       },
       {

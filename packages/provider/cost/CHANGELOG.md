@@ -690,6 +690,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- fal MiniMax H3 Max text-to-video, image-to-video and camera-controls are the card's standard 0.05, 0.08 and 0.16 USD/s at 480P, 768P and 1080P, and H3 Max Turbo text-to-video and image-to-video are 0.025, 0.04 and 0.08 USD/s. The November promotion ended 2026-11-15; the cards were re-read on 2026-11-16. `fal-ai/vidu/q4` keeps list rates through its promotion ending 2026-11-30 (ac-cukhhs).
+
 - The frontier registry (`frontier()`, `docs/frontier.md`) now follows the
   Artificial Analysis boards as read on 2026-11-11 (was 2026-10-22). Every board
   moved. New rows, unmapped for now: GPT Image 2.6 Sunburst and Flare (t2i #1/#3,

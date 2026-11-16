@@ -225,15 +225,15 @@ describe("MiniMax H3 Max text-to-video contract", () => {
     }
   });
 
-  // Card read 2026-11-04: promo through 2026-11-15 is $0.035/$0.056/$0.112.
-  // List after that date is $0.05/$0.08/$0.16. The recorded 0.92 s 480P
-  // call billed 0.92 units, so it estimates at 0.92 x $0.035.
+  // Card re-read 2026-11-16: the promotion ended, and standard rates are
+  // $0.05/$0.08/$0.16. The recorded 0.92 s 480P call billed 0.92 units at
+  // the promotion, so today's estimate is 0.92 x $0.05.
   it.each([
-    ["480P", 0.035],
-    ["768P", 0.056],
-    ["1080P", 0.112],
+    ["480P", 0.05],
+    ["768P", 0.08],
+    ["1080P", 0.16],
   ] as const)(
-    "prices %s at its current promo rate per requested second",
+    "prices %s at the published list rate per requested second",
     (tier, rate) => {
       const estimate = computeEstimate({
         provider: "fal",
@@ -252,12 +252,12 @@ describe("MiniMax H3 Max text-to-video contract", () => {
         endpoint,
         payload: { ...input, resolution: "480P", duration: 0.92 },
       }).usd
-    ).toBeCloseTo(0.0322));
+    ).toBeCloseTo(0.046));
 
   it("prices the default five seconds at 768P", () =>
     expect(
       computeEstimate({ provider: "fal", endpoint, payload: input }).usd
-    ).toBeCloseTo(0.28));
+    ).toBeCloseTo(0.4));
 
   it("does not price by aspect ratio", () =>
     expect(
@@ -266,13 +266,13 @@ describe("MiniMax H3 Max text-to-video contract", () => {
         endpoint,
         payload: { ...input, resolution: "480P", aspect_ratio: "21:9" },
       }).usd
-    ).toBeCloseTo(0.175));
+    ).toBeCloseTo(0.25));
 
   it("is statically priced, with a slug and a display name", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/minimax/h3-max/text-to-video",
-      asOf: "2026-11-04",
+      asOf: "2026-11-16",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "h3mt2v"

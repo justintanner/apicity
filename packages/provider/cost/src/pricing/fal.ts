@@ -51,6 +51,9 @@ const audioAsOf = "2026-08-22";
 const videoCardAsOf = "2026-10-29";
 // Cost learning pass 1 re-read these cards and the pricing API on this date.
 const learningPass1AsOf = "2026-11-04";
+// MiniMax H3 Max list rates, and the Vidu Q4 list-rate policy, re-read on
+// this date (ac-cukhhs). The November H3 Max promotion had ended.
+const cardRereadAsOf = "2026-11-16";
 
 // The five per-megapixel entries were re-read on this date: each model's
 // fal.ai page and GET /v1/models/pricing, with the megapixel definition and
@@ -2486,25 +2489,27 @@ export const fal: Record<string, ModelPricing> = {
   // Bills the requested seconds (default 5) at the resolution tier (default
   // 720p); audio does not change the price. The recorded 3 s 540p call billed
   // 27 units of $0.0035 ($0.0945) although the file played 3.042 s. List
-  // rates; the promotional 30% off ($0.0315/$0.0665/$0.084/$0.133/$0.273 per
-  // second) ends 2026-11-30.
+  // rates. Re-read 2026-11-16: the card now quotes the promotional per-second
+  // prices ($0.0315/$0.0665/$0.084/$0.133/$0.273) and the pricing API still
+  // reports $0.0035 per unit. The table keeps list rates through that
+  // promotion, which ends 2026-11-30.
   "fal-ai/vidu/q4/reference-to-video": perSecondTiered(
     "fal-ai/vidu/q4/reference-to-video",
     [resolutionTier("720p")],
     { "540p": 0.045, "720p": 0.095, "1080p": 0.12, "2K": 0.19, "4K": 0.39 },
     numericSeconds(5),
-    "2026-10-15"
+    cardRereadAsOf
   ),
   // Bills the requested seconds (default 5) at the resolution tier (default
   // 720p): the recorded 3 s 540p call billed 27 units of $0.0035 ($0.0945)
-  // although the file played 3.042 s. List rates; the promotional 30% off
-  // ($0.0315/$0.0665/$0.084/$0.133/$0.273 per second) ends 2026-11-30.
+  // although the file played 3.042 s. Same list-rate policy as
+  // reference-to-video, re-read 2026-11-16, through 2026-11-30.
   "fal-ai/vidu/q4/image-to-video": perSecondTiered(
     "fal-ai/vidu/q4/image-to-video",
     [resolutionTier("720p")],
     { "540p": 0.045, "720p": 0.095, "1080p": 0.12, "2K": 0.19, "4K": 0.39 },
     numericSeconds(5),
-    "2026-10-15"
+    cardRereadAsOf
   ),
   // Lyrics-mode mureka-7.6 recorded 6 units; rates follow the model page's card,
   // read 2026-11-04 with the pricing API at $0.005 a unit ($0.03). They were $0.0075
@@ -2988,56 +2993,64 @@ export const fal: Record<string, ModelPricing> = {
     ),
   },
 
-  // Promo through 2026-11-15 (card and pricing API read 2026-11-04, the October
-  // one has ended): $0.0175/$0.028/$0.056 at 480P/768P/1080P. List from
-  // 2026-11-16 is $0.025/$0.04/$0.08. The recorded 0.92 s 480P call billed 0.92
-  // units. Default resolution is 768P and default duration is 5. Turbo siblings
-  // whose cards were not this promo (extend-video's 2K tier) stay on their own
+  // Standard rates from 2026-11-16 (card re-read that day; the 30% promotion
+  // through 2026-11-15 has ended): $0.025/$0.04/$0.08 at 480P/768P/1080P.
+  // The page's endpointBilling.price is the 480P floor, $0.025. GET
+  // /v1/models/pricing the same day returns $0.01875/s, 25% under that floor.
+  // fal documents that this authenticated call can apply an account discount,
+  // and that figure is not on the card, so the table keeps the published
+  // rates. The recorded 0.92 s 480P call billed 0.92 units at the promotion.
+  // Default resolution is 768P and default duration is 5. Turbo siblings whose
+  // cards were not this promotion (extend-video's 2K tier) stay on their own
   // rates.
   "minimax/h3-max-turbo/text-to-video": perSecondTiered(
     "minimax/h3-max-turbo/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.0175, "768P": 0.028, "1080P": 0.056 },
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
     numericSeconds(5),
-    learningPass1AsOf
+    cardRereadAsOf
   ),
   "minimax/h3-max-turbo/image-to-video": perSecondTiered(
     "minimax/h3-max-turbo/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.0175, "768P": 0.028, "1080P": 0.056 },
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
     numericSeconds(5),
-    learningPass1AsOf
+    cardRereadAsOf
   ),
 
   // Bills the requested seconds (default 5) at the resolution tier (default
-  // 480P): the recorded 0.92 s 480P call billed 0.92 units. Promo through
-  // 2026-11-15, as text-to-video below; list from 2026-11-16 is $0.05/$0.08/$0.16.
+  // 480P): the recorded 0.92 s 480P call billed 0.92 units at the promotion.
+  // Standard rates from 2026-11-16, as text-to-video below: $0.05/$0.08/$0.16.
   "minimax/h3-max/camera-controls": perSecondTiered(
     "minimax/h3-max/camera-controls",
     [resolutionTier("480P")],
-    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
     numericSeconds(5),
-    learningPass1AsOf
+    cardRereadAsOf
   ),
 
-  // Promo through 2026-11-15 (card and pricing API read 2026-11-04, the October
-  // one has ended): $0.035/$0.056/$0.112 at 480P/768P/1080P. List from 2026-11-16
-  // is $0.05/$0.08/$0.16. The recorded 0.92 s 480P call billed 0.92 units. Default
-  // resolution is 768P and default duration is 5. Other H3 Max leaves are outside
-  // this sweep.
+  // Standard rates from 2026-11-16 (card re-read that day; the 30% promotion
+  // through 2026-11-15 has ended): $0.05/$0.08/$0.16 at 480P/768P/1080P.
+  // The page's endpointBilling.price is the 480P floor, $0.05. GET
+  // /v1/models/pricing the same day returns $0.0375/s, 25% under that floor.
+  // fal documents that this authenticated call can apply an account discount,
+  // and that figure is not on the card, so the table keeps the published
+  // rates. The recorded 0.92 s 480P call billed 0.92 units at the promotion.
+  // Default resolution is 768P and default duration is 5. Other H3 Max leaves
+  // are outside this sweep.
   "minimax/h3-max/text-to-video": perSecondTiered(
     "minimax/h3-max/text-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
     numericSeconds(5),
-    learningPass1AsOf
+    cardRereadAsOf
   ),
   "minimax/h3-max/image-to-video": perSecondTiered(
     "minimax/h3-max/image-to-video",
     [resolutionTier("768P")],
-    { "480P": 0.035, "768P": 0.056, "1080P": 0.112 },
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
     numericSeconds(5),
-    learningPass1AsOf
+    cardRereadAsOf
   ),
 
   // Card read 2026-10-29: $0.05/$0.06/$0.13/$0.16 per second at

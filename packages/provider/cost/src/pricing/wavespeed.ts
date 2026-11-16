@@ -892,4 +892,28 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 40000 micros, discount_rate 90 on 2026-11-16. No formula on the
+  // model page (price inputs: enable_image_search, enable_web_search, images,
+  // resolution). Free quotes (POST /api/v3/model/price) read 2026-11-16, list
+  // price: the text-to-image rate for the resolution and searches, plus
+  // 0.002 USD per input image (1, 2 and 14 images quoted: 0.042, 0.044 and
+  // 0.068 at 1k; 2 images at 4k with both searches: 0.167).
+  "google/nano-banana-2.1/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: { "1k": 0.04, "2k": 0.06, "4k": 0.135 },
+    extra: (p) => {
+      const search = searchSurcharge(p);
+      if (search === undefined || !Array.isArray(p.images)) return undefined;
+      return search + 0.002 * p.images.length;
+    },
+    source: {
+      url: "https://wavespeed.ai/models/google/nano-banana-2.1/edit",
+      asOf: "2026-11-16",
+    },
+  },
 };

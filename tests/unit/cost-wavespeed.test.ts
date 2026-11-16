@@ -1856,3 +1856,64 @@ describe("wavespeed google/nano-banana-2.1/text-to-image", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed google/nano-banana-2.1/edit", () => {
+  const model = "google/nano-banana-2.1/edit";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.042 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.042, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills by resolution plus 0.002 USD per input image", () => {
+    const one = { prompt: PROMPT, images: [image] };
+    expect(estimate(model, { ...one, resolution: "2k" }).usd).toBeCloseTo(
+      0.062,
+      9
+    );
+    expect(estimate(model, { ...one, resolution: "4k" }).usd).toBeCloseTo(
+      0.137,
+      9
+    );
+    expect(
+      estimate(model, { prompt: PROMPT, images: [image, image] }).usd
+    ).toBeCloseTo(0.044, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, images: Array(14).fill(image) }).usd
+    ).toBeCloseTo(0.068, 9);
+  });
+
+  it("adds 0.014 USD for each enabled search", () => {
+    const one = { prompt: PROMPT, images: [image] };
+    expect(
+      estimate(model, { ...one, enable_web_search: true }).usd
+    ).toBeCloseTo(0.056, 9);
+    expect(
+      estimate(model, { ...one, enable_image_search: true }).usd
+    ).toBeCloseTo(0.056, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image, image],
+        resolution: "4k",
+        enable_web_search: true,
+        enable_image_search: true,
+      }).usd
+    ).toBeCloseTo(0.167, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

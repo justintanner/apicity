@@ -274,6 +274,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.nanoBanana2p1.edit": {
+    "source": "wavespeed/google-nano-banana-2-1-edit",
+    "payload": {
+      "prompt": "Give the cat a small red knitted scarf.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.nanoBanana2p1.textToImage": {
     "source": "wavespeed/google-nano-banana-2-1-text-to-image",
     "payload": {

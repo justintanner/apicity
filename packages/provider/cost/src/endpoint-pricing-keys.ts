@@ -640,6 +640,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "wavespeed POST api.v3.runwayml.aleph2": "runwayml/aleph-2",
   "wavespeed POST api.v3.wavespeedAi.minimaxH3.videoEdit":
     "wavespeed-ai/minimax-h3/video-edit",
+  "wavespeed POST api.v3.xAi.grokImagineImageV2p0.textToImage":
+    "x-ai/grok-imagine-image-v2.0/text-to-image",
   "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo":
     "x-ai/grok-imagine-video-v1.5/image-to-video",
   "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.referenceToVideo":

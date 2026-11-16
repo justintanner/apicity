@@ -1105,6 +1105,7 @@ export const MODEL_SLUGS = {
     "openai/gpt-image-2.5-flare/text-to-image": "gi2p5fl",
     "pruna-ai/p-video-2-pro/image-to-video": "pvideo2p",
     "openai/gpt-image-2/text-to-image": "gi2",
+    "x-ai/grok-imagine-image-v2.0/text-to-image": "grokimgi2p0",
   },
 } as const;
 
@@ -2220,6 +2221,7 @@ export const MODEL_DISPLAY = {
     "openai/gpt-image-2.5-flare/text-to-image": "GPT Image 2.5 Flare",
     "pruna-ai/p-video-2-pro/image-to-video": "P-Video-2-Pro",
     "openai/gpt-image-2/text-to-image": "GPT Image 2",
+    "x-ai/grok-imagine-image-v2.0/text-to-image": "Grok Imagine Image 2.0",
   },
 } as const;
 

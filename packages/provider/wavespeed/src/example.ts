@@ -481,6 +481,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.xAi.grokImagineImageV2p0.textToImage": {
+    "source": "wavespeed/x-ai-grok-imagine-image-v2-0-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "quality": "low",
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo": {
     "source": "wavespeed/x-ai-grok-imagine-video-v1-5-image-to-video",
     "payload": {

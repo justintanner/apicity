@@ -5273,6 +5273,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.openai.gptImage2.textToImage"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.xAi.grokImagineImageV2p0.textToImage"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

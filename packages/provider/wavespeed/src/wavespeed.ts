@@ -45,6 +45,7 @@ import type {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
   WaveSpeedRunwaymlAleph2Request,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequest,
 } from "./types";
@@ -90,6 +91,7 @@ import {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";
@@ -798,6 +800,28 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
+              }
+            ),
+          },
+          grokImagineImageV2p0: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image
+            // Docs: https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
               }
             ),
           },

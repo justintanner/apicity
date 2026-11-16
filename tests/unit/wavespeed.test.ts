@@ -30,6 +30,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedPredictionStatusSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
@@ -1875,6 +1876,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
       "textToImage",
+      "edit",
     ]);
     expect(wavespeed.api.v3.openai.gptImage2p6Sunburst.textToImage.schema).toBe(
       WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema
@@ -1916,6 +1918,74 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
     ] as const) {
       expect(
         WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2.6-sunburst/edit", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-6-sunburst-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.openai.gptImage2p6Sunburst.edit.schema).toBe(
+      WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    const url = "https://example.com/ref.png";
+    expect(
+      WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema.safeParse({
+        prompt: "Swap the sky",
+        images: Array(16).fill(url),
+        mask_image: url,
+        markup_image: url,
+        aspect_ratio: "9:21",
+        resolution: "4k",
+        quality: "max",
+        complexity: "medium",
+        output_format: "gif",
+        frame_count: 2,
+        frame_duration_ms: 2000,
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.png";
+    for (const [field, value] of [
+      ["resolution", "8k"],
+      ["quality", "ultra"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "svg"],
+      ["frame_count", 17],
+      ["frame_duration_ms", 19],
+      ["images", Array(17).fill(url)],
+      ["images", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

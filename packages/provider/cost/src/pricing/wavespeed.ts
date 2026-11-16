@@ -795,4 +795,46 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 65000 micros, discount_rate 90 on 2026-11-16. No formula on the
+  // model page (price inputs: images, markup_image, mask_image, quality,
+  // resolution). Free quotes (POST /api/v3/model/price) read 2026-11-16 give
+  // the text-to-image rate for the quality and resolution, plus 0.015 USD per
+  // input image (1, 2, 3, 4 and 16 images quoted), plus 0.015 USD once when a
+  // mask_image or a markup_image is sent (both together still add it once).
+  // Output format, aspect_ratio and complexity add nothing.
+  "openai/gpt-image-2.6-sunburst/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: {
+      "low|1k": 0.03,
+      "low|2k": 0.06,
+      "low|4k": 0.1,
+      "medium|1k": 0.05,
+      "medium|2k": 0.1,
+      "medium|4k": 0.18,
+      "high|1k": 0.06,
+      "high|2k": 0.12,
+      "high|4k": 0.21,
+      "xhigh|1k": 0.11,
+      "xhigh|2k": 0.21,
+      "xhigh|4k": 0.38,
+      "max|1k": 0.25,
+      "max|2k": 0.47,
+      "max|4k": 0.85,
+    },
+    extra: (p) => {
+      if (!Array.isArray(p.images)) return undefined;
+      const guided = p.mask_image !== undefined || p.markup_image !== undefined;
+      return 0.015 * p.images.length + (guided ? 0.015 : 0);
+    },
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit",
+      asOf: "2026-11-16",
+    },
+  },
 };

@@ -205,6 +205,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
   billed 0.0217 USD (ac-pns6xz).
 
+- WaveSpeed GPT Image 2.6 Sunburst text-to-image
+  (`openai/gpt-image-2.6-sunburst/text-to-image`) bills one image per request by
+  quality and resolution, from 0.03 USD (low, 1k) to 0.85 USD (max, 4k) and
+  0.05 USD at the medium 1k default; svg adds 0.02 USD. The model page gives no
+  formula, so the rates are free quotes (list price, read 2026-11-16).
+  `MODEL_SLUGS.wavespeed` shares the family slug `gi2p6sb` (ac-2eh7af).
 - WaveSpeed Happy Horse 1.1 reference-to-video
   (`alibaba/happyhorse-1.1/reference-to-video`) bills the output's seconds (5 by
   default) at 0.07, 0.14 and 0.18 USD/s for 480p, 720p and 1080p (720p by

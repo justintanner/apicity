@@ -98,6 +98,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-6/sunburst-text-to-image",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.openai.gptImage2p6Sunburst.textToImage",
+            pricingKey: "openai/gpt-image-2.6-sunburst/text-to-image",
+          },
         ],
       },
       {

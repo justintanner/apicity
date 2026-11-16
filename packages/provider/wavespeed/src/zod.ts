@@ -1265,3 +1265,70 @@ export const WaveSpeedAlibabaHappyhorse1p1ReferenceToVideoRequestSchema =
       .optional()
       .describe("Random seed for reproducibility."),
   });
+
+// openai/gpt-image-2.6-sunburst/text-to-image, from the request schema on
+// WaveSpeed's model page (read 2026-11-16).
+export const WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema =
+  z.object({
+    prompt: z.string().describe("The positive prompt for the generation."),
+    aspect_ratio: z
+      .enum([
+        "1:1",
+        "1:2",
+        "2:1",
+        "1:3",
+        "3:1",
+        "2:3",
+        "3:2",
+        "3:4",
+        "4:3",
+        "4:5",
+        "5:4",
+        "9:16",
+        "16:9",
+        "9:21",
+        "21:9",
+      ])
+      .optional()
+      .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+    resolution: z
+      .enum(["1k", "2k", "4k"])
+      .optional()
+      .describe("Resolution of the image. WaveSpeed default: `1k`."),
+    quality: z
+      .enum(["low", "medium", "high", "xhigh", "max"])
+      .optional()
+      .describe(
+        "Rendering quality. Higher tiers add detail and cost more. WaveSpeed default: `medium`."
+      ),
+    complexity: z
+      .enum(["low", "medium", "high"])
+      .optional()
+      .describe(
+        "How much planning the model does before drawing. It does not change the price. WaveSpeed default: `high`."
+      ),
+    output_format: z
+      .enum(["png", "jpeg", "webp", "gif", "svg"])
+      .optional()
+      .describe(
+        "Format of the output. `gif` returns an animation, `svg` a vector image. WaveSpeed default: `png`."
+      ),
+    frame_count: z
+      .number()
+      .int()
+      .min(2)
+      .max(16)
+      .optional()
+      .describe(
+        "GIF only: number of animation frames, 2-16. WaveSpeed default: 9."
+      ),
+    frame_duration_ms: z
+      .number()
+      .int()
+      .min(20)
+      .max(2000)
+      .optional()
+      .describe(
+        "GIF only: milliseconds per frame, 20-2000. WaveSpeed default: 200."
+      ),
+  });

@@ -2072,3 +2072,58 @@ describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed openai/gpt-image-2/text-to-image", () => {
+  const model = "openai/gpt-image-2/text-to-image";
+
+  it("prices the recorded payload at the 0.01 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.01, 9);
+  });
+
+  it("bills one medium 1k image by default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.06, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.01, 0.02, 0.03],
+      medium: [0.06, 0.1, 0.18],
+      high: [0.22, 0.4, 0.72],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("adds nothing for the output format or aspect ratio", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        output_format: "jpeg",
+        aspect_ratio: "21:9",
+      }).usd
+    ).toBeCloseTo(0.06, 9);
+  });
+
+  it("quotes nothing for a quality the model does not offer", () => {
+    const result = estimate(model, { prompt: PROMPT, quality: "max" });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toEqual([
+      "wavespeed 'openai/gpt-image-2/text-to-image': no rate for variant 'max|1k' (selectors: quality, resolution)",
+    ]);
+  });
+});

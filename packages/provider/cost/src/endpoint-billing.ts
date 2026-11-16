@@ -5249,6 +5249,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.prunaAi.pVideo2Pro.imageToVideo"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/openai/gpt-image-2/text-to-image",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.openai.gptImage2.textToImage"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

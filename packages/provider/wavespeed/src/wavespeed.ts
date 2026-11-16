@@ -31,6 +31,7 @@ import type {
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
+  WaveSpeedOpenaiGptImage2TextToImageRequest,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequest,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
   WaveSpeedOpenaiGptImage2p6FlareEditRequest,
@@ -77,6 +78,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
@@ -954,6 +956,24 @@ export function createWaveSpeed(
               {
                 schema: WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
               }
+            ),
+          },
+          gptImage2: {
+            // POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image
+            // Docs: https://wavespeed.ai/models/openai/gpt-image-2/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedOpenaiGptImage2TextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/openai/gpt-image-2/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedOpenaiGptImage2TextToImageRequestSchema }
             ),
           },
         },

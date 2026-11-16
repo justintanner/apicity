@@ -619,6 +619,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "wavespeed POST api.v3.minimax.h3.referenceToVideo":
     "minimax/h3/reference-to-video",
   "wavespeed POST api.v3.minimax.h3.textToVideo": "minimax/h3/text-to-video",
+  "wavespeed POST api.v3.openai.gptImage2.textToImage":
+    "openai/gpt-image-2/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p5Flare.textToImage":
     "openai/gpt-image-2.5-flare/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p5Sunburst.textToImage":

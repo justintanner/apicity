@@ -215,6 +215,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
   P-Video-2-Pro (ac-cdx7ad).
 
+- WaveSpeed GPT Image 2 text-to-image (`openai/gpt-image-2/text-to-image`)
+  bills one image per request by quality and resolution, from 0.01 USD (low,
+  1k) to 0.72 USD (high, 4k) and 0.06 USD at the medium 1k default, from free
+  quotes (list price, read 2026-11-16). `MODEL_SLUGS.wavespeed` shares the
+  family slug `gi2` (ac-w6g9vb).
+
 - WaveSpeed GPT Image 2.5 Flare text-to-image
   (`openai/gpt-image-2.5-flare/text-to-image`) bills one image per request at
   the Sunburst rates, 0.01 USD (low, 1k) to 1 USD (max, 4k), from free quotes

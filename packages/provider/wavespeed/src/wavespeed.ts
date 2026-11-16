@@ -23,6 +23,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
+  WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
@@ -64,6 +65,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
@@ -684,6 +686,25 @@ export function createWaveSpeed(
                 schema:
                   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
               }
+            ),
+          },
+          nanoBanana2p1: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/text-to-image
+            // Docs: https://wavespeed.ai/models/google/nano-banana-2.1/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/nano-banana-2.1/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema }
             ),
           },
         },

@@ -240,6 +240,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "Nano-Banana-2.1",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.nanoBanana2p1.textToImage",
+            pricingKey: "google/nano-banana-2.1/text-to-image",
+          },
         ],
       },
       {

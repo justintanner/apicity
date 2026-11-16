@@ -158,6 +158,15 @@ const editSurcharge = (p: Record<string, unknown>): number | undefined => {
   return 0.015 * p.images.length + (guided ? 0.015 : 0);
 };
 
+// Nano Banana 2.1 on WaveSpeed: each enabled search (web, image) adds
+// 0.014 USD. A flag that is present but not a boolean fails closed.
+const searchSurcharge = (p: Record<string, unknown>): number | undefined => {
+  const flags = [p.enable_web_search, p.enable_image_search];
+  if (flags.some((flag) => flag !== undefined && typeof flag !== "boolean"))
+    return undefined;
+  return 0.014 * flags.filter((flag) => flag === true).length;
+};
+
 export const wavespeed: Record<string, ModelPricing> = {
   // base_price 100000 micros, discount_rate 95 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "1080p" ? 2 :
@@ -860,6 +869,26 @@ export const wavespeed: Record<string, ModelPricing> = {
     extra: editSurcharge,
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.6-flare/edit",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 40000 micros, discount_rate 90 on 2026-11-16. No formula on the
+  // model page (price inputs: enable_image_search, enable_web_search,
+  // resolution). Free quotes (POST /api/v3/model/price) read 2026-11-16, list
+  // price: 0.04, 0.06 and 0.135 USD at 1k, 2k and 4k, plus 0.014 USD for each
+  // enabled search (both at 1k: 0.068; both at 4k: 0.163). Format and aspect
+  // ratio add nothing. One request returns one image.
+  "google/nano-banana-2.1/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: { "1k": 0.04, "2k": 0.06, "4k": 0.135 },
+    extra: searchSurcharge,
+    source: {
+      url: "https://wavespeed.ai/models/google/nano-banana-2.1/text-to-image",
       asOf: "2026-11-16",
     },
   },

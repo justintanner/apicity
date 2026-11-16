@@ -1426,3 +1426,48 @@ export const WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema =
 // the same request schema as the Sunburst model.
 export const WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema =
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema;
+
+// google/nano-banana-2.1/text-to-image, from the request schema on WaveSpeed's
+// model page (read 2026-11-16).
+export const WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "3:2",
+      "2:3",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "21:9",
+      "1:4",
+      "4:1",
+      "1:8",
+      "8:1",
+    ])
+    .optional()
+    .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+  resolution: z
+    .enum(["1k", "2k", "4k"])
+    .optional()
+    .describe("Resolution of the image. WaveSpeed default: `1k`."),
+  output_format: z
+    .enum(["png", "jpeg"])
+    .optional()
+    .describe("Format of the output image. WaveSpeed default: `png`."),
+  enable_web_search: z
+    .boolean()
+    .optional()
+    .describe(
+      "Let the model use web search for real-time information. Costs more. WaveSpeed default: false."
+    ),
+  enable_image_search: z
+    .boolean()
+    .optional()
+    .describe(
+      "Let the model use image search for real-time information. Costs more. WaveSpeed default: false."
+    ),
+});

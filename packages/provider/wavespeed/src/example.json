@@ -258,6 +258,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.nanoBanana2p1.textToImage": {
+    "source": "wavespeed/google-nano-banana-2-1-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.heygen.video1p0.referenceToVideo": {
     "source": "wavespeed/heygen-video-1-0-reference-to-video",
     "payload": {

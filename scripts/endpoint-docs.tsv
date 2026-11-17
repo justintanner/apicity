@@ -39,6 +39,7 @@ wavespeed	api.v3.openai.gptImage2p6Flare.edit	POST	https://api.wavespeed.ai/api/
 wavespeed	api.v3.google.nanoBanana2p1.textToImage	POST	https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/text-to-image	https://wavespeed.ai/models/google/nano-banana-2.1/text-to-image
 wavespeed	api.v3.google.nanoBanana2p1.edit	POST	https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/edit	https://wavespeed.ai/models/google/nano-banana-2.1/edit
 wavespeed	api.v3.openai.gptImage2p5Sunburst.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-sunburst/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image
+wavespeed	api.v3.openai.gptImage2p5Flare.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-flare/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2.5-flare/text-to-image
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

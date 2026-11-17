@@ -1564,3 +1564,8 @@ export const WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema =
       .optional()
       .describe("Format of the output image. WaveSpeed default: `png`."),
   });
+
+// openai/gpt-image-2.5-flare/text-to-image: the model page (read 2026-11-16)
+// gives it the same request schema as the Sunburst model.
+export const WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema =
+  WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema;

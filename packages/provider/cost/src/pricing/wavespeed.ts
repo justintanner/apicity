@@ -953,4 +953,18 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 24000 micros, discount_rate 100 on 2026-11-16. No formula on the
+  // model page. Free quotes read 2026-11-16 match the Sunburst model at every
+  // quality and resolution.
+  "openai/gpt-image-2.5-flare/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P5_RATES,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.5-flare/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
 };

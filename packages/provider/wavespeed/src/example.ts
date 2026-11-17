@@ -362,6 +362,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.openai.gptImage2p5Flare.textToImage": {
+    "source": "wavespeed/openai-gpt-image-2-5-flare-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "quality": "low",
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.openai.gptImage2p5Sunburst.textToImage": {
     "source": "wavespeed/openai-gpt-image-2-5-sunburst-text-to-image",
     "payload": {

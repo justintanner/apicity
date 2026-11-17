@@ -48,6 +48,7 @@ import { createSimpleFunctions } from "@apicity/simplefunctions";
 import { createTelegram } from "@apicity/telegram";
 import { createTheSportsDB } from "@apicity/thesportsdb";
 import { createTiktokCreativeCenter } from "@apicity/tiktok-creative-center";
+import { createNunchux } from "@apicity/nunchux";
 import { createWaveSpeed } from "@apicity/wavespeed";
 import { createX } from "@apicity/x";
 import { createXai } from "@apicity/xai";
@@ -751,6 +752,7 @@ const PROVIDER_FACTORIES = {
   thesportsdb: createTheSportsDB,
   "tiktok-creative-center": createTiktokCreativeCenter,
   wavespeed: createWaveSpeed,
+  nunchux: createNunchux,
   x: createX,
   xai: createXai,
   youtube: createYouTube,

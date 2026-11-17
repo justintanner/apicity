@@ -75,6 +75,17 @@ export interface EndpointCostPolicy {
  * `tests/unit/endpoint-cost-tiers.test.ts` fails otherwise.
  */
 export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
+  {
+    match: { provider: "nunchux" },
+    tier: "prohibitive",
+    rationale: "Media generation costs depend on model and inputs",
+  },
+  {
+    match: { provider: "nunchux", method: "GET", dotPath: "v1.credits" },
+    tier: "cheap",
+    rationale:
+      "Free account credit balance read; no job slot or compute charge",
+  },
   // ── cheap: no marginal USD compute cost ────────────────────────────────
   // Public market-data / sports-data / open-data REST. No per-call USD charge.
   {

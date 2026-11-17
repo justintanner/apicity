@@ -136,6 +136,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/omkar/src"
       ),
+      "@apicity/nunchux/zod": path.resolve(
+        __dirname,
+        "../packages/provider/nunchux/src/zod"
+      ),
+      "@apicity/nunchux": path.resolve(
+        __dirname,
+        "../packages/provider/nunchux/src"
+      ),
       "@apicity/wavespeed/zod": path.resolve(
         __dirname,
         "../packages/provider/wavespeed/src/zod"

@@ -285,6 +285,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/omkar",
     factoryName: "createOmkar",
   },
+  nunchux: {
+    envVar: "NUNCHUX_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/nunchux",
+    factoryName: "createNunchux",
+  },
   wavespeed: {
     envVar: "WAVESPEED_API_KEY",
     optionKey: "apiKey",

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux `GET v1.credits` is classified as a free account balance read ($0).
+
 - KIE Video Upscale (`video/upscale`) is priced per second of input video by
   its `resolution` box: 0.0075 USD at 1080P, 0.015 at 2K (the default) and
   0.03 at 4K, on the clip length declared as `costHints.durationSeconds`. A

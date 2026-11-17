@@ -87,6 +87,7 @@ export const OP_ENV_POLICY = Object.freeze({
   MACHGEN_API_KEY: credential(),
   OMKAR_API_KEY: credential(),
   WAVESPEED_API_KEY: credential(),
+  NUNCHUX_API_KEY: credential(),
   QUO_API_KEY: credential(),
 
   S3_ACCESS_KEY_ID: credential(),

@@ -252,6 +252,11 @@ const PROVIDERS = [
     factoryNames: ["createOmkar"],
   },
   {
+    name: "nunchux",
+    entryFiles: ["packages/provider/nunchux/src/nunchux.ts"],
+    factoryNames: ["createNunchux"],
+  },
+  {
     name: "wavespeed",
     entryFiles: ["packages/provider/wavespeed/src/wavespeed.ts"],
     factoryNames: ["createWaveSpeed"],

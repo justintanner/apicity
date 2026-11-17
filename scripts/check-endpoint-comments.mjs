@@ -69,6 +69,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   "tiktok-creative-center": ["ads.tiktok.com"],
   omkar: ["www.omkar.cloud"],
   wavespeed: ["wavespeed.ai"],
+  nunchux: ["docs.nunchux.ai"],
 };
 
 const METHOD_LINE_RE =

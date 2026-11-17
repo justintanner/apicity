@@ -82,6 +82,7 @@
     "@apicity/thesportsdb": "workspace:*",
     "@apicity/tiktok-creative-center": "workspace:*",
     "@apicity/wavespeed": "workspace:*",
+    "@apicity/nunchux": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",

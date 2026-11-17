@@ -5297,6 +5297,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.xAi.grokImagineImageV2p0.textToImage"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/bytedance/seedream-v5.5/edit",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.bytedance.seedreamV5p5.edit"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

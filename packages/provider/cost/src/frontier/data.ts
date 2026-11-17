@@ -440,6 +440,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "seedream/5-5-image-to-image",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedreamV5p5.edit",
+            pricingKey: "bytedance/seedream-v5.5/edit",
+          },
         ],
       },
       {

@@ -19,6 +19,7 @@ import type {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5VideoEditRequest,
+  WaveSpeedBytedanceSeedreamV5p5EditRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
@@ -69,6 +70,7 @@ import {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
@@ -583,6 +585,25 @@ export function createWaveSpeed(
                 schema:
                   WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema,
               }
+            ),
+          },
+          seedreamV5p5: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit
+            // Docs: https://wavespeed.ai/models/bytedance/seedream-v5.5/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedreamV5p5EditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedream-v5.5/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBytedanceSeedreamV5p5EditRequestSchema }
             ),
           },
         },

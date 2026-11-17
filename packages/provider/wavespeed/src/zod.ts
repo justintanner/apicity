@@ -1739,3 +1739,55 @@ export const WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema =
         "Quality tier. WaveSpeed default: `medium`, the more expensive tier."
       ),
   });
+
+// bytedance/seedream-v5.5/edit, from the request schema on WaveSpeed's model
+// page (read 2026-11-16).
+export const WaveSpeedBytedanceSeedreamV5p5EditRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  images: z
+    .array(z.string())
+    .max(10)
+    .describe(
+      "URLs of the images to edit, up to 10. Each one adds to the price."
+    ),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe(
+      "Aspect ratio of the image. When omitted, it follows the input image."
+    ),
+  resolution: z
+    .enum(["1k", "1.5k", "2k"])
+    .optional()
+    .describe(
+      "Resolution tier. 1k and 1.5k cost the same; 2k is the highest and costs more. WaveSpeed default: `1k`."
+    ),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .optional()
+    .describe(
+      "Format of the output image. A transparent background always returns a png. WaveSpeed default: `png`."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .optional()
+    .describe(
+      "`transparent` returns a png with an alpha channel, `opaque` a solid background, and `auto` lets the model decide from the prompt and output format. WaveSpeed default: `auto`."
+    ),
+});

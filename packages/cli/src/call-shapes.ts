@@ -9774,4 +9774,20 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "nunchux\tGET\tv1.alibaba.tasks": {
+    provider: "nunchux",
+    method: "GET",
+    dotPath: "v1.alibaba.tasks",
+    positional: [
+      {
+        placeholder: "task_id",
+        param: "taskId",
+        optional: false,
+        alias: "task_id",
+      },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
 };

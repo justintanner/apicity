@@ -24,6 +24,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "nunchux",
     {
       kind: "free",
+      reason: "Free Wan/HappyHorse task status poll; takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/partner-models/wan",
+        asOf: "2026-11-18",
+      },
+    },
+    ["GET v1.alibaba.tasks"]
+  ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
       reason:
         "Free account balance read; counts toward RPM but takes no job slot",
       source: {

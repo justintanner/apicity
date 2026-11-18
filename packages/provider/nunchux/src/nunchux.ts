@@ -1,6 +1,7 @@
 import { attachExamples } from "./example";
 import { NunchuxError, isNunchuxErrorBody } from "./types";
 import type {
+  NunchuxAlibabaTaskResponse,
   NunchuxOptions,
   NunchuxCreditsResponse,
   NunchuxProvider,
@@ -85,6 +86,18 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
 
   return attachExamples({
     v1: {
+      alibaba: {
+        // GET https://api.nunchux.com/v1/alibaba/tasks/{task_id}
+        // Docs: https://docs.nunchux.ai/partner-models/wan
+        tasks: async (taskId: string, signal?: AbortSignal) => {
+          return request<NunchuxAlibabaTaskResponse>(
+            "GET",
+            `/v1/alibaba/tasks/${encodeURIComponent(taskId)}`,
+            undefined,
+            signal
+          );
+        },
+      },
       // GET https://api.nunchux.com/v1/credits
       // Docs: https://docs.nunchux.ai/credits-pricing
       credits: async (signal?: AbortSignal) => {

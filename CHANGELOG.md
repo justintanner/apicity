@@ -95,6 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).
+
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).
 
 - Added KIE Video Upscale `video/upscale`, KIE's own video upscaler and the first `video/` model id, on `kie.post.api.v1.jobs.createTask`, from the docs as re-read on 2026-11-12 (unchanged since the survey). It takes one public http(s) `video_url` (MP4, MOV or MKV, at most 50 MB and 60 s, checked after download) and a `resolution` output box of `"1080P"`, `"2K"` or `"4K"` (uppercase, default `"2K"`); the source is fitted inside the box with its aspect ratio kept. The id stays enum-only: one id is not a grammar. `@apicity/cost` prices each second of input video by the box, 0.0075 / 0.015 / 0.03 USD (1.5 / 3 / 6 credits) at 1080P / 2K / 4K, on the clip length the caller declares as `costHints.durationSeconds`, as for Topaz video. `check:kie-feed-drift` compares the three new rows, and they agree (645 cells). A recorded 1080P upscale of the 3 s `cat1-kling-o3-3s.mp4` (720 x 960 to 1080 x 1440) billed 4.5 credits (0.0225 USD), charged at success (ac-ggy4a4).

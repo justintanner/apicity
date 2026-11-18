@@ -31,7 +31,26 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+
+### alibaba
+
+<details>
+<summary><code>GET</code> <b><code>nunchux.v1.alibaba.tasks</code></b></summary>
+
+<code>GET https://api.nunchux.com/v1/alibaba/tasks/{taskId}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/wan)
+
+```typescript
+const res = await nunchux.v1.alibaba.tasks({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
 
 ### credits
 

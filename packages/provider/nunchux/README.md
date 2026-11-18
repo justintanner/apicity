@@ -38,7 +38,7 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 <details>
 <summary><code>GET</code> <b><code>nunchux.v1.alibaba.tasks</code></b></summary>
 
-<code>GET https://api.nunchux.com/v1/alibaba/tasks/{taskId}</code>
+<code>GET https://api.nunchux.com/v1/alibaba/tasks/{task_id}</code>
 
 Cost tier: <code>cheap</code>
 

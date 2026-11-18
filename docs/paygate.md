@@ -62,7 +62,7 @@ const task = await gated.post.api.v1.jobs.createTask(payload, { otp });
 Direct KIE VEO calls are gated separately from `createTask`: for
 `kie.veo.post.api.v1.veo.generate` mint with `dotPath: "api.v1.veo.generate"`,
 for `kie.veo.post.api.v1.veo.extend` use `dotPath: "api.v1.veo.extend"`.
-Upload, status, and helper endpoints are unlisted and remain free.
+Upload, status, and helper endpoints are unlisted and stay ungated.
 
 ## Rules
 
@@ -87,7 +87,10 @@ generation) are listed in `PAID_ENDPOINTS`. The pay gate in front of them is
 
 Armed or not, `paid: true` in `apicity describe` (and the `paid` column of
 `apicity commands`) is the cue to say that a call bills before making it.
-Unlisted endpoints are free.
+`paid` follows each endpoint's reviewed billing record (`billing`), so it is
+true for many endpoints outside `PAID_ENDPOINTS`; `gated: true` marks the rows
+of the registry. An unlisted endpoint is not gated, which does not make it
+free: read `billing`.
 
 The OTP is signed with a single shared **HMAC secret** — no key files, no
 environment variables, no cost coupling — and commits to the exact

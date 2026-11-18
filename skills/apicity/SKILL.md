@@ -53,7 +53,7 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    is to call the endpoint, not to handle the secret. Naming a variable is
    fine, printing its value never is.
 2. **Never mint an OTP and never ask for the pay-gate secret.** An operator can
-   arm a pay gate on paid endpoints; a paid call then answers `paygate` until
+   arm a pay gate on gated endpoints; a gated call then answers `paygate` until
    it carries a one-time token the operator minted out of band. If a call
    answers `paygate`, report what the `hint` says the operator must do and
    stop. Do not read the secret file, do not run the minting command, do not
@@ -73,7 +73,8 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    not retry, do not hunt for another key, do not switch providers to work
    around a credential you were not given.
 6. **Paid endpoints bill: say so before spending.** `apicity describe` shows
-   `paid: true` for exactly these, whether or not this host armed a pay gate.
+   `paid: true` for every call that bills (`billing` says how), whether or not
+   a pay gate covers it (`gated`).
    State the endpoint and that it bills, then call it without `--otp`. Pass
    `--otp` only with a token the operator gave you after a call answered
    `paygate` with `otp-missing` (see [Paid endpoints](#paid-endpoints)).
@@ -190,8 +191,8 @@ The directory is `--output-dir`, else
    its credential variable names, and whether it is configured. Unconfigured
    providers still describe; they just cannot be called.
 2. **Find the endpoint.** `apicity commands --provider <provider> --json`. Each
-   row carries `method`, `dotPath`, `pathParams`, `requestParams`, `paid` and
-   `configured`. Search that list rather than guessing a name.
+   row carries `method`, `dotPath`, `pathParams`, `requestParams`, `paid`,
+   `billing`, `gated` and `configured`. Search that list rather than guessing a name.
 3. **Describe it.** `apicity describe <provider> <dotPath> --json` adds the
    request JSON Schema, a recorded example payload when one exists, and the
    call shape. Read `pathParams` and `requestParams`: both are passed as
@@ -581,16 +582,28 @@ secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 
 ## Paid endpoints
 
-A small set of endpoints bills real money — media generation on `kie` and image
-and video generation on `xai`. The set is read at runtime, so trust the CLI
-rather than this list:
+Many endpoints bill real money: media generation, LLM calls, storage writes.
+Each row's `billing` field is its reviewed billing kind, and `paid` is true for
+every kind that bills:
+
+- `metered`: billed per call, by images, seconds, tokens or requests. Paid.
+- `accrual`: starts a charge that keeps running until it is stopped. Paid.
+- `unpriced`: billed, at a rate nobody has priced yet. Paid.
+- `free`: no charge.
+- `followup`: a poll or read whose cost is billed on the submit it follows.
+- `subscription`: a flat plan with no charge per call.
+
+`gated: true` marks the few the operator's pay gate covers: media generation
+on `kie` and `xai`. They read paid too. The CLI reads all of this at runtime,
+so trust it rather than this list:
 
 ```bash
-apicity describe kie api.v1.jobs.createTask --json   # "paid": true
+apicity describe kie api.v1.jobs.createTask --json   # "paid": true, "gated": true
+apicity describe openai v1.embeddings --json         # "paid": true, "gated": false
 apicity commands --provider xai --json               # each row carries "paid"
 ```
 
-`paid: true` means the call bills, whether or not this host gates it. Say so
+`paid: true` means the call bills, whether or not a gate covers it. Say so
 first — name the endpoint and that it bills — then call it without a token:
 
 ```bash
@@ -602,7 +615,7 @@ file (`--paygate-secret-file` or `$APICITY_PAYGATE_SECRET_FILE`), so that call
 usually just runs. Two answers mean something else:
 
 - **`paygate`, with `otp-missing` in `hint`.** The operator armed the gate:
-  every paid call now needs a one-time token, single-use and bound to the exact
+  every gated call now needs a one-time token, single-use and bound to the exact
   payload, and a missing or bad one fails closed. Report that the call is
   blocked on an operator-minted OTP, and wait for one.
 - **`paygate`, with `paygate-not-configured` in `hint`, on a call where you

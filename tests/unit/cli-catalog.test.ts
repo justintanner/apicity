@@ -3,6 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { endpointBilling, isPaidEndpoint } from "@apicity/cost";
+
 import {
   loadCatalog,
   findEntries,
@@ -174,6 +176,98 @@ describe("apicity catalog", () => {
           entry.provider === "kie" && entry.dotPath === "api.v1.jobs.createTask"
       )?.paid
     ).toBe(true);
+  });
+
+  // ac-e65yyk: `paid` is disclosure and comes from the reviewed billing
+  // record; `gated` is the pay-gate registry and is the only thing that
+  // changes how a call binds. Derived per row, so a new endpoint is covered
+  // the moment its tsv row and billing record land.
+  it("derives billing, gated and paid for every row", async () => {
+    const catalog = await loadCatalog({ env: fullEnv() });
+    const unbilled = new Set(["free", "followup", "subscription"]);
+    const wrong: string[] = [];
+
+    for (const entry of catalog) {
+      const { provider, method, dotPath } = entry;
+      const billing = endpointBilling(provider, method, dotPath).kind;
+      const gated = isPaidEndpoint(provider, method, dotPath);
+      if (
+        entry.billing !== billing ||
+        entry.gated !== gated ||
+        entry.paid !== (gated || !unbilled.has(billing))
+      ) {
+        wrong.push(`${provider} ${method} ${dotPath}`);
+      }
+    }
+
+    expect(wrong).toEqual([]);
+  });
+
+  it.each([
+    // gated and billed: the pay-gate registry
+    ["kie", "POST", "api.v1.jobs.createTask", true, true, "metered"],
+    // gated, documented free (ruling ac-qky8c5): still shown as paid
+    ["kie", "POST", "api.v1.voice.generate", true, true, "free"],
+    // billed with no gate: the rows that read `paid: no` before ac-e65yyk
+    ["openai", "POST", "v1.embeddings", true, false, "metered"],
+    ["fal", "POST", "veo3p1.textToVideo", true, false, "metered"],
+    ["s3", "PUT", "objects.put", true, false, "metered"],
+    [
+      "fireworks",
+      "POST",
+      "inference.v1.accounts.deployments.create",
+      true,
+      false,
+      "accrual",
+    ],
+    ["telegram", "POST", "sendGift", true, false, "unpriced"],
+    // the first billed Nunchux submit (N04), metered per image
+    [
+      "nunchux",
+      "POST",
+      "v1.google.v1beta.interactions",
+      true,
+      false,
+      "metered",
+    ],
+    // no charge at the call
+    ["kie", "GET", "api.v1.jobs.recordInfo", false, false, "followup"],
+    ["kimicoding", "POST", "coding.v1.messages", false, false, "subscription"],
+    ["nunchux", "GET", "v1.credits", false, false, "free"],
+    ["nunchux", "GET", "v1.alibaba.tasks", false, false, "free"],
+    [
+      "nunchux",
+      "GET",
+      "v1.bytedance.contents.generations.tasks.retrieve",
+      false,
+      false,
+      "free",
+    ],
+  ] as const)(
+    "%s %s %s reads paid=%s gated=%s billing=%s",
+    async (provider, method, dotPath, paid, gated, billing) => {
+      const catalog = await loadCatalog({ env: fullEnv() });
+      const entry = catalog.find(
+        (e) =>
+          e.provider === provider &&
+          e.method === method &&
+          e.dotPath === dotPath
+      );
+
+      expect(entry).toMatchObject({ paid, gated, billing });
+    }
+  );
+
+  it("shows a kind it has never heard of as paid", async () => {
+    const { isBilledKind } = await import("../../packages/cli/src/catalog");
+
+    expect(isBilledKind("free")).toBe(false);
+    expect(isBilledKind("followup")).toBe(false);
+    expect(isBilledKind("subscription")).toBe(false);
+    expect(isBilledKind("metered")).toBe(true);
+    expect(isBilledKind("accrual")).toBe(true);
+    expect(isBilledKind("unpriced")).toBe(true);
+    expect(isBilledKind("a-kind-added-later")).toBe(true);
   });
 });
 

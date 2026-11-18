@@ -158,6 +158,18 @@ export interface CostHelperUnitPricing {
 
 export type CostHelperPricing = CostHelperTokenPricing | CostHelperUnitPricing;
 
+/** What `@apicity/cost` says one endpoint's call costs. */
+export interface CostHelperBilling {
+  kind: string;
+  unit?: string;
+  reason?: string;
+}
+
+export interface CostHelperBillingPolicy {
+  match: { provider: string; method?: string; dotPath?: string };
+  billing: CostHelperBilling;
+}
+
 export interface CostHelpers {
   PAID_ENDPOINTS: CostPaidEndpointEntry[];
   isPaidEndpoint: (
@@ -165,6 +177,12 @@ export interface CostHelpers {
     method: string,
     dotPath: string
   ) => boolean;
+  ENDPOINT_BILLING: readonly CostHelperBillingPolicy[];
+  endpointBilling: (
+    provider: string,
+    method: string,
+    dotPath: string
+  ) => CostHelperBilling;
   frontier: (
     type: string,
     options?: { provider?: string }
@@ -212,6 +230,8 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     const exports = mod as Record<string, unknown>;
     const paidEndpoints = exports.PAID_ENDPOINTS;
     const isPaidEndpoint = exports.isPaidEndpoint;
+    const billingPolicies = exports.ENDPOINT_BILLING;
+    const endpointBilling = exports.endpointBilling;
     const frontier = exports.frontier;
     const formatFrontierPrice = exports.formatFrontierPrice;
     const frontierTypes = exports.FRONTIER_TYPES;
@@ -225,6 +245,16 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     if (typeof isPaidEndpoint !== "function") {
       throw new Error(
         "Expected @apicity/cost to export isPaidEndpoint as a function"
+      );
+    }
+    if (!Array.isArray(billingPolicies)) {
+      throw new Error(
+        "Expected @apicity/cost to export ENDPOINT_BILLING as an array"
+      );
+    }
+    if (typeof endpointBilling !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export endpointBilling as a function"
       );
     }
     if (typeof frontier !== "function") {
@@ -253,6 +283,8 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     return {
       PAID_ENDPOINTS: paidEndpoints as CostPaidEndpointEntry[],
       isPaidEndpoint: isPaidEndpoint as CostHelpers["isPaidEndpoint"],
+      ENDPOINT_BILLING: billingPolicies as CostHelpers["ENDPOINT_BILLING"],
+      endpointBilling: endpointBilling as CostHelpers["endpointBilling"],
       frontier: frontier as CostHelpers["frontier"],
       formatFrontierPrice:
         formatFrontierPrice as CostHelpers["formatFrontierPrice"],

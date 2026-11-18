@@ -1,5 +1,9 @@
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
-import { loadCostHelpers } from "./cost.js";
+import {
+  loadCostHelpers,
+  type CostHelperBilling,
+  type CostHelpers,
+} from "./cost.js";
 import {
   isProviderConfigured,
   readCredentialSources,
@@ -29,8 +33,58 @@ export interface CatalogEntry {
   pathParams: string[];
   /** Request-object properties that fill a URL placeholder. */
   requestParams: string[];
+  /**
+   * Say so before calling: the call bills, starts a charge that accrues, has
+   * a charge nobody has priced, or sits behind the operator's pay gate.
+   * `billing` and `gated` say which.
+   */
   paid: boolean;
+  /**
+   * In the pay-gate registry: once the operator arms the gate the call needs
+   * `--otp`. This, never `paid`, decides how a call binds its arguments.
+   */
+  gated: boolean;
+  /** The kind of the reviewed billing record `@apicity/cost` holds. */
+  billing: string;
   configured: boolean;
+}
+
+/**
+ * The billing kinds that cost nothing at the call: a documented free call, a
+ * poll billed on the submit it follows, and a flat plan with no marginal USD.
+ * Every other kind reads as paid, and so does one this list has never heard
+ * of: a new kind must be shown as billed until someone decides otherwise.
+ */
+const UNBILLED_KINDS: ReadonlySet<string> = new Set([
+  "free",
+  "followup",
+  "subscription",
+]);
+
+export function isBilledKind(kind: string): boolean {
+  return !UNBILLED_KINDS.has(kind);
+}
+
+/**
+ * One lookup per row, without `endpointBilling`'s scan of every policy: the
+ * catalog is built on each invocation, and 1,931 scans of 1,964 policies cost
+ * about 45 ms where this index costs 3. An exact record is the most specific
+ * one, so it is the answer `endpointBilling` gives; a row without one falls
+ * back to that function, which fails closed.
+ */
+export function billingLookup(
+  helpers: Pick<CostHelpers, "ENDPOINT_BILLING" | "endpointBilling">
+): (provider: string, method: string, dotPath: string) => CostHelperBilling {
+  const exact = new Map<string, CostHelperBilling>();
+  for (const policy of helpers.ENDPOINT_BILLING) {
+    const { provider, method, dotPath } = policy.match;
+    if (method === undefined || dotPath === undefined) continue;
+    const key = `${provider} ${method} ${dotPath}`;
+    if (!exact.has(key)) exact.set(key, policy.billing);
+  }
+  return (provider, method, dotPath) =>
+    exact.get(`${provider} ${method} ${dotPath}`) ??
+    helpers.endpointBilling(provider, method, dotPath);
 }
 
 export interface LoadCatalogOptions {
@@ -59,7 +113,8 @@ export async function loadCatalog(
   const env = options.env ?? process.env;
   const sources = options.sources ?? readCredentialSources(env, options.flags);
   const rows = await loadTsv();
-  const { isPaidEndpoint } = await loadCostHelpers();
+  const helpers = await loadCostHelpers();
+  const billingFor = billingLookup(helpers);
   const configuredByProvider = new Map<string, boolean>();
 
   return rows.map((row) => {
@@ -69,6 +124,8 @@ export async function loadCatalog(
       configuredByProvider.set(row.provider, configured);
     }
     const shape = callShapeFor(row);
+    const gated = helpers.isPaidEndpoint(row.provider, row.method, row.dotPath);
+    const billing = billingFor(row.provider, row.method, row.dotPath).kind;
     return {
       provider: row.provider,
       dotPath: row.dotPath,
@@ -77,7 +134,9 @@ export async function loadCatalog(
       docsUrl: row.docsUrl,
       pathParams: shape ? shape.positional.map((p) => p.param) : [],
       requestParams: shape ? shape.fields.map((f) => f.property) : [],
-      paid: isPaidEndpoint(row.provider, row.method, row.dotPath),
+      paid: gated || isBilledKind(billing),
+      gated,
+      billing,
       configured,
     };
   });

@@ -1048,7 +1048,8 @@ const est = await resolveMachGenUpscaleEstimate(
 The cost package keeps a small, explicit **paid-endpoint registry** used for
 OTP minting and documentation. Provider packages bundle the matching runtime
 registry for their own paid endpoints. Endpoints **not** in the registry are
-assumed free and need no caller changes.
+not gated and need no caller changes; that does not make them free, which is
+what each endpoint's billing record (`endpointBilling`) says.
 
 The gate is **opt-in**. A provider constructed without a pay-gate secret
 dispatches its paid endpoints like any other endpoint. Constructing it with a
@@ -1064,14 +1065,16 @@ in via factory options (or the CLI's `--paygate-secret-file` /
 
 An OTP presented to a provider built without a secret is refused with
 `paygate-not-configured`, never silently dropped: whoever passes one believes a
-gate exists. Armed or not, a registry row is the cue to say that a call bills
-before making it — it is what `apicity describe` reports as `paid: true`.
+gate exists. Armed or not, a registry row is what `apicity describe` reports as
+`gated: true`, and it also reads `paid: true`. `paid` is true for every billed
+endpoint, gated or not, from its billing record.
 
 ### Registry model
 
 - `PAID_ENDPOINTS` is the canonical list: exact `(provider, method, dotPath)`
   triples — no regex, prefix, wildcard, or inferred matching.
-- Unlisted endpoints pass through free, with no OTP or configuration.
+- Unlisted endpoints pass through ungated, with no OTP or configuration
+  (their cost is whatever their billing record says).
 - Listed endpoints dispatch when the provider was built without a secret, and
   need a valid OTP once a secret arms the gate.
 

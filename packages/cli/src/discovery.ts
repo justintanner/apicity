@@ -215,6 +215,8 @@ function commandsTable(entries: CatalogEntry[]): string {
     entry.dotPath,
     formatParams(entry),
     entry.paid ? "yes" : "no",
+    entry.billing,
+    entry.gated ? "yes" : "no",
     entry.configured ? "yes" : "no",
   ]);
   const header = [
@@ -223,6 +225,8 @@ function commandsTable(entries: CatalogEntry[]): string {
     "dotPath",
     "params",
     "paid",
+    "billing",
+    "gated",
     "configured",
   ];
   return renderTable([header, ...rows]);
@@ -321,6 +325,8 @@ function describeText(description: EndpointDescription): string {
     `pathParams:    ${description.pathParams.join(", ") || "(none)"}`,
     `requestParams: ${description.requestParams.join(", ") || "(none)"}`,
     `paid:          ${description.paid ? "yes" : "no"}`,
+    `billing:       ${description.billing}`,
+    `gated:         ${description.gated ? "yes" : "no"}`,
   ];
   if (description.schema !== undefined) {
     lines.push("", "schema:", JSON.stringify(description.schema, null, 2));

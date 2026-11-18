@@ -369,6 +369,39 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("parses the recorded MiniMax H3 reference request and rejects a reference image on the wrong container", () => {
+    const { schema } = createNunchux().v1.minimax.v2.videoGeneration;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/minimax-h3-reference-to-video_4063826930/recording.har",
+        "utf8"
+      )
+    ) as {
+      log: { entries: { request: { postData: { text: string } } }[] };
+    };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body.ratio).toBeUndefined();
+    expect(body.content[1]).toEqual({
+      type: "image_url",
+      role: "reference_image",
+      image_url: { url: expect.stringMatching(/\/cat1\.jpg$/) },
+    });
+    expect(
+      schema.safeParse({
+        ...body,
+        content: [
+          body.content[0],
+          {
+            type: "audio_url",
+            role: "reference_image",
+            audio_url: { url: "https://example.com/cat.jpg" },
+          },
+        ],
+      }).success
+    ).toBe(false);
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

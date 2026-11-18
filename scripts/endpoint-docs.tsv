@@ -1932,4 +1932,5 @@ nunchux	v1.credits	GET	https://api.nunchux.com/v1/credits	https://docs.nunchux.a
 nunchux	v1.alibaba.tasks	GET	https://api.nunchux.com/v1/alibaba/tasks/{task_id}	https://docs.nunchux.ai/partner-models/wan
 nunchux	v1.bytedance.contents.generations.tasks.retrieve	GET	https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}	https://docs.nunchux.ai/partner-models/seedance
 nunchux	v1.google.v1beta.interactions	POST	https://api.nunchux.com/v1/google/v1beta/interactions	https://docs.nunchux.ai/partner-models/nano-banana
+nunchux	v1.minimax.v2.query.videoGeneration	GET	https://api.nunchux.com/v1/minimax/v2/query/video_generation/{task_id}	https://docs.nunchux.ai/partner-models/minimax
 nunchux	v1.alibaba.services.aigc.videoGeneration.videoSynthesis	POST	https://api.nunchux.com/v1/alibaba/services/aigc/video-generation/video-synthesis	https://docs.nunchux.ai/partner-models/wan

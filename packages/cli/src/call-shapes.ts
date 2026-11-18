@@ -9806,4 +9806,20 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "nunchux\tGET\tv1.minimax.v2.query.videoGeneration": {
+    provider: "nunchux",
+    method: "GET",
+    dotPath: "v1.minimax.v2.query.videoGeneration",
+    positional: [
+      {
+        placeholder: "task_id",
+        param: "taskId",
+        optional: false,
+        alias: "task_id",
+      },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
 };

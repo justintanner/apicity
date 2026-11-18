@@ -8,6 +8,7 @@ import type {
   NunchuxCreditsResponse,
   NunchuxProvider,
   NunchuxGoogleInteractionsResponse,
+  NunchuxMinimaxTaskResponse,
 } from "./types";
 
 import {
@@ -178,6 +179,23 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
             },
             { schema: NunchuxGoogleInteractionsRequestSchema }
           ),
+        },
+      },
+      minimax: {
+        v2: {
+          query: {
+            // GET https://api.nunchux.com/v1/minimax/v2/query/video_generation/{task_id}
+            // Docs: https://docs.nunchux.ai/partner-models/minimax
+            videoGeneration: async (taskId: string, signal?: AbortSignal) => {
+              const task_id = taskId;
+              return request<NunchuxMinimaxTaskResponse>(
+                "GET",
+                `/v1/minimax/v2/query/video_generation/${encodeURIComponent(task_id)}`,
+                undefined,
+                signal
+              );
+            },
+          },
         },
       },
     },

@@ -115,6 +115,21 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("encodes the MiniMax task ID as one path segment without a GET body", async () => {
+    const body = { task: { status: "queued" } };
+    const { fetch, requests } = capture(body);
+    await expect(
+      createNunchux({
+        apiKey: "test-key",
+        fetch,
+      }).v1.minimax.v2.query.videoGeneration("task/id ?#")
+    ).resolves.toEqual(body);
+    expect(requests[0].url).toBe(
+      "https://api.nunchux.com/v1/minimax/v2/query/video_generation/task%2Fid%20%3F%23"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.body).toBeUndefined();
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

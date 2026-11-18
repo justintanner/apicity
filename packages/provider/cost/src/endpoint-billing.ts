@@ -75,6 +75,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     },
     ["POST v1.google.v1beta.interactions"]
   ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
+      reason: "Free MiniMax task status poll; takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/partner-models/minimax",
+        asOf: "2026-11-18",
+      },
+    },
+    ["GET v1.minimax.v2.query.videoGeneration"]
+  ),
   {
     match: { provider: "alibaba" },
     billing: {

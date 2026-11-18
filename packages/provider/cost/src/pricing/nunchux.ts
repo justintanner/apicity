@@ -11,6 +11,13 @@ function hasWanReferenceVideo(payload: Record<string, unknown>): boolean {
   );
 }
 
+function hasSeedanceReferenceVideo(p: Record<string, unknown>): boolean {
+  return (
+    Array.isArray(p.content) &&
+    p.content.some((part) => asObject(part)?.type === "video_url")
+  );
+}
+
 function nunchuxSeedanceTokens(
   p: Record<string, unknown>,
   hints?: CostHints
@@ -22,23 +29,28 @@ function nunchuxSeedanceTokens(
   const resolution = p.resolution === undefined ? "720p" : p.resolution;
   if (resolution !== "480p" && resolution !== "720p")
     return "Seedance 2.5 prices 480p and 720p.";
+  const inputSeconds = hasSeedanceReferenceVideo(p)
+    ? hintInputSeconds(hints)
+    : 0;
+  if (inputSeconds === undefined)
+    return "Seedance bills the input frames of reference videos. Pass their total length in costHints.inputDurationSeconds.";
   const hasFrame =
     Array.isArray(p.content) &&
     p.content.some((part) => {
       const item = asObject(part);
       return item?.type === "image_url" && item.role !== "reference_image";
     });
-  // The recorded text-only request returned 16:9. A supplied frame sets the shape.
+  // Text-only and reference-image receipts returned 16:9. A first frame sets the shape.
   const ratio = hasFrame ? hints?.aspectRatio : "16:9";
   // The first-frame receipt reports an adaptive 281:374 shape. At 480p
   // the matching integer dimensions are 562 x 748: 97 frames yield
   // 39,820.77 tokens and the vendor billed 39,820 whole tokens.
   if (resolution === "480p" && ratio === "281:374")
-    return Math.floor(seedanceTokens([562, 748], seconds));
+    return Math.floor(seedanceTokens([562, 748], seconds, inputSeconds));
   const sizes = SEEDANCE_2P5_SIZES[resolution]!;
   if (ratio === undefined || !Object.hasOwn(sizes, ratio))
     return "Seedance follows the input frame. Pass its supported aspect ratio in costHints.aspectRatio.";
-  return Math.round(seedanceTokens(sizes[ratio]!, seconds));
+  return Math.round(seedanceTokens(sizes[ratio]!, seconds, inputSeconds));
 }
 
 export const nunchux: Record<string, ModelPricing> = {
@@ -99,11 +111,7 @@ export const nunchux: Record<string, ModelPricing> = {
     select: [
       {
         name: "video input",
-        pick: (p) =>
-          Array.isArray(p.content) &&
-          p.content.some((item) => asObject(item)?.type === "video_url")
-            ? "video_input"
-            : "default",
+        pick: (p) => (hasSeedanceReferenceVideo(p) ? "video_input" : "default"),
       },
     ],
     rates: { default: 10.7 / 1e6, video_input: 6.4 / 1e6 },

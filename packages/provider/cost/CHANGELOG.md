@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Wan 3.0 reference-to-video prices at the same per-second rates; reference images add nothing. The recorded 480P two-second clip from one reference image costs $0.10.
 
+- Nunchux Seedance 2.5 estimates the recorded 281:374 first-frame output at 480p when callers supply its aspect ratio. The four-second clip lists at $0.426074.
+
 - Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
 
 - Nunchux Nano Banana 2.1 edits price at the same per-image rates as generations; input images add nothing. The recorded 1K edit lists at $0.0336.

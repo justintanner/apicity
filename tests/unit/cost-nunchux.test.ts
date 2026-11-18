@@ -119,6 +119,44 @@ describe("Nunchux Seedance 2.5 pricing", () => {
       }).usd
     ).toBeCloseTo((87300 * 10.7) / 1e6, 9);
   });
+  it("prices the recorded first-frame render with its reported output ratio", () => {
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/seedance-2-5-image-to-video_3270814726/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const payload = JSON.parse(
+      har.log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    const receipt = JSON.parse(
+      har.log.entries.at(-1)!.response.content.text!
+    ) as { ratio: string; usage: { completion_tokens: number } };
+    expect(receipt).toMatchObject({
+      ratio: "281:374",
+      usage: { completion_tokens: 39820 },
+    });
+    const request = { provider: "nunchux" as const, payload };
+    const estimate = computeEstimate({
+      ...request,
+      costHints: { aspectRatio: receipt.ratio },
+    });
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(
+      (receipt.usage.completion_tokens * 10.7) / 1e6,
+      9
+    );
+    const missing = computeEstimate(request);
+    expect(missing.usd).toBe(0);
+    expect(missing.warnings.join(" ")).toContain("costHints.aspectRatio");
+    expect(
+      computeEstimate({
+        ...request,
+        payload: { ...payload, resolution: "720p" },
+        costHints: { aspectRatio: receipt.ratio },
+      }).usd
+    ).toBe(0);
+  });
   it("selects the reference-video rate", () => {
     const payload = {
       ...body,

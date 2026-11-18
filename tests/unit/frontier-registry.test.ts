@@ -617,7 +617,7 @@ function liveRegistry() {
       );
     }
     if (
-      type === "t2v" &&
+      (type === "t2v" || type === "i2v") &&
       entry.provider === "nunchux" &&
       entry.dotPath === "v1.bytedance.contents.generations.tasks"
     ) {

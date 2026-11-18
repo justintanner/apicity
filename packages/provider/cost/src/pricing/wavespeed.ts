@@ -550,6 +550,28 @@ export const wavespeed: Record<string, ModelPricing> = {
     warn: editedVideoWarn("google/gemini-omni-1.1-flash/video-edit"),
     source: source("google/gemini-omni-1.1-flash/video-edit"),
   },
+  // Model page and free /model/price quotes verified 2026-11-18.
+  // 3 s source totals: 0.144/0.312/0.438/0.816 USD; discount_rate 100.
+  // Input: ceil(seconds), capped at 10, at 0.02 USD/s. Output: same
+  // duration with a 3 s minimum, at the selected resolution rate.
+  "google/gemini-omni-1.2-flash/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : Math.max(3, input);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.028, "720p": 0.084, "1080p": 0.126, "4k": 0.252 },
+    extra: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : 0.02 * input;
+    },
+    warn: editedVideoWarn("google/gemini-omni-1.2-flash/video-edit"),
+    source: source("google/gemini-omni-1.2-flash/video-edit"),
+  },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "768p" ? 1 : 1.4) *
   //   ($min([duration, 15]) + $ceil($min([get_duration(reference_videos,

@@ -605,6 +605,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "google/gemini-omni-1.1-flash/text-to-video",
   "wavespeed POST api.v3.google.geminiOmni1p1Flash.videoEdit":
     "google/gemini-omni-1.1-flash/video-edit",
+  "wavespeed POST api.v3.google.geminiOmni1p2Flash.textToVideo":
+    "google/gemini-omni-1.2-flash/text-to-video",
   "wavespeed POST api.v3.google.geminiOmni1p2Flash.videoEdit":
     "google/gemini-omni-1.2-flash/video-edit",
   "wavespeed POST api.v3.google.nanoBanana2p1.edit":

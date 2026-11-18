@@ -633,6 +633,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-2",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.geminiOmni1p2Flash.textToVideo",
+            pricingKey: "google/gemini-omni-1.2-flash/text-to-video",
+          },
         ],
       },
       {

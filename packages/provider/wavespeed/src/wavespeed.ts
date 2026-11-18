@@ -22,6 +22,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
   WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
   WaveSpeedGoogleNanoBanana2p1EditRequest,
@@ -71,6 +72,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
@@ -703,6 +705,26 @@ export function createWaveSpeed(
             ),
           },
           geminiOmni1p2Flash: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/text-to-video
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.2-flash/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
+              }
+            ),
             // sig-ok: version dots become "p" (fal dot rule)
             // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit
             // Docs: https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit

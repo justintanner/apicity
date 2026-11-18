@@ -35,6 +35,21 @@ describe("Nunchux Wan 3.0 video pricing", () => {
     expect(quote(body).usd).toBeCloseTo(0.1, 9);
     expect(quote({ ...body, parameters: undefined }).usd).toBeCloseTo(1, 9);
   });
+  it("prices the recorded reference-image clip like a text-to-video clip", () => {
+    const r2v = JSON.parse(
+      (
+        JSON.parse(
+          readFileSync(
+            "tests/recordings/nunchux_350094952/wan-3-0-reference-to-video_3561610200/recording.har",
+            "utf8"
+          )
+        ) as { log: { entries: HarEntry[] } }
+      ).log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    const estimate = quote(r2v);
+    expect(estimate.usd).toBeCloseTo(0.1, 9);
+    expect(estimate.warnings).toEqual([]);
+  });
   it("bills reference video at the output rate, up to 15 input seconds", () => {
     const video = reference("reference_video");
     expect(quote(video, 8).usd).toBeCloseTo(1.3, 9);

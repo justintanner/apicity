@@ -1178,6 +1178,11 @@ export const FRONTIER = {
             dotPath: "api.v3.alibaba.wan3p0.referenceToVideo",
             pricingKey: "alibaba/wan-3.0/reference-to-video",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.alibaba.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video",
+          },
         ],
       },
       {

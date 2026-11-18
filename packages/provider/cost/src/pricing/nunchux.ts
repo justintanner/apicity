@@ -30,6 +30,11 @@ function nunchuxSeedanceTokens(
     });
   // The recorded text-only request returned 16:9. A supplied frame sets the shape.
   const ratio = hasFrame ? hints?.aspectRatio : "16:9";
+  // The first-frame receipt reports an adaptive 281:374 shape. At 480p
+  // the matching integer dimensions are 562 x 748: 97 frames yield
+  // 39,820.77 tokens and the vendor billed 39,820 whole tokens.
+  if (resolution === "480p" && ratio === "281:374")
+    return Math.floor(seedanceTokens([562, 748], seconds));
   const sizes = SEEDANCE_2P5_SIZES[resolution]!;
   if (ratio === undefined || !Object.hasOwn(sizes, ratio))
     return "Seedance follows the input frame. Pass its supported aspect ratio in costHints.aspectRatio.";

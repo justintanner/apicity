@@ -94,6 +94,32 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("parses the recorded Seedance first frame and rejects a video role on an image", () => {
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/seedance-2-5-image-to-video_3270814726/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: { request: { postData: { text: string } } }[] } };
+    const { schema } = createNunchux().v1.bytedance.contents.generations.tasks;
+    const payload = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(payload.content[1]).toMatchObject({
+      type: "image_url",
+      role: "first_frame",
+      image_url: { url: expect.stringMatching(/\/cat1\.jpg$/) },
+    });
+    expect(
+      schema.safeParse({
+        ...payload,
+        content: [
+          payload.content[0],
+          { ...payload.content[1], role: "reference_video" },
+        ],
+      }).success
+    ).toBe(false);
+  });
   it("uses the default URL and Bearer key without a GET body", async () => {
     const { fetch, requests } = capture({ credits_remaining: 5 });
     await expect(

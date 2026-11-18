@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux MiniMax H3 image-to-video prices at the same per-second rates; a first-frame image adds nothing. The recorded four-second 768P clip lists at $0.32.
 
+- Nunchux MiniMax H3 reference-to-video prices at the same per-second rates; the first five reference images are included. The recorded four-second 768P clip from one reference image lists at $0.32.
+
 - WaveSpeed Gemini Omni 1.2 Flash reference-to-video
   (`google/gemini-omni-1.2-flash/reference-to-video`) costs the text-to-video
   rates, 0.023, 0.07, 0.105 or 0.21 USD per second at 360p, 720p, 1080p or 4k,

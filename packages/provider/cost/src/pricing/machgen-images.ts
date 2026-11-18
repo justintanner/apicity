@@ -1,5 +1,10 @@
 import type { ModelPricing, PerUnitPricing } from "./types";
-import { asNumber, asObject } from "./helpers";
+import {
+  asNumber,
+  asObject,
+  gptImageDimensions,
+  gptImageOutputTokens,
+} from "./helpers";
 
 // Gross USD before Generation Credit. Exact public pricebook rows are saved
 // in tests/fixtures/machgen-evidence/machgen-image-pricebook-2026-10-30.json.
@@ -49,6 +54,73 @@ function imagePricing(
     source,
   };
 }
+
+// Both 2.6 models use 30 micro-USD per token, discounted by 30% through
+// 2027-03-01T16:00Z. An edit source is billed as a 1024x1024 max image.
+const tokenRate = 21 / 1e6;
+const referenceTokens = 7024;
+const qualityFactors = new Map<string, readonly [number, number]>([
+  ["low", [16, 42]],
+  ["medium", [24, 33]],
+  ["high", [48, 10]],
+  ["xhigh", [64, 10]],
+  ["max", [96, 10]],
+]);
+
+function gptImage2p6Output(payload: Record<string, unknown>): number | string {
+  const config = asObject(payload.image_config);
+  const output = asObject(payload.image_output);
+  const size = gptImageDimensions(config?.width, config?.height);
+  if (!size || config?.size_mode === "auto")
+    return "image_config requires explicit supported width and height";
+  const factors =
+    typeof output?.quality === "string" && qualityFactors.get(output.quality);
+  if (!factors)
+    return "image_output.quality must be low, medium, high, xhigh or max";
+  if (output?.output_format === "gif")
+    return "GIF pricing depends on the delivered frame count";
+  if (output?.partial_images !== undefined && output.partial_images !== 0)
+    return "partial_images pricing depends on the delivered preview count";
+  if (payload.continuation_task_id !== undefined)
+    return "continuation_task_id carries an unknown reference charge";
+  if (
+    payload.src_task_ids !== undefined &&
+    !(Array.isArray(payload.src_task_ids) && payload.src_task_ids.length === 0)
+  )
+    return "src_task_ids carry an unknown reference charge";
+  const sources = payload.src_image_urls ?? [];
+  if (!Array.isArray(sources)) return "src_image_urls must be an array";
+  if (payload.task_type === "I2I") {
+    if (!sources.length) return "I2I requires a source in src_image_urls";
+  } else if (payload.task_type === "T2I") {
+    if (sources.length) return "T2I cannot price src_image_urls";
+  } else {
+    return "task_type must be T2I or I2I";
+  }
+  const [patches, tenths] = factors;
+  const base = gptImageOutputTokens(patches, size.width, size.height);
+  return Math.floor((base * tenths + 5) / 10);
+}
+
+const gptImage2p6: PerUnitPricing = {
+  kind: "perUnit",
+  unit: "tokens",
+  units: (payload) => {
+    const value = gptImage2p6Output(payload);
+    return typeof value === "number" ? value : undefined;
+  },
+  select: [],
+  rates: { "": tokenRate },
+  extra: (payload) =>
+    Array.isArray(payload.src_image_urls)
+      ? payload.src_image_urls.length * referenceTokens * tokenRate
+      : 0,
+  warn: (payload) => {
+    const value = gptImage2p6Output(payload);
+    return typeof value === "string" ? [value] : [];
+  },
+  source: { ...source, asOf: "2026-11-18" },
+};
 
 export const machgenImages: Record<string, ModelPricing> = {
   "GPT-Image-2": imagePricing(
@@ -157,6 +229,7 @@ export const machgenImages: Record<string, ModelPricing> = {
     false,
     false
   ),
+  "GPT-Image-2.6-Sunburst": gptImage2p6,
   "Nano-Banana-2": imagePricing(
     {
       "4096": 0.089,

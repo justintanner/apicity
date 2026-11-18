@@ -60,3 +60,39 @@ export function hintInputSeconds(hints?: CostHints): number | undefined {
   const n = asNumber(hints?.inputDurationSeconds);
   return n !== undefined && n > 0 ? n : undefined;
 }
+
+// Valid fixed dimensions for the GPT Image 2 family.
+export function gptImageDimensions(width: unknown, height: unknown) {
+  if (
+    typeof width !== "number" ||
+    typeof height !== "number" ||
+    !Number.isInteger(width) ||
+    !Number.isInteger(height) ||
+    width <= 0 ||
+    height <= 0
+  )
+    return undefined;
+  const long = Math.max(width, height);
+  const short = Math.min(width, height);
+  const pixels = width * height;
+  if (width % 16 !== 0 || height % 16 !== 0) return undefined;
+  if (long > 3840 || long / short > 3) return undefined;
+  if (pixels < 655_360 || pixels > 8_294_400) return undefined;
+  return { width, height };
+}
+
+// Output tokens per image, as the image generation guide's calculator computes
+// them: the long edge takes the quality's patch count, the short edge that
+// count scaled by the aspect ratio and rounded half to even. The recorded
+// gpt-image-2 calls at medium 1024x1024 billed exactly its 1756 tokens.
+export function gptImageOutputTokens(
+  patches: number,
+  width: number,
+  height: number
+): number {
+  const scaled = patches / (Math.max(width, height) / Math.min(width, height));
+  const floor = Math.floor(scaled);
+  const shortPatches =
+    scaled - floor === 0.5 ? floor + (floor % 2) : Math.round(scaled);
+  return Math.ceil((patches * shortPatches * (2e6 + width * height)) / 4e6);
+}

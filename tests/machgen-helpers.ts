@@ -12,6 +12,9 @@ import { resolveMachGenUpscaleEstimate } from "../packages/provider/cost/src/mac
 import type { CostHints } from "../packages/provider/cost/src/types";
 import { type PollyContext, teardownPolly, recordingExists } from "./harness";
 
+// Current tests/fixtures/cat1.jpg, pinned to the commit containing these bytes.
+export const CAT =
+  "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
 export const MACHGEN_FIXTURE =
   "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg";
 export const MACHGEN_END_FRAME =
@@ -296,8 +299,12 @@ async function runTask(
   expect(status.status, status.error_msg ?? "task did not complete").toBe(
     "COMPLETED"
   );
-  expect(status.task_output?.video).toMatch(/^https:\/\//);
-  expect(status.task_output?.video).toContain(task.task_id);
+  if (payload.task_type === "T2I" || payload.task_type === "I2I") {
+    expect(status.task_output?.image).toMatch(/^https:\/\//);
+  } else {
+    expect(status.task_output?.video).toMatch(/^https:\/\//);
+    expect(status.task_output?.video).toContain(task.task_id);
+  }
   expect(status.metadata.model).toBe(
     resolvedModel(payload.model, payload.task_type)
   );
@@ -306,6 +313,45 @@ async function runTask(
       JSON.stringify({ recording: name, estimate_usd: estimateUsd, ...billing })
     );
   return { task, status, billing };
+}
+
+export async function recordMachgenImage2p6(
+  model: string,
+  taskType: "T2I" | "I2I",
+  name: string,
+  ctx: PollyContext
+) {
+  try {
+    const provider = createMachGen({
+      apiKey: process.env.MACHGEN_API_KEY ?? "test-key",
+      timeout: 120000,
+    });
+    const edit = taskType === "I2I";
+    const payload: MachGenGenerateRequest = {
+      model,
+      task_type: taskType,
+      prompt: edit
+        ? "Turn this photo into a simple watercolor painting. Keep the cat and the composition."
+        : "A small red circle centered on a plain white background.",
+      image_config: edit
+        ? { width: 720, height: 1280 }
+        : { width: 1280, height: 720 },
+      image_output: { quality: "low" },
+      ...(edit ? { src_image_urls: [CAT] } : {}),
+    };
+    expect(provider.api.v0.generate.schema.safeParse(payload).success).toBe(
+      true
+    );
+    const estimate = computeEstimate({ provider: "machgen", payload });
+    expect(estimate.warnings).toEqual([]);
+    const micros = Math.round(estimate.usd * 1e6);
+    expect(micros).toBe(edit ? 156849 : 9345);
+    const { billing } = await runTask(provider, payload, name, estimate.usd);
+    expect(billing.generation_cost_micros).toBe(micros);
+    expect(billing.generation_credit_micros).toBe(0);
+  } finally {
+    await teardownPolly(ctx);
+  }
 }
 
 export async function recordMachgen(

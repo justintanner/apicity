@@ -309,7 +309,7 @@ describe("apicity frontier", () => {
       ).toBe(true);
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 4, i2i: 3, t2v: 3, i2v: 3, r2v: 4 });
+    expect(counts).toEqual({ t2i: 5, i2i: 4, t2v: 3, i2v: 3, r2v: 4 });
 
     const { writer, err } = capture();
     await expect(

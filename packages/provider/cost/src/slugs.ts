@@ -1030,6 +1030,7 @@ export const MODEL_SLUGS = {
     "GPT-Image-2": "gi2",
     "GPT-Image-2.5-Sunburst": "gi2p5sb",
     "GPT-Image-2.5-Flare": "gi2p5fl",
+    "GPT-Image-2.6-Sunburst": "gi2p6sb",
     "Nano-Banana-2": "nb2",
     "Nano-Banana-2.1": "nb21",
 
@@ -2154,6 +2155,7 @@ export const MODEL_DISPLAY = {
     "GPT-Image-2": "GPT Image 2",
     "GPT-Image-2.5-Sunburst": "GPT Image 2.5 Sunburst",
     "GPT-Image-2.5-Flare": "GPT Image 2.5 Flare",
+    "GPT-Image-2.6-Sunburst": "GPT Image 2.6 Sunburst",
     "Nano-Banana-2": "Nano Banana 2",
     "Nano-Banana-2.1": "Nano Banana 2.1",
 

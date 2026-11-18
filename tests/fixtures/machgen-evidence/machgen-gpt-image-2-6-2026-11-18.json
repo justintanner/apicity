@@ -1,0 +1,1103 @@
+{
+  "capturedAt": "2026-11-18",
+  "source": "Free reads of MachGen and OpenAI on 2026-11-18, for GPT-Image-2.6-Sunburst and GPT-Image-2.6-Flare: the public pricebook, this account's model list, the web app's capability contract and Playground estimator (both in the /_next/static/chunks of https://www.machgen.ai/generate), the REST guide, OpenAI's image cost calculator, and seven POST /api/v0/generate requests built to be refused, which MachGen answered HTTP 400 before accepting a task. Nothing was billed.",
+  "pricebook": {
+    "source": "https://api.machgen.ai/api/v0/billing/pricebook/public",
+    "readAt": "2026-11-18T04:59:32Z",
+    "prices": [
+      {
+        "model": "GPT-Image-2.6-Flare",
+        "width": null,
+        "height": null,
+        "audio": null,
+        "has_input_video": null,
+        "task_type": null,
+        "optimization_level": null,
+        "uses_adapter": null,
+        "unit": "PER_MEGAPIXEL",
+        "duration_start": null,
+        "duration_end": null,
+        "unit_price_micros": 200958,
+        "version": 1,
+        "updated_by": null,
+        "inherited": false,
+        "discount_percent": 30,
+        "discounted_unit_price_micros": 140671,
+        "fixed_unit_price_micros": null,
+        "task_type_discounts": {},
+        "discount_announced": false,
+        "discount_ends_at": "2027-03-01T16:00:00+00:00",
+        "task_type_discount_ends_at": {},
+        "discount_note": null,
+        "task_type_discount_notes": {},
+        "generation_credit_percent": 0
+      },
+      {
+        "model": "GPT-Image-2.6-Sunburst",
+        "width": null,
+        "height": null,
+        "audio": null,
+        "has_input_video": null,
+        "task_type": null,
+        "optimization_level": null,
+        "uses_adapter": null,
+        "unit": "PER_MEGAPIXEL",
+        "duration_start": null,
+        "duration_end": null,
+        "unit_price_micros": 200958,
+        "version": 1,
+        "updated_by": null,
+        "inherited": false,
+        "discount_percent": 30,
+        "discounted_unit_price_micros": 140671,
+        "fixed_unit_price_micros": null,
+        "task_type_discounts": {},
+        "discount_announced": false,
+        "discount_ends_at": "2027-03-01T16:00:00+00:00",
+        "task_type_discount_ends_at": {},
+        "discount_note": null,
+        "task_type_discount_notes": {},
+        "generation_credit_percent": 0
+      }
+    ],
+    "accountPricebook": {
+      "source": "https://api.machgen.ai/api/v0/billing/pricebook",
+      "readAt": "2026-11-18T05:07:08Z",
+      "matchesPublicRows": true,
+      "generation_credit_percent": [0, 0]
+    }
+  },
+  "modelList": {
+    "source": "https://api.machgen.ai/api/v0/models?kind=image",
+    "readAt": "2026-11-18T05:00:40Z",
+    "models": [
+      {
+        "model": "GPT-Image-2.6-Flare",
+        "aliases": [],
+        "kind": "image",
+        "supports_audio": false,
+        "surfaces": [
+          {
+            "task_type": "I2I",
+            "heights": [
+              544, 720, 816, 848, 880, 960, 1088, 1152, 1280, 1360, 1536, 1648,
+              1920, 2048, 2160, 3840
+            ],
+            "resolution_tier_labels": {},
+            "aspect_ratios": [
+              "16:9",
+              "9:16",
+              "1:1",
+              "4:3",
+              "3:4",
+              "3:2",
+              "2:3",
+              "21:9"
+            ],
+            "sizes": [
+              [1280, 544],
+              [1280, 720],
+              [1920, 816],
+              [1280, 848],
+              [2048, 880],
+              [1280, 960],
+              [1920, 1088],
+              [2048, 1152],
+              [720, 1280],
+              [848, 1280],
+              [960, 1280],
+              [1280, 1280],
+              [2048, 1360],
+              [2048, 1536],
+              [3840, 1648],
+              [1088, 1920],
+              [1152, 2048],
+              [1360, 2048],
+              [1536, 2048],
+              [2048, 2048],
+              [3840, 2160],
+              [2160, 3840]
+            ],
+            "custom_image_size": {
+              "edge_multiple": 16,
+              "max_edge": 3840,
+              "min_pixels": 655360,
+              "max_pixels": 8294400,
+              "min_aspect_ratio": 0.3333333333333333,
+              "max_aspect_ratio": 3.0
+            },
+            "image_qualities": [
+              "auto",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "image_complexities": ["low", "medium", "high"],
+            "supports_image_mask": true,
+            "supports_image_markup": true,
+            "image_continuation": {
+              "maxTurns": 8,
+              "retentionDays": 29,
+              "maxPromptChars": 64000,
+              "outputFormats": ["png", "jpeg", "webp"]
+            },
+            "supports_image_moderation": true,
+            "supports_auto_image_size": true,
+            "default_image_frames": 9,
+            "image_backgrounds": ["auto", "opaque", "transparent"],
+            "durations": [],
+            "supports_last_frame": false,
+            "max_input_images": 16,
+            "max_reference_images": null,
+            "max_reference_videos": null,
+            "max_reference_audios": null,
+            "min_reference_inputs": null,
+            "max_reference_inputs": null,
+            "requires_visual_reference": false,
+            "reference_video_operation_controls": {},
+            "max_prompt_chars": 32000,
+            "min_lyrics_chars": null,
+            "max_lyrics_chars": null,
+            "audio_config_fields": null,
+            "output_formats": ["png", "jpeg", "webp", "gif"],
+            "default_output_format": "png",
+            "engines": [],
+            "min_duration_secs": null,
+            "max_duration_secs": null,
+            "max_duration_secs_by_height": {},
+            "max_source_bytes": null,
+            "max_output_edge": null,
+            "source_requirement": null
+          },
+          {
+            "task_type": "T2I",
+            "heights": [
+              544, 720, 816, 848, 880, 960, 1088, 1152, 1280, 1360, 1536, 1648,
+              1920, 2048, 2160, 3840
+            ],
+            "resolution_tier_labels": {},
+            "aspect_ratios": [
+              "16:9",
+              "9:16",
+              "1:1",
+              "4:3",
+              "3:4",
+              "3:2",
+              "2:3",
+              "21:9"
+            ],
+            "sizes": [
+              [1280, 544],
+              [1280, 720],
+              [1920, 816],
+              [1280, 848],
+              [2048, 880],
+              [1280, 960],
+              [1920, 1088],
+              [2048, 1152],
+              [720, 1280],
+              [848, 1280],
+              [960, 1280],
+              [1280, 1280],
+              [2048, 1360],
+              [2048, 1536],
+              [3840, 1648],
+              [1088, 1920],
+              [1152, 2048],
+              [1360, 2048],
+              [1536, 2048],
+              [2048, 2048],
+              [3840, 2160],
+              [2160, 3840]
+            ],
+            "custom_image_size": {
+              "edge_multiple": 16,
+              "max_edge": 3840,
+              "min_pixels": 655360,
+              "max_pixels": 8294400,
+              "min_aspect_ratio": 0.3333333333333333,
+              "max_aspect_ratio": 3.0
+            },
+            "image_qualities": [
+              "auto",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "image_complexities": ["low", "medium", "high"],
+            "supports_image_mask": false,
+            "supports_image_markup": false,
+            "image_continuation": null,
+            "supports_image_moderation": true,
+            "supports_auto_image_size": true,
+            "default_image_frames": 9,
+            "image_backgrounds": ["auto", "opaque", "transparent"],
+            "durations": [],
+            "supports_last_frame": false,
+            "max_input_images": null,
+            "max_reference_images": null,
+            "max_reference_videos": null,
+            "max_reference_audios": null,
+            "min_reference_inputs": null,
+            "max_reference_inputs": null,
+            "requires_visual_reference": false,
+            "reference_video_operation_controls": {},
+            "max_prompt_chars": 32000,
+            "min_lyrics_chars": null,
+            "max_lyrics_chars": null,
+            "audio_config_fields": null,
+            "output_formats": ["png", "jpeg", "webp", "svg", "gif"],
+            "default_output_format": "png",
+            "engines": [],
+            "min_duration_secs": null,
+            "max_duration_secs": null,
+            "max_duration_secs_by_height": {},
+            "max_source_bytes": null,
+            "max_output_edge": null,
+            "source_requirement": null
+          }
+        ]
+      },
+      {
+        "model": "GPT-Image-2.6-Sunburst",
+        "aliases": [],
+        "kind": "image",
+        "supports_audio": false,
+        "surfaces": [
+          {
+            "task_type": "I2I",
+            "heights": [
+              544, 720, 816, 848, 880, 960, 1088, 1152, 1280, 1360, 1536, 1648,
+              1920, 2048, 2160, 3840
+            ],
+            "resolution_tier_labels": {},
+            "aspect_ratios": [
+              "16:9",
+              "9:16",
+              "1:1",
+              "4:3",
+              "3:4",
+              "3:2",
+              "2:3",
+              "21:9"
+            ],
+            "sizes": [
+              [1280, 544],
+              [1280, 720],
+              [1920, 816],
+              [1280, 848],
+              [2048, 880],
+              [1280, 960],
+              [1920, 1088],
+              [2048, 1152],
+              [720, 1280],
+              [848, 1280],
+              [960, 1280],
+              [1280, 1280],
+              [2048, 1360],
+              [2048, 1536],
+              [3840, 1648],
+              [1088, 1920],
+              [1152, 2048],
+              [1360, 2048],
+              [1536, 2048],
+              [2048, 2048],
+              [3840, 2160],
+              [2160, 3840]
+            ],
+            "custom_image_size": {
+              "edge_multiple": 16,
+              "max_edge": 3840,
+              "min_pixels": 655360,
+              "max_pixels": 8294400,
+              "min_aspect_ratio": 0.3333333333333333,
+              "max_aspect_ratio": 3.0
+            },
+            "image_qualities": [
+              "auto",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "image_complexities": ["low", "medium", "high"],
+            "supports_image_mask": true,
+            "supports_image_markup": true,
+            "image_continuation": {
+              "maxTurns": 8,
+              "retentionDays": 29,
+              "maxPromptChars": 64000,
+              "outputFormats": ["png", "jpeg", "webp"]
+            },
+            "supports_image_moderation": true,
+            "supports_auto_image_size": true,
+            "default_image_frames": 9,
+            "image_backgrounds": ["auto", "opaque", "transparent"],
+            "durations": [],
+            "supports_last_frame": false,
+            "max_input_images": 16,
+            "max_reference_images": null,
+            "max_reference_videos": null,
+            "max_reference_audios": null,
+            "min_reference_inputs": null,
+            "max_reference_inputs": null,
+            "requires_visual_reference": false,
+            "reference_video_operation_controls": {},
+            "max_prompt_chars": 32000,
+            "min_lyrics_chars": null,
+            "max_lyrics_chars": null,
+            "audio_config_fields": null,
+            "output_formats": ["png", "jpeg", "webp", "gif"],
+            "default_output_format": "png",
+            "engines": [],
+            "min_duration_secs": null,
+            "max_duration_secs": null,
+            "max_duration_secs_by_height": {},
+            "max_source_bytes": null,
+            "max_output_edge": null,
+            "source_requirement": null
+          },
+          {
+            "task_type": "T2I",
+            "heights": [
+              544, 720, 816, 848, 880, 960, 1088, 1152, 1280, 1360, 1536, 1648,
+              1920, 2048, 2160, 3840
+            ],
+            "resolution_tier_labels": {},
+            "aspect_ratios": [
+              "16:9",
+              "9:16",
+              "1:1",
+              "4:3",
+              "3:4",
+              "3:2",
+              "2:3",
+              "21:9"
+            ],
+            "sizes": [
+              [1280, 544],
+              [1280, 720],
+              [1920, 816],
+              [1280, 848],
+              [2048, 880],
+              [1280, 960],
+              [1920, 1088],
+              [2048, 1152],
+              [720, 1280],
+              [848, 1280],
+              [960, 1280],
+              [1280, 1280],
+              [2048, 1360],
+              [2048, 1536],
+              [3840, 1648],
+              [1088, 1920],
+              [1152, 2048],
+              [1360, 2048],
+              [1536, 2048],
+              [2048, 2048],
+              [3840, 2160],
+              [2160, 3840]
+            ],
+            "custom_image_size": {
+              "edge_multiple": 16,
+              "max_edge": 3840,
+              "min_pixels": 655360,
+              "max_pixels": 8294400,
+              "min_aspect_ratio": 0.3333333333333333,
+              "max_aspect_ratio": 3.0
+            },
+            "image_qualities": [
+              "auto",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ],
+            "image_complexities": ["low", "medium", "high"],
+            "supports_image_mask": false,
+            "supports_image_markup": false,
+            "image_continuation": null,
+            "supports_image_moderation": true,
+            "supports_auto_image_size": true,
+            "default_image_frames": 9,
+            "image_backgrounds": ["auto", "opaque", "transparent"],
+            "durations": [],
+            "supports_last_frame": false,
+            "max_input_images": null,
+            "max_reference_images": null,
+            "max_reference_videos": null,
+            "max_reference_audios": null,
+            "min_reference_inputs": null,
+            "max_reference_inputs": null,
+            "requires_visual_reference": false,
+            "reference_video_operation_controls": {},
+            "max_prompt_chars": 32000,
+            "min_lyrics_chars": null,
+            "max_lyrics_chars": null,
+            "audio_config_fields": null,
+            "output_formats": ["png", "jpeg", "webp", "svg", "gif"],
+            "default_output_format": "png",
+            "engines": [],
+            "min_duration_secs": null,
+            "max_duration_secs": null,
+            "max_duration_secs_by_height": {},
+            "max_source_bytes": null,
+            "max_output_edge": null,
+            "source_requirement": null
+          }
+        ]
+      }
+    ]
+  },
+  "contract": {
+    "chunk": "/_next/static/chunks/3-1j9qbczs3n0.js",
+    "page": "https://www.machgen.ai/models/machgen/gpt-image-2-6-sunburst",
+    "models": {
+      "GPT-Image-2.6-Sunburst": {
+        "key": "gptimage26sunburst",
+        "modelId": "GPT-Image-2.6-Sunburst",
+        "displayName": "GPT Image 2.6 Sunburst",
+        "badgeLabel": "GPT IMAGE 2.6 SUNBURST",
+        "order": 156,
+        "color": "bg-model-openai",
+        "description": "Detailed image generation and precise image editing.",
+        "tags": ["partner"],
+        "private": true,
+        "showInDocs": true,
+        "t2i": {
+          "outputFormats": ["png", "jpeg", "webp", "svg", "gif"],
+          "defaultOutputFormat": "png",
+          "maxPartialImages": 3,
+          "maxImageOutputs": 10,
+          "supportsSafetyIdentifier": true,
+          "supportsImageModeration": true,
+          "supportsAutoImageSize": true,
+          "customImageSize": {
+            "edgeMultiple": 16,
+            "maxEdge": 3840,
+            "minPixels": 655360,
+            "maxPixels": 8294400,
+            "minAspectRatio": "1/3",
+            "maxAspectRatio": 3
+          },
+          "imageBackgrounds": ["auto", "opaque", "transparent"],
+          "imageQualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "priceIncludesInputImages": false,
+          "imageOutputTokenPricing": {
+            "baselineSize": 1024,
+            "qualities": {
+              "low": {
+                "longEdgeTokens": 16,
+                "multiplierTenths": 42
+              },
+              "medium": {
+                "longEdgeTokens": 24,
+                "multiplierTenths": 33
+              },
+              "high": {
+                "longEdgeTokens": 48,
+                "multiplierTenths": 10
+              },
+              "xhigh": {
+                "longEdgeTokens": 64,
+                "multiplierTenths": 10
+              },
+              "max": {
+                "longEdgeTokens": 96,
+                "multiplierTenths": 10
+              }
+            }
+          },
+          "defaultImageQuality": "auto",
+          "defaultImageFrames": 9,
+          "imageComplexities": ["low", "medium", "high"],
+          "sizeGrid": "L",
+          "supportsSeed": false,
+          "maxPromptChars": 32000,
+          "pricing": "per_megapixel"
+        },
+        "i2i": {
+          "supportsImageMask": true,
+          "supportsImageMarkup": true,
+          "imageContinuation": {
+            "maxTurns": 8,
+            "retentionDays": 29,
+            "maxPromptChars": 64000,
+            "outputFormats": ["png", "jpeg", "webp"]
+          },
+          "outputFormats": ["png", "jpeg", "webp", "gif"],
+          "defaultOutputFormat": "png",
+          "maxPartialImages": 3,
+          "maxImageOutputs": 10,
+          "supportsSafetyIdentifier": true,
+          "supportsImageModeration": true,
+          "supportsAutoImageSize": true,
+          "customImageSize": {
+            "edgeMultiple": 16,
+            "maxEdge": 3840,
+            "minPixels": 655360,
+            "maxPixels": 8294400,
+            "minAspectRatio": "1/3",
+            "maxAspectRatio": 3
+          },
+          "imageBackgrounds": ["auto", "opaque", "transparent"],
+          "imageQualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "priceIncludesInputImages": false,
+          "imageOutputTokenPricing": {
+            "baselineSize": 1024,
+            "qualities": {
+              "low": {
+                "longEdgeTokens": 16,
+                "multiplierTenths": 42
+              },
+              "medium": {
+                "longEdgeTokens": 24,
+                "multiplierTenths": 33
+              },
+              "high": {
+                "longEdgeTokens": 48,
+                "multiplierTenths": 10
+              },
+              "xhigh": {
+                "longEdgeTokens": 64,
+                "multiplierTenths": 10
+              },
+              "max": {
+                "longEdgeTokens": 96,
+                "multiplierTenths": 10
+              }
+            }
+          },
+          "defaultImageQuality": "auto",
+          "defaultImageFrames": 9,
+          "imageComplexities": ["low", "medium", "high"],
+          "sizeGrid": "L",
+          "maxInputImages": 16,
+          "referenceInputLimits": "O",
+          "supportsSeed": false,
+          "maxPromptChars": 32000,
+          "pricing": "per_megapixel"
+        }
+      },
+      "GPT-Image-2.6-Flare": {
+        "key": "gptimage26flare",
+        "modelId": "GPT-Image-2.6-Flare",
+        "displayName": "GPT Image 2.6 Flare",
+        "badgeLabel": "GPT IMAGE 2.6 FLARE",
+        "order": 157,
+        "color": "bg-model-openai",
+        "description": "Fast image generation and editing.",
+        "tags": ["partner"],
+        "private": true,
+        "showInDocs": true,
+        "t2i": {
+          "outputFormats": ["png", "jpeg", "webp", "svg", "gif"],
+          "defaultOutputFormat": "png",
+          "maxPartialImages": 3,
+          "maxImageOutputs": 10,
+          "supportsSafetyIdentifier": true,
+          "supportsImageModeration": true,
+          "supportsAutoImageSize": true,
+          "customImageSize": {
+            "edgeMultiple": 16,
+            "maxEdge": 3840,
+            "minPixels": 655360,
+            "maxPixels": 8294400,
+            "minAspectRatio": "1/3",
+            "maxAspectRatio": 3
+          },
+          "imageBackgrounds": ["auto", "opaque", "transparent"],
+          "imageQualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "priceIncludesInputImages": false,
+          "imageOutputTokenPricing": {
+            "baselineSize": 1024,
+            "qualities": {
+              "low": {
+                "longEdgeTokens": 16,
+                "multiplierTenths": 42
+              },
+              "medium": {
+                "longEdgeTokens": 24,
+                "multiplierTenths": 33
+              },
+              "high": {
+                "longEdgeTokens": 48,
+                "multiplierTenths": 10
+              },
+              "xhigh": {
+                "longEdgeTokens": 64,
+                "multiplierTenths": 10
+              },
+              "max": {
+                "longEdgeTokens": 96,
+                "multiplierTenths": 10
+              }
+            }
+          },
+          "defaultImageQuality": "auto",
+          "defaultImageFrames": 9,
+          "imageComplexities": ["low", "medium", "high"],
+          "sizeGrid": "L",
+          "supportsSeed": false,
+          "maxPromptChars": 32000,
+          "pricing": "per_megapixel"
+        },
+        "i2i": {
+          "supportsImageMask": true,
+          "supportsImageMarkup": true,
+          "imageContinuation": {
+            "maxTurns": 8,
+            "retentionDays": 29,
+            "maxPromptChars": 64000,
+            "outputFormats": ["png", "jpeg", "webp"]
+          },
+          "outputFormats": ["png", "jpeg", "webp", "gif"],
+          "defaultOutputFormat": "png",
+          "maxPartialImages": 3,
+          "maxImageOutputs": 10,
+          "supportsSafetyIdentifier": true,
+          "supportsImageModeration": true,
+          "supportsAutoImageSize": true,
+          "customImageSize": {
+            "edgeMultiple": 16,
+            "maxEdge": 3840,
+            "minPixels": 655360,
+            "maxPixels": 8294400,
+            "minAspectRatio": "1/3",
+            "maxAspectRatio": 3
+          },
+          "imageBackgrounds": ["auto", "opaque", "transparent"],
+          "imageQualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "priceIncludesInputImages": false,
+          "imageOutputTokenPricing": {
+            "baselineSize": 1024,
+            "qualities": {
+              "low": {
+                "longEdgeTokens": 16,
+                "multiplierTenths": 42
+              },
+              "medium": {
+                "longEdgeTokens": 24,
+                "multiplierTenths": 33
+              },
+              "high": {
+                "longEdgeTokens": 48,
+                "multiplierTenths": 10
+              },
+              "xhigh": {
+                "longEdgeTokens": 64,
+                "multiplierTenths": 10
+              },
+              "max": {
+                "longEdgeTokens": 96,
+                "multiplierTenths": 10
+              }
+            }
+          },
+          "defaultImageQuality": "auto",
+          "defaultImageFrames": 9,
+          "imageComplexities": ["low", "medium", "high"],
+          "sizeGrid": "L",
+          "maxInputImages": 16,
+          "referenceInputLimits": "O",
+          "supportsSeed": false,
+          "maxPromptChars": 32000,
+          "pricing": "per_megapixel"
+        }
+      }
+    },
+    "raw": {
+      "C": "{outputFormats:[\"png\",\"jpeg\",\"webp\"],defaultOutputFormat:\"png\",maxPartialImages:3,maxImageOutputs:10,supportsSafetyIdentifier:!0,supportsImageModeration:!0,supportsAutoImageSize:!0,customImageSize:{edgeMultiple:16,maxEdge:3840,minPixels:655360,maxPixels:8294400,minAspectRatio:1/3,maxAspectRatio:3},imageBackgrounds:[\"auto\",\"opaque\",\"transparent\"]}",
+      "F": "{...C,imageQualities:[\"auto\",\"low\",\"medium\",\"high\"]}",
+      "j": "{...C,imageQualities:[...F.imageQualities,\"xhigh\",\"max\"]}",
+      "$": "{...j,priceIncludesInputImages:!1,imageOutputTokenPricing:{baselineSize:1024,qualities:{low:{longEdgeTokens:16,multiplierTenths:42},medium:{longEdgeTokens:24,multiplierTenths:33},high:{longEdgeTokens:48,multiplierTenths:10},xhigh:{longEdgeTokens:64,multiplierTenths:10},max:{longEdgeTokens:96,multiplierTenths:10}}},defaultImageQuality:\"auto\",defaultImageFrames:9,imageComplexities:[\"low\",\"medium\",\"high\"]}",
+      "O": "{image:{formats:[\"png\",\"jpeg\",\"webp\"],maxBytes:0x2faf07f,validateOriginal:!0}}",
+      "gptimage26sunburst": "{modelId:\"GPT-Image-2.6-Sunburst\",displayName:\"GPT Image 2.6 Sunburst\",badgeLabel:\"GPT IMAGE 2.6 SUNBURST\",order:156,color:\"bg-model-openai\",description:\"Detailed image generation and precise image editing.\",tags:[\"partner\"],private:!0,showInDocs:!0,t2i:{...$,outputFormats:[\"png\",\"jpeg\",\"webp\",\"svg\",\"gif\"],sizeGrid:L,supportsSeed:!1,maxPromptChars:32e3,pricing:\"per_megapixel\"},i2i:{supportsImageMask:!0,supportsImageMarkup:!0,imageContinuation:{maxTurns:8,retentionDays:29,maxPromptChars:64e3,outputFormats:[\"png\",\"jpeg\",\"webp\"]},...$,outputFormats:[\"png\",\"jpeg\",\"webp\",\"gif\"],sizeGrid:L,maxInputImages:16,referenceInputLimits:O,supportsSeed:!1,maxPromptChars:32e3,pricing:\"per_megapixel\"}}",
+      "gptimage26flare": "{modelId:\"GPT-Image-2.6-Flare\",displayName:\"GPT Image 2.6 Flare\",badgeLabel:\"GPT IMAGE 2.6 FLARE\",order:157,color:\"bg-model-openai\",description:\"Fast image generation and editing.\",tags:[\"partner\"],private:!0,showInDocs:!0,t2i:{...$,outputFormats:[\"png\",\"jpeg\",\"webp\",\"svg\",\"gif\"],sizeGrid:L,supportsSeed:!1,maxPromptChars:32e3,pricing:\"per_megapixel\"},i2i:{supportsImageMask:!0,supportsImageMarkup:!0,imageContinuation:{maxTurns:8,retentionDays:29,maxPromptChars:64e3,outputFormats:[\"png\",\"jpeg\",\"webp\"]},...$,outputFormats:[\"png\",\"jpeg\",\"webp\",\"gif\"],sizeGrid:L,maxInputImages:16,referenceInputLimits:O,supportsSeed:!1,maxPromptChars:32e3,pricing:\"per_megapixel\"}}"
+    }
+  },
+  "estimator": {
+    "chunk": "/_next/static/chunks/0_l5kw4gddp3x.js",
+    "page": "https://www.machgen.ai/generate",
+    "safeInteger": "function h(e){return Number.isSafeInteger(e)&&e>=0}",
+    "multiply": "function m(e,t){if(!h(e)||!h(t))return null;let n=e*t;return Number.isSafeInteger(n)?n:null}",
+    "roundHalfEven": "function g(e,t,n){if(!h(e)||!h(t)||!Number.isSafeInteger(n)||n<=0)return null;let i=Math.floor(e/n),r=e%n,u=m(i,t),l=r*t;if(null===u||!Number.isSafeInteger(l))return null;let a=u+Math.floor(l/n);if(!Number.isSafeInteger(a))return null;let s=l%n*2;return s<n?a:s>n?_(a,1):a%2==0?a:_(a,1)}",
+    "billedReferences": "function v(e,t,n){let i=r.ph[e],u=i&&t?(0,r.DF)(i,t):void 0;return u&&\"priceIncludesInputImages\"in u&&u.priceIncludesInputImages?0:n}",
+    "outputTokens": "function y(e,t,n,i){let r=void 0===i?n.longEdgeTokens/(Math.max(e,t)/Math.min(e,t)):n.longEdgeTokens,u=Math.floor(r),l=r-u==.5?u+u%2:Math.round(r),a=n.longEdgeTokens*l*(2e6+(i??e*t));return Number.isSafeInteger(a)?Math.floor((Math.ceil(a/4e6)*n.multiplierTenths+5)/10):null}",
+    "discount": "a=function(e,t){if(0===t||0===e)return null;if(!Number.isSafeInteger(t)||t<1||t>100)return{status:\"unavailable\",reason:\"invalid_discount\"};let n=100-t,i=Math.floor(e/100)*n+Math.floor((e%100*n+50)/100);return Number.isSafeInteger(i)?i:{status:\"unavailable\",reason:\"unsafe_total\"}}",
+    "perMegapixelTokenPricing": "if(\"PER_MEGAPIXEL\"===I.unit){let t=r.ph[e.modelId],n=t&&e.taskType?(0,r.DF)(t,e.taskType):void 0;if(n&&\"imageOutputTokenPricing\"in n&&n.imageOutputTokenPricing)return function(e,t,n,i){let{width:r,height:u,taskType:l,quantity:a}=t,s=t.imageFrameCount??1;if(!Number.isSafeInteger(s)||s<=0)return{status:\"unavailable\",reason:\"invalid_quantity\"};if(t.imageAutoSize&&void 0===i||!Number.isSafeInteger(r)||r<=0||!Number.isSafeInteger(u)||u<=0)return{status:\"unavailable\",reason:\"invalid_dimensions\"};if(!h(t.referenceImageCount??0))return{status:\"unavailable\",reason:\"invalid_reference_image_count\"};let o=null==t.imageQuality||\"auto\"===t.imageQuality?\"max\":t.imageQuality,d=n.qualities[o];if(!d||\"number\"!=typeof d.longEdgeTokens)return{status:\"unavailable\",reason:\"invalid_image_quality\"};let c=n.baselineSize,f=y(c,c,n.qualities.max),p=g(e.unit_price_micros,c**2,1e6),_=y(r,u,d,t.imageAutoSize?i:void 0),I=null===_?null:_*s;if(null===f||null===p||null===I)return{status:\"unavailable\",reason:\"unsafe_total\"};let S=(\"I2I\"===l?v(t.modelId,l,t.referenceImageCount??0):0)*1048576,E=g(f,S,c**2);if(null===E)return{status:\"unavailable\",reason:\"unsafe_total\"};let x=g(p,I+E,f);if(null===x)return{status:\"unavailable\",reason:\"unsafe_total\"};let M=g(x,1e6,(t.imageAutoSize?i:r*u)*s+S),N=m(x,a);return null===M||null===N?{status:\"unavailable\",reason:\"unsafe_total\"}:b({...e,unit_price_micros:M},N,a,null,l??null)}(I,e,n.imageOutputTokenPricing,\"customImageSize\"in n&&n.supportsAutoImageSize?n.customImageSize?.maxPixels:void 0)}"
+  },
+  "openaiCalculator": {
+    "guide": "https://developers.openai.com/api/docs/guides/image-generation#calculating-costs",
+    "bundle": "https://developers.openai.com/_astro/GptImageTokenCalculator.react.7TppeEsP.js",
+    "outputPricePerMillion": 30,
+    "patches": {
+      "low": 16,
+      "medium": 24,
+      "high": 48,
+      "xhigh": 64,
+      "max": 96
+    },
+    "multipliers": {
+      "low": 4.2,
+      "medium": 3.3,
+      "high": 1,
+      "xhigh": 1,
+      "max": 1
+    },
+    "raw": "c={low:16,medium:24,high:48,xhigh:64,max:96},l={low:4.2,medium:3.3,high:1,xhigh:1,max:1},u={\"gpt-image-2\":{low:16,medium:48,high:96},\"gpt-image-2.5\":c,\"gpt-image-2.6\":c},d=[{label:`low`,value:`low`},{label:`medium`,value:`medium`},{label:`high`,value:`high`},{label:`xhigh`,value:`xhigh`},{label:`max`,value:`max`}],f=16,p=655360,m=8294400,h=3840,g=3,_=new Intl.NumberFormat(`en-US`),v=({model:e,width:t,height:n,quality:r})=>{let i=Math.max(t,n),a=Math.min(t,n),o=u[e][r];if(o===void 0)throw Error(`Unsupported quality ${r} for ${e}`);let s=o/(i/a),c=Math.floor(s),d=s-c===.5?c+c%2:Math.round(s),f=(t>=n?o:d)*(t>=n?d:o),p=Math.ceil(f*(2e6+t*n)/4e6);return e===`gpt-image-2.6`?Math.round(p*l[r]):p}"
+  },
+  "docs": [
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#pricing",
+      "text": "Both models price each image using the estimated output tokens for its dimensions and quality. Generation and editing share the same price for a given output size and quality. Each reference adds 1.048576 megapixels at the baseline rate, regardless of its uploaded size, once per generated image. Masks do not add a reference charge. Automatic and omitted quality reserve the max price, then charge the quality actually returned. Any difference is refunded at your original discounted rate."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#pricing",
+      "text": "For example, 1920×1088 at max has a list price of $0.159 per image at the standard rate. Generate shows your estimate, including applicable discounts, before submission."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#pricing",
+      "text": "GIF pricing includes every delivered frame. Automatic size reserves the maximum output cost for the selected quality, multiplied by the requested GIF frames. Any unused amount is returned after completion. SVG authoring is included."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#streaming-previews",
+      "text": "Each generated preview adds 100 output tokens, with your existing discount. The estimate reserves the requested count; unused preview charges are refunded."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#continue-an-edit",
+      "text": "Each request charges for its new output and the unique images in its conversation history, including earlier generated results and new references, at the existing reference-image rate."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#dimensions-and-aspect-ratios",
+      "text": "Other sizes are accepted when all of these conditions hold: Both edges are positive multiples of 16. Neither edge exceeds 3840 pixels. Total pixels are between 655,360 and 8,294,400, inclusive. Width divided by height is between 1/3 and 3, inclusive."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#image-settings",
+      "text": "| quality | low, medium, high, xhigh, max, auto | auto |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#edit-an-image",
+      "text": "Editing accepts 1-16 ordered reference images. PNG, JPEG and WebP inputs must be smaller than 50 MB each."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#imageoutputoptions",
+      "text": "| `quality` | `Literal[auto, low, medium, high, xhigh, max] | None` | - | `None` | Rendering quality. Supported values depend on the model. Omit to keep its default. |"
+    }
+  ],
+  "probes": [
+    {
+      "label": "sunburst-t2i-bad-size-bad-quality",
+      "at": "2026-11-18T05:12:26Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.quality: Input should be 'auto', 'low', 'medium', 'high', 'xhigh' or 'max'"
+      }
+    },
+    {
+      "label": "sunburst-t2i-bad-size",
+      "at": "2026-11-18T05:13:49Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "f3edb225-2081-40b6-a8f5-cfc639938507"
+      }
+    },
+    {
+      "label": "flare-t2i-bad-size",
+      "at": "2026-11-18T05:13:51Z",
+      "request": {
+        "model": "GPT-Image-2.6-Flare",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "ee2684ca-e2b2-4fbf-b9dc-b009ec89a2c5"
+      }
+    },
+    {
+      "label": "sunburst-i2i-bad-size",
+      "at": "2026-11-18T05:13:53Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "3214b1c5-8006-462f-8c0e-0f75ccfd480c"
+      }
+    },
+    {
+      "label": "flare-i2i-bad-size",
+      "at": "2026-11-18T05:13:54Z",
+      "request": {
+        "model": "GPT-Image-2.6-Flare",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "45793d41-d94a-43d9-a152-a32ce5ef163c"
+      }
+    },
+    {
+      "label": "flare-t2i-bad-size-bad-quality",
+      "at": "2026-11-18T05:13:56Z",
+      "request": {
+        "model": "GPT-Image-2.6-Flare",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.quality: Input should be 'auto', 'low', 'medium', 'high', 'xhigh' or 'max'"
+      }
+    },
+    {
+      "label": "sunburst-t2i-bad-size-unknown-output-key",
+      "at": "2026-11-18T05:13:58Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "not_a_real_field": 1
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "85858755-f217-476e-9907-f66a971cd51c"
+      }
+    }
+  ],
+  "wallet": [
+    {
+      "at": "2026-11-18T05:12:24Z",
+      "balance_micros": 5880713,
+      "note": "before the probes; one unrelated task was running"
+    },
+    {
+      "at": "2026-11-18T05:14:02Z",
+      "balance_micros": 6740213,
+      "note": "after the probes; the difference, 859500, is the Generation Credit of that unrelated task (15 percent of 5730000)"
+    }
+  ],
+  "examples": [
+    {
+      "label": "MachGen docs example: 1920x1088 at max",
+      "task_type": "T2I",
+      "width": 1920,
+      "height": 1088,
+      "quality": "max",
+      "references": 0,
+      "outputTokens": 5300,
+      "referenceTokens": 0,
+      "listMicros": 159000,
+      "discountedMicros": 111300
+    },
+    {
+      "label": "Baseline: 1024x1024 at max",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 1024,
+      "quality": "max",
+      "references": 0,
+      "outputTokens": 7024,
+      "referenceTokens": 0,
+      "listMicros": 210720,
+      "discountedMicros": 147504
+    },
+    {
+      "label": "Recorded T2I: 1280x720 at low",
+      "task_type": "T2I",
+      "width": 1280,
+      "height": 720,
+      "quality": "low",
+      "references": 0,
+      "outputTokens": 445,
+      "referenceTokens": 0,
+      "listMicros": 13350,
+      "discountedMicros": 9345
+    },
+    {
+      "label": "Recorded I2I: 720x1280 at low, one source",
+      "task_type": "I2I",
+      "width": 720,
+      "height": 1280,
+      "quality": "low",
+      "references": 1,
+      "outputTokens": 445,
+      "referenceTokens": 7024,
+      "listMicros": 224070,
+      "discountedMicros": 156849
+    },
+    {
+      "label": "1024x640 at low (the pixel minimum)",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 640,
+      "quality": "low",
+      "references": 0,
+      "outputTokens": 449,
+      "referenceTokens": 0,
+      "listMicros": 13470,
+      "discountedMicros": 9429
+    },
+    {
+      "label": "1024x1024 at low",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 1024,
+      "quality": "low",
+      "references": 0,
+      "outputTokens": 823,
+      "referenceTokens": 0,
+      "listMicros": 24690,
+      "discountedMicros": 17283
+    },
+    {
+      "label": "1024x1024 at medium",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 1024,
+      "quality": "medium",
+      "references": 0,
+      "outputTokens": 1449,
+      "referenceTokens": 0,
+      "listMicros": 43470,
+      "discountedMicros": 30429
+    },
+    {
+      "label": "1024x1024 at high",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 1024,
+      "quality": "high",
+      "references": 0,
+      "outputTokens": 1756,
+      "referenceTokens": 0,
+      "listMicros": 52680,
+      "discountedMicros": 36876
+    },
+    {
+      "label": "1024x1024 at xhigh",
+      "task_type": "T2I",
+      "width": 1024,
+      "height": 1024,
+      "quality": "xhigh",
+      "references": 0,
+      "outputTokens": 3122,
+      "referenceTokens": 0,
+      "listMicros": 93660,
+      "discountedMicros": 65562
+    },
+    {
+      "label": "1536x1024 at max, I2I, 3 sources",
+      "task_type": "I2I",
+      "width": 1536,
+      "height": 1024,
+      "quality": "max",
+      "references": 3,
+      "outputTokens": 5488,
+      "referenceTokens": 21072,
+      "listMicros": 796800,
+      "discountedMicros": 557760
+    },
+    {
+      "label": "3840x2160 at max",
+      "task_type": "T2I",
+      "width": 3840,
+      "height": 2160,
+      "quality": "max",
+      "references": 0,
+      "outputTokens": 13342,
+      "referenceTokens": 0,
+      "listMicros": 400260,
+      "discountedMicros": 280182
+    }
+  ],
+  "notes": [
+    "The pricebook row is a per-megapixel figure, but neither model bills pixels times that rate. The estimator turns it into a price per output token: round-half-even(200958 x 1048576 / 1e6) = 210720 micro-USD buys the 7024 tokens of a 1024x1024 image at max, which is 30 micro-USD per token, OpenAI's 30 USD per 1M image output tokens.",
+    "Output tokens follow OpenAI's calculator for GPT-Image-2.6: ceil(patches x round-half-even(patches x short / long) x (2000000 + width x height) / 4000000), times 4.2 at low and 3.3 at medium, rounded half up. MachGen's integer form, floor((tokens x tenths + 5) / 10), gave the same count as OpenAI's Math.round at every one of the 29146 valid sizes and five qualities (145730 cases).",
+    "An I2I request adds 7024 tokens for each source image (priceIncludesInputImages is false): 1.048576 megapixels at the pricebook rate, whatever the image's own size. T2I adds none.",
+    "The 30 percent discount runs to 2027-03-01T16:00:00Z. The estimator applies it to the total and rounds half up; because the list total is always 30 micro-USD times a whole token count, the discounted total is exactly 21 micro-USD per token.",
+    "generation_credit_percent is 0 on both rows of the account pricebook, so no Generation Credit is expected on these tasks.",
+    "The seven probes show that both models answer this key on T2I and I2I (a 400, not a 403), that image_output.quality is validated before the size and takes exactly auto, low, medium, high, xhigh and max, and that an unknown key inside image_output is not refused at that stage.",
+    "The two model pages print only the per-megapixel headline (0.201 USD, 0.141 USD discounted). The billing rule is on the REST guide, which covers both models, and in the estimator, which both contract entries share."
+  ]
+}

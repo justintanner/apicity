@@ -5,7 +5,28 @@ import {
   MACHGEN_IMAGE_MODELS,
   MachGenGenerateRequestSchema,
 } from "@apicity/machgen";
-import { computeEstimate } from "@apicity/cost";
+import { computeEstimate, PRICING } from "@apicity/cost";
+
+const tokenEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-gpt-image-2-6-2026-11-18.json",
+    "utf8"
+  )
+) as {
+  contract: { models: Record<string, { i2i: { maxInputImages: number } }> };
+  examples: {
+    label: string;
+    task_type: string;
+    width: number;
+    height: number;
+    quality: string;
+    references: number;
+    discountedMicros: number;
+  }[];
+};
+const tokenModels = MACHGEN_IMAGE_MODELS.filter((id) =>
+  Object.hasOwn(tokenEvidence.contract.models, id)
+);
 
 const payload = {
   model: "GPT-Image-2",
@@ -90,10 +111,12 @@ describe("MachGen image tasks", () => {
     ) as { contract: Record<string, { i2i: { maxInputImages: number } }> };
     expect(MACHGEN_I2I_MAX_IMAGES).toEqual(
       Object.fromEntries(
-        Object.entries(evidence.contract).map(([model, entry]) => [
-          model,
-          entry.i2i.maxInputImages,
-        ])
+        Object.entries({
+          ...evidence.contract,
+          ...Object.fromEntries(
+            tokenModels.map((id) => [id, tokenEvidence.contract.models[id]!])
+          ),
+        }).map(([model, entry]) => [model, entry.i2i.maxInputImages])
       )
     );
     expect(Object.keys(MACHGEN_I2I_MAX_IMAGES)).toEqual([
@@ -104,6 +127,7 @@ describe("MachGen image tasks", () => {
     ["GPT-Image-2", 16],
     ["GPT-Image-2.5-Sunburst", 16],
     ["GPT-Image-2.5-Flare", 16],
+    ["GPT-Image-2.6-Sunburst", 16],
     ["Nano-Banana-2", 14],
     ["Nano-Banana-2.1", 14],
   ])("caps %s I2I at %i source images", (model, cap) => {
@@ -142,7 +166,11 @@ describe("MachGen image tasks", () => {
       }[];
     };
     expect(new Set(evidence.prices.map((row) => row.model))).toEqual(
-      new Set(MACHGEN_IMAGE_MODELS)
+      new Set(
+        Object.entries(PRICING.machgen)
+          .filter(([, row]) => row.kind === "perUnit" && row.unit === "images")
+          .map(([id]) => id)
+      )
     );
     for (const row of evidence.prices) {
       for (const task_type of ["T2I", "I2I"]) {
@@ -160,6 +188,77 @@ describe("MachGen image tasks", () => {
       }
     }
   });
+  it("accepts all six quality settings, preserves additional output fields and rejects an unknown quality", () => {
+    for (const quality of ["auto", "low", "medium", "high", "xhigh", "max"]) {
+      const image_output = { quality, complexity: "medium" };
+      expect(
+        MachGenGenerateRequestSchema.parse({ ...payload, image_output })
+          .image_output
+      ).toEqual(image_output);
+    }
+    expect(parse({ image_output: { quality: "lo" } }).success).toBe(false);
+  });
+  it.each(tokenModels)("matches every output-token example for %s", (model) => {
+    for (const row of tokenEvidence.examples) {
+      const result = estimate({
+        model,
+        task_type: row.task_type,
+        image_config: { width: row.width, height: row.height },
+        image_output: { quality: row.quality },
+        ...(row.references ? { src_image_urls: sources(row.references) } : {}),
+      });
+      expect(result.warnings, row.label).toEqual([]);
+      expect(Math.round(result.usd * 1e6), row.label).toBe(
+        row.discountedMicros
+      );
+    }
+  });
+  it.each(tokenModels)(
+    "explains unresolved token estimates for %s",
+    (model) => {
+      const config = { width: 1280, height: 720 };
+      const settings = { quality: "low" };
+      const cases: [Record<string, unknown>, string][] = [
+        [{ task_type: "R2V" }, "task_type"],
+        [{ image_output: undefined }, "quality"],
+        [{ image_output: { quality: "auto" } }, "quality"],
+        [{ image_output: { quality: "other" } }, "quality"],
+        [{ image_config: { ...config, size_mode: "auto" } }, "image_config"],
+        ...[
+          { height: 720 },
+          { width: 1281, height: 720 },
+          { width: 1280, height: 720.5 },
+          { width: 4096, height: 2048 },
+          { width: 1280, height: 160 },
+          { width: 640, height: 640 },
+          { width: 3072, height: 3072 },
+          { width: -1024, height: -1024 },
+        ].map((image_config): [Record<string, unknown>, string] => [
+          { image_config },
+          "image_config",
+        ]),
+        [{ image_output: { ...settings, output_format: "gif" } }, "GIF"],
+        [
+          { image_output: { ...settings, partial_images: 1 } },
+          "partial_images",
+        ],
+        [{ continuation_task_id: "previous" }, "continuation_task_id"],
+        [{ src_task_ids: ["previous"] }, "src_task_ids"],
+        [{ task_type: "I2I" }, "src_image_urls"],
+        [{ src_image_urls: sources(1) }, "src_image_urls"],
+      ];
+      for (const [overrides, reason] of cases) {
+        const result = estimate({
+          model,
+          image_config: config,
+          image_output: settings,
+          ...overrides,
+        });
+        expect(result.usd).toBe(0);
+        expect(result.warnings).toEqual([expect.stringContaining(reason)]);
+      }
+    }
+  );
   it("defaults GPT Image 2 to high quality and declines unknown prices", () => {
     expect(estimate().usd).toBe(0.001385);
     expect(estimate({ optimization_level: undefined }).usd).toBe(0.048);

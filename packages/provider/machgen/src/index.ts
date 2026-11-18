@@ -29,6 +29,7 @@ export type {
   MachGenUpscaleQuoteResponse,
   MachGenVideoConfig,
   MachGenImageConfig,
+  MachGenImageOutput,
 } from "./types";
 export type {
   MachGenSharpenGrid,
@@ -45,6 +46,7 @@ export {
   MACHGEN_IMAGE_MODELS,
   MACHGEN_I2I_MAX_IMAGES,
   MachGenImageConfigSchema,
+  MachGenImageOutputSchema,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_UPSCALE,

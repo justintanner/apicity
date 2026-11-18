@@ -238,6 +238,7 @@ const MACHGEN_IDS: Readonly<Record<string, string>> = {
 
 /** The MachGen image ids per frontier model, on the same generate call. */
 const MACHGEN_IMAGE_IDS: Readonly<Record<string, string>> = {
+  "GPT Image 2.6 Sunburst (max)": "GPT-Image-2.6-Sunburst",
   "GPT Image 2.5 Sunburst (max)": "GPT-Image-2.5-Sunburst",
   "GPT Image 2.5 Flare (max)": "GPT-Image-2.5-Flare",
   "GPT Image 2 (high)": "GPT-Image-2",
@@ -1237,6 +1238,7 @@ describe("frontier image snapshots", () => {
     expect(machgenRows(i2i.endpointMap)).toEqual(
       machgenGenerate(
         [
+          "GPT Image 2.6 Sunburst (max)",
           "GPT Image 2.5 Sunburst (max)",
           "GPT Image 2.5 Flare (max)",
           "Nano Banana 2.1",

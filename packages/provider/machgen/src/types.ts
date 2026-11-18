@@ -6,6 +6,7 @@ import type {
   MachGenUploadRequestSchema,
   MachGenGenerateRequestSchema,
   MachGenImageConfigSchema,
+  MachGenImageOutputSchema,
   MachGenUpscaleConfigSchema,
   MachGenUpscaleQuoteRequestSchema,
   MachGenVideoConfigSchema,
@@ -33,6 +34,7 @@ export interface MachGenOptions {
 export type MachGenGenerateRequest = z.infer<
   typeof MachGenGenerateRequestSchema
 >;
+export type MachGenImageOutput = z.infer<typeof MachGenImageOutputSchema>;
 export type MachGenImageConfig = z.infer<typeof MachGenImageConfigSchema>;
 export type MachGenVideoConfig = z.infer<typeof MachGenVideoConfigSchema>;
 export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;

@@ -75,6 +75,7 @@ const omniEvidence = JSON.parse(
 ) as { pricebook: { prices: PricebookRow[] } };
 // Models priced from the public pricebook after the 2026-10-25 snapshot.
 const pricebookAsOf: Record<string, string> = {
+  "GPT-Image-2.6-Sunburst": "2026-11-18",
   "Seedance-2.5": "2026-10-29",
   "Seedance-2.0": "2026-10-29",
   "MiniMax-H3-Turbo": "2026-11-01",
@@ -309,6 +310,7 @@ describe("MachGen pricing", () => {
       "GPT-Image-2",
       "GPT-Image-2.5-Sunburst",
       "GPT-Image-2.5-Flare",
+      "GPT-Image-2.6-Sunburst",
       "Nano-Banana-2",
       "Nano-Banana-2.1",
     ])
@@ -723,6 +725,7 @@ describe("MachGen pricing", () => {
       "GPT-Image-2": "gi2",
       "GPT-Image-2.5-Sunburst": "gi2p5sb",
       "GPT-Image-2.5-Flare": "gi2p5fl",
+      "GPT-Image-2.6-Sunburst": "gi2p6sb",
       "Nano-Banana-2": "nb2",
       "Nano-Banana-2.1": "nb21",
       "MiniMax-H3": "mmh3",

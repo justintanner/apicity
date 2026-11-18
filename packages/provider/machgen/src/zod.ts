@@ -491,6 +491,7 @@ export const MACHGEN_IMAGE_MODELS = [
   "GPT-Image-2",
   "GPT-Image-2.5-Sunburst",
   "GPT-Image-2.5-Flare",
+  "GPT-Image-2.6-Sunburst",
   "Nano-Banana-2",
   "Nano-Banana-2.1",
 ] as const;
@@ -503,6 +504,7 @@ export const MACHGEN_I2I_MAX_IMAGES: Readonly<Record<string, number>> = {
   "GPT-Image-2": 16,
   "GPT-Image-2.5-Sunburst": 16,
   "GPT-Image-2.5-Flare": 16,
+  "GPT-Image-2.6-Sunburst": 16,
   "Nano-Banana-2": 14,
   "Nano-Banana-2.1": 14,
 };
@@ -519,6 +521,17 @@ export const MachGenImageConfigSchema = z.object({
   infer_steps: z.number().int().positive().optional(),
   guidance_scale: z.array(z.number()).optional(),
 });
+
+export const MachGenImageOutputSchema = z
+  .object({
+    quality: z
+      .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+      .optional()
+      .describe(
+        "Omitted or auto lets the model choose. GPT Image 2.6 reserves the max price and bills the returned quality."
+      ),
+  })
+  .passthrough();
 
 export const MachGenGenerateRequestSchema = z
   .object({
@@ -543,6 +556,7 @@ export const MachGenGenerateRequestSchema = z
     prompt: z.string(),
     video_config: MachGenVideoConfigSchema.optional(),
     image_config: MachGenImageConfigSchema.optional(),
+    image_output: MachGenImageOutputSchema.optional(),
     upscale_config: MachGenUpscaleConfigSchema.optional(),
     enhance_prompt: z.boolean().optional(),
     prompt_enhancement_level: z

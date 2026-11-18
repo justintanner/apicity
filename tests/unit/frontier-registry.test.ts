@@ -244,6 +244,7 @@ const MACHGEN_IDS: Readonly<Record<string, string>> = {
 const MACHGEN_IMAGE_IDS: Readonly<Record<string, string>> = {
   "GPT Image 2.6 Sunburst (max)": "GPT-Image-2.6-Sunburst",
   "GPT Image 2.5 Sunburst (max)": "GPT-Image-2.5-Sunburst",
+  "GPT Image 2.6 Flare (max)": "GPT-Image-2.6-Flare",
   "GPT Image 2.5 Flare (max)": "GPT-Image-2.5-Flare",
   "GPT Image 2 (high)": "GPT-Image-2",
   "Nano Banana 2.1": "Nano-Banana-2.1",
@@ -1265,6 +1266,7 @@ describe("frontier image snapshots", () => {
       machgenGenerate(
         [
           "GPT Image 2.6 Sunburst (max)",
+          "GPT Image 2.6 Flare (max)",
           "GPT Image 2.5 Sunburst (max)",
           "GPT Image 2.5 Flare (max)",
           "Nano Banana 2.1",

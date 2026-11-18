@@ -95,6 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen supports GPT Image 2.6 Flare text-to-image and image-to-image on `api.v0.generate`, at the same output-token price as GPT Image 2.6 Sunburst. The recorded low-quality 1280×720 generation billed $0.009345 and the 720×1280 edit of one source image $0.156849, matching the estimates (ac-hgm6m1).
+
 - MachGen supports GPT Image 2.6 Sunburst text-to-image and image-to-image on `api.v0.generate`, with quality selection through `image_output.quality`.
 
 - WaveSpeed supports HeyGen Video 1.0 image-to-video with a first-frame image, prompt and 5–15 second duration.

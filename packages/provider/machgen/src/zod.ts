@@ -492,6 +492,7 @@ export const MACHGEN_IMAGE_MODELS = [
   "GPT-Image-2.5-Sunburst",
   "GPT-Image-2.5-Flare",
   "GPT-Image-2.6-Sunburst",
+  "GPT-Image-2.6-Flare",
   "Nano-Banana-2",
   "Nano-Banana-2.1",
 ] as const;
@@ -505,6 +506,7 @@ export const MACHGEN_I2I_MAX_IMAGES: Readonly<Record<string, number>> = {
   "GPT-Image-2.5-Sunburst": 16,
   "GPT-Image-2.5-Flare": 16,
   "GPT-Image-2.6-Sunburst": 16,
+  "GPT-Image-2.6-Flare": 16,
   "Nano-Banana-2": 14,
   "Nano-Banana-2.1": 14,
 };

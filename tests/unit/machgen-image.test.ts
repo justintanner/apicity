@@ -128,6 +128,7 @@ describe("MachGen image tasks", () => {
     ["GPT-Image-2.5-Sunburst", 16],
     ["GPT-Image-2.5-Flare", 16],
     ["GPT-Image-2.6-Sunburst", 16],
+    ["GPT-Image-2.6-Flare", 16],
     ["Nano-Banana-2", 14],
     ["Nano-Banana-2.1", 14],
   ])("caps %s I2I at %i source images", (model, cap) => {

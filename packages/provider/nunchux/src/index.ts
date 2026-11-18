@@ -18,6 +18,10 @@ export type {
   NunchuxGoogleNamespace,
   NunchuxGoogleV1betaNamespace,
   NunchuxGoogleInteractionsResponse,
+  NunchuxMinimaxNamespace,
+  NunchuxMinimaxTaskResponse,
+  NunchuxMinimaxV2Namespace,
+  NunchuxMinimaxV2QueryNamespace,
 } from "./types";
 export {
   NunchuxGoogleInteractionsRequestSchema,

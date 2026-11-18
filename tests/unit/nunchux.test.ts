@@ -193,6 +193,20 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("parses the recorded Seedance 2.0 first-frame request and rejects a short duration", () => {
+    const { schema } = createNunchux().v1.bytedance.contents.generations.tasks;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/seedance-2-0-image-to-video_3582590595/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: { request: { postData: { text: string } } }[] } };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body.model).toBe("dreamina-seedance-2-0-260128");
+    expect(schema.safeParse({ ...body, duration: 3 }).success).toBe(false);
+  });
   it("uses the default URL and Bearer key without a GET body", async () => {
     const { fetch, requests } = capture({ credits_remaining: 5 });
     await expect(

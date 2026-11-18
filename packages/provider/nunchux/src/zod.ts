@@ -83,7 +83,7 @@ const seedanceWebUrl = z
 
 export const NunchuxBytedanceGenerationTasksRequestSchema = z.object({
   model: z
-    .enum(["dreamina-seedance-2-5-260628"])
+    .enum(["dreamina-seedance-2-5-260628", "dreamina-seedance-2-0-260128"])
     .or(NunchuxSeedanceModelAliasSchema),
   content: z
     .array(

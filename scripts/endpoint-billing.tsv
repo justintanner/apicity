@@ -1845,6 +1845,7 @@ wavespeed	api.v3.openai.gptImage2p6Flare.edit	POST	metered	images		https://waves
 wavespeed	api.v3.openai.gptImage2p6Flare.textToImage	POST	metered	images		https://wavespeed.ai/models/openai/gpt-image-2.6-flare/text-to-image	2026-11-16
 wavespeed	api.v3.openai.gptImage2p6Sunburst.edit	POST	metered	images		https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/edit	2026-11-16
 wavespeed	api.v3.openai.gptImage2p6Sunburst.textToImage	POST	metered	images		https://wavespeed.ai/models/openai/gpt-image-2.6-sunburst/text-to-image	2026-11-16
+wavespeed	api.v3.prunaAi.pVideo2Pro.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video	2026-11-18
 wavespeed	api.v3.runwayml.aleph2	POST	metered	seconds		https://wavespeed.ai/models/runwayml/aleph-2	2026-11-06
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04

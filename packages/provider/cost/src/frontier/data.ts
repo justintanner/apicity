@@ -827,7 +827,13 @@ export const FRONTIER = {
         model: "P-Video-2-Pro",
         creator: "Pruna AI",
         elo: 1117,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.prunaAi.pVideo2Pro.imageToVideo",
+            pricingKey: "pruna-ai/p-video-2-pro/image-to-video",
+          },
+        ],
       },
       {
         rank: 9,

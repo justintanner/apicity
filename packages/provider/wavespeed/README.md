@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-41 endpoints across 12 groups. Each method mirrors an upstream URL path.
+42 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -674,6 +674,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const prediction = await wavespeed.api.v3.predictions.result("prediction_id");
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+### prunaAi
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.prunaAi.pVideo2Pro.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/pruna-ai/p-video-2-pro/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.prunaAi.pVideo2Pro.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed HeyGen Video 1.0 image-to-video costs 0.025 USD/s at 480p, 0.045 USD/s at 768p, and 0.12 USD/s at 1080p or 2k.
+
 - WaveSpeed Gemini Omni 1.2 Flash text-to-video costs 0.023, 0.07, 0.105 or 0.21 USD per second at 360p, 720p, 1080p or 4k respectively.
 
 - Nunchux `GET v1.credits` is classified as a free account balance read ($0).

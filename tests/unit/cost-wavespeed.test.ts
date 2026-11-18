@@ -47,6 +47,29 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
   });
 });
 
+describe("wavespeed heygen/video-1.0/image-to-video", () => {
+  const model = "heygen/video-1.0/image-to-video";
+  const base = { prompt: PROMPT, image: "https://example.com/cat.jpg" };
+
+  it.each([
+    ["480p", 0.125],
+    ["768p", 0.225],
+    ["1080p", 0.6],
+    ["2k", 0.6],
+  ] as const)("matches the five-second %s quote", (resolution, quoted) => {
+    const result = estimate(model, { ...base, resolution, duration: 5 });
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(quoted, 9);
+  });
+
+  it("matches the default quote and scales with duration", () => {
+    expect(estimate(model, base).usd).toBeCloseTo(0.225, 9);
+    expect(
+      estimate(model, { ...base, resolution: "480p", duration: 15 }).usd
+    ).toBeCloseTo(0.375, 9);
+  });
+});
+
 describe("wavespeed heygen/video-1.0/text-to-video", () => {
   const model = "heygen/video-1.0/text-to-video";
 

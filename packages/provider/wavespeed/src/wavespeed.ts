@@ -29,6 +29,7 @@ import type {
   WaveSpeedGoogleNanoBanana2p1EditRequest,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
+  WaveSpeedHeygenVideo1p0ImageToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
@@ -80,6 +81,7 @@ import {
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
@@ -368,6 +370,23 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedHeygenVideo1p0TextToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/image-to-video
+            // Docs: https://wavespeed.ai/models/heygen/video-1.0/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedHeygenVideo1p0ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/heygen/video-1.0/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema }
             ),
             // sig-ok: version dots become "p" (fal dot rule)
             // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/reference-to-video

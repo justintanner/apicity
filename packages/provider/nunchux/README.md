@@ -31,7 +31,7 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-4 endpoints across 4 groups. Each method mirrors an upstream URL path.
+5 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -103,6 +103,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await nunchux.v1.google.v1beta.interactions({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
+
+### minimax
+
+<details>
+<summary><code>GET</code> <b><code>nunchux.v1.minimax.v2.query.videoGeneration</code></b></summary>
+
+<code>GET https://api.nunchux.com/v1/minimax/v2/query/video_generation/{task_id}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/minimax)
+
+```typescript
+const res = await nunchux.v1.minimax.v2.query.videoGeneration({ /* ... */ });
 ```
 
 Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)

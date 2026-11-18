@@ -100,6 +100,15 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale:
       "Free account credit balance read; no job slot or compute charge",
   },
+  {
+    match: {
+      provider: "nunchux",
+      method: "GET",
+      dotPath: "v1.minimax.v2.query.videoGeneration",
+    },
+    tier: "cheap",
+    rationale: "Free task status poll; no job slot or compute charge",
+  },
   // ── cheap: no marginal USD compute cost ────────────────────────────────
   // Public market-data / sports-data / open-data REST. No per-call USD charge.
   {

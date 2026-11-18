@@ -148,6 +148,7 @@ export interface NunchuxV1Namespace {
   /** Free account balance read; counts toward the requests-per-minute cap. */
   credits(signal?: AbortSignal): Promise<NunchuxCreditsResponse>;
   google: NunchuxGoogleNamespace;
+  minimax: NunchuxMinimaxNamespace;
 }
 
 export interface NunchuxProvider {
@@ -186,4 +187,33 @@ export interface NunchuxGoogleV1betaNamespace {
 }
 export interface NunchuxGoogleNamespace {
   v1beta: NunchuxGoogleV1betaNamespace;
+}
+
+export interface NunchuxMinimaxTaskResponse {
+  task: {
+    /** queued or running while the task runs; succeeded, failed or cancelled when it ends, or a new upstream status. */
+    status: string;
+    /** Present only when status is succeeded. The URL is time-limited; a later poll returns a fresh one, for up to 7 days. */
+    content?: { url: string };
+    /** The failure detail, present when the task did not succeed. */
+    error?: Record<string, unknown>;
+    /** The billed quantities: output seconds, reference-video seconds and the billed image count. */
+    usage?: Record<string, unknown>;
+  };
+}
+
+export interface NunchuxMinimaxV2QueryNamespace {
+  /** Free MiniMax task status read; takes no job slot. */
+  videoGeneration(
+    taskId: string,
+    signal?: AbortSignal
+  ): Promise<NunchuxMinimaxTaskResponse>;
+}
+
+export interface NunchuxMinimaxV2Namespace {
+  query: NunchuxMinimaxV2QueryNamespace;
+}
+
+export interface NunchuxMinimaxNamespace {
+  v2: NunchuxMinimaxV2Namespace;
 }

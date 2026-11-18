@@ -511,6 +511,11 @@ export const FRONTIER = {
             dotPath: "api.v3.google.nanoBanana2p1.edit",
             pricingKey: "google/nano-banana-2.1/edit",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.google.v1beta.interactions",
+            modelId: "gemini-nano-banana-2.1",
+          },
         ],
       },
       {

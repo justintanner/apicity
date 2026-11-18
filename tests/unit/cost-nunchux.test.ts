@@ -153,6 +153,22 @@ describe("Nunchux Nano Banana 2.1 pricing", () => {
       })
     ).toMatchObject({ status: "priced", usd: 0.0336 });
   });
+  it("prices the recorded 1K edit at list, like a 1K generation", () => {
+    const edit = JSON.parse(
+      (
+        JSON.parse(
+          readFileSync(
+            "tests/recordings/nunchux_350094952/nano-banana-2-1-edit_4018369537/recording.har",
+            "utf8"
+          )
+        ) as { log: { entries: HarEntry[] } }
+      ).log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    expect(edit.input).toHaveLength(2);
+    expect(computeEstimate({ provider: "nunchux", payload: edit })).toEqual(
+      expect.objectContaining({ usd: 0.0336, warnings: [] })
+    );
+  });
   it("prices sizes independently and defaults to 4K", () => {
     expect(quote({ type: "image", image_size: "2K" }).usd).toBe(0.0504);
     expect(quote({ type: "image", image_size: "4K" }).usd).toBe(0.113);

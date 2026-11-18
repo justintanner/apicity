@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import examples from "../../packages/provider/nunchux/src/example";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -112,6 +113,40 @@ describe("nunchux", () => {
       schema.safeParse({
         ...recorded,
         input: [{ ...image, data: "data:image/jpeg;base64,YQ==" }],
+      }).success
+    ).toBe(false);
+  });
+  it("parses the recorded Nano Banana edit with its cat image part", () => {
+    const { schema } = createNunchux().v1.google.v1beta.interactions;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/nano-banana-2-1-edit_4018369537/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: { request: { postData: { text: string } } }[] } };
+    const recorded = JSON.parse(har.log.entries[0]!.request.postData.text) as {
+      input: Record<string, unknown>[];
+    };
+    // The harness stores the image as a size summary; restore the bytes of
+    // the fixture it summarizes, which the test sent.
+    const cat = readFileSync("tests/fixtures/cat1.jpg");
+    expect(recorded.input[1]).toEqual({
+      type: "image",
+      data: `<inline base64 data; ${cat.byteLength} bytes>`,
+      mime_type: "image/jpeg",
+    });
+    const payload = {
+      ...recorded,
+      input: [
+        recorded.input[0],
+        { ...recorded.input[1], data: cat.toString("base64") },
+      ],
+    };
+    expect(schema.safeParse(payload).success).toBe(true);
+    expect(
+      schema.safeParse({
+        ...payload,
+        response_format: { type: "image", image_size: "8K" },
       }).success
     ).toBe(false);
   });

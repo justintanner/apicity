@@ -117,6 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Nano Banana 2.1 now generates images through `v1.google.v1beta.interactions`. A 1K image lists at $0.0336.
 
+- Nunchux Nano Banana 2.1 now edits images through `v1.google.v1beta.interactions`: send the text prompt first, then up to 14 base64 image parts. A 1K edit lists at $0.0336, the same as a 1K generation, and is the Nunchux entry for Nano Banana 2.1 on the image-editing frontier.
+
 - `@apicity/nunchux` adds the free MiniMax task poll `v1.minimax.v2.query.videoGeneration(taskId)` (`GET https://api.nunchux.com/v1/minimax/v2/query/video_generation/{task_id}`, 0 USD).
 
 - Added KIE Video Upscale `video/upscale`, KIE's own video upscaler and the first `video/` model id, on `kie.post.api.v1.jobs.createTask`, from the docs as re-read on 2026-11-12 (unchanged since the survey). It takes one public http(s) `video_url` (MP4, MOV or MKV, at most 50 MB and 60 s, checked after download) and a `resolution` output box of `"1080P"`, `"2K"` or `"4K"` (uppercase, default `"2K"`); the source is fitted inside the box with its aspect ratio kept. The id stays enum-only: one id is not a grammar. `@apicity/cost` prices each second of input video by the box, 0.0075 / 0.015 / 0.03 USD (1.5 / 3 / 6 credits) at 1080P / 2K / 4K, on the clip length the caller declares as `costHints.durationSeconds`, as for Topaz video. `check:kie-feed-drift` compares the three new rows, and they agree (645 cells). A recorded 1080P upscale of the 3 s `cat1-kling-o3-3s.mp4` (720 x 960 to 1080 x 1440) billed 4.5 credits (0.0225 USD), charged at success (ac-ggy4a4).

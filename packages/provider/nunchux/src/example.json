@@ -15,6 +15,23 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST v1.bytedance.contents.generations.tasks": {
+    "source": "nunchux/seedance-2-5-text-to-video",
+    "payload": {
+      "model": "dreamina-seedance-2-5-260628",
+      "content": [
+        {
+          "type": "text",
+          "text": "A red paper boat drifts across a calm pond at sunrise; slow push-in."
+        }
+      ],
+      "duration": 4,
+      "resolution": "480p",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v1.google.v1beta.interactions": {
     "source": "nunchux/nano-banana-2-1-text-to-image",
     "payload": {

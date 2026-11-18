@@ -56,6 +56,15 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "nunchux",
     {
+      kind: "metered",
+      unit: "tokens",
+      source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+    },
+    ["POST v1.bytedance.contents.generations.tasks"]
+  ),
+  ...rows(
+    "nunchux",
+    {
       kind: "free",
       reason:
         "Free account balance read; counts toward RPM but takes no job slot",

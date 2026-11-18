@@ -17,6 +17,7 @@ import {
 } from "@apicity/cost";
 import {
   NunchuxAlibabaVideoSynthesisRequestSchema,
+  NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequestSchema,
 } from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
@@ -613,6 +614,15 @@ function liveRegistry() {
           (id === "wan3.0-video" ||
             id === "wan3.0-video-prime" ||
             id.endsWith("-t2v"))
+      );
+    }
+    if (
+      type === "t2v" &&
+      entry.provider === "nunchux" &&
+      entry.dotPath === "v1.bytedance.contents.generations.tasks"
+    ) {
+      return NunchuxBytedanceGenerationTasksRequestSchema.shape.model.options[0].options.some(
+        (id) => id === entry.modelId
       );
     }
     if (type === "t2v" || type === "v2v" || type === "r2v") {

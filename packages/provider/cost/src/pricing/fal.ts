@@ -1,3 +1,9 @@
+import {
+  SEEDANCE_2P0_SIZES,
+  SEEDANCE_2P5_SIZES,
+  seedanceTokens,
+  type SeedanceSizes,
+} from "../seedance";
 import type { CostEstimate, CostHints } from "../types";
 import type { ModelPricing } from "./types";
 import {
@@ -657,75 +663,6 @@ const perSecondTiered = (
 // image-to-video follow the input image's aspect, for which ByteDance
 // publishes no sizing rule.
 
-// [width, height] by resolution and aspect ratio, copied from ByteDance's
-// table: one column for the 2.0 series (2.0, 2.0 Fast and 2.0 US), and one
-// for 2.5 (2.5 US and the draft completion too), which has no 4k.
-type SeedanceSizes = Readonly<
-  Record<string, Readonly<Record<string, readonly [number, number]>>>
->;
-
-const SEEDANCE_2P0_SIZES: SeedanceSizes = {
-  "480p": {
-    "16:9": [864, 496],
-    "4:3": [752, 560],
-    "1:1": [640, 640],
-    "3:4": [560, 752],
-    "9:16": [496, 864],
-    "21:9": [992, 432],
-  },
-  "720p": {
-    "16:9": [1280, 720],
-    "4:3": [1112, 834],
-    "1:1": [960, 960],
-    "3:4": [834, 1112],
-    "9:16": [720, 1280],
-    "21:9": [1470, 630],
-  },
-  "1080p": {
-    "16:9": [1920, 1080],
-    "4:3": [1664, 1248],
-    "1:1": [1440, 1440],
-    "3:4": [1248, 1664],
-    "9:16": [1080, 1920],
-    "21:9": [2206, 946],
-  },
-  "4k": {
-    "16:9": [3840, 2160],
-    "4:3": [3326, 2494],
-    "1:1": [2880, 2880],
-    "3:4": [2494, 3326],
-    "9:16": [2160, 3840],
-    "21:9": [4398, 1886],
-  },
-};
-
-const SEEDANCE_2P5_SIZES: SeedanceSizes = {
-  "480p": {
-    "16:9": [854, 480],
-    "4:3": [752, 560],
-    "1:1": [640, 640],
-    "3:4": [560, 752],
-    "9:16": [480, 854],
-    "21:9": [992, 432],
-  },
-  "720p": {
-    "16:9": [1280, 720],
-    "4:3": [1112, 834],
-    "1:1": [960, 960],
-    "3:4": [834, 1112],
-    "9:16": [720, 1280],
-    "21:9": [1470, 630],
-  },
-  "1080p": {
-    "16:9": [1920, 1080],
-    "4:3": [1664, 1248],
-    "1:1": [1440, 1440],
-    "3:4": [1248, 1664],
-    "9:16": [1080, 1920],
-    "21:9": [2206, 946],
-  },
-};
-
 const SEEDANCE_RATIOS = "21:9, 16:9, 4:3, 1:1, 3:4 or 9:16";
 
 interface SeedanceSpec {
@@ -799,7 +736,7 @@ function seedanceSeconds(
 // The billed tokens, or the reason the request does not fix them. units and
 // warn both read this, so a priced request carries no warning and every
 // unpriced one names its cause.
-function seedanceTokens(
+function falSeedanceTokens(
   spec: SeedanceSpec,
   p: Record<string, unknown>,
   hints?: CostHints
@@ -930,23 +867,25 @@ function seedanceTokens(
     };
   }
 
-  const [width, height] = size;
-  const clipFrames = video && input !== undefined ? 24 * input : 0;
-  const pixels = width * height * (clipFrames + 24 * seconds + 1);
-  const divisor = spec.videoOnlyDivisor ?? 1024;
-  // 0.6 as 3 / 5 keeps whole-number token counts exact.
-  return { tokens: video ? (pixels * 3) / (5 * divisor) : pixels / divisor };
+  const tokens = seedanceTokens(
+    size,
+    seconds,
+    video ? input : 0,
+    spec.videoOnlyDivisor
+  );
+  // fal applies its 0.6 video-input multiplier to the whole token count.
+  return { tokens: video ? (tokens * 3) / 5 : tokens };
 }
 
 const seedance = (spec: SeedanceSpec): ModelPricing => ({
   kind: "perUnit",
   unit: "tokens",
   units: (p, hints) => {
-    const result = seedanceTokens(spec, p, hints);
+    const result = falSeedanceTokens(spec, p, hints);
     return "tokens" in result ? result.tokens : undefined;
   },
   warn: (p, hints) => {
-    const result = seedanceTokens(spec, p, hints);
+    const result = falSeedanceTokens(spec, p, hints);
     return "warning" in result ? [result.warning] : [];
   },
   select: [{ name: "resolution", pick: (p) => seedanceResolution(spec, p) }],

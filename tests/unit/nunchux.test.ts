@@ -67,6 +67,32 @@ describe("nunchux", () => {
     expect(requests[0].init.method).toBe("GET");
     expect(requests[0].init.body).toBeUndefined();
   });
+  it("parses the recorded Seedance body and rejects off-grid controls and non-web video URLs", () => {
+    const { schema } = createNunchux().v1.bytedance.contents.generations.tasks;
+    const body = schema.parse(
+      examples["POST v1.bytedance.contents.generations.tasks"]!.payload
+    );
+    expect(body.model).toBe("dreamina-seedance-2-5-260628");
+    expect(schema.safeParse({ ...body, resolution: "1080p" }).success).toBe(
+      false
+    );
+    expect(
+      schema.safeParse({ ...body, model: "seedream-2-5-260628" }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        content: [
+          ...body.content,
+          {
+            type: "video_url",
+            role: "reference_video",
+            video_url: { url: "data:video/mp4;base64,YQ==" },
+          },
+        ],
+      }).success
+    ).toBe(false);
+  });
   it("uses the default URL and Bearer key without a GET body", async () => {
     const { fetch, requests } = capture({ credits_remaining: 5 });
     await expect(

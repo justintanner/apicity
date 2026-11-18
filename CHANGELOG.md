@@ -113,6 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `@apicity/nunchux` adds the free Seedance task poll `v1.bytedance.contents.generations.tasks.retrieve(taskId)` (`GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}`, 0 USD).
 
+- Nunchux Seedance 2.5 text-to-video is available through `v1.bytedance.contents.generations.tasks`. The list rate is $10.70 per million video tokens, or $6.40 with reference video.
+
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).
 
 - Nunchux Nano Banana 2.1 now generates images through `v1.google.v1beta.interactions`. A 1K image lists at $0.0336.

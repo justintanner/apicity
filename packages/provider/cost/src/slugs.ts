@@ -1063,7 +1063,11 @@ export const MODEL_SLUGS = {
     "Grok-Imagine-Video": "grokimgv",
   },
   // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
-  nunchux: { "gemini-nano-banana-2.1": "nb21", "wan3.0-video": "wan3p0" },
+  nunchux: {
+    "gemini-nano-banana-2.1": "nb21",
+    "wan3.0-video": "wan3p0",
+    "dreamina-seedance-2-5-260628": "sd2p5",
+  },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
     "heygen/video-1.0/image-to-video": "heygenvideo",
@@ -2190,6 +2194,7 @@ export const MODEL_DISPLAY = {
   nunchux: {
     "gemini-nano-banana-2.1": "Nano Banana 2.1",
     "wan3.0-video": "Wan 3.0",
+    "dreamina-seedance-2-5-260628": "Seedance 2.5",
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",

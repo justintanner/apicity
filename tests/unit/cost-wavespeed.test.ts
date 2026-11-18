@@ -1351,6 +1351,75 @@ describe("wavespeed google/gemini-omni-1.1-flash/reference-to-video", () => {
   });
 });
 
+describe("wavespeed google/gemini-omni-1.2-flash/reference-to-video", () => {
+  const model = "google/gemini-omni-1.2-flash/reference-to-video";
+  const IMAGE = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.069 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [IMAGE],
+      resolution: "360p",
+      duration: 3,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.069, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-18, list price.
+  it("bills the quoted rate per second by resolution", () => {
+    for (const [resolution, duration, usd] of [
+      ["360p", 3, 0.069],
+      ["360p", 5, 0.115],
+      ["720p", 3, 0.21],
+      ["720p", 15, 1.05],
+      ["1080p", 3, 0.315],
+      ["4k", 3, 0.63],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          images: [IMAGE],
+          resolution,
+          duration,
+        }).usd,
+        `${resolution} ${duration} s`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("defaults to 8 s at 720p; references and aspect ratio add nothing", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, images: [IMAGE] }).usd
+    ).toBeCloseTo(0.56, 9);
+    for (const payload of [
+      { prompt: PROMPT, duration: 3, resolution: "360p" },
+      {
+        prompt: PROMPT,
+        images: [IMAGE, IMAGE],
+        duration: 3,
+        resolution: "360p",
+      },
+      {
+        prompt: PROMPT,
+        reference_videos: ["https://example.com/ref.mp4"],
+        duration: 3,
+        resolution: "360p",
+      },
+      { prompt: PROMPT, aspect_ratio: "9:16", duration: 3, resolution: "360p" },
+    ]) {
+      expect(estimate(model, payload).usd).toBeCloseTo(0.069, 9);
+    }
+  });
+
+  it("fails closed on a resolution WaveSpeed does not price", () => {
+    const result = estimate(model, { prompt: PROMPT, resolution: "480p" });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
 describe("wavespeed runwayml/aleph-2", () => {
   const model = "runwayml/aleph-2";
   const video = "https://example.com/cat.mp4";

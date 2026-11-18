@@ -1211,6 +1211,45 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema =
       .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
   });
 
+// google/gemini-omni-1.2-flash/reference-to-video, from WaveSpeed's model
+// catalog (GET /api/v3/models, read 2026-11-18): the 1.1 fields with
+// 3-15 s instead of 3-10 s.
+export const WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Text prompt describing the video and how the reference media guides it. Refer to images as <IMAGE_REF_0>, <IMAGE_REF_1>, ... and videos as <VIDEO_REF_0>, ..., numbered from 0 in array order."
+      ),
+    images: z
+      .array(z.string())
+      .max(10)
+      .optional()
+      .describe("Public URLs of up to 10 reference images."),
+    reference_videos: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Public URLs of up to 3 reference videos, each at most 3 s long."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 3-15. WaveSpeed default: 8."),
+  });
+
 // runwayml/aleph-2, from WaveSpeed's model catalog (GET /api/v3/models, read
 // 2026-11-02 and 2026-11-06).
 export const WaveSpeedRunwaymlAleph2RequestSchema = z.object({

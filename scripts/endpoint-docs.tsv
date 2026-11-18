@@ -1927,5 +1927,6 @@ fal	klingVideo.o3.pro.videoToVideo.reference	POST	https://fal.run/fal-ai/kling-v
 machgen	api.v0.upload	POST	https://api.machgen.ai/api/v0/upload	https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k
 wavespeed	api.v3.google.geminiOmni1p2Flash.textToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/text-to-video	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
 wavespeed	api.v3.google.geminiOmni1p2Flash.videoEdit	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit
+wavespeed	api.v3.google.geminiOmni1p2Flash.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/reference-to-video	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/reference-to-video
 nunchux	v1.credits	GET	https://api.nunchux.com/v1/credits	https://docs.nunchux.ai/credits-pricing
 nunchux	v1.alibaba.tasks	GET	https://api.nunchux.com/v1/alibaba/tasks/{task_id}	https://docs.nunchux.ai/partner-models/wan

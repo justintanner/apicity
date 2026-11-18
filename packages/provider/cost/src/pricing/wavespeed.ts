@@ -802,6 +802,26 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
     source: source("google/gemini-omni-1.1-flash/reference-to-video"),
   },
+  // base_price 70000 micros, discount_rate 100 on 2026-11-18. The model page
+  // carries no formula, only its price inputs (duration, resolution). Free
+  // quotes (POST /api/v3/model/price) read 2026-11-18, list price: the 1.2
+  // text-to-video rates, 0.023, 0.07, 0.105 and 0.21 USD/s at 360p, 720p,
+  // 1080p and 4k, linear in the duration (3, 5, 8 and 15 s quoted). Reference
+  // images, reference videos and aspect_ratio add nothing; 8 s at 720p by
+  // default quotes 0.56 USD.
+  "google/gemini-omni-1.2-flash/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.023, "720p": 0.07, "1080p": 0.105, "4k": 0.21 },
+    source: {
+      url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/reference-to-video",
+      asOf: "2026-11-18",
+    },
+  },
   // base_price 370000 micros, discount_rate 100 on 2026-11-02 and 2026-11-06.
   // Formula:
   //   {"total_price": $max([2, $min([$ceil(get_duration(video)), 30])]) *

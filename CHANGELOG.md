@@ -97,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - WaveSpeed supports HeyGen Video 1.0 image-to-video with a first-frame image, prompt and 5–15 second duration.
 
+- `@apicity/wavespeed` adds Gemini Omni 1.2 Flash reference-to-video at `api.v3.google.geminiOmni1p2Flash.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/reference-to-video`), the leaf beside text-to-video and video-edit: up to 10 reference images and 3 reference videos (each at most 3 s), 3-15 s at 360p, 720p, 1080p or 4k. WaveSpeed bills the text-to-video rates, 0.023 to 0.21 USD/s list, 0.56 USD by default (8 s, 720p); references add nothing. Recorded at 3 s, 360p from the cat photo, which billed 0.069 USD in 31 s (ac-p3eht2).
+
 - WaveSpeed supports Gemini Omni 1.2 Flash text-to-video with 3–15 second clips through `api.v3.google.geminiOmni1p2Flash.textToVideo`.
 
 - `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).

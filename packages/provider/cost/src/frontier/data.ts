@@ -874,6 +874,11 @@ export const FRONTIER = {
             dotPath: "api.v3.minimax.h3.imageToVideo",
             pricingKey: "minimax/h3/image-to-video",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.minimax.v2.videoGeneration",
+            modelId: "MiniMax-H3",
+          },
         ],
       },
       {

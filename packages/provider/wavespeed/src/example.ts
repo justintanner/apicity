@@ -274,6 +274,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.geminiOmni1p2Flash.videoEdit": {
+    "source": "wavespeed/google-gemini-omni-1-2-flash-video-edit",
+    "payload": {
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "prompt": "Make the cat's fur bright orange.",
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.nanoBanana2p1.edit": {
     "source": "wavespeed/google-nano-banana-2-1-edit",
     "payload": {

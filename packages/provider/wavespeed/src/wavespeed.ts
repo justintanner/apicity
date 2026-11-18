@@ -23,6 +23,7 @@ import type {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
   WaveSpeedGoogleNanoBanana2p1EditRequest,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
@@ -70,6 +71,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
@@ -695,6 +697,27 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
+              }
+            ),
+          },
+          geminiOmni1p2Flash: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.2-flash/video-edit",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
               }
             ),
           },

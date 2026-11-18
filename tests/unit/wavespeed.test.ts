@@ -24,6 +24,7 @@ import {
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
@@ -1239,6 +1240,50 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-google-gemini-omni-1-2-flash-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    prompt: "Make the cat's fur bright orange.",
+    resolution: "360p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p2Flash)).toEqual([
+      "videoEdit",
+    ]);
+    expect(wavespeed.api.v3.google.geminiOmni1p2Flash.videoEdit.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["video", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

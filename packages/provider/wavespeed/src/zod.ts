@@ -757,6 +757,23 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema = z.object(
   }
 );
 
+// google/gemini-omni-1.2-flash/video-edit, from the WaveSpeed model page
+// (https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit, read 2026-11-18).
+export const WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema = z.object(
+  {
+    video: z
+      .string()
+      .describe("URL of the source video to edit (at most 10 seconds)."),
+    prompt: z
+      .string()
+      .describe("Instruction describing how to edit the source video."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the edited video. WaveSpeed default: `720p`."),
+  }
+);
+
 // minimax/h3/reference-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02).
 export const WaveSpeedMinimaxH3ReferenceToVideoRequestSchema = z.object({

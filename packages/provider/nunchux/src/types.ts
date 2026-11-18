@@ -5,6 +5,8 @@ import type {
   NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequest,
   NunchuxGoogleInteractionsRequestSchema,
+  NunchuxMinimaxVideoGenerationRequest,
+  NunchuxMinimaxVideoGenerationRequestSchema,
 } from "./zod";
 
 /** HTTP status; 408 for timeout, 499 for caller abort, 500 for transport errors. */
@@ -241,14 +243,30 @@ export interface NunchuxGoogleNamespace {
 
 export interface NunchuxMinimaxTaskResponse {
   task: {
+    /** The task ID, an opaque string. */
+    id: string;
+    model: string;
+    resolution?: string;
+    /** Requested output seconds. */
+    duration?: number;
+    /** generation on the recorded text-to-video task. */
+    task_type?: string;
+    /** video on the recorded task. */
+    modality?: string;
     /** queued or running while the task runs; succeeded, failed or cancelled when it ends, or a new upstream status. */
     status: string;
     /** Present only when status is succeeded. The URL is time-limited; a later poll returns a fresh one, for up to 7 days. */
     content?: { url: string };
     /** The failure detail, present when the task did not succeed. */
     error?: Record<string, unknown>;
-    /** The billed quantities: output seconds, reference-video seconds and the billed image count. */
-    usage?: Record<string, unknown>;
+    /** The billed quantities, present once the task succeeded. */
+    usage?: {
+      total_seconds: number;
+      /** Reference-video seconds billed at the output rate. */
+      input_seconds: number;
+      output_seconds: number;
+      input_image_count: number;
+    };
   };
 }
 
@@ -260,8 +278,21 @@ export interface NunchuxMinimaxV2QueryNamespace {
   ): Promise<NunchuxMinimaxTaskResponse>;
 }
 
+export interface NunchuxMinimaxVideoGenerationResponse {
+  /** Poll it with v1.minimax.v2.query.videoGeneration. */
+  task_id: string;
+}
+
 export interface NunchuxMinimaxV2Namespace {
   query: NunchuxMinimaxV2QueryNamespace;
+  /** Submits a MiniMax video task; billed per second of output. */
+  videoGeneration: {
+    (
+      body: NunchuxMinimaxVideoGenerationRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxMinimaxVideoGenerationResponse>;
+    schema: typeof NunchuxMinimaxVideoGenerationRequestSchema;
+  };
 }
 
 export interface NunchuxMinimaxNamespace {

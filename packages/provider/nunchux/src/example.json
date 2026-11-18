@@ -50,5 +50,22 @@
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST v1.minimax.v2.videoGeneration": {
+    "source": "nunchux/minimax-h3-text-to-video",
+    "payload": {
+      "model": "MiniMax-H3",
+      "content": [
+        {
+          "type": "text",
+          "text": "A red paper boat drifts across a calm pond at sunrise; slow push-in."
+        }
+      ],
+      "resolution": "768P",
+      "duration": 4,
+      "ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 }

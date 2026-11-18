@@ -113,3 +113,20 @@ export async function recordNunchuxBytedanceTask(
 }
 
 // minimax adapter (ac-1zu8fr.14)
+export async function recordNunchuxMinimaxTask(
+  body: import("@apicity/nunchux").NunchuxMinimaxVideoGenerationRequest,
+  ctx: PollyContext
+) {
+  const v2 = nunchuxClient().v1.minimax.v2;
+  return recordNunchuxTask(
+    {
+      submit: async () => (await v2.videoGeneration(body)).task_id,
+      poll: v2.query.videoGeneration,
+      status: (task) => task.task.status,
+      isSuccess: (status) => status === "succeeded",
+      isFailure: (status) => status === "failed" || status === "cancelled",
+      outputUrl: (task) => task.task.content?.url,
+    },
+    ctx
+  );
+}

@@ -34,6 +34,7 @@ import {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
+  WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
@@ -1929,6 +1930,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
       "gptImage2p6Sunburst",
       "gptImage2p5Sunburst",
       "gptImage2p5Flare",
+      "gptImage2",
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
       "textToImage",
@@ -2445,6 +2447,63 @@ describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
           [field]: value,
         }).success,
         `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.openai.gptImage2)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.openai.gptImage2.textToImage.schema).toBe(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "3:1",
+        resolution: "4k",
+        quality: "high",
+        output_format: "jpeg",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects the GPT Image 2.5 tiers above high and values off the grid", () => {
+    for (const [field, value] of [
+      ["quality", "xhigh"],
+      ["quality", "max"],
+      ["resolution", "8k"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "svg"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
       ).toBe(false);
     }
   });

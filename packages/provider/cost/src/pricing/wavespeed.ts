@@ -1017,4 +1017,30 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-18",
     },
   },
+  // base_price 60000 micros, discount_rate 95 on 2026-11-16. No formula on the
+  // model page, only its price inputs (quality, resolution), so the rates are
+  // the list prices of free quotes read 2026-11-16 at every quality and
+  // resolution. The output format and aspect ratio add nothing. One request
+  // returns one image.
+  "openai/gpt-image-2/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: {
+      "low|1k": 0.01,
+      "low|2k": 0.02,
+      "low|4k": 0.03,
+      "medium|1k": 0.06,
+      "medium|2k": 0.1,
+      "medium|4k": 0.18,
+      "high|1k": 0.22,
+      "high|2k": 0.4,
+      "high|4k": 0.72,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
 };

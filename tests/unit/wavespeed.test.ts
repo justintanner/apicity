@@ -39,6 +39,7 @@ import {
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -117,6 +118,7 @@ describe("wavespeed provider", () => {
       "runwayml",
       "kwaivgi",
       "openai",
+      "prunaAi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -2302,5 +2304,103 @@ describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
         RECORDED
       ).success
     ).toBe(true);
+  });
+});
+
+describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-pruna-ai-p-video-2-pro-image-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    duration: 5,
+    resolution: "480p",
+    mode: "cost",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.prunaAi)).toEqual(["pVideo2Pro"]);
+    expect(Object.keys(wavespeed.api.v3.prunaAi.pVideo2Pro)).toEqual([
+      "imageToVideo",
+    ]);
+    expect(wavespeed.api.v3.prunaAi.pVideo2Pro.imageToVideo.schema).toBe(
+      WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "pruna-ai/p-video-2-pro/image-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.prunaAi.pVideo2Pro.imageToVideo({
+      prompt: RECORDED.prompt,
+      image: RECORDED.image,
+      duration: 5,
+      resolution: "480p",
+      mode: "cost",
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/pruna-ai/p-video-2-pro/image-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema.safeParse({
+        ...RECORDED,
+        last_image: RECORDED.image,
+        duration: 15,
+        resolution: "768p",
+        mode: "quality",
+        prompt_upsampler: "off",
+        seed: 1712789405,
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["duration", 4],
+      ["duration", 16],
+      ["duration", 5.5],
+      ["resolution", "720p"],
+      ["mode", "turbo"],
+      ["prompt_upsampler", "on"],
+      ["seed", 1.5],
+      ["image", ""],
+      ["last_image", ""],
+      ["image", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
   });
 });

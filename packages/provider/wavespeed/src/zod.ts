@@ -1569,3 +1569,51 @@ export const WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema =
 // gives it the same request schema as the Sunburst model.
 export const WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema =
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema;
+
+// pruna-ai/p-video-2-pro/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-18).
+export const WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("Text prompt describing the video to generate."),
+  image: z
+    .string()
+    .min(1)
+    .describe(
+      "First frame: a public URL of the reference image, which sets the output canvas."
+    ),
+  last_image: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Last frame: a public URL of an optional reference image."),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 5-15. WaveSpeed default: 5."),
+  resolution: z
+    .enum(["480p", "768p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  mode: z
+    .enum(["speed", "quality", "cost"])
+    .optional()
+    .describe(
+      "Generation mode: `cost` bills less at the quality of `speed`, `speed` renders faster, and `quality` renders at higher quality. WaveSpeed default: `speed`."
+    ),
+  prompt_upsampler: z
+    .enum(["off", "turbo", "max"])
+    .optional()
+    .describe(
+      "Prompt expansion, independent of `mode`; it does not change the price. WaveSpeed default: `turbo`."
+    ),
+  seed: z
+    .number()
+    .int()
+    .optional()
+    .describe("Random seed for reproducible output. Omit for a random seed."),
+});

@@ -205,6 +205,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
   billed 0.0217 USD (ac-pns6xz).
 
+- WaveSpeed P-Video-2-Pro image-to-video (`pruna-ai/p-video-2-pro/image-to-video`)
+  bills per second by mode and resolution: 0.02 and 0.035 USD/s at 480p and
+  768p in `speed` mode, 0.04 and 0.075 in `quality` mode, and 0.01 and 0.025 in
+  `cost` mode, from free quotes (list price, read 2026-11-18; the model page
+  publishes no formula). The last frame, prompt expansion and seed add nothing.
+  Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
+  P-Video-2-Pro (ac-cdx7ad).
+
 - WaveSpeed GPT Image 2.5 Flare text-to-image
   (`openai/gpt-image-2.5-flare/text-to-image`) bills one image per request at
   the Sunburst rates, 0.01 USD (low, 1k) to 1 USD (max, 4k), from free quotes

@@ -124,6 +124,9 @@ export type {
   WaveSpeedWavespeedAiMinimaxH3VideoEditMethod,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
   WaveSpeedWavespeedAiNamespace,
+  WaveSpeedXAiGrokImagineImageV2p0Namespace,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageMethod,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
   WaveSpeedXAiGrokImagineVideoV1p5Namespace,
@@ -174,6 +177,7 @@ export {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";

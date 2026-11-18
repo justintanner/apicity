@@ -1850,6 +1850,7 @@ wavespeed	api.v3.openai.gptImage2p6Sunburst.textToImage	POST	metered	images		htt
 wavespeed	api.v3.prunaAi.pVideo2Pro.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video	2026-11-18
 wavespeed	api.v3.runwayml.aleph2	POST	metered	seconds		https://wavespeed.ai/models/runwayml/aleph-2	2026-11-06
 wavespeed	api.v3.wavespeedAi.minimaxH3.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/wavespeed-ai/minimax-h3/video-edit	2026-11-04
+wavespeed	api.v3.xAi.grokImagineImageV2p0.textToImage	POST	metered	images		https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image	2026-11-16
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/image-to-video	2026-11-04
 wavespeed	api.v3.xAi.grokImagineVideoV1p5.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/x-ai/grok-imagine-video-v1.5/reference-to-video	2026-11-06
 x	v2.media.upload	GET	unpriced	requests	Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f	https://docs.x.com/x-api/getting-started/pricing.md	2026-11-04

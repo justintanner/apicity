@@ -44,6 +44,7 @@ import {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "@apicity/wavespeed/zod";
@@ -2500,6 +2501,66 @@ describe("wavespeed openai/gpt-image-2/text-to-image", () => {
     ] as const) {
       expect(
         WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-x-ai-grok-imagine-image-v2-0-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.xAi)).toEqual([
+      "grokImagineVideoV1p5",
+      "grokImagineImageV2p0",
+    ]);
+    expect(Object.keys(wavespeed.api.v3.xAi.grokImagineImageV2p0)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.xAi.grokImagineImageV2p0.textToImage.schema).toBe(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "19.5:9",
+        resolution: "2k",
+        quality: "medium",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "4k"],
+      ["quality", "high"],
+      ["aspect_ratio", "21:9"],
+      ["prompt", ""],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

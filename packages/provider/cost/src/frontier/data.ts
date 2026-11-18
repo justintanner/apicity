@@ -290,6 +290,11 @@ export const FRONTIER = {
             dotPath: "v1.images.generations",
             modelId: "grok-imagine-image-2.0",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.xAi.grokImagineImageV2p0.textToImage",
+            pricingKey: "x-ai/grok-imagine-image-v2.0/text-to-image",
+          },
         ],
       },
       {

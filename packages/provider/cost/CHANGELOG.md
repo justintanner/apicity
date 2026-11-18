@@ -215,6 +215,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
   P-Video-2-Pro (ac-cdx7ad).
 
+- WaveSpeed Grok Imagine Image 2.0 text-to-image
+  (`x-ai/grok-imagine-image-v2.0/text-to-image`) bills one image per request at
+  0.04, 0.06, 0.06 and 0.08 USD for low 1k, low 2k, medium 1k and medium 2k (the
+  default), from free quotes (list price, read 2026-11-16).
+  `MODEL_SLUGS.wavespeed` shares xAI's slug `grokimgi2p0` (ac-tkei3h).
+
 - WaveSpeed GPT Image 2 text-to-image (`openai/gpt-image-2/text-to-image`)
   bills one image per request by quality and resolution, from 0.01 USD (low,
   1k) to 0.72 USD (high, 4k) and 0.06 USD at the medium 1k default, from free

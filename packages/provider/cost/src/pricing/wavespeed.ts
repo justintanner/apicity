@@ -1043,4 +1043,28 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 80000 micros, discount_rate 100 on 2026-11-16. No formula on the
+  // model page, only its price inputs (quality, resolution), so the rates are
+  // the list prices of free quotes read 2026-11-16. The default (medium, 2k) is
+  // the most expensive request; aspect ratio adds nothing. One request returns
+  // one image.
+  "x-ai/grok-imagine-image-v2.0/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "2k" },
+    ],
+    rates: {
+      "low|1k": 0.04,
+      "low|2k": 0.06,
+      "medium|1k": 0.06,
+      "medium|2k": 0.08,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
 };

@@ -1675,3 +1675,43 @@ export const WaveSpeedOpenaiGptImage2TextToImageRequestSchema = z.object({
     .optional()
     .describe("Format of the output image. WaveSpeed default: `png`."),
 });
+
+// x-ai/grok-imagine-image-v2.0/text-to-image, from the request schema on
+// WaveSpeed's model page (read 2026-11-16).
+export const WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .min(1)
+      .describe("Text description of the image to generate."),
+    aspect_ratio: z
+      .enum([
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "3:2",
+        "2:3",
+        "2:1",
+        "1:2",
+        "19.5:9",
+        "9:19.5",
+        "20:9",
+        "9:20",
+      ])
+      .optional()
+      .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+    resolution: z
+      .enum(["1k", "2k"])
+      .optional()
+      .describe(
+        "Resolution tier of the image. WaveSpeed default: `2k`, the more expensive tier."
+      ),
+    quality: z
+      .enum(["low", "medium"])
+      .optional()
+      .describe(
+        "Quality tier. WaveSpeed default: `medium`, the more expensive tier."
+      ),
+  });

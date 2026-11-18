@@ -2182,3 +2182,43 @@ describe("wavespeed openai/gpt-image-2/text-to-image", () => {
     ]);
   });
 });
+
+describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
+  const model = "x-ai/grok-imagine-image-v2.0/text-to-image";
+
+  it("prices the recorded payload at the 0.04 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.04, 9);
+  });
+
+  it("bills the medium 2k default, the most expensive request", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.08, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    for (const [quality, resolution, usd] of [
+      ["low", "1k", 0.04],
+      ["low", "2k", 0.06],
+      ["medium", "1k", 0.06],
+      ["medium", "2k", 0.08],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+        `${quality} ${resolution}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, aspect_ratio: "20:9" }).usd
+    ).toBeCloseTo(0.08, 9);
+  });
+});

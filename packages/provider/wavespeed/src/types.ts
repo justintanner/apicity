@@ -42,6 +42,7 @@ import type {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";
@@ -587,8 +588,24 @@ export interface WaveSpeedXAiGrokImagineVideoV1p5Namespace {
   imageToVideo: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod;
   referenceToVideo: WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoMethod;
 }
+export type WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest = z.input<
+  typeof WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedXAiGrokImagineImageV2p0TextToImageMethod {
+  (
+    request: WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema;
+}
+export interface WaveSpeedXAiGrokImagineImageV2p0Namespace {
+  textToImage: WaveSpeedXAiGrokImagineImageV2p0TextToImageMethod;
+}
 export interface WaveSpeedXAiNamespace {
   grokImagineVideoV1p5: WaveSpeedXAiGrokImagineVideoV1p5Namespace;
+  grokImagineImageV2p0: WaveSpeedXAiGrokImagineImageV2p0Namespace;
 }
 export type WaveSpeedWavespeedAiMinimaxH3VideoEditRequest = z.input<
   typeof WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema

@@ -603,7 +603,7 @@ function liveRegistry() {
       );
     }
     if (
-      type === "t2v" &&
+      (type === "t2v" || type === "r2v") &&
       entry.provider === "nunchux" &&
       entry.dotPath ===
         "v1.alibaba.services.aigc.videoGeneration.videoSynthesis"
@@ -613,7 +613,7 @@ function liveRegistry() {
           id === entry.modelId &&
           (id === "wan3.0-video" ||
             id === "wan3.0-video-prime" ||
-            id.endsWith("-t2v"))
+            id.endsWith(`-${type}`))
       );
     }
     if (

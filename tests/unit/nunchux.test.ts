@@ -39,6 +39,31 @@ describe("nunchux", () => {
       schema.safeParse({ ...body, parameters: { duration: 1 } }).success
     ).toBe(false);
   });
+  it("parses the recorded Wan 3.0 reference-to-video request and rejects an unknown media type", () => {
+    const { schema } =
+      createNunchux().v1.alibaba.services.aigc.videoGeneration.videoSynthesis;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/wan-3-0-reference-to-video_3561610200/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: { request: { postData: { text: string } } }[] } };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body.input.media).toEqual([
+      { type: "reference_image", url: expect.stringMatching(/\/cat1\.jpg$/) },
+    ]);
+    expect(
+      schema.safeParse({
+        ...body,
+        input: {
+          ...body.input,
+          media: [{ ...body.input.media![0]!, type: "reference_gif" }],
+        },
+      }).success
+    ).toBe(false);
+  });
   it("encodes the task ID as one path segment without a GET body", async () => {
     const body = { output: { task_id: "task/id ?#", task_status: "UNKNOWN" } };
     const { fetch, requests } = capture(body);

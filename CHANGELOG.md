@@ -121,6 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Seedance 2.5 image-to-video now appears on the frontier. The four-second 480p first-frame recording used 39,820 tokens, or $0.426074 at list.
 
+- Nunchux Seedance 2.5 reference-to-video now appears on the frontier. A four-second 480p clip guided by a reference image used 38,830 output tokens, or $0.415481 at list.
+
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).
 
 - Nunchux Nano Banana 2.1 now generates images through `v1.google.v1beta.interactions`. A 1K image lists at $0.0336.

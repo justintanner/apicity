@@ -194,6 +194,35 @@ describe("Nunchux Seedance 2.5 pricing", () => {
       }).usd
     ).toBe(0);
   });
+  it("prices the recorded 16:9 reference-image render on output tokens alone", () => {
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/seedance-2-5-reference-to-video_2938573094/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const payload = JSON.parse(
+      har.log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    const receipt = JSON.parse(
+      har.log.entries.at(-1)!.response.content.text!
+    ) as { ratio: string; usage: { completion_tokens: number } };
+    expect(receipt).toMatchObject({
+      ratio: "16:9",
+      usage: { completion_tokens: 38830 },
+    });
+    const request = { provider: "nunchux" as const, payload };
+    const estimate = computeEstimate(request);
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(
+      (receipt.usage.completion_tokens * 10.7) / 1e6,
+      9
+    );
+    expect(
+      computeEstimate({ ...request, costHints: { inputDurationSeconds: 4 } })
+        .usd
+    ).toBe(estimate.usd);
+  });
   it("selects the reference-video rate", () => {
     const payload = {
       ...body,
@@ -206,10 +235,22 @@ describe("Nunchux Seedance 2.5 pricing", () => {
         },
       ],
     };
-    expect(computeEstimate({ provider: "nunchux", payload }).usd).toBeCloseTo(
-      (38830 * 6.4) / 1e6,
-      9
-    );
+    const request = { provider: "nunchux" as const, payload };
+    for (const inputDurationSeconds of [undefined, 0, -1, NaN]) {
+      const estimate = computeEstimate({
+        ...request,
+        costHints: { inputDurationSeconds },
+      });
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+    // Four seconds of input add 96 frames to the 97 output frames at 854 × 480.
+    expect(
+      computeEstimate({ ...request, costHints: { inputDurationSeconds: 4 } })
+        .usd
+    ).toBeCloseTo((77260 * 6.4) / 1e6, 9);
   });
 });
 

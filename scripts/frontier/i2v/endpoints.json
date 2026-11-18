@@ -85,7 +85,13 @@
     }
   ],
   "Hyperflow H3": [],
-  "P-Video-2-Pro": [],
+  "P-Video-2-Pro": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.prunaAi.pVideo2Pro.imageToVideo",
+      "pricingKey": "pruna-ai/p-video-2-pro/image-to-video"
+    }
+  ],
   "MiniMax H3 Max": [
     {
       "provider": "fal",

@@ -428,6 +428,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.prunaAi.pVideo2Pro.imageToVideo": {
+    "source": "wavespeed/pruna-ai-p-video-2-pro-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns its head toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "duration": 5,
+      "resolution": "480p",
+      "mode": "cost"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.runwayml.aleph2": {
     "source": "wavespeed/runwayml-aleph-2",
     "payload": {

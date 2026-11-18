@@ -178,6 +178,46 @@ export const nunchux: Record<string, ModelPricing> = {
     rates: { "720P": 0.1, "1080P": 0.15 },
     source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
   },
+  // Both feeds list happyhorse-1.0-video-edit at $0.14/$0.24 per second for
+  // 720P/1080P with input_video_billed true and max_billable_input_video_seconds
+  // 15. The HappyHorse page documents no edit, so 1080P, the family's default
+  // and most expensive tier, stands in for a missing resolution.
+  "happyhorse-1.0-video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const source = hintInputSeconds(hints);
+      if (source === undefined) return undefined;
+      const duration = asObject(p.parameters)?.duration;
+      if (
+        duration !== undefined &&
+        (typeof duration !== "number" ||
+          !Number.isInteger(duration) ||
+          duration < 3 ||
+          duration > 15)
+      )
+        return undefined;
+      return (duration ?? source) + Math.min(source, 15);
+    },
+    warn: (_p, hints) =>
+      hintInputSeconds(hints) === undefined
+        ? [
+            "HappyHorse edits bill the source clip's length. Pass it in costHints.inputDurationSeconds.",
+          ]
+        : [],
+    select: [
+      {
+        name: "resolution",
+        required: true,
+        pick: (p) => {
+          const resolution = asObject(p.parameters)?.resolution;
+          return resolution === undefined ? "1080P" : asString(resolution);
+        },
+      },
+    ],
+    rates: { "720P": 0.14, "1080P": 0.24 },
+    source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+  },
   // Both feeds list 480p|720p/default at $10.70/M completion tokens and
   // 480p|720p/video_input at $6.40/M. Neither feed splits the rate by audio.
   // A silent 480p, 16:9, 4-second render reported 38,830 completion tokens.

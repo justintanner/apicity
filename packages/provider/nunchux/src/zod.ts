@@ -21,6 +21,7 @@ export const NunchuxAlibabaVideoSynthesisRequestSchema = z.object({
       "happyhorse-1.0-t2v",
       "happyhorse-1.0-i2v",
       "happyhorse-1.0-r2v",
+      "happyhorse-1.0-video-edit",
     ])
     .or(NunchuxAlibabaVideoModelAliasSchema),
   input: z.object({

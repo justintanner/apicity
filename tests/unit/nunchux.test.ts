@@ -89,6 +89,31 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("parses the recorded HappyHorse 1.0 video edit request and rejects an off-grid duration type", () => {
+    const { schema } =
+      createNunchux().v1.alibaba.services.aigc.videoGeneration.videoSynthesis;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/happyhorse-1-0-video-edit_3156347330/recording.har",
+        "utf8"
+      )
+    ) as {
+      log: { entries: { request: { postData: { text: string } } }[] };
+    };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body.model).toBe("happyhorse-1.0-video-edit");
+    expect(body.input.media).toEqual([
+      { type: "video", url: expect.stringMatching(/cat1-kling-o3-3s\.mp4$/) },
+    ]);
+    expect(
+      schema.safeParse({
+        ...body,
+        parameters: { ...body.parameters, duration: 3.5 },
+      }).success
+    ).toBe(false);
+  });
   it("encodes the task ID as one path segment without a GET body", async () => {
     const body = { output: { task_id: "task/id ?#", task_status: "UNKNOWN" } };
     const { fetch, requests } = capture(body);

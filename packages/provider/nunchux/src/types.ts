@@ -72,7 +72,34 @@ export interface NunchuxCreditsResponse {
   spend_limit: NunchuxSpendLimit | null;
 }
 
+export interface NunchuxAlibabaTaskResponse {
+  request_id?: string;
+  output: {
+    task_id: string;
+    /** PENDING, RUNNING, SUCCEEDED, FAILED, CANCELED, or a new upstream status. */
+    task_status: string;
+    /** Available on success; task IDs and video URLs expire after 24 hours. */
+    video_url?: string;
+    code?: string;
+    message?: string;
+  };
+  usage?: {
+    input_video_duration?: number;
+    output_video_duration?: number;
+    [key: string]: unknown;
+  };
+}
+
+export interface NunchuxAlibabaNamespace {
+  /** Free Wan/HappyHorse task status read; takes no job slot. */
+  tasks(
+    taskId: string,
+    signal?: AbortSignal
+  ): Promise<NunchuxAlibabaTaskResponse>;
+}
+
 export interface NunchuxV1Namespace {
+  alibaba: NunchuxAlibabaNamespace;
   /** Free account balance read; counts toward the requests-per-minute cap. */
   credits(signal?: AbortSignal): Promise<NunchuxCreditsResponse>;
 }

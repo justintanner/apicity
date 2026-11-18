@@ -76,6 +76,11 @@ export interface EndpointCostPolicy {
  */
 export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
+    match: { provider: "nunchux", method: "GET", dotPath: "v1.alibaba.tasks" },
+    tier: "cheap",
+    rationale: "Free task status poll; no job slot or compute charge",
+  },
+  {
     match: { provider: "nunchux" },
     tier: "prohibitive",
     rationale: "Media generation costs depend on model and inputs",

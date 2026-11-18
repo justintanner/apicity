@@ -103,8 +103,48 @@ export interface NunchuxAlibabaNamespace {
   ): Promise<NunchuxAlibabaTaskResponse>;
 }
 
+export interface NunchuxBytedanceTaskResponse {
+  /** The task ID, an opaque string. */
+  id: string;
+  model?: string;
+  /** queued or running while the task runs; succeeded, failed, cancelled or expired when it ends, or a new upstream status. */
+  status: string;
+  /** Present only when status is succeeded; the URL expires. */
+  content?: { video_url: string };
+  /** Present when the task did not succeed. */
+  error?: { code?: string; message?: string };
+  /** Clip length in seconds. */
+  duration?: number;
+  ratio?: string;
+  resolution?: string;
+  usage?: { completion_tokens: number; total_tokens?: number };
+  created_at?: number;
+  updated_at?: number;
+}
+
+export interface NunchuxBytedanceContentsGenerationsTasksNamespace {
+  /** Free Seedance task status read; takes no job slot. */
+  retrieve(
+    taskId: string,
+    signal?: AbortSignal
+  ): Promise<NunchuxBytedanceTaskResponse>;
+}
+
+export interface NunchuxBytedanceContentsGenerationsNamespace {
+  tasks: NunchuxBytedanceContentsGenerationsTasksNamespace;
+}
+
+export interface NunchuxBytedanceContentsNamespace {
+  generations: NunchuxBytedanceContentsGenerationsNamespace;
+}
+
+export interface NunchuxBytedanceNamespace {
+  contents: NunchuxBytedanceContentsNamespace;
+}
+
 export interface NunchuxV1Namespace {
   alibaba: NunchuxAlibabaNamespace;
+  bytedance: NunchuxBytedanceNamespace;
   /** Free account balance read; counts toward the requests-per-minute cap. */
   credits(signal?: AbortSignal): Promise<NunchuxCreditsResponse>;
   google: NunchuxGoogleNamespace;

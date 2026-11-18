@@ -1930,4 +1930,5 @@ wavespeed	api.v3.google.geminiOmni1p2Flash.videoEdit	POST	https://api.wavespeed.
 wavespeed	api.v3.google.geminiOmni1p2Flash.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/reference-to-video	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/reference-to-video
 nunchux	v1.credits	GET	https://api.nunchux.com/v1/credits	https://docs.nunchux.ai/credits-pricing
 nunchux	v1.alibaba.tasks	GET	https://api.nunchux.com/v1/alibaba/tasks/{task_id}	https://docs.nunchux.ai/partner-models/wan
+nunchux	v1.bytedance.contents.generations.tasks.retrieve	GET	https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}	https://docs.nunchux.ai/partner-models/seedance
 nunchux	v1.google.v1beta.interactions	POST	https://api.nunchux.com/v1/google/v1beta/interactions	https://docs.nunchux.ai/partner-models/nano-banana

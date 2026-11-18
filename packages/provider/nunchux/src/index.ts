@@ -3,6 +3,11 @@ export { NunchuxError, isNunchuxErrorBody } from "./types";
 export type {
   NunchuxAlibabaNamespace,
   NunchuxAlibabaTaskResponse,
+  NunchuxBytedanceContentsGenerationsNamespace,
+  NunchuxBytedanceContentsGenerationsTasksNamespace,
+  NunchuxBytedanceContentsNamespace,
+  NunchuxBytedanceNamespace,
+  NunchuxBytedanceTaskResponse,
   NunchuxOptions,
   NunchuxErrorBody,
   NunchuxErrorDetail,

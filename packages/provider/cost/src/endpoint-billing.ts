@@ -36,6 +36,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "nunchux",
     {
       kind: "free",
+      reason: "Free Seedance task status poll; takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/partner-models/seedance",
+        asOf: "2026-11-18",
+      },
+    },
+    ["GET v1.bytedance.contents.generations.tasks.retrieve"]
+  ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
       reason:
         "Free account balance read; counts toward RPM but takes no job slot",
       source: {

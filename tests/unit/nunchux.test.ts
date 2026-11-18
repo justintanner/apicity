@@ -34,6 +34,21 @@ describe("nunchux", () => {
     expect(requests[0].init.method).toBe("GET");
     expect(requests[0].init.body).toBeUndefined();
   });
+  it("encodes the Seedance task ID as one path segment without a GET body", async () => {
+    const body = { id: "task/id ?#", status: "queued" };
+    const { fetch, requests } = capture(body);
+    await expect(
+      createNunchux({
+        apiKey: "test-key",
+        fetch,
+      }).v1.bytedance.contents.generations.tasks.retrieve("task/id ?#")
+    ).resolves.toEqual(body);
+    expect(requests[0].url).toBe(
+      "https://api.nunchux.com/v1/bytedance/contents/generations/tasks/task%2Fid%20%3F%23"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.body).toBeUndefined();
+  });
   it("uses the default URL and Bearer key without a GET body", async () => {
     const { fetch, requests } = capture({ credits_remaining: 5 });
     await expect(

@@ -49,6 +49,7 @@ export const providerHosts: Readonly<Record<string, readonly string[]>> = {
   thesportsdb: ["www.thesportsdb.com"],
   "tiktok-creative-center": ["ads.tiktok.com"],
   wavespeed: ["api.wavespeed.ai"],
+  nunchux: ["api.nunchux.com"],
   x: ["api.x.com"],
   xai: ["api.x.ai", "management-api.x.ai"],
   youtube: ["www.googleapis.com", "www.youtube.com"],

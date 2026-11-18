@@ -20,6 +20,19 @@ function rows(
 }
 
 export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
+      reason:
+        "Free account balance read; counts toward RPM but takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/credits-pricing",
+        asOf: "2026-11-17",
+      },
+    },
+    ["GET v1.credits"]
+  ),
   {
     match: { provider: "alibaba" },
     billing: {

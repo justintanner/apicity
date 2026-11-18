@@ -738,6 +738,13 @@ export const ENDPOINT_NOTES = new Map([
 
 const PROVIDER_NOTES = new Map([
   [
+    "nunchux",
+    "Nunchux account credits and plan limits. `v1.credits()` is free and " +
+      "takes no job slot, but counts toward the request rate limit. " +
+      "Authentication uses `Authorization: Bearer`. `NunchuxError` preserves " +
+      "the HTTP status, error code and body across standard and partner errors.",
+  ],
+  [
     "omkar",
     [
       "Omkar Cloud's TikTok Scraper scrapes TikTok live on every call, so a",
@@ -5012,6 +5019,9 @@ const PROVIDER_AUTH = {
   omkar: {
     showMiddleware: false,
   },
+  nunchux: {
+    showMiddleware: false,
+  },
   wavespeed: {
     showMiddleware: false,
   },
@@ -5081,6 +5091,7 @@ const PROVIDER_DOCS = {
     "https://ads.tiktok.com/creative/creativeCenter/trends/video",
   omkar: "https://www.omkar.cloud/tools/tiktok-scraper",
   wavespeed: "https://wavespeed.ai/docs/rest-api",
+  nunchux: "https://docs.nunchux.ai/credits-pricing",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -5127,6 +5138,9 @@ const DEP_NOTES = {
 };
 
 const PROVIDER_DEP_NOTES = {
+  nunchux: {
+    zod: "reserved for request schemas; the credits read takes no parameters",
+  },
   openai: {
     ws: "WebSocket client for the Realtime server control channel in `@apicity/openai/realtime`",
   },

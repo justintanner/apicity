@@ -715,7 +715,8 @@ const DISCOVERY = [
       (await loadCatalog()).filter((entry) => entry.provider === "openligadb"),
     direct: (writer: CliWriter) =>
       runCommands(writer, { provider: "openligadb", stdoutIsTTY: false }),
-    human: /^provider\s+method\s+dotPath\s+params\s+paid\s+configured$/,
+    human:
+      /^provider\s+method\s+dotPath\s+params\s+paid\s+billing\s+gated\s+configured$/,
   },
   {
     command: "providers",

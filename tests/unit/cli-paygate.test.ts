@@ -339,6 +339,117 @@ describe("a paid endpoint with a valid approval", () => {
   });
 });
 
+describe("a billed endpoint outside the pay-gate registry", () => {
+  const EMBEDDINGS = "v1.embeddings";
+  const BODY = { model: "text-embedding-3-small", input: "hello" };
+
+  /** A provider whose leaf takes `(body, signal?)`, like every ungated one. */
+  function fakeOpenAi(calls: unknown[][]): ProviderInstantiator {
+    return () =>
+      Promise.resolve({
+        post: {
+          v1: {
+            embeddings: (...args: unknown[]): Promise<unknown> => {
+              calls.push(args);
+              return Promise.resolve({ data: [] });
+            },
+          },
+        },
+      } as InstantiatedProvider);
+  }
+
+  function bodyFile(): string {
+    const file = join(sandbox(), "req.json");
+    writeFileSync(file, JSON.stringify(BODY));
+    return file;
+  }
+
+  function openAiOptions(calls: unknown[][]): EndpointOptions {
+    return {
+      env: { HOME: sandbox(), OPENAI_API_KEY: "openai-test" },
+      stdoutIsTTY: false,
+      instantiate: fakeOpenAi(calls),
+    };
+  }
+
+  it("is paid, not gated, in the catalog", async () => {
+    const catalog = await loadCatalog({ env: {} });
+    const entry = selectEntry(findEntries(catalog, "openai", EMBEDDINGS));
+
+    expect(entry).toMatchObject({
+      paid: true,
+      gated: false,
+      billing: "metered",
+    });
+  });
+
+  it("binds the body alone, so the signal slot stays empty", async () => {
+    const catalog = await loadCatalog({ env: {} });
+    const entry = selectEntry(findEntries(catalog, "openai", EMBEDDINGS));
+
+    expect(bindArguments({ entry, positional: {}, body: BODY })).toEqual([
+      BODY,
+    ]);
+    expect(
+      bindArguments({ entry, positional: {}, body: BODY, otp: "otp-value" })
+    ).toEqual([BODY]);
+  });
+
+  it("binds the metered Nunchux submit the same way", async () => {
+    const catalog = await loadCatalog({ env: {} });
+    const entry = selectEntry(
+      findEntries(catalog, "nunchux", "v1.google.v1beta.interactions")
+    );
+    const body = { model: "gemini-nano-banana-2.1", input: "A red boat" };
+
+    expect(entry).toMatchObject({
+      paid: true,
+      gated: false,
+      billing: "metered",
+    });
+    expect(bindArguments({ entry, positional: {}, body })).toEqual([body]);
+    expect(
+      bindArguments({ entry, positional: {}, body, otp: "otp-value" })
+    ).toEqual([body]);
+  });
+
+  it("calls upstream with the body alone when no gate is configured", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "openai",
+      [EMBEDDINGS, "--data-file", bodyFile()],
+      cap.writer,
+      openAiOptions(calls)
+    );
+
+    expect(exit).toBe(0);
+    expect(calls).toEqual([[BODY]]);
+  });
+
+  it("calls upstream with the body alone when the gate is armed", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "openai",
+      [
+        EMBEDDINGS,
+        "--data-file",
+        bodyFile(),
+        "--paygate-secret-file",
+        secretFile(),
+      ],
+      cap.writer,
+      openAiOptions(calls)
+    );
+
+    expect(exit).toBe(0);
+    expect(calls).toEqual([[BODY]]);
+  });
+});
+
 describe("the CLI is the code client, never the minter", () => {
   it("has no minting path anywhere under packages/cli/src", async () => {
     const found = await new Promise<string>((resolve) => {

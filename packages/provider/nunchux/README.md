@@ -31,7 +31,7 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+4 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -52,6 +52,25 @@ Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
 
 </details>
 
+### bytedance
+
+<details>
+<summary><code>GET</code> <b><code>nunchux.v1.bytedance.contents.generations.tasks.retrieve</code></b></summary>
+
+<code>GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/seedance)
+
+```typescript
+const res = await nunchux.v1.bytedance.contents.generations.tasks.retrieve({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
+
 ### credits
 
 <details>
@@ -65,6 +84,25 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await nunchux.v1.credits();
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
+
+### google
+
+<details>
+<summary><code>POST</code> <b><code>nunchux.v1.google.v1beta.interactions</code></b></summary>
+
+<code>POST https://api.nunchux.com/v1/google/v1beta/interactions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/nano-banana)
+
+```typescript
+const res = await nunchux.v1.google.v1beta.interactions({ /* ... */ });
 ```
 
 Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)

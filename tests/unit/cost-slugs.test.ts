@@ -99,6 +99,15 @@ describe("MODEL_SLUGS", () => {
     );
   });
 
+  it("registers a slug for every nunchux pricing entry", () => {
+    expect(Object.keys(MODEL_SLUGS.nunchux).sort()).toEqual(
+      Object.keys(PRICING.nunchux).sort()
+    );
+    expect(Object.keys(MODEL_DISPLAY.nunchux).sort()).toEqual(
+      Object.keys(PRICING.nunchux).sort()
+    );
+  });
+
   it("has kie models", () => {
     expect(MODEL_SLUGS.kie).toMatchObject({
       "bytedance/seedance-2": "sd2",

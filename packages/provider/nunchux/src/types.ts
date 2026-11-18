@@ -1,3 +1,8 @@
+import type {
+  NunchuxGoogleInteractionsRequest,
+  NunchuxGoogleInteractionsRequestSchema,
+} from "./zod";
+
 /** HTTP status; 408 for timeout, 499 for caller abort, 500 for transport errors. */
 export class NunchuxError extends Error {
   constructor(
@@ -98,12 +103,87 @@ export interface NunchuxAlibabaNamespace {
   ): Promise<NunchuxAlibabaTaskResponse>;
 }
 
+export interface NunchuxBytedanceTaskResponse {
+  /** The task ID, an opaque string. */
+  id: string;
+  model?: string;
+  /** queued or running while the task runs; succeeded, failed, cancelled or expired when it ends, or a new upstream status. */
+  status: string;
+  /** Present only when status is succeeded; the URL expires. */
+  content?: { video_url: string };
+  /** Present when the task did not succeed. */
+  error?: { code?: string; message?: string };
+  /** Clip length in seconds. */
+  duration?: number;
+  ratio?: string;
+  resolution?: string;
+  usage?: { completion_tokens: number; total_tokens?: number };
+  created_at?: number;
+  updated_at?: number;
+}
+
+export interface NunchuxBytedanceContentsGenerationsTasksNamespace {
+  /** Free Seedance task status read; takes no job slot. */
+  retrieve(
+    taskId: string,
+    signal?: AbortSignal
+  ): Promise<NunchuxBytedanceTaskResponse>;
+}
+
+export interface NunchuxBytedanceContentsGenerationsNamespace {
+  tasks: NunchuxBytedanceContentsGenerationsTasksNamespace;
+}
+
+export interface NunchuxBytedanceContentsNamespace {
+  generations: NunchuxBytedanceContentsGenerationsNamespace;
+}
+
+export interface NunchuxBytedanceNamespace {
+  contents: NunchuxBytedanceContentsNamespace;
+}
+
 export interface NunchuxV1Namespace {
   alibaba: NunchuxAlibabaNamespace;
+  bytedance: NunchuxBytedanceNamespace;
   /** Free account balance read; counts toward the requests-per-minute cap. */
   credits(signal?: AbortSignal): Promise<NunchuxCreditsResponse>;
+  google: NunchuxGoogleNamespace;
 }
 
 export interface NunchuxProvider {
   v1: NunchuxV1Namespace;
+}
+
+export interface NunchuxGoogleInteractionsResponse {
+  id: string;
+  object: string;
+  model: string;
+  status: string;
+  created: number;
+  updated: number;
+  service_tier: string;
+  usage: Record<string, unknown>;
+  steps: {
+    type?: string;
+    signature?: string;
+    content?: {
+      type?: string;
+      data?: string;
+      mime_type?: string;
+      text?: string;
+    }[];
+  }[];
+}
+
+export interface NunchuxGoogleV1betaNamespace {
+  interactions: {
+    (
+      body: NunchuxGoogleInteractionsRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxGoogleInteractionsResponse>;
+    schema: typeof NunchuxGoogleInteractionsRequestSchema;
+  };
+}
+export interface NunchuxGoogleNamespace {
+  v1beta: NunchuxGoogleV1betaNamespace;
 }

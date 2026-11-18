@@ -265,6 +265,11 @@ export const FRONTIER = {
             dotPath: "api.v3.google.nanoBanana2p1.textToImage",
             pricingKey: "google/nano-banana-2.1/text-to-image",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.google.v1beta.interactions",
+            modelId: "gemini-nano-banana-2.1",
+          },
         ],
       },
       {
@@ -1226,6 +1231,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-2",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.geminiOmni1p2Flash.referenceToVideo",
+            pricingKey: "google/gemini-omni-1.2-flash/reference-to-video",
           },
         ],
       },

@@ -3,6 +3,11 @@ export { NunchuxError, isNunchuxErrorBody } from "./types";
 export type {
   NunchuxAlibabaNamespace,
   NunchuxAlibabaTaskResponse,
+  NunchuxBytedanceContentsGenerationsNamespace,
+  NunchuxBytedanceContentsGenerationsTasksNamespace,
+  NunchuxBytedanceContentsNamespace,
+  NunchuxBytedanceNamespace,
+  NunchuxBytedanceTaskResponse,
   NunchuxOptions,
   NunchuxErrorBody,
   NunchuxErrorDetail,
@@ -10,4 +15,11 @@ export type {
   NunchuxCreditsResponse,
   NunchuxV1Namespace,
   NunchuxProvider,
+  NunchuxGoogleNamespace,
+  NunchuxGoogleV1betaNamespace,
+  NunchuxGoogleInteractionsResponse,
 } from "./types";
+export {
+  NunchuxGoogleInteractionsRequestSchema,
+  type NunchuxGoogleInteractionsRequest,
+} from "./zod";

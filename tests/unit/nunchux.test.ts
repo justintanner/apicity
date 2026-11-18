@@ -1,3 +1,4 @@
+import examples from "../../packages/provider/nunchux/src/example";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createNunchux,
@@ -33,6 +34,21 @@ describe("nunchux", () => {
     expect(requests[0].init.method).toBe("GET");
     expect(requests[0].init.body).toBeUndefined();
   });
+  it("encodes the Seedance task ID as one path segment without a GET body", async () => {
+    const body = { id: "task/id ?#", status: "queued" };
+    const { fetch, requests } = capture(body);
+    await expect(
+      createNunchux({
+        apiKey: "test-key",
+        fetch,
+      }).v1.bytedance.contents.generations.tasks.retrieve("task/id ?#")
+    ).resolves.toEqual(body);
+    expect(requests[0].url).toBe(
+      "https://api.nunchux.com/v1/bytedance/contents/generations/tasks/task%2Fid%20%3F%23"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.body).toBeUndefined();
+  });
   it("uses the default URL and Bearer key without a GET body", async () => {
     const { fetch, requests } = capture({ credits_remaining: 5 });
     await expect(
@@ -43,6 +59,43 @@ describe("nunchux", () => {
       init: { method: "GET", headers: { Authorization: "Bearer test-key" } },
     });
     expect(requests[0].init.body).toBeUndefined();
+  });
+  it("parses the recorded Google request and checks image controls and edit inputs", () => {
+    const { schema } = createNunchux().v1.google.v1beta.interactions;
+    const recorded = schema.parse(
+      examples["POST v1.google.v1beta.interactions"]!.payload
+    );
+    expect(
+      schema.safeParse({
+        ...recorded,
+        response_format: { type: "image", image_size: "0.5K" },
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...recorded,
+        response_format: { type: "image", aspect_ratio: "auto" },
+      }).success
+    ).toBe(false);
+    const image = { type: "image", data: "YQ==", mime_type: "image/jpeg" };
+    expect(
+      schema.safeParse({
+        ...recorded,
+        input: [...recorded.input, ...Array(14).fill(image)],
+      }).success
+    ).toBe(true);
+    expect(
+      schema.safeParse({
+        ...recorded,
+        input: [...recorded.input, ...Array(15).fill(image)],
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...recorded,
+        input: [{ ...image, data: "data:image/jpeg;base64,YQ==" }],
+      }).success
+    ).toBe(false);
   });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");

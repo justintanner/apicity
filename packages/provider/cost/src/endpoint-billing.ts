@@ -36,6 +36,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "nunchux",
     {
       kind: "free",
+      reason: "Free Seedance task status poll; takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/partner-models/seedance",
+        asOf: "2026-11-18",
+      },
+    },
+    ["GET v1.bytedance.contents.generations.tasks.retrieve"]
+  ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
       reason:
         "Free account balance read; counts toward RPM but takes no job slot",
       source: {
@@ -44,6 +56,15 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["GET v1.credits"]
+  ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "metered",
+      unit: "images",
+      source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+    },
+    ["POST v1.google.v1beta.interactions"]
   ),
   {
     match: { provider: "alibaba" },
@@ -5045,6 +5066,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["POST api.v3.google.geminiOmni1p2Flash.videoEdit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/reference-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.google.geminiOmni1p2Flash.referenceToVideo"]
   ),
   ...rows(
     "wavespeed",

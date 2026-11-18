@@ -5,6 +5,7 @@ import path from "node:path";
 import {
   classifyEndpoint,
   resolveEndpointCostPolicy,
+  endpointBilling,
   isEndpointExplicitlyClassified,
   ENDPOINT_COST_POLICIES,
   PAID_ENDPOINTS,
@@ -188,6 +189,13 @@ describe("endpoint cost-tier classification — fail-closed invariants", () => {
       if (!pricedProviders.includes(e.provider)) continue;
       // S3 documented request classes are sub-cent; pinned in cost-s3.test.ts.
       if (e.provider === "s3") continue;
+      // Nunchux balance and status reads have a separately reviewed free billing row.
+      if (
+        e.provider === "nunchux" &&
+        e.method === "GET" &&
+        endpointBilling(e.provider, e.method, e.dotPath).kind === "free"
+      )
+        continue;
       if (classifyEndpoint(e.provider, e.method, e.dotPath) === "cheap") {
         offenders.push(`${e.provider}.${e.dotPath} [${e.method}]`);
       }

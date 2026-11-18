@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
+
+- WaveSpeed Gemini Omni 1.2 Flash reference-to-video
+  (`google/gemini-omni-1.2-flash/reference-to-video`) costs the text-to-video
+  rates, 0.023, 0.07, 0.105 or 0.21 USD per second at 360p, 720p, 1080p or 4k,
+  from free quotes (list price, read 2026-11-18); reference images and videos
+  add nothing. The row's `asOf` is 2026-11-18. Slug `geminiomni1p2f`; it is
+  the WaveSpeed entry for Gemini Omni Flash 1.2 on the r2v frontier (ac-p3eht2).
+
 - MachGen GPT Image 2.6 Sunburst costs $0.000021 per output token at the current discount. Each edit source adds 7,024 tokens.
 
 - WaveSpeed HeyGen Video 1.0 image-to-video costs 0.025 USD/s at 480p, 0.045 USD/s at 768p, and 0.12 USD/s at 1080p or 2k.

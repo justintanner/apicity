@@ -1024,7 +1024,9 @@ meta	v25.container	GET	cheap	Instagram Graph posting API; free, no per-call USD 
 meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.mediaPublish	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 nunchux	v1.alibaba.tasks	GET	cheap	Free task status poll; no job slot or compute charge
+nunchux	v1.bytedance.contents.generations.tasks.retrieve	GET	cheap	Free task status poll; no job slot or compute charge
 nunchux	v1.credits	GET	cheap	Free account credit balance read; no job slot or compute charge
+nunchux	v1.google.v1beta.interactions	POST	prohibitive	Media generation costs depend on model and inputs
 omkar	feed.explore	GET	cheap	Free plan of 1,000 requests a month; no per-call USD cost
 omkar	feed.explore.categories	GET	cheap	Free plan of 1,000 requests a month; no per-call USD cost
 omkar	feed.trending	GET	cheap	Free plan of 1,000 requests a month; no per-call USD cost
@@ -1832,6 +1834,7 @@ wavespeed	api.v3.google.geminiOmni1p1Flash.imageToVideo	POST	prohibitive	Per-mod
 wavespeed	api.v3.google.geminiOmni1p1Flash.referenceToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.google.geminiOmni1p1Flash.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.google.geminiOmni1p1Flash.videoEdit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
+wavespeed	api.v3.google.geminiOmni1p2Flash.referenceToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.google.geminiOmni1p2Flash.textToVideo	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.google.geminiOmni1p2Flash.videoEdit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy
 wavespeed	api.v3.google.nanoBanana2p1.edit	POST	prohibitive	Per-model media-generation marketplace; per-call cost depends on the model and inputs and routinely exceeds $1. The prediction result read shares the provider policy

@@ -99,11 +99,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - WaveSpeed supports HeyGen Video 1.0 image-to-video with a first-frame image, prompt and 5–15 second duration.
 
+- `@apicity/wavespeed` adds Gemini Omni 1.2 Flash reference-to-video at `api.v3.google.geminiOmni1p2Flash.referenceToVideo` (`POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/reference-to-video`), the leaf beside text-to-video and video-edit: up to 10 reference images and 3 reference videos (each at most 3 s), 3-15 s at 360p, 720p, 1080p or 4k. WaveSpeed bills the text-to-video rates, 0.023 to 0.21 USD/s list, 0.56 USD by default (8 s, 720p); references add nothing. Recorded at 3 s, 360p from the cat photo, which billed 0.069 USD in 31 s (ac-p3eht2).
+
 - WaveSpeed supports Gemini Omni 1.2 Flash text-to-video with 3–15 second clips through `api.v3.google.geminiOmni1p2Flash.textToVideo`.
 
 - `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).
 
+- `@apicity/nunchux` adds the free Seedance task poll `v1.bytedance.contents.generations.tasks.retrieve(taskId)` (`GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}`, 0 USD).
+
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).
+
+- Nunchux Nano Banana 2.1 now generates images through `v1.google.v1beta.interactions`. A 1K image lists at $0.0336.
 
 - Added KIE Video Upscale `video/upscale`, KIE's own video upscaler and the first `video/` model id, on `kie.post.api.v1.jobs.createTask`, from the docs as re-read on 2026-11-12 (unchanged since the survey). It takes one public http(s) `video_url` (MP4, MOV or MKV, at most 50 MB and 60 s, checked after download) and a `resolution` output box of `"1080P"`, `"2K"` or `"4K"` (uppercase, default `"2K"`); the source is fitted inside the box with its aspect ratio kept. The id stays enum-only: one id is not a grammar. `@apicity/cost` prices each second of input video by the box, 0.0075 / 0.015 / 0.03 USD (1.5 / 3 / 6 credits) at 1080P / 2K / 4K, on the clip length the caller declares as `costHints.durationSeconds`, as for Topaz video. `check:kie-feed-drift` compares the three new rows, and they agree (645 cells). A recorded 1080P upscale of the 3 s `cat1-kling-o3-3s.mp4` (720 x 960 to 1080 x 1440) billed 4.5 credits (0.0225 USD), charged at success (ac-ggy4a4).
 

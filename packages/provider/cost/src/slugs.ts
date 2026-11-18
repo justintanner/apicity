@@ -1062,6 +1062,7 @@ export const MODEL_SLUGS = {
     "Grok-Imagine-Video": "grokimgv",
   },
   // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
+  nunchux: { "gemini-nano-banana-2.1": "nb21" },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
     "heygen/video-1.0/image-to-video": "heygenvideo",
@@ -1086,6 +1087,7 @@ export const MODEL_SLUGS = {
     "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
     "google/gemini-omni-1.2-flash/text-to-video": "geminiomni1p2f",
     "google/gemini-omni-1.2-flash/video-edit": "geminiomni1p2f",
+    "google/gemini-omni-1.2-flash/reference-to-video": "geminiomni1p2f",
     "minimax/h3/reference-to-video": "mmh3",
     "wavespeed-ai/minimax-h3/video-edit": "mmh3",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
@@ -2183,6 +2185,7 @@ export const MODEL_DISPLAY = {
     "Veo-3.1-Fast": "Veo 3.1 Fast",
     "Grok-Imagine-Video": "Grok Imagine Video",
   },
+  nunchux: { "gemini-nano-banana-2.1": "Nano Banana 2.1" },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",
     "heygen/video-1.0/image-to-video": "HeyGen Video",
@@ -2207,6 +2210,7 @@ export const MODEL_DISPLAY = {
     "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
     "google/gemini-omni-1.2-flash/text-to-video": "Gemini Omni 1.2 Flash",
     "google/gemini-omni-1.2-flash/video-edit": "Gemini Omni 1.2 Flash Edit",
+    "google/gemini-omni-1.2-flash/reference-to-video": "Gemini Omni 1.2 Flash",
     "minimax/h3/reference-to-video": "MiniMax H3",
     "wavespeed-ai/minimax-h3/video-edit": "MiniMax H3 Edit",
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",

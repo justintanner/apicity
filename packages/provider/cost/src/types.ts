@@ -305,6 +305,7 @@ export type EstimateRequest =
         | "google"
         | "googleflow"
         | "machgen"
+        | "nunchux"
         | "wavespeed";
       payload: Record<string, unknown>;
       endpoint?: string;

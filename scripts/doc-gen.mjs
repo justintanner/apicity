@@ -883,6 +883,8 @@ const PROVIDER_NOTES = new Map([
       "For GPT Image 2.6, the requested dimensions and `image_output.quality` determine the output-token count.",
       "With auto or omitted quality, MachGen reserves the maximum price and bills the quality it returns.",
       "Each source image in an edit adds 7,024 tokens. The discounted rate is $0.000021 per token.",
+      "At low quality, the recorded 1280×720 Sunburst generation billed $0.009345.",
+      "A 720×1280 Sunburst edit with one source image billed $0.156849.",
       "Send `Alibaba-Wan-3.0` requests with MachGen's documented",
       '`video_config`: `aspect_ratio: "adaptive"`, `fps: 30` and `audio: true`.',
       "On 2026-10-22, seven Wan 3.0 tasks that omitted `aspect_ratio` and",

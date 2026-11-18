@@ -50,6 +50,43 @@ describe("Nunchux Wan 3.0 video pricing", () => {
     expect(estimate.usd).toBeCloseTo(0.1, 9);
     expect(estimate.warnings).toEqual([]);
   });
+  it("prices the recorded Wan 2.7 edit from the source clip's length", () => {
+    const edit = JSON.parse(
+      (
+        JSON.parse(
+          readFileSync(
+            "tests/recordings/nunchux_350094952/wan-2-7-video-edit_1170098627/recording.har",
+            "utf8"
+          )
+        ) as {
+          log: { entries: HarEntry[] };
+        }
+      ).log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    // Output 2 s plus the 3 s source billed up to the output length: 4 s.
+    expect(quote(edit, 3)).toMatchObject({ warnings: [] });
+    expect(quote(edit, 3).usd).toBeCloseTo(0.4, 9);
+    // Without a duration the output follows the source: 3 + 3 seconds.
+    expect(
+      quote({ ...edit, parameters: { resolution: "720P" } }, 3).usd
+    ).toBeCloseTo(0.6, 9);
+    // The source bills at most 10 seconds; 1080P is the default tier.
+    expect(
+      quote({ ...edit, parameters: { duration: 10 } }, 12).usd
+    ).toBeCloseTo(3, 9);
+    for (const seconds of [undefined, 0, -1, NaN]) {
+      const estimate = quote(edit, seconds);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+    for (const parameters of [{ resolution: "480P" }, { duration: 11 }]) {
+      const estimate = quote({ ...edit, parameters }, 3);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.length).toBeGreaterThan(0);
+    }
+  });
   it("bills reference video at the output rate, up to 15 input seconds", () => {
     const video = reference("reference_video");
     expect(quote(video, 8).usd).toBeCloseTo(1.3, 9);

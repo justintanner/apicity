@@ -82,6 +82,46 @@ export const nunchux: Record<string, ModelPricing> = {
     rates: { "480P": 0.05, "720P": 0.1, "1080P": 0.2 },
     source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
   },
+  // Both /pricing and /v1/pricing list wan2.7-videoedit at $0.10/$0.15 per
+  // second for 720P/1080P (no 480P) with input_video_billed true and
+  // max_billable_input_video_seconds 10: the source clip bills as well.
+  "wan2.7-videoedit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const source = hintInputSeconds(hints);
+      if (source === undefined) return undefined;
+      const duration = asObject(p.parameters)?.duration;
+      if (
+        duration !== undefined &&
+        (typeof duration !== "number" ||
+          !Number.isInteger(duration) ||
+          duration < 2 ||
+          duration > 10)
+      )
+        return undefined;
+      const output = duration ?? source;
+      return output + Math.min(source, output, 10);
+    },
+    warn: (_p, hints) =>
+      hintInputSeconds(hints) === undefined
+        ? [
+            "Wan 2.7 edits bill the source clip's length. Pass it in costHints.inputDurationSeconds.",
+          ]
+        : [],
+    select: [
+      {
+        name: "resolution",
+        required: true,
+        pick: (p) => {
+          const resolution = asObject(p.parameters)?.resolution;
+          return resolution === undefined ? "1080P" : asString(resolution);
+        },
+      },
+    ],
+    rates: { "720P": 0.1, "1080P": 0.15 },
+    source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+  },
   // Both feeds list 480p|720p/default at $10.70/M completion tokens and
   // 480p|720p/video_input at $6.40/M. Neither feed splits the rate by audio.
   // A silent 480p, 16:9, 4-second render reported 38,830 completion tokens.

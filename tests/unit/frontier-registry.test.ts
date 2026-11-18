@@ -603,7 +603,7 @@ function liveRegistry() {
       );
     }
     if (
-      (type === "t2v" || type === "r2v") &&
+      (type === "t2v" || type === "r2v" || type === "v2v") &&
       entry.provider === "nunchux" &&
       entry.dotPath ===
         "v1.alibaba.services.aigc.videoGeneration.videoSynthesis"
@@ -611,9 +611,11 @@ function liveRegistry() {
       return NunchuxAlibabaVideoSynthesisRequestSchema.shape.model.options[0].options.some(
         (id) =>
           id === entry.modelId &&
-          (id === "wan3.0-video" ||
-            id === "wan3.0-video-prime" ||
-            id.endsWith(`-${type}`))
+          (type === "v2v"
+            ? /video-?edit$/.test(id)
+            : id === "wan3.0-video" ||
+              id === "wan3.0-video-prime" ||
+              id.endsWith(`-${type}`))
       );
     }
     if (

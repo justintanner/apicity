@@ -107,6 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - WaveSpeed supports Gemini Omni 1.2 Flash text-to-video with 3–15 second clips through `api.v3.google.geminiOmni1p2Flash.textToVideo`.
 
+- Nunchux Wan 3.0 text-to-video is available through `v1.alibaba.services.aigc.videoGeneration.videoSynthesis`. A two-second 480P clip costs $0.10.
+
 - `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).
 
 - `@apicity/nunchux` adds the free Seedance task poll `v1.bytedance.contents.generations.tasks.retrieve(taskId)` (`GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}`, 0 USD).

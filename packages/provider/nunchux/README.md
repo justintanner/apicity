@@ -31,9 +31,26 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-5 endpoints across 5 groups. Each method mirrors an upstream URL path.
+6 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>nunchux.v1.alibaba.services.aigc.videoGeneration.videoSynthesis</code></b></summary>
+
+<code>POST https://api.nunchux.com/v1/alibaba/services/aigc/video-generation/video-synthesis</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/wan)
+
+```typescript
+const res = await nunchux.v1.alibaba.services.aigc.videoGeneration.videoSynthesis({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>nunchux.v1.alibaba.tasks</code></b></summary>

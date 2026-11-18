@@ -23,6 +23,15 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "nunchux",
     {
+      kind: "metered",
+      unit: "seconds",
+      source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+    },
+    ["POST v1.alibaba.services.aigc.videoGeneration.videoSynthesis"]
+  ),
+  ...rows(
+    "nunchux",
+    {
       kind: "free",
       reason: "Free Wan/HappyHorse task status poll; takes no job slot",
       source: {

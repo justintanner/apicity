@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux Wan 3.0 costs $0.05, $0.10 or $0.20 per second at 480P, 720P or 1080P. Reference video seconds count toward the charge.
+
 - Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
 
 - WaveSpeed Gemini Omni 1.2 Flash reference-to-video

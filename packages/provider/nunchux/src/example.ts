@@ -15,6 +15,22 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.alibaba.services.aigc.videoGeneration.videoSynthesis": {
+    "source": "nunchux/wan-3-0-text-to-video",
+    "payload": {
+      "model": "wan3.0-video",
+      "input": {
+        "prompt": "A red paper boat drifts across a calm pond at sunrise."
+      },
+      "parameters": {
+        "resolution": "480P",
+        "duration": 2,
+        "watermark": false
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v1.google.v1beta.interactions": {
     "source": "nunchux/nano-banana-2-1-text-to-image",
     "payload": {

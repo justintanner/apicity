@@ -230,6 +230,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedreamV5p5.edit": {
+    "source": "wavespeed/bytedance-seedream-v5-5-edit",
+    "payload": {
+      "prompt": "Give the cat a small red knitted scarf.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.geminiOmni1p1Flash.imageToVideo": {
     "source": "wavespeed/google-gemini-omni-1-1-flash-image-to-video",
     "payload": {
@@ -274,6 +286,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.geminiOmni1p2Flash.textToVideo": {
+    "source": "wavespeed/google-gemini-omni-1-2-flash-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST api.v3.google.geminiOmni1p2Flash.videoEdit": {
+    "source": "wavespeed/google-gemini-omni-1-2-flash-video-edit",
+    "payload": {
+      "video": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+      "prompt": "Make the cat's fur bright orange.",
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.nanoBanana2p1.edit": {
     "source": "wavespeed/google-nano-banana-2-1-edit",
     "payload": {
@@ -291,6 +323,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "prompt": "A red paper boat drifts across a calm pond at sunrise.",
       "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST api.v3.heygen.video1p0.imageToVideo": {
+    "source": "wavespeed/heygen-video-1-0-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "duration": 5,
+      "resolution": "480p"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -358,6 +401,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A red paper boat drifts across a calm pond at sunrise.",
       "resolution": "768p",
       "duration": 4
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST api.v3.openai.gptImage2.textToImage": {
+    "source": "wavespeed/openai-gpt-image-2-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "quality": "low",
+      "resolution": "1k"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -449,6 +502,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.skyworkAi.skyreelsV4.textToVideo": {
+    "source": "wavespeed/skywork-ai-skyreels-v4-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "duration": 3,
+      "resolution": "480p",
+      "sound": false,
+      "mode": "fast"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.wavespeedAi.minimaxH3.videoEdit": {
     "source": "wavespeed/wavespeed-ai-minimax-h3-video-edit",
     "payload": {
@@ -457,6 +522,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "resolution": "480p",
       "duration": 3,
       "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST api.v3.xAi.grokImagineImageV2p0.textToImage": {
+    "source": "wavespeed/x-ai-grok-imagine-image-v2-0-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "quality": "low",
+      "resolution": "1k"
     },
     "tier": "prohibitive",
     "runByDefault": false

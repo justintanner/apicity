@@ -597,6 +597,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "bytedance/seedance-2.5/text-to-video",
   "wavespeed POST api.v3.bytedance.seedance2p5.videoEdit":
     "bytedance/seedance-2.5/video-edit",
+  "wavespeed POST api.v3.bytedance.seedreamV5p5.edit":
+    "bytedance/seedream-v5.5/edit",
   "wavespeed POST api.v3.google.geminiOmni1p1Flash.imageToVideo":
     "google/gemini-omni-1.1-flash/image-to-video",
   "wavespeed POST api.v3.google.geminiOmni1p1Flash.referenceToVideo":
@@ -605,10 +607,16 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "google/gemini-omni-1.1-flash/text-to-video",
   "wavespeed POST api.v3.google.geminiOmni1p1Flash.videoEdit":
     "google/gemini-omni-1.1-flash/video-edit",
+  "wavespeed POST api.v3.google.geminiOmni1p2Flash.textToVideo":
+    "google/gemini-omni-1.2-flash/text-to-video",
+  "wavespeed POST api.v3.google.geminiOmni1p2Flash.videoEdit":
+    "google/gemini-omni-1.2-flash/video-edit",
   "wavespeed POST api.v3.google.nanoBanana2p1.edit":
     "google/nano-banana-2.1/edit",
   "wavespeed POST api.v3.google.nanoBanana2p1.textToImage":
     "google/nano-banana-2.1/text-to-image",
+  "wavespeed POST api.v3.heygen.video1p0.imageToVideo":
+    "heygen/video-1.0/image-to-video",
   "wavespeed POST api.v3.heygen.video1p0.referenceToVideo":
     "heygen/video-1.0/reference-to-video",
   "wavespeed POST api.v3.heygen.video1p0.textToVideo":
@@ -619,6 +627,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "wavespeed POST api.v3.minimax.h3.referenceToVideo":
     "minimax/h3/reference-to-video",
   "wavespeed POST api.v3.minimax.h3.textToVideo": "minimax/h3/text-to-video",
+  "wavespeed POST api.v3.openai.gptImage2.textToImage":
+    "openai/gpt-image-2/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p5Flare.textToImage":
     "openai/gpt-image-2.5-flare/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p5Sunburst.textToImage":
@@ -634,8 +644,12 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "wavespeed POST api.v3.prunaAi.pVideo2Pro.imageToVideo":
     "pruna-ai/p-video-2-pro/image-to-video",
   "wavespeed POST api.v3.runwayml.aleph2": "runwayml/aleph-2",
+  "wavespeed POST api.v3.skyworkAi.skyreelsV4.textToVideo":
+    "skywork-ai/skyreels-v4/text-to-video",
   "wavespeed POST api.v3.wavespeedAi.minimaxH3.videoEdit":
     "wavespeed-ai/minimax-h3/video-edit",
+  "wavespeed POST api.v3.xAi.grokImagineImageV2p0.textToImage":
+    "x-ai/grok-imagine-image-v2.0/text-to-image",
   "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.imageToVideo":
     "x-ai/grok-imagine-video-v1.5/image-to-video",
   "wavespeed POST api.v3.xAi.grokImagineVideoV1p5.referenceToVideo":

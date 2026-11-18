@@ -5028,11 +5028,47 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.google.geminiOmni1p2Flash.textToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.google.geminiOmni1p2Flash.videoEdit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/heygen/video-1.0/reference-to-video",
         asOf: "2026-11-04",
       },
     },
     ["POST api.v3.heygen.video1p0.referenceToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/heygen/video-1.0/image-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.heygen.video1p0.imageToVideo"]
   ),
   ...rows(
     "wavespeed",
@@ -5259,6 +5295,54 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["POST api.v3.prunaAi.pVideo2Pro.imageToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/openai/gpt-image-2/text-to-image",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.openai.gptImage2.textToImage"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.xAi.grokImagineImageV2p0.textToImage"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/bytedance/seedream-v5.5/edit",
+        asOf: "2026-11-16",
+      },
+    },
+    ["POST api.v3.bytedance.seedreamV5p5.edit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.skyworkAi.skyreelsV4.textToVideo"]
   ),
   ...rows(
     "x",

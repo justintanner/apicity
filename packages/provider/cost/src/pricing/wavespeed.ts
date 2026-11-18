@@ -217,6 +217,22 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.025, "768p": 0.045 },
     source: source("heygen/video-1.0/text-to-video"),
   },
+
+  // Five-second /model/price quotes on 2026-11-18: 0.125, 0.225, 0.6,
+  // and 0.6 USD. Turbo and quality prompt enhancement leave the quote unchanged.
+  "heygen/video-1.0/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "480p": 0.025, "768p": 0.045, "1080p": 0.12, "2k": 0.12 },
+    source: {
+      url: "https://wavespeed.ai/models/heygen/video-1.0/image-to-video",
+      asOf: "2026-11-18",
+    },
+  },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
   //   {"total_price": base_price * $min([duration, 15]) *
   //   (resolution = "768p" ? 1 : 1.4)}
@@ -307,6 +323,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     ],
     rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
     source: source("google/gemini-omni-1.1-flash/text-to-video"),
+  },
+  // Free /model/price quotes, 2026-11-18: 3 seconds at each resolution
+  // costs 0.069, 0.21, 0.315 or 0.63 USD. Defaults quote 0.56 USD.
+  "google/gemini-omni-1.2-flash/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.023, "720p": 0.07, "1080p": 0.105, "4k": 0.21 },
+    source: source("google/gemini-omni-1.2-flash/text-to-video"),
   },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. The formula
   // is the text-to-video one; the input image adds nothing:
@@ -549,6 +577,28 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     warn: editedVideoWarn("google/gemini-omni-1.1-flash/video-edit"),
     source: source("google/gemini-omni-1.1-flash/video-edit"),
+  },
+  // Model page and free /model/price quotes verified 2026-11-18.
+  // 3 s source totals: 0.144/0.312/0.438/0.816 USD; discount_rate 100.
+  // Input: ceil(seconds), capped at 10, at 0.02 USD/s. Output: same
+  // duration with a 3 s minimum, at the selected resolution rate.
+  "google/gemini-omni-1.2-flash/video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : Math.max(3, input);
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.028, "720p": 0.084, "1080p": 0.126, "4k": 0.252 },
+    extra: (_p, hints) => {
+      const input = sourceSeconds(10)(hints);
+      return input === undefined ? undefined : 0.02 * input;
+    },
+    warn: editedVideoWarn("google/gemini-omni-1.2-flash/video-edit"),
+    source: source("google/gemini-omni-1.2-flash/video-edit"),
   },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "768p" ? 1 : 1.4) *
@@ -992,6 +1042,105 @@ export const wavespeed: Record<string, ModelPricing> = {
     },
     source: {
       url: "https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video",
+      asOf: "2026-11-18",
+    },
+  },
+  // base_price 60000 micros, discount_rate 95 on 2026-11-16. No formula on the
+  // model page, only its price inputs (quality, resolution), so the rates are
+  // the list prices of free quotes read 2026-11-16 at every quality and
+  // resolution. The output format and aspect ratio add nothing. One request
+  // returns one image.
+  "openai/gpt-image-2/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: {
+      "low|1k": 0.01,
+      "low|2k": 0.02,
+      "low|4k": 0.03,
+      "medium|1k": 0.06,
+      "medium|2k": 0.1,
+      "medium|4k": 0.18,
+      "high|1k": 0.22,
+      "high|2k": 0.4,
+      "high|4k": 0.72,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 80000 micros, discount_rate 100 on 2026-11-16. No formula on the
+  // model page, only its price inputs (quality, resolution), so the rates are
+  // the list prices of free quotes read 2026-11-16. The default (medium, 2k) is
+  // the most expensive request; aspect ratio adds nothing. One request returns
+  // one image.
+  "x-ai/grok-imagine-image-v2.0/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "quality", pick: (p) => asString(p.quality) ?? "medium" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "2k" },
+    ],
+    rates: {
+      "low|1k": 0.04,
+      "low|2k": 0.06,
+      "medium|1k": 0.06,
+      "medium|2k": 0.08,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 28000 micros, discount_rate 95 on 2026-11-16. No formula on the
+  // model page, only its price inputs (images, resolution). Free quotes read
+  // 2026-11-16, list price: 0.02 USD at 1k and 1.5k and 0.035 USD at 2k, plus
+  // 0.008 USD per input image (1, 2, 5 and 10 images at 1k: 0.028, 0.036, 0.06
+  // and 0.10; 1, 2 and 10 at 2k: 0.043, 0.051 and 0.115). aspect_ratio,
+  // output_format and background add nothing. An estimate without an `images`
+  // list fails closed.
+  "bytedance/seedream-v5.5/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: { "1k": 0.02, "1.5k": 0.02, "2k": 0.035 },
+    extra: (p) =>
+      Array.isArray(p.images) ? 0.008 * p.images.length : undefined,
+    source: {
+      url: "https://wavespeed.ai/models/bytedance/seedream-v5.5/edit",
+      asOf: "2026-11-16",
+    },
+  },
+  // base_price 350000 micros, discount_rate 100 on 2026-11-18. The model page
+  // carries no formula, only its price inputs (duration, mode, resolution),
+  // so the rates are the list prices of free quotes (POST /api/v3/model/price)
+  // read 2026-11-18: USD per second by mode and resolution, linear in the
+  // duration (3, 4, 5, 6, 10 and 15 s quoted). Sound and aspect_ratio add
+  // nothing. The quote takes only whole seconds from 3 to 15.
+  "skywork-ai/skyreels-v4/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "mode", pick: (p) => asString(p.mode) ?? "std" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1080p" },
+    ],
+    rates: {
+      "std|480p": 0.11,
+      "std|720p": 0.14,
+      "std|1080p": 0.35,
+      "fast|480p": 0.08,
+      "fast|720p": 0.11,
+      "fast|1080p": 0.275,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video",
       asOf: "2026-11-18",
     },
   },

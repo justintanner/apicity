@@ -20,10 +20,13 @@ import {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
@@ -33,6 +36,7 @@ import {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
+  WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
@@ -41,7 +45,9 @@ import {
   WaveSpeedPredictionStatusSchema,
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "@apicity/wavespeed/zod";
@@ -119,6 +125,7 @@ describe("wavespeed provider", () => {
       "kwaivgi",
       "openai",
       "prunaAi",
+      "skyworkAi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -361,6 +368,45 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
   });
 });
 
+describe("wavespeed heygen/video-1.0/image-to-video", () => {
+  const schema = createWaveSpeed({ apiKey: "ws-key" }).api.v3.heygen.video1p0
+    .imageToVideo.schema;
+  const minimal = {
+    image: "https://example.com/cat.jpg",
+    prompt: "Cat blinks.",
+  };
+
+  it("accepts the required fields and documented upper limits", () => {
+    expect(schema.safeParse(minimal).success).toBe(true);
+    expect(
+      schema.safeParse({
+        ...minimal,
+        duration: 15,
+        resolution: "2k",
+        seed: 2147483647,
+        prompt_enhancement: "quality",
+      }).success
+    ).toBe(true);
+  });
+
+  it.each([
+    ["image", ""],
+    ["prompt", ""],
+    ["prompt", "a".repeat(32001)],
+    ["duration", 4],
+    ["duration", 16],
+    ["duration", 5.5],
+    ["resolution", "720p"],
+    ["prompt_enhancement", "on"],
+    ["seed", -1],
+    ["seed", 2147483648],
+  ])("rejects an out-of-range %s", (field, value) => {
+    expect(schema.safeParse({ ...minimal, [field]: value }).success).toBe(
+      false
+    );
+  });
+});
+
 describe("wavespeed heygen/video-1.0/text-to-video", () => {
   // The payload tests/integration/wavespeed-heygen-video-1-0-text-to-video.test.ts
   // recorded.
@@ -540,6 +586,7 @@ describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
     expect(Object.keys(wavespeed.api.v3.bytedance)).toEqual([
       "seedance2p5",
       "seedance2p0",
+      "seedreamV5p5",
     ]);
     expect(wavespeed.api.v3.bytedance.seedance2p0.textToVideo.schema).toBe(
       WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema
@@ -602,6 +649,56 @@ describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/text-to-video", () => {
+  // The payload tests/integration/wavespeed-google-gemini-omni-1-2-flash-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    resolution: "360p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.google.geminiOmni1p2Flash.textToVideo.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("accepts the 15-second maximum", () => {
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema.safeParse({
+        ...RECORDED,
+        duration: 15,
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "1:1"],
+      ["duration", 2],
+      ["duration", 16],
+      ["duration", 3.5],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,
@@ -1164,6 +1261,7 @@ describe("wavespeed heygen/video-1.0/reference-to-video", () => {
 
     expect(Object.keys(wavespeed.api.v3.heygen.video1p0)).toEqual([
       "textToVideo",
+      "imageToVideo",
       "referenceToVideo",
     ]);
     expect(wavespeed.api.v3.heygen.video1p0.referenceToVideo.schema).toBe(
@@ -1238,6 +1336,50 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
     ] as const) {
       expect(
         WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/video-edit", () => {
+  // The payload
+  // tests/integration/wavespeed-google-gemini-omni-1-2-flash-video-edit.test.ts
+  // recorded.
+  const RECORDED = {
+    video:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1-kling-o3-3s.mp4",
+    prompt: "Make the cat's fur bright orange.",
+    resolution: "360p",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.google.geminiOmni1p2Flash.videoEdit).toBeTypeOf(
+      "function"
+    );
+    expect(wavespeed.api.v3.google.geminiOmni1p2Flash.videoEdit.schema).toBe(
+      WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema
+    );
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["video", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,
@@ -1884,6 +2026,7 @@ describe("wavespeed openai/gpt-image-2.6-sunburst/text-to-image", () => {
       "gptImage2p6Sunburst",
       "gptImage2p5Sunburst",
       "gptImage2p5Flare",
+      "gptImage2",
     ]);
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p6Sunburst)).toEqual([
       "textToImage",
@@ -2396,6 +2539,276 @@ describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed openai/gpt-image-2/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.openai.gptImage2)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.openai.gptImage2.textToImage.schema).toBe(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "3:1",
+        resolution: "4k",
+        quality: "high",
+        output_format: "jpeg",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects the GPT Image 2.5 tiers above high and values off the grid", () => {
+    for (const [field, value] of [
+      ["quality", "xhigh"],
+      ["quality", "max"],
+      ["resolution", "8k"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "svg"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedOpenaiGptImage2TextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-x-ai-grok-imagine-image-v2-0-text-to-image.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.xAi)).toEqual([
+      "grokImagineVideoV1p5",
+      "grokImagineImageV2p0",
+    ]);
+    expect(Object.keys(wavespeed.api.v3.xAi.grokImagineImageV2p0)).toEqual([
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.xAi.grokImagineImageV2p0.textToImage.schema).toBe(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
+        prompt: "A koi pond",
+        aspect_ratio: "19.5:9",
+        resolution: "2k",
+        quality: "medium",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "4k"],
+      ["quality", "high"],
+      ["aspect_ratio", "21:9"],
+      ["prompt", ""],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedream-v5.5/edit", () => {
+  // The payload tests/integration/wavespeed-bytedance-seedream-v5-5-edit.test.ts
+  // recorded.
+  const CAT_IMAGE =
+    "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [CAT_IMAGE],
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedreamV5p5)).toEqual([
+      "edit",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedreamV5p5.edit.schema).toBe(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option and ten images", () => {
+    expect(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse({
+        prompt: "Make it a watercolour",
+        images: Array.from({ length: 10 }, () => CAT_IMAGE),
+        aspect_ratio: "9:21",
+        resolution: "1.5k",
+        output_format: "jpeg",
+        background: "transparent",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["images", Array.from({ length: 11 }, () => CAT_IMAGE)],
+      ["images", undefined],
+      ["resolution", "4k"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "webp"],
+      ["background", "white"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-skywork-ai-skyreels-v4-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    duration: 3,
+    resolution: "480p",
+    sound: false,
+    mode: "fast",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.skyworkAi)).toEqual(["skyreelsV4"]);
+    expect(Object.keys(wavespeed.api.v3.skyworkAi.skyreelsV4)).toEqual([
+      "textToVideo",
+    ]);
+    expect(wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo.schema).toBe(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "skywork-ai/skyreels-v4/text-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo({
+      prompt: RECORDED.prompt,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse({
+        prompt: "A koi pond",
+        duration: 15,
+        aspect_ratio: "1:1",
+        resolution: "1080p",
+        sound: true,
+        mode: "std",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["duration", 2],
+      ["duration", 16],
+      ["duration", 3.5],
+      ["resolution", "4k"],
+      ["aspect_ratio", "4:3"],
+      ["mode", "turbo"],
+      ["sound", "yes"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-42 endpoints across 13 groups. Each method mirrors an upstream URL path.
+49 endpoints across 14 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -345,6 +345,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.bytedance.seedreamV5p5.edit</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/bytedance/seedream-v5.5/edit)
+
+```typescript
+const res = await wavespeed.api.v3.bytedance.seedreamV5p5.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
 ### google
 
 <details>
@@ -416,6 +433,40 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.google.geminiOmni1p2Flash.textToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.google.geminiOmni1p2Flash.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.google.geminiOmni1p2Flash.videoEdit</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit)
+
+```typescript
+const res = await wavespeed.api.v3.google.geminiOmni1p2Flash.videoEdit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.google.nanoBanana2p1.edit</code></b></summary>
 
 <code>POST https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/edit</code>
@@ -450,6 +501,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### heygen
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.heygen.video1p0.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/heygen/video-1.0/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.heygen.video1p0.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.heygen.video1p0.referenceToVideo</code></b></summary>
@@ -558,6 +626,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### openai
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.openai.gptImage2.textToImage</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/openai/gpt-image-2/text-to-image)
+
+```typescript
+const res = await wavespeed.api.v3.openai.gptImage2.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.openai.gptImage2p5Flare.textToImage</code></b></summary>
@@ -718,6 +803,25 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 
 </details>
 
+### skyworkAi
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
 ### wavespeedAi
 
 <details>
@@ -738,6 +842,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### xAi
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.xAi.grokImagineImageV2p0.textToImage</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image)
+
+```typescript
+const res = await wavespeed.api.v3.xAi.grokImagineImageV2p0.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.xAi.grokImagineVideoV1p5.imageToVideo</code></b></summary>

@@ -18,18 +18,23 @@ import type {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
@@ -39,7 +44,9 @@ import type {
   WaveSpeedPredictionStatusSchema,
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";
@@ -244,6 +251,18 @@ export interface WaveSpeedHeygenVideo1p0TextToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedHeygenVideo1p0TextToVideoRequestSchema;
 }
+export type WaveSpeedHeygenVideo1p0ImageToVideoRequest = z.input<
+  typeof WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedHeygenVideo1p0ImageToVideoMethod {
+  (
+    request: WaveSpeedHeygenVideo1p0ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema;
+}
 export type WaveSpeedHeygenVideo1p0ReferenceToVideoRequest = z.input<
   typeof WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema
 >;
@@ -258,6 +277,7 @@ export interface WaveSpeedHeygenVideo1p0ReferenceToVideoMethod {
 }
 export interface WaveSpeedHeygenVideo1p0Namespace {
   textToVideo: WaveSpeedHeygenVideo1p0TextToVideoMethod;
+  imageToVideo: WaveSpeedHeygenVideo1p0ImageToVideoMethod;
   referenceToVideo: WaveSpeedHeygenVideo1p0ReferenceToVideoMethod;
 }
 export interface WaveSpeedHeygenNamespace {
@@ -417,9 +437,25 @@ export interface WaveSpeedBytedanceSeedance2p0Namespace {
   videoEdit: WaveSpeedBytedanceSeedance2p0VideoEditMethod;
   referenceToVideo: WaveSpeedBytedanceSeedance2p0ReferenceToVideoMethod;
 }
+export type WaveSpeedBytedanceSeedreamV5p5EditRequest = z.input<
+  typeof WaveSpeedBytedanceSeedreamV5p5EditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedBytedanceSeedreamV5p5EditMethod {
+  (
+    request: WaveSpeedBytedanceSeedreamV5p5EditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedBytedanceSeedreamV5p5EditRequestSchema;
+}
+export interface WaveSpeedBytedanceSeedreamV5p5Namespace {
+  edit: WaveSpeedBytedanceSeedreamV5p5EditMethod;
+}
 export interface WaveSpeedBytedanceNamespace {
   seedance2p5: WaveSpeedBytedanceSeedance2p5Namespace;
   seedance2p0: WaveSpeedBytedanceSeedance2p0Namespace;
+  seedreamV5p5: WaveSpeedBytedanceSeedreamV5p5Namespace;
 }
 
 export type WaveSpeedBlackForestLabsFlux3TextToVideoRequest = z.input<
@@ -490,6 +526,34 @@ export interface WaveSpeedGoogleGeminiOmni1p1FlashVideoEditMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema;
 }
+export type WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest = z.input<
+  typeof WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoMethod {
+  (
+    request: WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema;
+}
+export type WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest = z.input<
+  typeof WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedGoogleGeminiOmni1p2FlashVideoEditMethod {
+  (
+    request: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema;
+}
+export interface WaveSpeedGoogleGeminiOmni1p2FlashNamespace {
+  textToVideo: WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoMethod;
+  videoEdit: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditMethod;
+}
 export type WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest = z.input<
   typeof WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema
 >;
@@ -538,6 +602,7 @@ export interface WaveSpeedGoogleNanoBanana2p1Namespace {
 }
 export interface WaveSpeedGoogleNamespace {
   geminiOmni1p1Flash: WaveSpeedGoogleGeminiOmni1p1FlashNamespace;
+  geminiOmni1p2Flash: WaveSpeedGoogleGeminiOmni1p2FlashNamespace;
   nanoBanana2p1: WaveSpeedGoogleNanoBanana2p1Namespace;
 }
 
@@ -569,8 +634,24 @@ export interface WaveSpeedXAiGrokImagineVideoV1p5Namespace {
   imageToVideo: WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoMethod;
   referenceToVideo: WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoMethod;
 }
+export type WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest = z.input<
+  typeof WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedXAiGrokImagineImageV2p0TextToImageMethod {
+  (
+    request: WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema;
+}
+export interface WaveSpeedXAiGrokImagineImageV2p0Namespace {
+  textToImage: WaveSpeedXAiGrokImagineImageV2p0TextToImageMethod;
+}
 export interface WaveSpeedXAiNamespace {
   grokImagineVideoV1p5: WaveSpeedXAiGrokImagineVideoV1p5Namespace;
+  grokImagineImageV2p0: WaveSpeedXAiGrokImagineImageV2p0Namespace;
 }
 export type WaveSpeedWavespeedAiMinimaxH3VideoEditRequest = z.input<
   typeof WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema
@@ -721,11 +802,27 @@ export interface WaveSpeedOpenaiGptImage2p5FlareTextToImageMethod {
 export interface WaveSpeedOpenaiGptImage2p5FlareNamespace {
   textToImage: WaveSpeedOpenaiGptImage2p5FlareTextToImageMethod;
 }
+export type WaveSpeedOpenaiGptImage2TextToImageRequest = z.input<
+  typeof WaveSpeedOpenaiGptImage2TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedOpenaiGptImage2TextToImageMethod {
+  (
+    request: WaveSpeedOpenaiGptImage2TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedOpenaiGptImage2TextToImageRequestSchema;
+}
+export interface WaveSpeedOpenaiGptImage2Namespace {
+  textToImage: WaveSpeedOpenaiGptImage2TextToImageMethod;
+}
 export interface WaveSpeedOpenaiNamespace {
   gptImage2p6Flare: WaveSpeedOpenaiGptImage2p6FlareNamespace;
   gptImage2p6Sunburst: WaveSpeedOpenaiGptImage2p6SunburstNamespace;
   gptImage2p5Sunburst: WaveSpeedOpenaiGptImage2p5SunburstNamespace;
   gptImage2p5Flare: WaveSpeedOpenaiGptImage2p5FlareNamespace;
+  gptImage2: WaveSpeedOpenaiGptImage2Namespace;
 }
 export type WaveSpeedPrunaAiPVideo2ProImageToVideoRequest = z.input<
   typeof WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema
@@ -745,6 +842,24 @@ export interface WaveSpeedPrunaAiPVideo2ProNamespace {
 export interface WaveSpeedPrunaAiNamespace {
   pVideo2Pro: WaveSpeedPrunaAiPVideo2ProNamespace;
 }
+export type WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequest = z.input<
+  typeof WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedSkyworkAiSkyreelsV4TextToVideoMethod {
+  (
+    request: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema;
+}
+export interface WaveSpeedSkyworkAiSkyreelsV4Namespace {
+  textToVideo: WaveSpeedSkyworkAiSkyreelsV4TextToVideoMethod;
+}
+export interface WaveSpeedSkyworkAiNamespace {
+  skyreelsV4: WaveSpeedSkyworkAiSkyreelsV4Namespace;
+}
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
   alibaba: WaveSpeedAlibabaNamespace;
@@ -759,6 +874,7 @@ export interface WaveSpeedV3Namespace {
   kwaivgi: WaveSpeedKwaivgiNamespace;
   openai: WaveSpeedOpenaiNamespace;
   prunaAi: WaveSpeedPrunaAiNamespace;
+  skyworkAi: WaveSpeedSkyworkAiNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

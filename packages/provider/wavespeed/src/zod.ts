@@ -87,6 +87,43 @@ export const WaveSpeedHeygenVideo1p0TextToVideoRequestSchema = z.object({
     .describe("Random seed. Omit for a random result."),
 });
 
+// https://wavespeed.ai/models/heygen/video-1.0/image-to-video (read 2026-11-18).
+export const WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema = z.object({
+  image: z
+    .string()
+    .min(1)
+    .describe("First-frame image. The output follows its aspect ratio."),
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("Describe the scene, action, and camera movement."),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 5-15. WaveSpeed default: 5."),
+  resolution: z
+    .enum(["480p", "768p", "1080p", "2k"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `768p`."),
+  prompt_enhancement: z
+    .enum(["disabled", "turbo", "quality"])
+    .optional()
+    .describe(
+      "Rewrite the prompt before generating. WaveSpeed default: `disabled`."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .optional()
+    .describe("Random seed. Omit for a random result."),
+});
+
 // minimax/h3/text-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02).
 export const WaveSpeedMinimaxH3TextToVideoRequestSchema = z.object({
@@ -272,6 +309,30 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema =
       .max(10)
       .optional()
       .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
+  });
+
+// WaveSpeed model page, read 2026-11-18:
+// https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
+export const WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe("Text prompt describing the video to generate."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 3-15. WaveSpeed default: 8."),
   });
 
 // minimax/h3/image-to-video, from WaveSpeed's model catalog
@@ -747,6 +808,23 @@ export const WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema = z.object({
 export const WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema = z.object(
   {
     video: z.string().describe("URL of the source video to edit."),
+    prompt: z
+      .string()
+      .describe("Instruction describing how to edit the source video."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the edited video. WaveSpeed default: `720p`."),
+  }
+);
+
+// google/gemini-omni-1.2-flash/video-edit, from the WaveSpeed model page
+// (https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit, read 2026-11-18).
+export const WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema = z.object(
+  {
+    video: z
+      .string()
+      .describe("URL of the source video to edit (at most 10 seconds)."),
     prompt: z
       .string()
       .describe("Instruction describing how to edit the source video."),
@@ -1616,4 +1694,170 @@ export const WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema = z.object({
     .int()
     .optional()
     .describe("Random seed for reproducible output. Omit for a random seed."),
+});
+
+// openai/gpt-image-2/text-to-image, from the request schema on WaveSpeed's
+// model page (read 2026-11-16): the GPT Image 2.5 fields with three quality
+// tiers instead of five.
+export const WaveSpeedOpenaiGptImage2TextToImageRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+  resolution: z
+    .enum(["1k", "2k", "4k"])
+    .optional()
+    .describe("Resolution of the image. WaveSpeed default: `1k`."),
+  quality: z
+    .enum(["low", "medium", "high"])
+    .optional()
+    .describe(
+      "Quality of the image. Higher quality costs more. WaveSpeed default: `medium`."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp"])
+    .optional()
+    .describe("Format of the output image. WaveSpeed default: `png`."),
+});
+
+// x-ai/grok-imagine-image-v2.0/text-to-image, from the request schema on
+// WaveSpeed's model page (read 2026-11-16).
+export const WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .min(1)
+      .describe("Text description of the image to generate."),
+    aspect_ratio: z
+      .enum([
+        "1:1",
+        "16:9",
+        "9:16",
+        "4:3",
+        "3:4",
+        "3:2",
+        "2:3",
+        "2:1",
+        "1:2",
+        "19.5:9",
+        "9:19.5",
+        "20:9",
+        "9:20",
+      ])
+      .optional()
+      .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+    resolution: z
+      .enum(["1k", "2k"])
+      .optional()
+      .describe(
+        "Resolution tier of the image. WaveSpeed default: `2k`, the more expensive tier."
+      ),
+    quality: z
+      .enum(["low", "medium"])
+      .optional()
+      .describe(
+        "Quality tier. WaveSpeed default: `medium`, the more expensive tier."
+      ),
+  });
+
+// bytedance/seedream-v5.5/edit, from the request schema on WaveSpeed's model
+// page (read 2026-11-16).
+export const WaveSpeedBytedanceSeedreamV5p5EditRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  images: z
+    .array(z.string())
+    .max(10)
+    .describe(
+      "URLs of the images to edit, up to 10. Each one adds to the price."
+    ),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe(
+      "Aspect ratio of the image. When omitted, it follows the input image."
+    ),
+  resolution: z
+    .enum(["1k", "1.5k", "2k"])
+    .optional()
+    .describe(
+      "Resolution tier. 1k and 1.5k cost the same; 2k is the highest and costs more. WaveSpeed default: `1k`."
+    ),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .optional()
+    .describe(
+      "Format of the output image. A transparent background always returns a png. WaveSpeed default: `png`."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .optional()
+    .describe(
+      "`transparent` returns a png with an alpha channel, `opaque` a solid background, and `auto` lets the model decide from the prompt and output format. WaveSpeed default: `auto`."
+    ),
+});
+
+// skywork-ai/skyreels-v4/text-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-18).
+export const WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema = z.object({
+  prompt: z.string().describe("The prompt describing the video to generate."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `1080p`."),
+  sound: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate sound effects with the video. WaveSpeed default: false."
+    ),
+  mode: z
+    .enum(["std", "fast"])
+    .optional()
+    .describe(
+      "Quality/performance mode. `fast` currently requires `sound` false. WaveSpeed default: `std`."
+    ),
 });

@@ -1063,6 +1063,7 @@ export const MODEL_SLUGS = {
   // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
+    "heygen/video-1.0/image-to-video": "heygenvideo",
     "heygen/video-1.0/text-to-video": "heygenvideo",
     "minimax/h3/text-to-video": "mmh3",
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
@@ -1082,6 +1083,8 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/video-edit": "sd2p5",
     "heygen/video-1.0/reference-to-video": "heygenvideo",
     "google/gemini-omni-1.1-flash/video-edit": "geminiomni1p1f",
+    "google/gemini-omni-1.2-flash/text-to-video": "geminiomni1p2f",
+    "google/gemini-omni-1.2-flash/video-edit": "geminiomni1p2f",
     "minimax/h3/reference-to-video": "mmh3",
     "wavespeed-ai/minimax-h3/video-edit": "mmh3",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
@@ -1103,6 +1106,10 @@ export const MODEL_SLUGS = {
     "openai/gpt-image-2.5-sunburst/text-to-image": "gi2p5sb",
     "openai/gpt-image-2.5-flare/text-to-image": "gi2p5fl",
     "pruna-ai/p-video-2-pro/image-to-video": "pvideo2p",
+    "openai/gpt-image-2/text-to-image": "gi2",
+    "x-ai/grok-imagine-image-v2.0/text-to-image": "grokimgi2p0",
+    "bytedance/seedream-v5.5/edit": "sd5p5",
+    "skywork-ai/skyreels-v4/text-to-video": "skyreelsv4",
   },
 } as const;
 
@@ -2176,6 +2183,7 @@ export const MODEL_DISPLAY = {
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",
+    "heygen/video-1.0/image-to-video": "HeyGen Video",
     "heygen/video-1.0/text-to-video": "HeyGen Video",
     "minimax/h3/text-to-video": "MiniMax H3",
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
@@ -2195,6 +2203,8 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/video-edit": "Seedance 2.5 Edit",
     "heygen/video-1.0/reference-to-video": "HeyGen Video",
     "google/gemini-omni-1.1-flash/video-edit": "Gemini Omni 1.1 Flash Edit",
+    "google/gemini-omni-1.2-flash/text-to-video": "Gemini Omni 1.2 Flash",
+    "google/gemini-omni-1.2-flash/video-edit": "Gemini Omni 1.2 Flash Edit",
     "minimax/h3/reference-to-video": "MiniMax H3",
     "wavespeed-ai/minimax-h3/video-edit": "MiniMax H3 Edit",
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
@@ -2216,6 +2226,10 @@ export const MODEL_DISPLAY = {
     "openai/gpt-image-2.5-sunburst/text-to-image": "GPT Image 2.5 Sunburst",
     "openai/gpt-image-2.5-flare/text-to-image": "GPT Image 2.5 Flare",
     "pruna-ai/p-video-2-pro/image-to-video": "P-Video-2-Pro",
+    "openai/gpt-image-2/text-to-image": "GPT Image 2",
+    "x-ai/grok-imagine-image-v2.0/text-to-image": "Grok Imagine Image 2.0",
+    "bytedance/seedream-v5.5/edit": "Seedream 5.5 Edit",
+    "skywork-ai/skyreels-v4/text-to-video": "SkyReels V4",
   },
 } as const;
 

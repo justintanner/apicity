@@ -107,6 +107,11 @@
       "provider": "openai",
       "dotPath": "v1.images.generations",
       "modelId": "gpt-image-2"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.openai.gptImage2.textToImage",
+      "pricingKey": "openai/gpt-image-2/text-to-image"
     }
   ],
   "Kling Image 4.0 (preview)": [],
@@ -148,6 +153,11 @@
       "provider": "xai",
       "dotPath": "v1.images.generations",
       "modelId": "grok-imagine-image-2.0"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.xAi.grokImagineImageV2p0.textToImage",
+      "pricingKey": "x-ai/grok-imagine-image-v2.0/text-to-image"
     }
   ],
   "Canva Craft": []

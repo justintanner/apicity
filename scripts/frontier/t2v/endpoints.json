@@ -98,6 +98,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "google/gemini-omni-flash-1-2"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.google.geminiOmni1p2Flash.textToVideo",
+      "pricingKey": "google/gemini-omni-1.2-flash/text-to-video"
     }
   ],
   "HeyGen Video 1": [
@@ -136,5 +141,11 @@
       "pricingKey": "black-forest-labs/flux-3/text-to-video"
     }
   ],
-  "SkyReels V4": []
+  "SkyReels V4": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.skyworkAi.skyreelsV4.textToVideo",
+      "pricingKey": "skywork-ai/skyreels-v4/text-to-video"
+    }
+  ]
 }

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed HeyGen Video 1.0 image-to-video costs 0.025 USD/s at 480p, 0.045 USD/s at 768p, and 0.12 USD/s at 1080p or 2k.
+
+- WaveSpeed Gemini Omni 1.2 Flash text-to-video costs 0.023, 0.07, 0.105 or 0.21 USD per second at 360p, 720p, 1080p or 4k respectively.
+
 - Nunchux `GET v1.credits` is classified as a free account balance read ($0).
 
 - KIE Video Upscale (`video/upscale`) is priced per second of input video by
@@ -214,6 +218,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   publishes no formula). The last frame, prompt expansion and seed add nothing.
   Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
   P-Video-2-Pro (ac-cdx7ad).
+
+- WaveSpeed Seedream 5.5 edit (`bytedance/seedream-v5.5/edit`) bills 0.02 USD
+  at 1k and 1.5k (1k by default) or 0.035 USD at 2k, plus 0.008 USD per input
+  image, from free quotes (list price, read 2026-11-16). An estimate without an
+  `images` list fails closed. `MODEL_SLUGS.wavespeed` shares the family slug
+  `sd5p5` (ac-5ttwpq).
+
+- WaveSpeed Grok Imagine Image 2.0 text-to-image
+  (`x-ai/grok-imagine-image-v2.0/text-to-image`) bills one image per request at
+  0.04, 0.06, 0.06 and 0.08 USD for low 1k, low 2k, medium 1k and medium 2k (the
+  default), from free quotes (list price, read 2026-11-16).
+  `MODEL_SLUGS.wavespeed` shares xAI's slug `grokimgi2p0` (ac-tkei3h).
+
+- WaveSpeed GPT Image 2 text-to-image (`openai/gpt-image-2/text-to-image`)
+  bills one image per request by quality and resolution, from 0.01 USD (low,
+  1k) to 0.72 USD (high, 4k) and 0.06 USD at the medium 1k default, from free
+  quotes (list price, read 2026-11-16). `MODEL_SLUGS.wavespeed` shares the
+  family slug `gi2` (ac-w6g9vb).
+
+- WaveSpeed SkyReels V4 text-to-video (`skywork-ai/skyreels-v4/text-to-video`)
+  bills per second by mode and resolution: 0.11, 0.14 and 0.35 USD/s at 480p,
+  720p and 1080p in `std` mode, and 0.08, 0.11 and 0.275 USD/s in `fast` mode,
+  from free quotes (list price, read 2026-11-18; the model page publishes no
+  formula). Sound and aspect ratio add nothing. Slug `skyreelsv4`, display
+  "SkyReels V4"; it is the t2v frontier entry for SkyReels V4 (ac-9poz7k).
 
 - WaveSpeed GPT Image 2.5 Flare text-to-image
   (`openai/gpt-image-2.5-flare/text-to-image`) bills one image per request at

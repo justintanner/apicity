@@ -173,7 +173,7 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
 ];
 
-const T2V_UNMAPPED = ["Utopai X", "SkyReels V4"];
+const T2V_UNMAPPED = ["Utopai X"];
 const I2V_UNMAPPED = [
   "Utopai X",
   "SkyReels V4",
@@ -1091,7 +1091,7 @@ describe("frontier image snapshots", () => {
 
   // openai.gptImage2 carries no type keyword; it resolves on t2i because its
   // schema takes a prompt and an image count and size, and no media input.
-  it("maps GPT Image 2 through the fal leaf, the KIE id, MachGen and OpenAI", () => {
+  it("maps GPT Image 2 through the fal leaf, the KIE id, MachGen, OpenAI and WaveSpeed", () => {
     expect(textCarriesTypeKeyword("t2i", "openai.gptImage2")).toBe(false);
     expect(t2i.endpointMap["GPT Image 2 (high)"]).toEqual([
       {
@@ -1113,6 +1113,11 @@ describe("frontier image snapshots", () => {
         provider: "openai",
         dotPath: "v1.images.generations",
         modelId: "gpt-image-2",
+      },
+      {
+        provider: "wavespeed",
+        dotPath: "api.v3.openai.gptImage2.textToImage",
+        pricingKey: "openai/gpt-image-2/text-to-image",
       },
     ]);
   });
@@ -1277,7 +1282,7 @@ describe("frontier video snapshots", () => {
     expect(seedRows(t2v.snapshot)).toEqual(T2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2v.snapshot)).toEqual([]);
     expect(unmappedNames(t2v.endpointMap)).toEqual(T2V_UNMAPPED);
-    expect(mappedCount(t2v.endpointMap)).toBe(8);
+    expect(mappedCount(t2v.endpointMap)).toBe(9);
     expect(Object.keys(t2v.endpointMap)).toHaveLength(10);
   });
 

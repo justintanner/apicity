@@ -19,18 +19,23 @@ import type {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p5VideoEditRequest,
+  WaveSpeedBytedanceSeedreamV5p5EditRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequest,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequest,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
   WaveSpeedGoogleNanoBanana2p1EditRequest,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequest,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
+  WaveSpeedHeygenVideo1p0ImageToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
+  WaveSpeedOpenaiGptImage2TextToImageRequest,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequest,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
   WaveSpeedOpenaiGptImage2p6FlareEditRequest,
@@ -42,7 +47,9 @@ import type {
   WaveSpeedProvider,
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
   WaveSpeedRunwaymlAleph2Request,
+  WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequest,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequest,
 } from "./types";
@@ -65,18 +72,23 @@ import {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1EditRequestSchema,
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
+  WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
@@ -85,7 +97,9 @@ import {
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
+  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
 } from "./zod";
@@ -360,6 +374,23 @@ export function createWaveSpeed(
               { schema: WaveSpeedHeygenVideo1p0TextToVideoRequestSchema }
             ),
             // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/image-to-video
+            // Docs: https://wavespeed.ai/models/heygen/video-1.0/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedHeygenVideo1p0ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/heygen/video-1.0/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
             // POST https://api.wavespeed.ai/api/v3/heygen/video-1.0/reference-to-video
             // Docs: https://wavespeed.ai/models/heygen/video-1.0/reference-to-video
             referenceToVideo: Object.assign(
@@ -577,6 +608,25 @@ export function createWaveSpeed(
               }
             ),
           },
+          seedreamV5p5: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit
+            // Docs: https://wavespeed.ai/models/bytedance/seedream-v5.5/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedreamV5p5EditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedream-v5.5/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedBytedanceSeedreamV5p5EditRequestSchema }
+            ),
+          },
         },
         blackForestLabs: {
           flux3: {
@@ -696,6 +746,47 @@ export function createWaveSpeed(
               }
             ),
           },
+          geminiOmni1p2Flash: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/text-to-video
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.2-flash/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
+              }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit
+            // Docs: https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit
+            videoEdit: Object.assign(
+              async (
+                body: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/google/gemini-omni-1.2-flash/video-edit",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedGoogleGeminiOmni1p2FlashVideoEditRequestSchema,
+              }
+            ),
+          },
           nanoBanana2p1: {
             // sig-ok: version dots become "p" (fal dot rule)
             // POST https://api.wavespeed.ai/api/v3/google/nano-banana-2.1/text-to-image
@@ -773,6 +864,28 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
+              }
+            ),
+          },
+          grokImagineImageV2p0: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image
+            // Docs: https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
               }
             ),
           },
@@ -956,6 +1069,24 @@ export function createWaveSpeed(
               }
             ),
           },
+          gptImage2: {
+            // POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image
+            // Docs: https://wavespeed.ai/models/openai/gpt-image-2/text-to-image
+            textToImage: Object.assign(
+              async (
+                body: WaveSpeedOpenaiGptImage2TextToImageRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/openai/gpt-image-2/text-to-image",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedOpenaiGptImage2TextToImageRequestSchema }
+            ),
+          },
         },
         prunaAi: {
           pVideo2Pro: {
@@ -975,6 +1106,28 @@ export function createWaveSpeed(
               },
               {
                 schema: WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
+              }
+            ),
+          },
+        },
+        skyworkAi: {
+          skyreelsV4: {
+            // POST https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video
+            // Docs: https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video
+            textToVideo: Object.assign(
+              async (
+                body: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/skywork-ai/skyreels-v4/text-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
               }
             ),
           },

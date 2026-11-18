@@ -47,6 +47,29 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
   });
 });
 
+describe("wavespeed heygen/video-1.0/image-to-video", () => {
+  const model = "heygen/video-1.0/image-to-video";
+  const base = { prompt: PROMPT, image: "https://example.com/cat.jpg" };
+
+  it.each([
+    ["480p", 0.125],
+    ["768p", 0.225],
+    ["1080p", 0.6],
+    ["2k", 0.6],
+  ] as const)("matches the five-second %s quote", (resolution, quoted) => {
+    const result = estimate(model, { ...base, resolution, duration: 5 });
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(quoted, 9);
+  });
+
+  it("matches the default quote and scales with duration", () => {
+    expect(estimate(model, base).usd).toBeCloseTo(0.225, 9);
+    expect(
+      estimate(model, { ...base, resolution: "480p", duration: 15 }).usd
+    ).toBeCloseTo(0.375, 9);
+  });
+});
+
 describe("wavespeed heygen/video-1.0/text-to-video", () => {
   const model = "heygen/video-1.0/text-to-video";
 
@@ -227,6 +250,28 @@ describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
 
   it("bills 8 s at 720p by default", () => {
     expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.8, 9);
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/text-to-video", () => {
+  const model = "google/gemini-omni-1.2-flash/text-to-video";
+
+  it.each([
+    ["360p", 0.069],
+    ["720p", 0.21],
+    ["1080p", 0.315],
+    ["4k", 0.63],
+  ] as const)("matches the three-second %s quote", (resolution, quoted) => {
+    const result = estimate(model, { prompt: PROMPT, resolution, duration: 3 });
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(quoted, 9);
+  });
+
+  it("matches the default and maximum-duration quotes", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.56, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "360p", duration: 15 }).usd
+    ).toBeCloseTo(0.345, 9);
   });
 });
 
@@ -693,6 +738,61 @@ describe("wavespeed google/gemini-omni-1.1-flash/video-edit", () => {
         { inputDurationSeconds: 25 }
       ).usd
     ).toBeCloseTo(0.2 + 10 * 0.18, 9);
+  });
+
+  it("fails closed without the input video's length", () => {
+    const result = estimate(model, { video, prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/video-edit", () => {
+  const model = "google/gemini-omni-1.2-flash/video-edit";
+  const video = "https://example.com/cat.mp4";
+
+  it("prices the recorded payload at the 0.144 USD list quote", () => {
+    // The recorded clip, tests/fixtures/cat1-kling-o3-3s.mp4, runs 3.0 s:
+    // 0.02 USD/s to read it, then 3 output seconds at 0.028.
+    const result = estimate(
+      model,
+      {
+        video,
+        prompt: "Make the cat's fur bright orange.",
+        resolution: "360p",
+      },
+      { inputDurationSeconds: 3 }
+    );
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.06 + 3 * 0.028, 9);
+  });
+
+  it("bills the output at the source's length, 720p by default", () => {
+    expect(
+      estimate(model, { video, prompt: PROMPT }, { inputDurationSeconds: 8 })
+        .usd
+    ).toBeCloseTo(0.16 + 8 * 0.084, 9);
+  });
+
+  it("bills at least 3 output seconds and at most a 10 s source", () => {
+    expect(
+      estimate(
+        model,
+        { video, prompt: PROMPT, resolution: "4k" },
+        { inputDurationSeconds: 1.2 }
+      ).usd
+    ).toBeCloseTo(0.04 + 3 * 0.252, 9);
+    expect(
+      estimate(
+        model,
+        { video, prompt: PROMPT, resolution: "1080p" },
+        { inputDurationSeconds: 25 }
+      ).usd
+    ).toBeCloseTo(0.2 + 10 * 0.126, 9);
   });
 
   it("fails closed without the input video's length", () => {
@@ -2067,6 +2167,226 @@ describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
       image: IMAGE,
       mode: "turbo",
     });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
+
+describe("wavespeed openai/gpt-image-2/text-to-image", () => {
+  const model = "openai/gpt-image-2/text-to-image";
+
+  it("prices the recorded payload at the 0.01 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.01, 9);
+  });
+
+  it("bills one medium 1k image by default", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.06, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.01, 0.02, 0.03],
+      medium: [0.06, 0.1, 0.18],
+      high: [0.22, 0.4, 0.72],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("adds nothing for the output format or aspect ratio", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        output_format: "jpeg",
+        aspect_ratio: "21:9",
+      }).usd
+    ).toBeCloseTo(0.06, 9);
+  });
+
+  it("quotes nothing for a quality the model does not offer", () => {
+    const result = estimate(model, { prompt: PROMPT, quality: "max" });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toEqual([
+      "wavespeed 'openai/gpt-image-2/text-to-image': no rate for variant 'max|1k' (selectors: quality, resolution)",
+    ]);
+  });
+});
+
+describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
+  const model = "x-ai/grok-imagine-image-v2.0/text-to-image";
+
+  it("prices the recorded payload at the 0.04 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.04, 9);
+  });
+
+  it("bills the medium 2k default, the most expensive request", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.08, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills every quality at every resolution", () => {
+    for (const [quality, resolution, usd] of [
+      ["low", "1k", 0.04],
+      ["low", "2k", 0.06],
+      ["medium", "1k", 0.06],
+      ["medium", "2k", 0.08],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, quality, resolution }).usd,
+        `${quality} ${resolution}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, aspect_ratio: "20:9" }).usd
+    ).toBeCloseTo(0.08, 9);
+  });
+});
+
+describe("wavespeed bytedance/seedream-v5.5/edit", () => {
+  const model = "bytedance/seedream-v5.5/edit";
+  const image = "https://example.com/cat.jpg";
+  const images = (n: number) => Array.from({ length: n }, () => image);
+
+  it("prices the recorded payload at the 0.028 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.028, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills the resolution rate plus 0.008 USD per input image", () => {
+    for (const [resolution, count, usd] of [
+      [undefined, 1, 0.028],
+      ["1.5k", 1, 0.028],
+      ["1k", 2, 0.036],
+      ["1k", 5, 0.06],
+      ["1k", 10, 0.1],
+      ["2k", 1, 0.043],
+      ["2k", 2, 0.051],
+      ["2k", 10, 0.115],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, images: images(count), resolution })
+          .usd,
+        `${resolution} x${count}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio, format or background", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        aspect_ratio: "21:9",
+        output_format: "jpeg",
+        background: "transparent",
+      }).usd
+    ).toBeCloseTo(0.028, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+    expect(result.usd).toBe(0);
+    expect(result.warnings).not.toEqual([]);
+  });
+});
+
+describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
+  const model = "skywork-ai/skyreels-v4/text-to-video";
+
+  it("prices the recorded payload at the 0.24 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.24, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-18, list price.
+  it("bills the quoted rate per second by mode and resolution", () => {
+    for (const [mode, resolution, duration, usd] of [
+      ["std", "480p", 3, 0.33],
+      ["std", "480p", 5, 0.55],
+      ["std", "480p", 15, 1.65],
+      ["std", "720p", 3, 0.42],
+      ["std", "720p", 5, 0.7],
+      ["std", "720p", 15, 2.1],
+      ["std", "1080p", 15, 5.25],
+      ["fast", "480p", 5, 0.4],
+      ["fast", "480p", 15, 1.2],
+      ["fast", "720p", 3, 0.33],
+      ["fast", "720p", 5, 0.55],
+      ["fast", "1080p", 5, 1.375],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, mode, resolution, duration }).usd,
+        `${mode} ${resolution} ${duration} s`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("defaults to 5 s at 1080p in std mode; sound and aspect ratio add nothing", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(1.75, 9);
+    for (const duration of [3, 4, 6, 10]) {
+      expect(
+        estimate(model, { prompt: PROMPT, duration }).usd,
+        `${duration} s`
+      ).toBeCloseTo(0.35 * duration, 9);
+    }
+    for (const extra of [
+      { sound: true },
+      { aspect_ratio: "9:16" },
+      { aspect_ratio: "1:1" },
+    ]) {
+      expect(estimate(model, { prompt: PROMPT, ...extra }).usd).toBeCloseTo(
+        1.75,
+        9
+      );
+    }
+    expect(
+      estimate(model, { prompt: PROMPT, mode: "fast", sound: true }).usd
+    ).toBeCloseTo(1.375, 9);
+  });
+
+  it("fails closed on a mode WaveSpeed does not price", () => {
+    const result = estimate(model, { prompt: PROMPT, mode: "turbo" });
 
     expect(result.usd).toBe(0);
     expect(result.warnings).toHaveLength(1);

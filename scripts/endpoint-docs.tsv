@@ -1,6 +1,7 @@
 provider	dotPath	method	fullUrl	docsUrl
 wavespeed	api.v3.predictions.result	GET	https://api.wavespeed.ai/api/v3/predictions/{id}/result	https://wavespeed.ai/docs/get-result
 wavespeed	api.v3.alibaba.wan3p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/text-to-video
+wavespeed	api.v3.heygen.video1p0.imageToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/image-to-video	https://wavespeed.ai/models/heygen/video-1.0/image-to-video
 wavespeed	api.v3.heygen.video1p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/text-to-video	https://wavespeed.ai/models/heygen/video-1.0/text-to-video
 wavespeed	api.v3.minimax.h3.textToVideo	POST	https://api.wavespeed.ai/api/v3/minimax/h3/text-to-video	https://wavespeed.ai/models/minimax/h3/text-to-video
 wavespeed	api.v3.bytedance.seedance2p5.textToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/text-to-video	https://wavespeed.ai/models/bytedance/seedance-2.5/text-to-video
@@ -41,6 +42,10 @@ wavespeed	api.v3.google.nanoBanana2p1.edit	POST	https://api.wavespeed.ai/api/v3/
 wavespeed	api.v3.openai.gptImage2p5Sunburst.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-sunburst/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/text-to-image
 wavespeed	api.v3.openai.gptImage2p5Flare.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-flare/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2.5-flare/text-to-image
 wavespeed	api.v3.prunaAi.pVideo2Pro.imageToVideo	POST	https://api.wavespeed.ai/api/v3/pruna-ai/p-video-2-pro/image-to-video	https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video
+wavespeed	api.v3.openai.gptImage2.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2/text-to-image
+wavespeed	api.v3.xAi.grokImagineImageV2p0.textToImage	POST	https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image	https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image
+wavespeed	api.v3.bytedance.seedreamV5p5.edit	POST	https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit	https://wavespeed.ai/models/bytedance/seedream-v5.5/edit
+wavespeed	api.v3.skyworkAi.skyreelsV4.textToVideo	POST	https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video	https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories
@@ -1920,5 +1925,7 @@ fal	klingVideo.o3.pro.referenceToVideo	POST	https://fal.run/fal-ai/kling-video/o
 fal	klingVideo.o3.pro.videoToVideo.edit	POST	https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/edit	https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/edit/api
 fal	klingVideo.o3.pro.videoToVideo.reference	POST	https://fal.run/fal-ai/kling-video/o3/pro/video-to-video/reference	https://fal.ai/models/fal-ai/kling-video/o3/pro/video-to-video/reference/api
 machgen	api.v0.upload	POST	https://api.machgen.ai/api/v0/upload	https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k
+wavespeed	api.v3.google.geminiOmni1p2Flash.textToVideo	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/text-to-video	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
+wavespeed	api.v3.google.geminiOmni1p2Flash.videoEdit	POST	https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/video-edit	https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit
 nunchux	v1.credits	GET	https://api.nunchux.com/v1/credits	https://docs.nunchux.ai/credits-pricing
 nunchux	v1.alibaba.tasks	GET	https://api.nunchux.com/v1/alibaba/tasks/{task_id}	https://docs.nunchux.ai/partner-models/wan

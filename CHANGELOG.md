@@ -95,6 +95,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed supports HeyGen Video 1.0 image-to-video with a first-frame image, prompt and 5–15 second duration.
+
+- WaveSpeed supports Gemini Omni 1.2 Flash text-to-video with 3–15 second clips through `api.v3.google.geminiOmni1p2Flash.textToVideo`.
+
 - `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).
 
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).
@@ -164,6 +168,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@apicity/machgen` adds the custom-LoRA reserve at `api.v0.adapters.create` (`POST https://api.machgen.ai/api/v0/adapters?model={model}`), the first of MachGen's three upload calls: reserve, `PUT` the `.safetensors` file to the returned `upload_url`, commit. `MiniMax-H3` is the only model with custom LoRAs (read 2026-11-11). `model` goes in the query and the file's size, MD5 and two configs in the body; the schema pins MachGen's checks from 20 free 400 probes (`tests/fixtures/machgen-evidence/machgen-adapter-reserve-2026-11-11.json`), including the undocumented `renoise` sampler and the 5 GB size limit. Reserving bills nothing: a recorded reserve of a synthetic 408-byte LoRA left the wallet unchanged. The response's one-time `upload_url` lets anyone holding it write the file for 7 days, so the recording keeps only `https://storage.googleapis.com/***`, and a test fails on any live one in a MachGen recording (ac-516jzc).
 
 - `@apicity/wavespeed` adds P-Video-2-Pro image-to-video at `api.v3.prunaAi.pVideo2Pro.imageToVideo` (`POST https://api.wavespeed.ai/api/v3/pruna-ai/p-video-2-pro/image-to-video`), #8 on the 2026-11-16 image-to-video frontier board and the first P-Video endpoint in apicity: a first-frame image and an optional last frame, 5-15 s at 480p or 768p, in `speed`, `quality` or `cost` mode, with optional prompt expansion and seed. WaveSpeed bills by mode and resolution, from 0.01 USD/s (`cost`, 480p) to 0.075 USD/s (`quality`, 768p) list, 0.175 USD by default (5 s, 768p, `speed`); the last frame, prompt expansion and seed add nothing. Recorded at 5 s, 480p in `cost` mode from the cat photo, which billed 0.05 USD in 21 s (ac-cdx7ad).
+
+- `@apicity/wavespeed` adds Seedream 5.5 edit at `api.v3.bytedance.seedreamV5p5.edit` (`POST https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit`): edits up to 10 input images from a text instruction at 1k, 1.5k or 2k, as png or jpeg, with an optional transparent or opaque background. WaveSpeed bills 0.02 USD at 1k and 1.5k or 0.035 USD at 2k, plus 0.008 USD per input image, list. The recorded 1k edit of one image is quoted at 0.028 USD (ac-5ttwpq).
+
+- `@apicity/wavespeed` adds Grok Imagine Image 2.0 text-to-image at `api.v3.xAi.grokImagineImageV2p0.textToImage` (`POST https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image`): one image per request at 1k or 2k in two quality tiers and 13 aspect ratios. WaveSpeed bills the image by quality and resolution, from 0.04 USD (low, 1k) to 0.08 USD (medium, 2k) list; the default is the 0.08 USD tier. The recorded low-quality 1k image is quoted at 0.04 USD (ac-tkei3h).
+
+- `@apicity/wavespeed` adds GPT Image 2 text-to-image at `api.v3.openai.gptImage2.textToImage` (`POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image`): one png, jpeg or webp image per request at 1k, 2k or 4k in three quality tiers. WaveSpeed bills the image by quality and resolution, from 0.01 USD (low, 1k) to 0.72 USD (high, 4k) list, 0.06 USD by default. The recorded low-quality 1k image is quoted at 0.01 USD (ac-w6g9vb).
+
+- `@apicity/wavespeed` adds SkyReels V4 text-to-video at `api.v3.skyworkAi.skyreelsV4.textToVideo` (`POST https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video`), #10 on the 2026-11-16 text-to-video frontier board and the first SkyReels endpoint in apicity: 3-15 s at 480p, 720p or 1080p, in `std` or `fast` mode, with optional sound (`fast` needs sound off). WaveSpeed bills by mode and resolution, from 0.08 USD/s (`fast`, 480p) to 0.35 USD/s (`std`, 1080p) list, 1.75 USD by default (5 s, 1080p, `std`); sound and aspect ratio add nothing. Recorded at 3 s, 480p in `fast` mode, which billed 0.24 USD in 16 s (ac-9poz7k).
 
 - `@apicity/wavespeed` adds GPT Image 2.5 Flare text-to-image at `api.v3.openai.gptImage2p5Flare.textToImage` (`POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-flare/text-to-image`), with the Sunburst request schema. WaveSpeed quotes it at the Sunburst rates, from 0.01 USD (low, 1k) to 1 USD (max, 4k) list, 0.024 USD by default. The recorded low-quality 1k image is quoted at 0.01 USD (ac-cg5q9o).
 

@@ -220,6 +220,11 @@ export const FRONTIER = {
             dotPath: "v1.images.generations",
             modelId: "gpt-image-2",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.openai.gptImage2.textToImage",
+            pricingKey: "openai/gpt-image-2/text-to-image",
+          },
         ],
       },
       {
@@ -284,6 +289,11 @@ export const FRONTIER = {
             provider: "xai",
             dotPath: "v1.images.generations",
             modelId: "grok-imagine-image-2.0",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.xAi.grokImagineImageV2p0.textToImage",
+            pricingKey: "x-ai/grok-imagine-image-v2.0/text-to-image",
           },
         ],
       },
@@ -429,6 +439,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "seedream/5-5-image-to-image",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedreamV5p5.edit",
+            pricingKey: "bytedance/seedream-v5.5/edit",
           },
         ],
       },
@@ -623,6 +638,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-2",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.geminiOmni1p2Flash.textToVideo",
+            pricingKey: "google/gemini-omni-1.2-flash/text-to-video",
+          },
         ],
       },
       {
@@ -684,7 +704,13 @@ export const FRONTIER = {
         model: "SkyReels V4",
         creator: "Skywork AI",
         elo: 1134,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.skyworkAi.skyreelsV4.textToVideo",
+            pricingKey: "skywork-ai/skyreels-v4/text-to-video",
+          },
+        ],
       },
     ],
   },
@@ -812,6 +838,11 @@ export const FRONTIER = {
             provider: "fal",
             dotPath: "heygen.heygenVideo.imageToVideo",
             pricingKey: "heygen/heygen-video/image-to-video",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.heygen.video1p0.imageToVideo",
+            pricingKey: "heygen/video-1.0/image-to-video",
           },
         ],
       },

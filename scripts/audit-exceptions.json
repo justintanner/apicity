@@ -1,10 +1,3 @@
 {
-  "exceptions": [
-    {
-      "advisory": "GHSA-fc5q-39xc-vjpf",
-      "package": "picomatch",
-      "reason": "No patched picomatch exists: the advisory covers every release (<=4.0.7, npm latest 4.0.7) and upstream PR micromatch/picomatch#194 is unmerged. picomatch reaches this repository only through dev and build tooling (vitest, vite, tinyglobby, fdir), which globs patterns written in this repository; no published @apicity package depends on it. Operator decision ac-p48wtr. Remove this entry when a patched picomatch ships and the pnpm override moves to it.",
-      "expires": "2026-12-02"
-    }
-  ]
+  "exceptions": []
 }

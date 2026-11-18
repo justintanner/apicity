@@ -5321,6 +5321,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.bytedance.seedreamV5p5.edit"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.skyworkAi.skyreelsV4.textToVideo"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

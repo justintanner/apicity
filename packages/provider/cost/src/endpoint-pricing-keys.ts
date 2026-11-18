@@ -644,6 +644,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "wavespeed POST api.v3.prunaAi.pVideo2Pro.imageToVideo":
     "pruna-ai/p-video-2-pro/image-to-video",
   "wavespeed POST api.v3.runwayml.aleph2": "runwayml/aleph-2",
+  "wavespeed POST api.v3.skyworkAi.skyreelsV4.textToVideo":
+    "skywork-ai/skyreels-v4/text-to-video",
   "wavespeed POST api.v3.wavespeedAi.minimaxH3.videoEdit":
     "wavespeed-ai/minimax-h3/video-edit",
   "wavespeed POST api.v3.xAi.grokImagineImageV2p0.textToImage":

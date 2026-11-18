@@ -2322,3 +2322,73 @@ describe("wavespeed bytedance/seedream-v5.5/edit", () => {
     expect(result.warnings).not.toEqual([]);
   });
 });
+
+describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
+  const model = "skywork-ai/skyreels-v4/text-to-video";
+
+  it("prices the recorded payload at the 0.24 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.24, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-18, list price.
+  it("bills the quoted rate per second by mode and resolution", () => {
+    for (const [mode, resolution, duration, usd] of [
+      ["std", "480p", 3, 0.33],
+      ["std", "480p", 5, 0.55],
+      ["std", "480p", 15, 1.65],
+      ["std", "720p", 3, 0.42],
+      ["std", "720p", 5, 0.7],
+      ["std", "720p", 15, 2.1],
+      ["std", "1080p", 15, 5.25],
+      ["fast", "480p", 5, 0.4],
+      ["fast", "480p", 15, 1.2],
+      ["fast", "720p", 3, 0.33],
+      ["fast", "720p", 5, 0.55],
+      ["fast", "1080p", 5, 1.375],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, mode, resolution, duration }).usd,
+        `${mode} ${resolution} ${duration} s`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("defaults to 5 s at 1080p in std mode; sound and aspect ratio add nothing", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(1.75, 9);
+    for (const duration of [3, 4, 6, 10]) {
+      expect(
+        estimate(model, { prompt: PROMPT, duration }).usd,
+        `${duration} s`
+      ).toBeCloseTo(0.35 * duration, 9);
+    }
+    for (const extra of [
+      { sound: true },
+      { aspect_ratio: "9:16" },
+      { aspect_ratio: "1:1" },
+    ]) {
+      expect(estimate(model, { prompt: PROMPT, ...extra }).usd).toBeCloseTo(
+        1.75,
+        9
+      );
+    }
+    expect(
+      estimate(model, { prompt: PROMPT, mode: "fast", sound: true }).usd
+    ).toBeCloseTo(1.375, 9);
+  });
+
+  it("fails closed on a mode WaveSpeed does not price", () => {
+    const result = estimate(model, { prompt: PROMPT, mode: "turbo" });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

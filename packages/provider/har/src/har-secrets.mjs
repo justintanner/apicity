@@ -21,17 +21,139 @@ export const PROVIDER_PATH_SECRET_RULES = Object.freeze({
     /(https?:\/\/(?:www\.)?thesportsdb\.com\/api\/v1\/json\/)[^/?#"\\\s]+/gi,
 });
 
-/** Signed-URL query parameters, in any letter case. */
-const SIGNED_URL_QUERY_PARAM =
-  /^(OSSAccessKeyId|Signature|X-Amz-Signature|X-Amz-Credential|X-Amz-Security-Token)$/i;
+/**
+ * Signed-URL query parameters that carry a credential, by storage family,
+ * lower-cased. Each name is in the family's own signing documentation:
+ * - AWS SigV4: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-create-signed-request.html
+ * - Alibaba Cloud OSS V1: https://www.alibabacloud.com/help/en/oss/developer-reference/ddd-signatures-to-urls
+ * - Alibaba Cloud OSS V4: https://www.alibabacloud.com/help/en/oss/developer-reference/add-signatures-to-urls
+ * - Volcengine TOS: https://www.volcengine.com/docs/6349/129226
+ * - Google Cloud Storage V4 (no token parameter): https://cloud.google.com/storage/docs/access-control/signing-urls-manually
+ */
+export const SIGNED_URL_QUERY_PARAMS = Object.freeze({
+  aws: Object.freeze([
+    "x-amz-credential",
+    "x-amz-signature",
+    "x-amz-security-token",
+  ]),
+  ossV1: Object.freeze(["ossaccesskeyid", "signature", "security-token"]),
+  ossV4: Object.freeze([
+    "x-oss-credential",
+    "x-oss-signature",
+    "x-oss-security-token",
+  ]),
+  tos: Object.freeze([
+    "x-tos-credential",
+    "x-tos-signature",
+    "x-tos-security-token",
+  ]),
+  gcs: Object.freeze(["x-goog-credential", "x-goog-signature"]),
+});
 
-/** True when a query parameter carries signed-URL credentials. The name is
- * compared decoded, so `X%2DAmz%2DSecurity%2DToken` matches too.
+const SIGNED_URL_QUERY_PARAM_NAMES = new Set(
+  Object.values(SIGNED_URL_QUERY_PARAMS).flat()
+);
+
+/** True when a query parameter carries signed-URL credentials, in any letter
+ * case. The name is compared decoded, so `X%2DAmz%2DSecurity%2DToken` in a URL
+ * matches too.
  * @param {unknown} name
  * @returns {boolean}
  */
 export function isSignedUrlQueryParam(name) {
-  return typeof name === "string" && SIGNED_URL_QUERY_PARAM.test(name);
+  return (
+    typeof name === "string" &&
+    SIGNED_URL_QUERY_PARAM_NAMES.has(name.toLowerCase())
+  );
+}
+
+const RAW_URL = /https?:\/\/(?:[^"\\\s]|\\u0026)+/gi;
+const ENCODED_URL = /https?%3A%2F%2F[\w.~!*'()%-]*/gi;
+/** Values a committed file may hold for a signed-URL parameter. */
+const SIGNED_URL_PLACEHOLDERS = new Set(["", "***"]);
+
+/**
+ * @param {string} text
+ * @param {string[]} names
+ */
+function signedUrlParamsInText(text, names) {
+  for (const [raw] of text.matchAll(RAW_URL)) {
+    let parsed;
+    try {
+      parsed = new URL(raw.replace(/\\u0026/gi, "&"));
+    } catch {
+      continue;
+    }
+    for (const [name, value] of parsed.searchParams) {
+      if (isSignedUrlQueryParam(name) && !SIGNED_URL_PLACEHOLDERS.has(value)) {
+        names.push(name);
+      }
+    }
+  }
+  for (const [encoded] of text.matchAll(ENCODED_URL)) {
+    let decoded;
+    try {
+      decoded = decodeURIComponent(encoded);
+    } catch {
+      continue;
+    }
+    signedUrlParamsInText(decoded, names);
+  }
+}
+
+/**
+ * One signed-URL query parameter in a committed file that holds a value other
+ * than a placeholder. The value is deliberately left out.
+ *
+ * @typedef {object} LiveSignedUrlParam
+ * @property {string} path where the string sits, as a JSONPath such as
+ *   `$.log.entries[0].response.content.text`
+ * @property {string} name the parameter name, decoded
+ */
+
+/**
+ * Every signed-URL query parameter that `redactUrlSecrets` would remove and
+ * that holds a value other than `""` or `***`, in any string of a parsed JSON
+ * value (or in one string), including URLs percent-encoded inside another URL
+ * and URLs whose `&` is escaped as `&`. A `{ name, value }` pair, as a HAR
+ * `queryString` entry stores a parameter, counts too.
+ *
+ * @param {unknown} value a parsed JSON document, or a file's text
+ * @returns {LiveSignedUrlParam[]}
+ */
+export function findLiveSignedUrlParams(value) {
+  /** @type {LiveSignedUrlParam[]} */
+  const findings = [];
+  /**
+   * @param {unknown} item
+   * @param {string} path
+   */
+  const visit = (item, path) => {
+    if (typeof item === "string") {
+      /** @type {string[]} */
+      const names = [];
+      signedUrlParamsInText(item, names);
+      for (const name of names) findings.push({ path, name });
+      return;
+    }
+    if (Array.isArray(item)) {
+      item.forEach((entry, index) => visit(entry, `${path}[${index}]`));
+      return;
+    }
+    if (!isPlainObject(item)) return;
+    if (
+      isSignedUrlQueryParam(item.name) &&
+      typeof item.value === "string" &&
+      !SIGNED_URL_PLACEHOLDERS.has(item.value)
+    ) {
+      findings.push({ path, name: /** @type {string} */ (item.name) });
+    }
+    for (const [key, entry] of Object.entries(item)) {
+      visit(entry, `${path}${jsonPathMember(key)}`);
+    }
+  };
+  visit(value, "$");
+  return findings;
 }
 
 /** Scrub signed query credentials. Also reaches a percent-encoded URL, such as
@@ -48,7 +170,7 @@ export function redactUrlSecrets(url) {
   for (const pattern of Object.values(PROVIDER_PATH_SECRET_RULES)) {
     result = result.replace(pattern, "$1***");
   }
-  result = result.replace(/https?%3A%2F%2F[\w.~!*'()%-]*/gi, (value) => {
+  result = result.replace(ENCODED_URL, (value) => {
     let decoded;
     try {
       decoded = decodeURIComponent(value);
@@ -58,7 +180,7 @@ export function redactUrlSecrets(url) {
     const clean = redactUrlSecrets(decoded);
     return clean === decoded ? value : encodeURIComponent(clean);
   });
-  return result.replace(/https?:\/\/(?:[^"\\\s]|\\u0026)+/gi, (value) => {
+  return result.replace(RAW_URL, (value) => {
     const escaped = /\\u0026/i.test(value);
     try {
       const parsed = new URL(escaped ? value.replace(/\\u0026/gi, "&") : value);

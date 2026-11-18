@@ -502,6 +502,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.skyworkAi.skyreelsV4.textToVideo": {
+    "source": "wavespeed/skywork-ai-skyreels-v4-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "duration": 3,
+      "resolution": "480p",
+      "sound": false,
+      "mode": "fast"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.wavespeedAi.minimaxH3.videoEdit": {
     "source": "wavespeed/wavespeed-ai-minimax-h3-video-edit",
     "payload": {

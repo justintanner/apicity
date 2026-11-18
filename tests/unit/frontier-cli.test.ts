@@ -71,7 +71,7 @@ describe("apicity frontier", () => {
     const i2i = envelope.data.find((row) => row.type === "i2i");
     expect(i2i).toMatchObject({ models: "7/10", captured: "2026-11-16" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
-    expect(t2v).toMatchObject({ models: "8/10", captured: "2026-11-16" });
+    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-16" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
     expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-16" });
     const derived = envelope.data.find((row) => row.type === "r2v");
@@ -226,7 +226,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("alibaba.wan3p0.textToVideo");
     expect(table).toContain("wan/3-0-video-prime");
     expect(table).toContain("MiniMax-H3");
-    expect(table).toContain("not yet in apicity: Utopai X, SkyReels V4");
+    expect(table).toContain("api.v3.skyworkAi.skyreelsV4.textToVideo");
+    expect(table).toContain("not yet in apicity: Utopai X");
+    expect(table).not.toContain("not yet in apicity: Utopai X, SkyReels V4");
   });
 
   it("prints v2v rows through the video-editing alias", async () => {

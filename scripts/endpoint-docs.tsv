@@ -45,6 +45,7 @@ wavespeed	api.v3.prunaAi.pVideo2Pro.imageToVideo	POST	https://api.wavespeed.ai/a
 wavespeed	api.v3.openai.gptImage2.textToImage	POST	https://api.wavespeed.ai/api/v3/openai/gpt-image-2/text-to-image	https://wavespeed.ai/models/openai/gpt-image-2/text-to-image
 wavespeed	api.v3.xAi.grokImagineImageV2p0.textToImage	POST	https://api.wavespeed.ai/api/v3/x-ai/grok-imagine-image-v2.0/text-to-image	https://wavespeed.ai/models/x-ai/grok-imagine-image-v2.0/text-to-image
 wavespeed	api.v3.bytedance.seedreamV5p5.edit	POST	https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit	https://wavespeed.ai/models/bytedance/seedream-v5.5/edit
+wavespeed	api.v3.skyworkAi.skyreelsV4.textToVideo	POST	https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video	https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

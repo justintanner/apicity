@@ -45,6 +45,7 @@ import {
   WaveSpeedPredictionStatusSchema,
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -124,6 +125,7 @@ describe("wavespeed provider", () => {
       "kwaivgi",
       "openai",
       "prunaAi",
+      "skyworkAi",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -2718,6 +2720,99 @@ describe("wavespeed bytedance/seedream-v5.5/edit", () => {
           [field]: value,
         }).success,
         field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-skywork-ai-skyreels-v4-text-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+    duration: 3,
+    resolution: "480p",
+    sound: false,
+    mode: "fast",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.skyworkAi)).toEqual(["skyreelsV4"]);
+    expect(Object.keys(wavespeed.api.v3.skyworkAi.skyreelsV4)).toEqual([
+      "textToVideo",
+    ]);
+    expect(wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo.schema).toBe(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "skywork-ai/skyreels-v4/text-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo({
+      prompt: RECORDED.prompt,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/text-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse({
+        prompt: "A koi pond",
+        duration: 15,
+        aspect_ratio: "1:1",
+        resolution: "1080p",
+        sound: true,
+        mode: "std",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["duration", 2],
+      ["duration", 16],
+      ["duration", 3.5],
+      ["resolution", "4k"],
+      ["aspect_ratio", "4:3"],
+      ["mode", "turbo"],
+      ["sound", "yes"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${value}`
       ).toBe(false);
     }
   });

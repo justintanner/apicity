@@ -1828,3 +1828,36 @@ export const WaveSpeedBytedanceSeedreamV5p5EditRequestSchema = z.object({
       "`transparent` returns a png with an alpha channel, `opaque` a solid background, and `auto` lets the model decide from the prompt and output format. WaveSpeed default: `auto`."
     ),
 });
+
+// skywork-ai/skyreels-v4/text-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-18).
+export const WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema = z.object({
+  prompt: z.string().describe("The prompt describing the video to generate."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1"])
+    .optional()
+    .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Resolution of the video. WaveSpeed default: `1080p`."),
+  sound: z
+    .boolean()
+    .optional()
+    .describe(
+      "Generate sound effects with the video. WaveSpeed default: false."
+    ),
+  mode: z
+    .enum(["std", "fast"])
+    .optional()
+    .describe(
+      "Quality/performance mode. `fast` currently requires `sound` false. WaveSpeed default: `std`."
+    ),
+});

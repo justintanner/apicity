@@ -1117,4 +1117,31 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 350000 micros, discount_rate 100 on 2026-11-18. The model page
+  // carries no formula, only its price inputs (duration, mode, resolution),
+  // so the rates are the list prices of free quotes (POST /api/v3/model/price)
+  // read 2026-11-18: USD per second by mode and resolution, linear in the
+  // duration (3, 4, 5, 6, 10 and 15 s quoted). Sound and aspect_ratio add
+  // nothing. The quote takes only whole seconds from 3 to 15.
+  "skywork-ai/skyreels-v4/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "mode", pick: (p) => asString(p.mode) ?? "std" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1080p" },
+    ],
+    rates: {
+      "std|480p": 0.11,
+      "std|720p": 0.14,
+      "std|1080p": 0.35,
+      "fast|480p": 0.08,
+      "fast|720p": 0.11,
+      "fast|1080p": 0.275,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/text-to-video",
+      asOf: "2026-11-18",
+    },
+  },
 };

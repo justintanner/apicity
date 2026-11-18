@@ -237,6 +237,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   quotes (list price, read 2026-11-16). `MODEL_SLUGS.wavespeed` shares the
   family slug `gi2` (ac-w6g9vb).
 
+- WaveSpeed SkyReels V4 text-to-video (`skywork-ai/skyreels-v4/text-to-video`)
+  bills per second by mode and resolution: 0.11, 0.14 and 0.35 USD/s at 480p,
+  720p and 1080p in `std` mode, and 0.08, 0.11 and 0.275 USD/s in `fast` mode,
+  from free quotes (list price, read 2026-11-18; the model page publishes no
+  formula). Sound and aspect ratio add nothing. Slug `skyreelsv4`, display
+  "SkyReels V4"; it is the t2v frontier entry for SkyReels V4 (ac-9poz7k).
+
 - WaveSpeed GPT Image 2.5 Flare text-to-image
   (`openai/gpt-image-2.5-flare/text-to-image`) bills one image per request at
   the Sunburst rates, 0.01 USD (low, 1k) to 1 USD (max, 4k), from free quotes

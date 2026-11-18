@@ -23,6 +23,7 @@ import {
   WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
+  WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashVideoEditRequestSchema,
@@ -1799,6 +1800,105 @@ describe("wavespeed google/gemini-omni-1.1-flash/reference-to-video", () => {
           }
         ).success,
         field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed google/gemini-omni-1.2-flash/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-google-gemini-omni-1-2-flash-reference-to-video.test.ts
+  // recorded.
+  const RECORDED = {
+    prompt: "The cat from <IMAGE_REF_0> walks across a sunlit wooden floor.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "360p",
+    duration: 3,
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.google.geminiOmni1p2Flash)).toEqual([
+      "textToVideo",
+      "videoEdit",
+      "referenceToVideo",
+    ]);
+    expect(
+      wavespeed.api.v3.google.geminiOmni1p2Flash.referenceToVideo.schema
+    ).toBe(WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema);
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "google/gemini-omni-1.2-flash/reference-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.google.geminiOmni1p2Flash.referenceToVideo({
+      prompt: RECORDED.prompt,
+      images: RECORDED.images,
+      resolution: "360p",
+      duration: 3,
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/google/gemini-omni-1.2-flash/reference-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option, up to 15 s", () => {
+    const url = "https://example.com/ref.mp4";
+    expect(
+      WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema.safeParse({
+        prompt: "<IMAGE_REF_0> meets <VIDEO_REF_0>",
+        images: Array(10).fill(url),
+        reference_videos: Array(3).fill(url),
+        aspect_ratio: "9:16",
+        resolution: "4k",
+        duration: 15,
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const url = "https://example.com/ref.mp4";
+    for (const [field, value] of [
+      ["resolution", "480p"],
+      ["aspect_ratio", "1:1"],
+      ["duration", 2],
+      ["duration", 16],
+      ["duration", 3.5],
+      ["images", Array(11).fill(url)],
+      ["reference_videos", Array(4).fill(url)],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedGoogleGeminiOmni1p2FlashReferenceToVideoRequestSchema.safeParse(
+          {
+            ...RECORDED,
+            [field]: value,
+          }
+        ).success,
+        `${field} ${value}`
       ).toBe(false);
     }
   });

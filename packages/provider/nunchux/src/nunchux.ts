@@ -90,9 +90,10 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
         // GET https://api.nunchux.com/v1/alibaba/tasks/{task_id}
         // Docs: https://docs.nunchux.ai/partner-models/wan
         tasks: async (taskId: string, signal?: AbortSignal) => {
+          const task_id = taskId;
           return request<NunchuxAlibabaTaskResponse>(
             "GET",
-            `/v1/alibaba/tasks/${encodeURIComponent(taskId)}`,
+            `/v1/alibaba/tasks/${encodeURIComponent(task_id)}`,
             undefined,
             signal
           );

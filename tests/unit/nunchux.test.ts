@@ -340,6 +340,35 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("parses the recorded MiniMax H3 first-frame request and rejects an unknown role", () => {
+    const { schema } = createNunchux().v1.minimax.v2.videoGeneration;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/minimax-h3-image-to-video_177567466/recording.har",
+        "utf8"
+      )
+    ) as {
+      log: { entries: { request: { postData: { text: string } } }[] };
+    };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body.ratio).toBeUndefined();
+    expect(body.content[1]).toEqual({
+      type: "image_url",
+      role: "first_frame",
+      image_url: { url: expect.stringMatching(/\/cat1\.jpg$/) },
+    });
+    expect(
+      schema.safeParse({
+        ...body,
+        content: [
+          body.content[0],
+          { ...body.content[1]!, role: "middle_frame" },
+        ],
+      }).success
+    ).toBe(false);
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

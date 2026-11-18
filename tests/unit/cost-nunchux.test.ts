@@ -450,6 +450,22 @@ describe("Nunchux MiniMax H3 pricing", () => {
       9
     );
   });
+  it("prices the recorded first-frame clip like a text-to-video clip", () => {
+    const i2v = JSON.parse(
+      (
+        JSON.parse(
+          readFileSync(
+            "tests/recordings/nunchux_350094952/minimax-h3-image-to-video_177567466/recording.har",
+            "utf8"
+          )
+        ) as {
+          log: { entries: HarEntry[] };
+        }
+      ).log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    expect(quote(i2v)).toMatchObject({ warnings: [] });
+    expect(quote(i2v).usd).toBeCloseTo(0.32, 9);
+  });
   it("adds 0.04 for each reference image beyond the first five", () => {
     expect(
       quote({ ...body, content: [text, ...Array(5).fill(image)] }).usd

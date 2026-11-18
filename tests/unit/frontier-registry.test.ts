@@ -619,9 +619,9 @@ function liveRegistry() {
               id.endsWith(`-${type}`))
       );
     }
-    // t2v only until N13 (i2v) and N14 (r2v) list MiniMax-H3 on those boards.
+    // t2v and i2v until N14 lists MiniMax-H3 on the r2v board.
     if (
-      type === "t2v" &&
+      (type === "t2v" || type === "i2v") &&
       entry.provider === "nunchux" &&
       entry.dotPath === "v1.minimax.v2.videoGeneration"
     ) {

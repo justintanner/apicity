@@ -274,6 +274,30 @@ export const WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema =
       .describe("Length of the video in seconds, 3-10. WaveSpeed default: 8."),
   });
 
+// WaveSpeed model page, read 2026-11-18:
+// https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video
+export const WaveSpeedGoogleGeminiOmni1p2FlashTextToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe("Text prompt describing the video to generate."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["360p", "720p", "1080p", "4k"])
+      .optional()
+      .describe("Resolution of the video. WaveSpeed default: `720p`."),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(15)
+      .optional()
+      .describe("Length of the video in seconds, 3-15. WaveSpeed default: 8."),
+  });
+
 // minimax/h3/image-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02).
 export const WaveSpeedMinimaxH3ImageToVideoRequestSchema = z.object({

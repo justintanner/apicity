@@ -274,6 +274,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.google.geminiOmni1p2Flash.textToVideo": {
+    "source": "wavespeed/google-gemini-omni-1-2-flash-text-to-video",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise.",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.geminiOmni1p2Flash.videoEdit": {
     "source": "wavespeed/google-gemini-omni-1-2-flash-video-edit",
     "payload": {

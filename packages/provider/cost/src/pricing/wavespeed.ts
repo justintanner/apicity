@@ -308,6 +308,18 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "360p": 0.03, "720p": 0.1, "1080p": 0.15, "4k": 0.3 },
     source: source("google/gemini-omni-1.1-flash/text-to-video"),
   },
+  // Free /model/price quotes, 2026-11-18: 3 seconds at each resolution
+  // costs 0.069, 0.21, 0.315 or 0.63 USD. Defaults quote 0.56 USD.
+  "google/gemini-omni-1.2-flash/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(8),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "360p": 0.023, "720p": 0.07, "1080p": 0.105, "4k": 0.21 },
+    source: source("google/gemini-omni-1.2-flash/text-to-video"),
+  },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. The formula
   // is the text-to-video one; the input image adds nothing:
   //   {"total_price": base_price * $min([duration, 15]) *

@@ -230,6 +230,28 @@ describe("wavespeed google/gemini-omni-1.1-flash/text-to-video", () => {
   });
 });
 
+describe("wavespeed google/gemini-omni-1.2-flash/text-to-video", () => {
+  const model = "google/gemini-omni-1.2-flash/text-to-video";
+
+  it.each([
+    ["360p", 0.069],
+    ["720p", 0.21],
+    ["1080p", 0.315],
+    ["4k", 0.63],
+  ] as const)("matches the three-second %s quote", (resolution, quoted) => {
+    const result = estimate(model, { prompt: PROMPT, resolution, duration: 3 });
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(quoted, 9);
+  });
+
+  it("matches the default and maximum-duration quotes", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(0.56, 9);
+    expect(
+      estimate(model, { prompt: PROMPT, resolution: "360p", duration: 15 }).usd
+    ).toBeCloseTo(0.345, 9);
+  });
+});
+
 describe("wavespeed minimax/h3/image-to-video", () => {
   const model = "minimax/h3/image-to-video";
   const image = "https://example.com/cat.jpg";

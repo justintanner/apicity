@@ -5,7 +5,13 @@ import type {
   NunchuxOptions,
   NunchuxCreditsResponse,
   NunchuxProvider,
+  NunchuxGoogleInteractionsResponse,
 } from "./types";
+
+import {
+  NunchuxGoogleInteractionsRequestSchema,
+  type NunchuxGoogleInteractionsRequest,
+} from "./zod";
 
 function errorEnvelope(body: unknown): { code?: string; message?: string } {
   if (!isNunchuxErrorBody(body)) return {};
@@ -108,6 +114,26 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
           undefined,
           signal
         );
+      },
+      google: {
+        v1beta: {
+          // POST https://api.nunchux.com/v1/google/v1beta/interactions
+          // Docs: https://docs.nunchux.ai/partner-models/nano-banana
+          interactions: Object.assign(
+            async (
+              body: NunchuxGoogleInteractionsRequest,
+              signal?: AbortSignal
+            ) => {
+              return request<NunchuxGoogleInteractionsResponse>(
+                "POST",
+                "/v1/google/v1beta/interactions",
+                body,
+                signal
+              );
+            },
+            { schema: NunchuxGoogleInteractionsRequestSchema }
+          ),
+        },
       },
     },
   });

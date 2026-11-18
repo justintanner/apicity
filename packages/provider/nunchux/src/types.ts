@@ -1,3 +1,8 @@
+import type {
+  NunchuxGoogleInteractionsRequest,
+  NunchuxGoogleInteractionsRequestSchema,
+} from "./zod";
+
 /** HTTP status; 408 for timeout, 499 for caller abort, 500 for transport errors. */
 export class NunchuxError extends Error {
   constructor(
@@ -102,8 +107,43 @@ export interface NunchuxV1Namespace {
   alibaba: NunchuxAlibabaNamespace;
   /** Free account balance read; counts toward the requests-per-minute cap. */
   credits(signal?: AbortSignal): Promise<NunchuxCreditsResponse>;
+  google: NunchuxGoogleNamespace;
 }
 
 export interface NunchuxProvider {
   v1: NunchuxV1Namespace;
+}
+
+export interface NunchuxGoogleInteractionsResponse {
+  id: string;
+  object: string;
+  model: string;
+  status: string;
+  created: number;
+  updated: number;
+  service_tier: string;
+  usage: Record<string, unknown>;
+  steps: {
+    type?: string;
+    signature?: string;
+    content?: {
+      type?: string;
+      data?: string;
+      mime_type?: string;
+      text?: string;
+    }[];
+  }[];
+}
+
+export interface NunchuxGoogleV1betaNamespace {
+  interactions: {
+    (
+      body: NunchuxGoogleInteractionsRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxGoogleInteractionsResponse>;
+    schema: typeof NunchuxGoogleInteractionsRequestSchema;
+  };
+}
+export interface NunchuxGoogleNamespace {
+  v1beta: NunchuxGoogleV1betaNamespace;
 }

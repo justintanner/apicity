@@ -66,9 +66,9 @@ const EXPECTED_NESTED_SURFACES: Record<string, number> = {
   "packages/provider/cost/src/actual": 3,
   "packages/provider/cost/src/extract": 6,
   "packages/provider/cost/src/frontier": 3,
-  "packages/provider/cost/src/pricing": 22,
+  "packages/provider/cost/src/pricing": 23,
 };
-const EXPECTED_NESTED_SURFACE_TOTAL = 34;
+const EXPECTED_NESTED_SURFACE_TOTAL = 35;
 
 const UPDATE_NESTED_PIN =
   "update EXPECTED_NESTED_SURFACES and EXPECTED_NESTED_SURFACE_TOTAL in " +

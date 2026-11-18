@@ -260,6 +260,11 @@ export const FRONTIER = {
             dotPath: "api.v3.google.nanoBanana2p1.textToImage",
             pricingKey: "google/nano-banana-2.1/text-to-image",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.google.v1beta.interactions",
+            modelId: "gemini-nano-banana-2.1",
+          },
         ],
       },
       {

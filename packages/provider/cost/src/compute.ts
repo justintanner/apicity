@@ -1505,6 +1505,13 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         { keyedBy: "model" },
         req.costHints
       );
+    case "nunchux":
+      return evaluatePerUnit(
+        "nunchux",
+        req.payload,
+        { keyedBy: "model" },
+        req.costHints
+      );
     case "googleflow": {
       const result = evaluatePerUnit(
         "googleflow",

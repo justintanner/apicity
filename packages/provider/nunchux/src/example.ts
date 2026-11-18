@@ -14,7 +14,27 @@ export interface EndpointExample {
   runByDefault: boolean;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.google.v1beta.interactions": {
+    "source": "nunchux/nano-banana-2-1-text-to-image",
+    "payload": {
+      "model": "gemini-nano-banana-2.1",
+      "input": [
+        {
+          "type": "text",
+          "text": "A red paper boat on a calm pond at sunrise, soft morning light, photographic."
+        }
+      ],
+      "response_format": {
+        "type": "image",
+        "image_size": "1K",
+        "aspect_ratio": "1:1"
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  }
+};
 
 export default EXAMPLES;
 

@@ -3,7 +3,7 @@
 Cross-provider cost & token estimation for the
 [apicity](https://github.com/justintanner/apicity) monorepo: a USD figure for a
 planned API call to the billed providers (openai, anthropic, xai, kimicoding,
-fireworks, alibaba, kie, elevenlabs, machgen, wavespeed, x — see [Coverage](#coverage)),
+fireworks, alibaba, kie, elevenlabs, machgen, nunchux, wavespeed, x — see [Coverage](#coverage)),
 computed purely locally from bundled rate tables — no keys, no network.
 
 Zero dependencies, and not a wrapper for any single upstream API — a deliberate
@@ -236,6 +236,11 @@ treat it as ±20%. Nothing calls upstream.
 MachGen reads `model`, `task_type`, `video_config` and source media, with
 cost-only hints for unknown output, reference-video and upscale-source
 lengths.
+
+Nunchux selects a list price by `payload.model`. Nano Banana 2.1 prices one
+image by `response_format.image_size`. Omitting the size selects 4K.
+Nunchux applies a standard 10% discount to Google calls. For models with
+billed input media, `costHints.inputDurationSeconds` supplies its duration.
 
 WaveSpeed payloads carry no model field: pass the WaveSpeed model id
 (`alibaba/wan-3.0/text-to-video`) as `endpoint`. Rows price WaveSpeed's list
@@ -888,6 +893,9 @@ is estimate minus actual, and `ratio` is estimate over actual.
 MachGen rates are gross USD per second, verified 2026-10-25 against
 https://www.machgen.ai/pricing, before any Generation Credit rebate.
 
+Nunchux Nano Banana 2.1 lists at $0.0336 for 1K, $0.0504 for 2K and $0.113
+for 4K. The public and authenticated pricing feeds include the Google discount.
+
 WaveSpeed rates are list USD, read 2026-11-02 from the pricing record each
 model page embeds (`https://wavespeed.ai/models/<model id>`) and checked
 against WaveSpeed's free price quotes. A running promotion bills less; the
@@ -915,6 +923,7 @@ module in `src/pricing/`, and set the entry's `source.asOf` to that date.
 | `elevenlabs`                                                       | `per-unit-table`         | TTS per character; Scribe STT per second via `costHints.durationSeconds`                                                                                          |
 | `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints                                                                                  |
 | `x`                                                                | `per-unit-table`         | posts per request with a URL-sensitive rate; reads per declared resource; media upload unpriced                                                                   |
+| `nunchux`                                                          | `per-unit-table`         | per image by output size at list rates, keyed by `payload.model`                                                                                                  |
 | `wavespeed`                                                        | `per-unit-table`         | per second of video by resolution at list rates; keyed by the WaveSpeed model id in `endpoint`                                                                    |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno                                                                               |
 | `free`                                                             | `free`                   | always $0                                                                                                                                                         |

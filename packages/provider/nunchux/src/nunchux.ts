@@ -3,6 +3,7 @@ import { NunchuxError, isNunchuxErrorBody } from "./types";
 import type {
   NunchuxAlibabaVideoSynthesisResponse,
   NunchuxAlibabaTaskResponse,
+  NunchuxBytedanceGenerationTaskCreateResponse,
   NunchuxBytedanceTaskResponse,
   NunchuxOptions,
   NunchuxCreditsResponse,
@@ -14,6 +15,8 @@ import type {
 import {
   NunchuxAlibabaVideoSynthesisRequestSchema,
   type NunchuxAlibabaVideoSynthesisRequest,
+  NunchuxBytedanceGenerationTasksRequestSchema,
+  type NunchuxBytedanceGenerationTasksRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
 } from "./zod";
@@ -135,19 +138,35 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
       bytedance: {
         contents: {
           generations: {
-            tasks: {
-              // GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}
-              // Docs: https://docs.nunchux.ai/partner-models/seedance
-              retrieve: async (taskId: string, signal?: AbortSignal) => {
-                const task_id = taskId;
-                return request<NunchuxBytedanceTaskResponse>(
-                  "GET",
-                  `/v1/bytedance/contents/generations/tasks/${encodeURIComponent(task_id)}`,
-                  undefined,
+            // POST https://api.nunchux.com/v1/bytedance/contents/generations/tasks
+            // Docs: https://docs.nunchux.ai/partner-models/seedance
+            tasks: Object.assign(
+              async (
+                body: NunchuxBytedanceGenerationTasksRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<NunchuxBytedanceGenerationTaskCreateResponse>(
+                  "POST",
+                  "/v1/bytedance/contents/generations/tasks",
+                  body,
                   signal
                 );
               },
-            },
+              {
+                schema: NunchuxBytedanceGenerationTasksRequestSchema,
+                // GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}
+                // Docs: https://docs.nunchux.ai/partner-models/seedance
+                retrieve: async (taskId: string, signal?: AbortSignal) => {
+                  const task_id = taskId;
+                  return request<NunchuxBytedanceTaskResponse>(
+                    "GET",
+                    `/v1/bytedance/contents/generations/tasks/${encodeURIComponent(task_id)}`,
+                    undefined,
+                    signal
+                  );
+                },
+              }
+            ),
           },
         },
       },

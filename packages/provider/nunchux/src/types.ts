@@ -1,6 +1,8 @@
 import type {
   NunchuxAlibabaVideoSynthesisRequest,
   NunchuxAlibabaVideoSynthesisRequestSchema,
+  NunchuxBytedanceGenerationTasksRequest,
+  NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequest,
   NunchuxGoogleInteractionsRequestSchema,
 } from "./zod";
@@ -134,6 +136,10 @@ export interface NunchuxAlibabaNamespace {
   ): Promise<NunchuxAlibabaTaskResponse>;
 }
 
+export interface NunchuxBytedanceGenerationTaskCreateResponse {
+  id: string;
+}
+
 export interface NunchuxBytedanceTaskResponse {
   /** The task ID, an opaque string. */
   id: string;
@@ -151,9 +157,22 @@ export interface NunchuxBytedanceTaskResponse {
   usage?: { completion_tokens: number; total_tokens?: number };
   created_at?: number;
   updated_at?: number;
+  seed?: number;
+  framespersecond?: number;
+  service_tier?: string;
+  execution_expires_after?: number;
+  generate_audio?: boolean;
+  draft?: boolean;
+  priority?: number;
+  output_format?: string;
 }
 
 export interface NunchuxBytedanceContentsGenerationsTasksNamespace {
+  (
+    body: NunchuxBytedanceGenerationTasksRequest,
+    signal?: AbortSignal
+  ): Promise<NunchuxBytedanceGenerationTaskCreateResponse>;
+  schema: typeof NunchuxBytedanceGenerationTasksRequestSchema;
   /** Free Seedance task status read; takes no job slot. */
   retrieve(
     taskId: string,

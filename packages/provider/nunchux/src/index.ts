@@ -11,6 +11,7 @@ export type {
   NunchuxBytedanceContentsGenerationsTasksNamespace,
   NunchuxBytedanceContentsNamespace,
   NunchuxBytedanceNamespace,
+  NunchuxBytedanceGenerationTaskCreateResponse,
   NunchuxBytedanceTaskResponse,
   NunchuxOptions,
   NunchuxErrorBody,
@@ -30,6 +31,8 @@ export type {
 export {
   NunchuxAlibabaVideoSynthesisRequestSchema,
   type NunchuxAlibabaVideoSynthesisRequest,
+  NunchuxBytedanceGenerationTasksRequestSchema,
+  type NunchuxBytedanceGenerationTasksRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
 } from "./zod";

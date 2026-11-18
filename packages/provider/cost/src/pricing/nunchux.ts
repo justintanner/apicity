@@ -1,3 +1,5 @@
+import { SEEDANCE_2P5_SIZES, seedanceTokens } from "../seedance";
+import type { CostHints } from "../types";
 import { asObject, asString, hintInputSeconds } from "./helpers";
 import type { ModelPricing } from "./types";
 
@@ -7,6 +9,31 @@ function hasWanReferenceVideo(payload: Record<string, unknown>): boolean {
     Array.isArray(media) &&
     media.some((item) => asObject(item)?.type === "reference_video")
   );
+}
+
+function nunchuxSeedanceTokens(
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | string {
+  const seconds =
+    p.duration === undefined ? hints?.durationSeconds : p.duration;
+  if (typeof seconds !== "number" || !Number.isInteger(seconds) || seconds < 4)
+    return "Seedance requires the output duration in whole seconds (at least 4). Supply duration or costHints.durationSeconds.";
+  const resolution = p.resolution === undefined ? "720p" : p.resolution;
+  if (resolution !== "480p" && resolution !== "720p")
+    return "Seedance 2.5 prices 480p and 720p.";
+  const hasFrame =
+    Array.isArray(p.content) &&
+    p.content.some((part) => {
+      const item = asObject(part);
+      return item?.type === "image_url" && item.role !== "reference_image";
+    });
+  // The recorded text-only request returned 16:9. A supplied frame sets the shape.
+  const ratio = hasFrame ? hints?.aspectRatio : "16:9";
+  const sizes = SEEDANCE_2P5_SIZES[resolution]!;
+  if (ratio === undefined || !Object.hasOwn(sizes, ratio))
+    return "Seedance follows the input frame. Pass its supported aspect ratio in costHints.aspectRatio.";
+  return Math.round(seedanceTokens(sizes[ratio]!, seconds));
 }
 
 export const nunchux: Record<string, ModelPricing> = {
@@ -48,6 +75,33 @@ export const nunchux: Record<string, ModelPricing> = {
       },
     ],
     rates: { "480P": 0.05, "720P": 0.1, "1080P": 0.2 },
+    source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+  },
+  // Both feeds list 480p|720p/default at $10.70/M completion tokens and
+  // 480p|720p/video_input at $6.40/M. Neither feed splits the rate by audio.
+  // A silent 480p, 16:9, 4-second render reported 38,830 completion tokens.
+  "dreamina-seedance-2-5-260628": {
+    kind: "perUnit",
+    unit: "tokens",
+    units: (p, hints) => {
+      const result = nunchuxSeedanceTokens(p, hints);
+      return typeof result === "number" ? result : undefined;
+    },
+    warn: (p, hints) => {
+      const result = nunchuxSeedanceTokens(p, hints);
+      return typeof result === "string" ? [result] : [];
+    },
+    select: [
+      {
+        name: "video input",
+        pick: (p) =>
+          Array.isArray(p.content) &&
+          p.content.some((item) => asObject(item)?.type === "video_url")
+            ? "video_input"
+            : "default",
+      },
+    ],
+    rates: { default: 10.7 / 1e6, video_input: 6.4 / 1e6 },
     source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
   },
   // /pricing and /v1/pricing quote 0.03024 / 0.04536 / 0.1017 USD

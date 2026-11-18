@@ -1025,6 +1025,7 @@ meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD com
 meta	v25.mediaPublish	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 nunchux	v1.alibaba.services.aigc.videoGeneration.videoSynthesis	POST	prohibitive	Media generation costs depend on model and inputs
 nunchux	v1.alibaba.tasks	GET	cheap	Free task status poll; no job slot or compute charge
+nunchux	v1.bytedance.contents.generations.tasks	POST	prohibitive	Media generation costs depend on model and inputs
 nunchux	v1.bytedance.contents.generations.tasks.retrieve	GET	cheap	Free task status poll; no job slot or compute charge
 nunchux	v1.credits	GET	cheap	Free account credit balance read; no job slot or compute charge
 nunchux	v1.google.v1beta.interactions	POST	prohibitive	Media generation costs depend on model and inputs

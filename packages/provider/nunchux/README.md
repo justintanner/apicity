@@ -31,7 +31,7 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-6 endpoints across 5 groups. Each method mirrors an upstream URL path.
+7 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -70,6 +70,23 @@ Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
 </details>
 
 ### bytedance
+
+<details>
+<summary><code>POST</code> <b><code>nunchux.v1.bytedance.contents.generations.tasks</code></b></summary>
+
+<code>POST https://api.nunchux.com/v1/bytedance/contents/generations/tasks</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/seedance)
+
+```typescript
+const res = await nunchux.v1.bytedance.contents.generations.tasks({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>nunchux.v1.bytedance.contents.generations.tasks.retrieve</code></b></summary>

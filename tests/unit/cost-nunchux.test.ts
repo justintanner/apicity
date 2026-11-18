@@ -58,6 +58,71 @@ describe("Nunchux Wan 3.0 video pricing", () => {
   );
 });
 
+describe("Nunchux Seedance 2.5 pricing", () => {
+  const har = JSON.parse(
+    readFileSync(
+      "tests/recordings/nunchux_350094952/seedance-2-5-text-to-video_3674644594/recording.har",
+      "utf8"
+    )
+  ) as { log: { entries: HarEntry[] } };
+  const body = JSON.parse(
+    har.log.entries[0]!.request.postData!.text!
+  ) as Record<string, unknown>;
+  const receipt = JSON.parse(
+    har.log.entries.at(-1)!.response.content.text!
+  ) as { usage: { completion_tokens: number } };
+  it("prices the recorded 16:9 clip at its settled token charge", () => {
+    expect(receipt.usage.completion_tokens).toBe(38830);
+    const estimate = computeEstimate({ provider: "nunchux", payload: body });
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(
+      (receipt.usage.completion_tokens * 10.7) / 1e6,
+      9
+    );
+  });
+  it("requires the input frame shape and uses the default 720p resolution", () => {
+    const payload = {
+      ...body,
+      content: [
+        { type: "text", text: "Animate this frame." },
+        {
+          type: "image_url",
+          role: "first_frame",
+          image_url: { url: "https://example.com/frame.jpg" },
+        },
+      ],
+      resolution: undefined,
+    };
+    expect(
+      computeEstimate({ provider: "nunchux", payload }).warnings.join(" ")
+    ).toContain("costHints.aspectRatio");
+    expect(
+      computeEstimate({
+        provider: "nunchux",
+        payload,
+        costHints: { aspectRatio: "1:1" },
+      }).usd
+    ).toBeCloseTo((87300 * 10.7) / 1e6, 9);
+  });
+  it("selects the reference-video rate", () => {
+    const payload = {
+      ...body,
+      content: [
+        { type: "text", text: "Follow this motion." },
+        {
+          type: "video_url",
+          role: "reference_video",
+          video_url: { url: "https://example.com/clip.mp4" },
+        },
+      ],
+    };
+    expect(computeEstimate({ provider: "nunchux", payload }).usd).toBeCloseTo(
+      (38830 * 6.4) / 1e6,
+      9
+    );
+  });
+});
+
 const har = JSON.parse(
   readFileSync(
     "tests/recordings/nunchux_350094952/nano-banana-2-1-text-to-image_903528036/recording.har",

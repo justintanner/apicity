@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Wan 3.0 costs $0.05, $0.10 or $0.20 per second at 480P, 720P or 1080P. Reference video seconds count toward the charge.
 
+- Nunchux Seedance 2.5 estimates use the output frame count and resolution. A million video tokens list at $10.70, or $6.40 with reference video.
+
 - Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
 
 - Nunchux Nano Banana 2.1 edits price at the same per-image rates as generations; input images add nothing. The recorded 1K edit lists at $0.0336.

@@ -91,4 +91,25 @@ export async function recordNunchuxAlibabaTask(
 }
 
 // bytedance adapter (ac-1zu8fr.11)
+export async function recordNunchuxBytedanceTask(
+  body: import("@apicity/nunchux").NunchuxBytedanceGenerationTasksRequest,
+  ctx: PollyContext
+) {
+  const tasks = nunchuxClient().v1.bytedance.contents.generations.tasks;
+  const task = await recordNunchuxTask(
+    {
+      submit: async () => (await tasks(body)).id,
+      poll: tasks.retrieve,
+      status: (task) => task.status,
+      isSuccess: (status) => status === "succeeded",
+      isFailure: (status) =>
+        ["failed", "cancelled", "expired"].includes(status),
+      outputUrl: (task) => task.content?.video_url,
+    },
+    ctx
+  );
+  expect(task.model).toBe(body.model);
+  return task;
+}
+
 // minimax adapter (ac-1zu8fr.14)

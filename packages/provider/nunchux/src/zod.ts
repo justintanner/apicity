@@ -74,6 +74,70 @@ export type NunchuxAlibabaVideoSynthesisRequest = z.input<
   typeof NunchuxAlibabaVideoSynthesisRequestSchema
 >;
 
+const NunchuxSeedanceModelAliasSchema = z
+  .string()
+  .regex(/^(dreamina-)?seedance-\d+-\d+(-[a-z]+)*-\d{6}$/);
+const seedanceWebUrl = z
+  .httpUrl()
+  .describe("A public HTTP or HTTPS URL the provider can fetch.");
+
+export const NunchuxBytedanceGenerationTasksRequestSchema = z.object({
+  model: z
+    .enum(["dreamina-seedance-2-5-260628"])
+    .or(NunchuxSeedanceModelAliasSchema),
+  content: z
+    .array(
+      z.discriminatedUnion("type", [
+        z.object({ type: z.literal("text"), text: z.string() }),
+        z.object({
+          type: z.literal("image_url"),
+          role: z
+            .enum(["first_frame", "last_frame", "reference_image"])
+            .optional(),
+          image_url: z.object({ url: seedanceWebUrl }),
+        }),
+        z.object({
+          type: z.literal("video_url"),
+          role: z.literal("reference_video"),
+          video_url: z.object({ url: seedanceWebUrl }),
+        }),
+        z.object({
+          type: z.literal("audio_url"),
+          role: z.literal("reference_audio"),
+          audio_url: z.object({
+            url: seedanceWebUrl.describe(
+              "Public audio clip, up to 30 seconds."
+            ),
+          }),
+        }),
+      ])
+    )
+    .min(1)
+    .refine(
+      (items) => items[0]?.type === "text",
+      "The first content item must be the text prompt."
+    )
+    .describe(
+      "Start with the text prompt. Add a first frame for image-to-video or reference media for reference-to-video. Frame items and reference items cannot be combined."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .optional()
+    .describe("Output length in whole seconds, at least 4."),
+  resolution: z.enum(["480p", "720p"]).optional().describe("Defaults to 720p."),
+  generate_audio: z
+    .boolean()
+    .optional()
+    .describe(
+      "Defaults to true. The provider lists generated audio as a billing dimension."
+    ),
+});
+export type NunchuxBytedanceGenerationTasksRequest = z.input<
+  typeof NunchuxBytedanceGenerationTasksRequestSchema
+>;
+
 const NunchuxGeminiImageModelAliasSchema = z
   .string()
   .regex(/^gemini-[a-z0-9.-]+$/);

@@ -1091,7 +1091,7 @@ describe("frontier image snapshots", () => {
 
   // openai.gptImage2 carries no type keyword; it resolves on t2i because its
   // schema takes a prompt and an image count and size, and no media input.
-  it("maps GPT Image 2 through the fal leaf, the KIE id, MachGen and OpenAI", () => {
+  it("maps GPT Image 2 through the fal leaf, the KIE id, MachGen, OpenAI and WaveSpeed", () => {
     expect(textCarriesTypeKeyword("t2i", "openai.gptImage2")).toBe(false);
     expect(t2i.endpointMap["GPT Image 2 (high)"]).toEqual([
       {
@@ -1113,6 +1113,11 @@ describe("frontier image snapshots", () => {
         provider: "openai",
         dotPath: "v1.images.generations",
         modelId: "gpt-image-2",
+      },
+      {
+        provider: "wavespeed",
+        dotPath: "api.v3.openai.gptImage2.textToImage",
+        pricingKey: "openai/gpt-image-2/text-to-image",
       },
     ]);
   });

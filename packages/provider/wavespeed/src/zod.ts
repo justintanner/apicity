@@ -1617,3 +1617,44 @@ export const WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema = z.object({
     .optional()
     .describe("Random seed for reproducible output. Omit for a random seed."),
 });
+
+// openai/gpt-image-2/text-to-image, from the request schema on WaveSpeed's
+// model page (read 2026-11-16): the GPT Image 2.5 fields with three quality
+// tiers instead of five.
+export const WaveSpeedOpenaiGptImage2TextToImageRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe("Aspect ratio of the image. WaveSpeed default: `1:1`."),
+  resolution: z
+    .enum(["1k", "2k", "4k"])
+    .optional()
+    .describe("Resolution of the image. WaveSpeed default: `1k`."),
+  quality: z
+    .enum(["low", "medium", "high"])
+    .optional()
+    .describe(
+      "Quality of the image. Higher quality costs more. WaveSpeed default: `medium`."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp"])
+    .optional()
+    .describe("Format of the output image. WaveSpeed default: `png`."),
+});

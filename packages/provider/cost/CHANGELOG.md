@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux `GET v1.credits` is classified as a free account balance read ($0).
+
 - KIE Video Upscale (`video/upscale`) is priced per second of input video by
   its `resolution` box: 0.0075 USD at 1080P, 0.015 at 2K (the default) and
   0.03 at 4K, on the clip length declared as `costHints.durationSeconds`. A
@@ -204,6 +206,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   slug or `PRICING` row, and it is the fal entry for GPT Image 2.6 Sunburst
   (max) in the frontier registry. A recorded low-quality, low-effort square JPEG
   billed 0.0217 USD (ac-pns6xz).
+
+- WaveSpeed P-Video-2-Pro image-to-video (`pruna-ai/p-video-2-pro/image-to-video`)
+  bills per second by mode and resolution: 0.02 and 0.035 USD/s at 480p and
+  768p in `speed` mode, 0.04 and 0.075 in `quality` mode, and 0.01 and 0.025 in
+  `cost` mode, from free quotes (list price, read 2026-11-18; the model page
+  publishes no formula). The last frame, prompt expansion and seed add nothing.
+  Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
+  P-Video-2-Pro (ac-cdx7ad).
 
 - WaveSpeed GPT Image 2.5 Flare text-to-image
   (`openai/gpt-image-2.5-flare/text-to-image`) bills one image per request at

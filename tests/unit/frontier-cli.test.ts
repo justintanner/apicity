@@ -37,7 +37,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("leaderboard");
     expect(table).toContain("i2v");
     expect(table).toContain("image-to-video");
-    expect(table).toContain("5/10");
+    expect(table).toContain("6/10");
     expect(table).toContain("2026-11-16");
     expect(table).toContain("derived");
     expect(table).toContain("7/7");
@@ -65,7 +65,7 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "5/10", captured: "2026-11-16" });
+    expect(i2v).toMatchObject({ models: "6/10", captured: "2026-11-16" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
     expect(t2i).toMatchObject({ models: "7/10", captured: "2026-11-16" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
@@ -165,7 +165,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
     expect(table).toContain(
-      "not yet in apicity: Utopai X, SkyReels V4, Hyperflow H3, P-Video-2-Pro, Pika H3 Flex"
+      "not yet in apicity: Utopai X, SkyReels V4, Hyperflow H3, Pika H3 Flex"
     );
     expect(table).not.toContain("present");
   });

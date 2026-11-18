@@ -20,6 +20,19 @@ function rows(
 }
 
 export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
+  ...rows(
+    "nunchux",
+    {
+      kind: "free",
+      reason:
+        "Free account balance read; counts toward RPM but takes no job slot",
+      source: {
+        url: "https://docs.nunchux.ai/credits-pricing",
+        asOf: "2026-11-17",
+      },
+    },
+    ["GET v1.credits"]
+  ),
   {
     match: { provider: "alibaba" },
     billing: {
@@ -5234,6 +5247,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     ["POST api.v3.openai.gptImage2p5Flare.textToImage"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.prunaAi.pVideo2Pro.imageToVideo"]
   ),
   ...rows(
     "x",

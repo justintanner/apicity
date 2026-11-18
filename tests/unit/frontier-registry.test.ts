@@ -178,7 +178,6 @@ const I2V_UNMAPPED = [
   "Utopai X",
   "SkyReels V4",
   "Hyperflow H3",
-  "P-Video-2-Pro",
   "Pika H3 Flex",
 ];
 const V2V_UNMAPPED = ["Hyperflow H3", "Pika H3 Flex"];
@@ -856,7 +855,7 @@ describe("frontier snapshots", () => {
     ).toEqual(I2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(snapshot)).toEqual([]);
     expect(unmappedNames(endpointMap)).toEqual(I2V_UNMAPPED);
-    expect(mappedCount(endpointMap)).toBe(5);
+    expect(mappedCount(endpointMap)).toBe(6);
     expect(Object.keys(endpointMap)).toHaveLength(10);
   });
 

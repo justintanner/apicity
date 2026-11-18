@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 33 provider APIs
+# apicity — one command line for 34 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -487,6 +487,12 @@ Poll `apicity machgen api.v0.tasks --taskId <id>`, then download with
 `apicity machgen api.v0.tasks.billing --taskId <id>` reads the final charge.
 `task_type: "UPSCALE"` re-renders a finished task, named in `src_task_ids`,
 at a higher `video_config.height`.
+
+### nunchux — account credits and plan limits
+
+```bash
+apicity nunchux v1.credits --json
+```
 
 ### wavespeed — media generation, polled by prediction id
 

@@ -38,6 +38,7 @@ import type {
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
   WaveSpeedPredictionStatusSchema,
+  WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -743,6 +744,24 @@ export interface WaveSpeedOpenaiNamespace {
   gptImage2p5Sunburst: WaveSpeedOpenaiGptImage2p5SunburstNamespace;
   gptImage2p5Flare: WaveSpeedOpenaiGptImage2p5FlareNamespace;
 }
+export type WaveSpeedPrunaAiPVideo2ProImageToVideoRequest = z.input<
+  typeof WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedPrunaAiPVideo2ProImageToVideoMethod {
+  (
+    request: WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema;
+}
+export interface WaveSpeedPrunaAiPVideo2ProNamespace {
+  imageToVideo: WaveSpeedPrunaAiPVideo2ProImageToVideoMethod;
+}
+export interface WaveSpeedPrunaAiNamespace {
+  pVideo2Pro: WaveSpeedPrunaAiPVideo2ProNamespace;
+}
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
   alibaba: WaveSpeedAlibabaNamespace;
@@ -756,6 +775,7 @@ export interface WaveSpeedV3Namespace {
   runwayml: WaveSpeedRunwaymlNamespace;
   kwaivgi: WaveSpeedKwaivgiNamespace;
   openai: WaveSpeedOpenaiNamespace;
+  prunaAi: WaveSpeedPrunaAiNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

@@ -1,0 +1,54 @@
+{
+  "name": "@apicity/nunchux",
+  "version": "0.28.0",
+  "description": "Nunchux AI media generation API provider.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintanner/apicity.git",
+    "directory": "provider/nunchux"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./zod": {
+      "import": "./dist/src/zod.js",
+      "types": "./dist/src/zod.d.ts"
+    }
+  },
+  "dependencies": {
+    "zod": "^4.6.6"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "nunchux",
+    "video",
+    "generation",
+    "apicity"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  },
+  "homepage": "https://github.com/justintanner/apicity#readme",
+  "bugs": {
+    "url": "https://github.com/justintanner/apicity/issues"
+  }
+}

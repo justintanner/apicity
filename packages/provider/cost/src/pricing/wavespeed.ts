@@ -989,4 +989,32 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 35000 micros, discount_rate 100 on 2026-11-18. The model page
+  // carries no formula, only its price inputs (duration, mode, resolution),
+  // so the rates are the list prices of free quotes (POST /api/v3/model/price)
+  // read 2026-11-18: USD per second by mode and resolution, linear in the
+  // duration (5, 6, 7, 9, 10, 12 and 15 s quoted). The last frame, the prompt
+  // upsampler and the seed add nothing. The quote takes only whole seconds
+  // from 5 to 15.
+  "pruna-ai/p-video-2-pro/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "mode", pick: (p) => asString(p.mode) ?? "speed" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: {
+      "speed|480p": 0.02,
+      "speed|768p": 0.035,
+      "quality|480p": 0.04,
+      "quality|768p": 0.075,
+      "cost|480p": 0.01,
+      "cost|768p": 0.025,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video",
+      asOf: "2026-11-18",
+    },
+  },
 };

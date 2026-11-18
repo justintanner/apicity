@@ -2053,3 +2053,77 @@ describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
     ).toBeCloseTo(1, 9);
   });
 });
+
+describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
+  const model = "pruna-ai/p-video-2-pro/image-to-video";
+  const IMAGE = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.05 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image: IMAGE,
+      duration: 5,
+      resolution: "480p",
+      mode: "cost",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.05, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-18, list price.
+  it("bills the quoted rate per second by mode and resolution", () => {
+    for (const [mode, resolution, duration, usd] of [
+      ["speed", "480p", 5, 0.1],
+      ["speed", "480p", 9, 0.18],
+      ["speed", "768p", 6, 0.21],
+      ["speed", "768p", 10, 0.35],
+      ["speed", "768p", 15, 0.525],
+      ["quality", "480p", 5, 0.2],
+      ["quality", "480p", 7, 0.28],
+      ["quality", "768p", 5, 0.375],
+      ["quality", "768p", 15, 1.125],
+      ["cost", "480p", 15, 0.15],
+      ["cost", "768p", 5, 0.125],
+      ["cost", "768p", 12, 0.3],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          image: IMAGE,
+          mode,
+          resolution,
+          duration,
+        }).usd,
+        `${mode} ${resolution} ${duration} s`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("defaults to 5 s at 768p in speed mode; the extras add nothing", () => {
+    expect(estimate(model, { prompt: PROMPT, image: IMAGE }).usd).toBeCloseTo(
+      0.175,
+      9
+    );
+    for (const extra of [
+      { last_image: IMAGE },
+      { prompt_upsampler: "max" },
+      { seed: 7 },
+    ]) {
+      expect(
+        estimate(model, { prompt: PROMPT, image: IMAGE, ...extra }).usd
+      ).toBeCloseTo(0.175, 9);
+    }
+  });
+
+  it("fails closed on a mode WaveSpeed does not price", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image: IMAGE,
+      mode: "turbo",
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

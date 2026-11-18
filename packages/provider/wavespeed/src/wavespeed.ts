@@ -41,6 +41,7 @@ import type {
   WaveSpeedOptions,
   WaveSpeedPredictionResponse,
   WaveSpeedProvider,
+  WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
   WaveSpeedRunwaymlAleph2Request,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
@@ -84,6 +85,7 @@ import {
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6SunburstTextToImageRequestSchema,
+  WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -974,6 +976,28 @@ export function createWaveSpeed(
               },
               {
                 schema: WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
+              }
+            ),
+          },
+        },
+        prunaAi: {
+          pVideo2Pro: {
+            // POST https://api.wavespeed.ai/api/v3/pruna-ai/p-video-2-pro/image-to-video
+            // Docs: https://wavespeed.ai/models/pruna-ai/p-video-2-pro/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/pruna-ai/p-video-2-pro/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
               }
             ),
           },

@@ -160,6 +160,11 @@ export const FRONTIER = {
             modelId: "gpt-image-2-6/flare-text-to-image",
           },
           {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.6-Flare",
+          },
+          {
             provider: "wavespeed",
             dotPath: "api.v3.openai.gptImage2p6Flare.textToImage",
             pricingKey: "openai/gpt-image-2.6-flare/text-to-image",
@@ -366,6 +371,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "gpt-image-2-6/flare-image-to-image",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "GPT-Image-2.6-Flare",
           },
           {
             provider: "wavespeed",

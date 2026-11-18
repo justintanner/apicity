@@ -230,6 +230,7 @@ export const machgenImages: Record<string, ModelPricing> = {
     false
   ),
   "GPT-Image-2.6-Sunburst": gptImage2p6,
+  "GPT-Image-2.6-Flare": gptImage2p6,
   "Nano-Banana-2": imagePricing(
     {
       "4096": 0.089,

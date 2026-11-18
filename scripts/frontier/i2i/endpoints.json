@@ -33,6 +33,11 @@
       "modelId": "gpt-image-2-6/flare-image-to-image"
     },
     {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "GPT-Image-2.6-Flare"
+    },
+    {
       "provider": "wavespeed",
       "dotPath": "api.v3.openai.gptImage2p6Flare.edit",
       "pricingKey": "openai/gpt-image-2.6-flare/edit"

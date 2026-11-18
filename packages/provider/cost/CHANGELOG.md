@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Seedance 2.5 reference images incur the output-token rate of $10.70 per million. Reference videos add input frames and use $6.40 per million, with their combined duration supplied in `costHints.inputDurationSeconds`.
 
+- Nunchux Seedance 2.0 prices a million tokens at $7.00 for 480p and 720p or $7.70 for 1080p. Reference video includes input frames at $4.30 or $4.70 per million, respectively.
+
 - Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
 
 - Nunchux Nano Banana 2.1 edits price at the same per-image rates as generations; input images add nothing. The recorded 1K edit lists at $0.0336.

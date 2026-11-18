@@ -254,6 +254,96 @@ describe("Nunchux Seedance 2.5 pricing", () => {
   });
 });
 
+describe("Nunchux Seedance 2.0 pricing", () => {
+  const har = JSON.parse(
+    readFileSync(
+      "tests/recordings/nunchux_350094952/seedance-2-0-image-to-video_3582590595/recording.har",
+      "utf8"
+    )
+  ) as { log: { entries: HarEntry[] } };
+  const payload = JSON.parse(
+    har.log.entries[0]!.request.postData!.text!
+  ) as Record<string, unknown>;
+  const receipt = JSON.parse(
+    har.log.entries.at(-1)!.response.content.text!
+  ) as { ratio: string; usage: { completion_tokens: number } };
+  const request = { provider: "nunchux" as const, payload };
+
+  it("matches the first-frame receipt and its settled list charge", () => {
+    expect(receipt).toMatchObject({
+      ratio: "3:4",
+      usage: { completion_tokens: 39891 },
+    });
+    const estimate = computeEstimate({
+      ...request,
+      costHints: { aspectRatio: receipt.ratio },
+    });
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(
+      (receipt.usage.completion_tokens * 7) / 1e6,
+      9
+    );
+    expect(estimate.usd).toBeCloseTo(0.279237, 9);
+    expect(computeEstimate(request).warnings.join(" ")).toContain(
+      "costHints.aspectRatio"
+    );
+  });
+
+  it.each([
+    ["720p", 87300, 7, 173700, 4.3],
+    ["1080p", 196425, 7.7, 390825, 4.7],
+  ] as const)(
+    "selects the %s rates with and without reference video",
+    (resolution, tokens, rate, withInput, videoRate) => {
+      const plain = {
+        ...payload,
+        resolution,
+        content: [{ type: "text", text: "A still camera." }],
+      };
+      expect(computeEstimate({ ...request, payload: plain }).usd).toBeCloseTo(
+        (tokens * rate) / 1e6,
+        9
+      );
+      const reference = {
+        ...plain,
+        content: [
+          ...plain.content,
+          {
+            type: "video_url",
+            role: "reference_video",
+            video_url: { url: "https://example.com/clip.mp4" },
+          },
+        ],
+      };
+      expect(
+        computeEstimate({ ...request, payload: reference }).warnings.join(" ")
+      ).toContain("costHints.inputDurationSeconds");
+      expect(
+        computeEstimate({
+          ...request,
+          payload: reference,
+          costHints: { inputDurationSeconds: 4 },
+        }).usd
+      ).toBeCloseTo((withInput * videoRate) / 1e6, 9);
+    }
+  );
+
+  it("rejects unpriced resolutions and unverified frame shapes", () => {
+    for (const [resolution, aspectRatio] of [
+      ["4k", "3:4"],
+      ["480p", "281:374"],
+    ] as const) {
+      const estimate = computeEstimate({
+        ...request,
+        payload: { ...payload, resolution },
+        costHints: { aspectRatio },
+      });
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.length).toBeGreaterThan(0);
+    }
+  });
+});
+
 const har = JSON.parse(
   readFileSync(
     "tests/recordings/nunchux_350094952/nano-banana-2-1-text-to-image_903528036/recording.har",

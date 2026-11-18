@@ -623,8 +623,12 @@ function liveRegistry() {
       entry.provider === "nunchux" &&
       entry.dotPath === "v1.bytedance.contents.generations.tasks"
     ) {
+      // Nunchux lists 2.0 for text and first-frame inputs. The 2.5 recording
+      // also confirms reference-to-video on this shared endpoint.
       return NunchuxBytedanceGenerationTasksRequestSchema.shape.model.options[0].options.some(
-        (id) => id === entry.modelId
+        (id) =>
+          id === entry.modelId &&
+          (type !== "r2v" || id === "dreamina-seedance-2-5-260628")
       );
     }
     if (type === "t2v" || type === "v2v" || type === "r2v") {

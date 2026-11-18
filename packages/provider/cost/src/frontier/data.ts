@@ -836,6 +836,11 @@ export const FRONTIER = {
             dotPath: "api.v3.bytedance.seedance2p0.imageToVideo",
             pricingKey: "bytedance/seedance-2.0/image-to-video",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.bytedance.contents.generations.tasks",
+            modelId: "dreamina-seedance-2-0-260128",
+          },
         ],
       },
       {

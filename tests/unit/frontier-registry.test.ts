@@ -15,6 +15,7 @@ import {
   frontier,
   frontierType,
 } from "@apicity/cost";
+import { NunchuxGoogleInteractionsRequestSchema } from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
 import { createWaveSpeed } from "@apicity/wavespeed";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
@@ -575,6 +576,14 @@ function liveRegistry() {
       ) {
         const ids = type === "t2i" ? kieImage.t2i : kieImage.i2i;
         return ids.has(entry.modelId);
+      }
+      if (
+        entry.provider === "nunchux" &&
+        entry.dotPath === "v1.google.v1beta.interactions"
+      ) {
+        return NunchuxGoogleInteractionsRequestSchema.shape.model.options[0].options.some(
+          (id) => id === entry.modelId
+        );
       }
       if (entry.provider === "googleflow" && entry.dotPath === "v1.images") {
         return googleflowImages.has(entry.modelId);

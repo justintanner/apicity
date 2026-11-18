@@ -1026,6 +1026,7 @@ meta	v25.mediaPublish	POST	free		Instagram Graph API has rate limits and no per-
 nunchux	v1.alibaba.tasks	GET	free		Free Wan/HappyHorse task status poll; takes no job slot	https://docs.nunchux.ai/partner-models/wan	2026-11-18
 nunchux	v1.bytedance.contents.generations.tasks.retrieve	GET	free		Free Seedance task status poll; takes no job slot	https://docs.nunchux.ai/partner-models/seedance	2026-11-18
 nunchux	v1.credits	GET	free		Free account balance read; counts toward RPM but takes no job slot	https://docs.nunchux.ai/credits-pricing	2026-11-17
+nunchux	v1.google.v1beta.interactions	POST	metered	images		https://nunchux.ai/pricing	2026-11-18
 omkar	feed.explore	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04
 omkar	feed.explore.categories	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04
 omkar	feed.trending	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04

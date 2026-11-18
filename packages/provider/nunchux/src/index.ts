@@ -15,4 +15,11 @@ export type {
   NunchuxCreditsResponse,
   NunchuxV1Namespace,
   NunchuxProvider,
+  NunchuxGoogleNamespace,
+  NunchuxGoogleV1betaNamespace,
+  NunchuxGoogleInteractionsResponse,
 } from "./types";
+export {
+  NunchuxGoogleInteractionsRequestSchema,
+  type NunchuxGoogleInteractionsRequest,
+} from "./zod";

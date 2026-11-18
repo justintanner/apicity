@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux Nano Banana 2.1 list estimates are $0.0336 for 1K, $0.0504 for 2K and $0.113 for 4K. Omitting the size bills at 4K.
+
 - WaveSpeed Gemini Omni 1.2 Flash reference-to-video
   (`google/gemini-omni-1.2-flash/reference-to-video`) costs the text-to-video
   rates, 0.023, 0.07, 0.105 or 0.21 USD per second at 360p, 720p, 1080p or 4k,

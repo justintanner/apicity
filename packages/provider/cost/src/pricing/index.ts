@@ -23,6 +23,7 @@ import { googleflow } from "./googleflow";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
 import { machgen } from "./machgen";
+import { nunchux } from "./nunchux";
 import { openai } from "./openai";
 import { wavespeed } from "./wavespeed";
 import { s3 } from "./s3";
@@ -46,6 +47,7 @@ export const PRICING = {
   zaicoding,
   quo,
   machgen,
+  nunchux,
   openai,
   wavespeed,
   s3,

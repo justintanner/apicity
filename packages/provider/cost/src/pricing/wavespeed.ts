@@ -334,7 +334,10 @@ export const wavespeed: Record<string, ModelPricing> = {
       { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
     ],
     rates: { "360p": 0.023, "720p": 0.07, "1080p": 0.105, "4k": 0.21 },
-    source: source("google/gemini-omni-1.2-flash/text-to-video"),
+    source: {
+      url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/text-to-video",
+      asOf: "2026-11-18",
+    },
   },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. The formula
   // is the text-to-video one; the input image adds nothing:
@@ -598,7 +601,10 @@ export const wavespeed: Record<string, ModelPricing> = {
       return input === undefined ? undefined : 0.02 * input;
     },
     warn: editedVideoWarn("google/gemini-omni-1.2-flash/video-edit"),
-    source: source("google/gemini-omni-1.2-flash/video-edit"),
+    source: {
+      url: "https://wavespeed.ai/models/google/gemini-omni-1.2-flash/video-edit",
+      asOf: "2026-11-18",
+    },
   },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
   //   {"total_price": base_price * (resolution = "768p" ? 1 : 1.4) *

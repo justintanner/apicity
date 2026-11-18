@@ -1001,6 +1001,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- WaveSpeed Gemini Omni 1.2 Flash text-to-video and video-edit report the
+  date their rates were verified by free quotes, 2026-11-18, instead of the
+  2026-11-02 date of the shared WaveSpeed source helper. Prices are unchanged
+  (ac-x41dxy).
+
 - fal MiniMax H3 Max extend, insert, and reference-to-video, including turbo
   reference-to-video, quote the requested seconds at the card rate when the
   payload sets `duration` and `resolution`. 3d-to-video and lip-sync quote

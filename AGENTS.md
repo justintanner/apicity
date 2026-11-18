@@ -146,6 +146,18 @@ local iteration; it falls back to the full typecheck when the diff, including
 staged and unstaged files, touches another package or shared package/TypeScript
 config.
 
+**Audit exceptions.** `pnpm run audit` reads `scripts/audit-exceptions.json`.
+An entry lets one advisory (a GHSA id on one package) through the gate until
+its `expires` date, and exists only for an advisory with no patched release.
+Every run prints each active entry. The gate fails on an expired entry, on an
+entry that matches no current advisory, and on every other advisory. An entry
+is an audit policy change that only the operator approves: never add, widen,
+extend or renew one on your own, and never change the audit level to pass the
+gate. A red audit with a patched release available is fixed by a
+`pnpm.overrides` bump to the first patched version; one without a patched
+release goes to the mayor. `tests/unit/audit-exceptions.test.ts` pins the
+file's content.
+
 ## Shared Namespaces Across Sibling Slices
 
 **Ownership.** When one upstream family splits across two or more slices — a

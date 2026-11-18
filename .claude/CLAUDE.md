@@ -334,6 +334,18 @@ API keys are resolved at runtime via the [1Password CLI](https://developer.1pass
 
 GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, README code-block type check, build, verify artifacts, packed-provider type check, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (every push, any branch; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
 
+**Audit exceptions.** `pnpm run audit` reads `scripts/audit-exceptions.json`.
+An entry lets one advisory (a GHSA id on one package) through the gate until
+its `expires` date, and exists only for an advisory with no patched release.
+Every run prints each active entry. The gate fails on an expired entry, on an
+entry that matches no current advisory, and on every other advisory. An entry
+is an audit policy change that only the operator approves: never add, widen,
+extend or renew one on your own, and never change the audit level to pass the
+gate. A red audit with a patched release available is fixed by a
+`pnpm.overrides` bump to the first patched version; one without a patched
+release goes to the mayor. `tests/unit/audit-exceptions.test.ts` pins the
+file's content.
+
 ## Code Conventions
 
 - ES modules (`"type": "module"`) throughout

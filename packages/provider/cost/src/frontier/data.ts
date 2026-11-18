@@ -1129,6 +1129,11 @@ export const FRONTIER = {
             dotPath: "api.v3.alibaba.wan2p7.videoEdit",
             pricingKey: "alibaba/wan-2.7/video-edit",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v1.alibaba.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan2.7-videoedit",
+          },
         ],
       },
       {

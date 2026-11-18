@@ -1067,6 +1067,7 @@ export const MODEL_SLUGS = {
     "gemini-nano-banana-2.1": "nb21",
     "wan3.0-video": "wan3p0",
     "dreamina-seedance-2-5-260628": "sd2p5",
+    "wan2.7-videoedit": "wan2p7",
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
@@ -2195,6 +2196,7 @@ export const MODEL_DISPLAY = {
     "gemini-nano-banana-2.1": "Nano Banana 2.1",
     "wan3.0-video": "Wan 3.0",
     "dreamina-seedance-2-5-260628": "Seedance 2.5",
+    "wan2.7-videoedit": "Wan 2.7 Edit",
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",

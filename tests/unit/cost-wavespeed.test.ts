@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { computeEstimate } from "@apicity/cost";
+import { computeEstimate, PRICING } from "@apicity/cost";
 import type { CostHints } from "@apicity/cost";
 
 const estimate = (
@@ -2459,5 +2459,35 @@ describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
 
     expect(result.usd).toBe(0);
     expect(result.warnings).toHaveLength(1);
+  });
+});
+
+// ac-x41dxy: the Gemini Omni 1.2 rows were verified by free quotes on
+// 2026-11-18, not on the 2026-11-02 date of the shared source() helper.
+describe("wavespeed Gemini Omni 1.2 verification dates", () => {
+  it("dates every 1.2 row 2026-11-18 and leaves the 1.1 rows alone", () => {
+    for (const operation of [
+      "text-to-video",
+      "video-edit",
+      "reference-to-video",
+    ]) {
+      const model = `google/gemini-omni-1.2-flash/${operation}`;
+      expect(PRICING.wavespeed[model]?.source, model).toEqual({
+        url: `https://wavespeed.ai/models/${model}`,
+        asOf: "2026-11-18",
+      });
+    }
+    expect(
+      PRICING.wavespeed["google/gemini-omni-1.1-flash/text-to-video"]?.source
+        .asOf
+    ).toBe("2026-11-02");
+  });
+
+  it("keeps the 1.2 prices", () => {
+    const t2v = "google/gemini-omni-1.2-flash/text-to-video";
+    expect(
+      estimate(t2v, { prompt: PROMPT, resolution: "360p", duration: 3 }).usd
+    ).toBeCloseTo(0.069, 9);
+    expect(estimate(t2v, { prompt: PROMPT }).usd).toBeCloseTo(0.56, 9);
   });
 });

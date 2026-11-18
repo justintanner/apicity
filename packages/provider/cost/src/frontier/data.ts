@@ -833,6 +833,11 @@ export const FRONTIER = {
             dotPath: "heygen.heygenVideo.imageToVideo",
             pricingKey: "heygen/heygen-video/image-to-video",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.heygen.video1p0.imageToVideo",
+            pricingKey: "heygen/video-1.0/image-to-video",
+          },
         ],
       },
       {

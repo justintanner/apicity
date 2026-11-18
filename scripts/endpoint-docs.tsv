@@ -1,6 +1,7 @@
 provider	dotPath	method	fullUrl	docsUrl
 wavespeed	api.v3.predictions.result	GET	https://api.wavespeed.ai/api/v3/predictions/{id}/result	https://wavespeed.ai/docs/get-result
 wavespeed	api.v3.alibaba.wan3p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/alibaba/wan-3.0/text-to-video	https://wavespeed.ai/models/alibaba/wan-3.0/text-to-video
+wavespeed	api.v3.heygen.video1p0.imageToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/image-to-video	https://wavespeed.ai/models/heygen/video-1.0/image-to-video
 wavespeed	api.v3.heygen.video1p0.textToVideo	POST	https://api.wavespeed.ai/api/v3/heygen/video-1.0/text-to-video	https://wavespeed.ai/models/heygen/video-1.0/text-to-video
 wavespeed	api.v3.minimax.h3.textToVideo	POST	https://api.wavespeed.ai/api/v3/minimax/h3/text-to-video	https://wavespeed.ai/models/minimax/h3/text-to-video
 wavespeed	api.v3.bytedance.seedance2p5.textToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5/text-to-video	https://wavespeed.ai/models/bytedance/seedance-2.5/text-to-video

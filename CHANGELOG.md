@@ -95,6 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed supports HeyGen Video 1.0 image-to-video with a first-frame image, prompt and 5–15 second duration.
+
 - WaveSpeed supports Gemini Omni 1.2 Flash text-to-video with 3–15 second clips through `api.v3.google.geminiOmni1p2Flash.textToVideo`.
 
 - **nunchux**: new `@apicity/nunchux` provider with `v1.credits`, a free account balance and plan-limit read ($0).

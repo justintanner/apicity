@@ -327,6 +327,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.heygen.video1p0.imageToVideo": {
+    "source": "wavespeed/heygen-video-1-0-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "duration": 5,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.heygen.video1p0.referenceToVideo": {
     "source": "wavespeed/heygen-video-1-0-reference-to-video",
     "payload": {

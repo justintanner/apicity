@@ -366,6 +366,45 @@ describe("wavespeed alibaba/wan-3.0/text-to-video", () => {
   });
 });
 
+describe("wavespeed heygen/video-1.0/image-to-video", () => {
+  const schema = createWaveSpeed({ apiKey: "ws-key" }).api.v3.heygen.video1p0
+    .imageToVideo.schema;
+  const minimal = {
+    image: "https://example.com/cat.jpg",
+    prompt: "Cat blinks.",
+  };
+
+  it("accepts the required fields and documented upper limits", () => {
+    expect(schema.safeParse(minimal).success).toBe(true);
+    expect(
+      schema.safeParse({
+        ...minimal,
+        duration: 15,
+        resolution: "2k",
+        seed: 2147483647,
+        prompt_enhancement: "quality",
+      }).success
+    ).toBe(true);
+  });
+
+  it.each([
+    ["image", ""],
+    ["prompt", ""],
+    ["prompt", "a".repeat(32001)],
+    ["duration", 4],
+    ["duration", 16],
+    ["duration", 5.5],
+    ["resolution", "720p"],
+    ["prompt_enhancement", "on"],
+    ["seed", -1],
+    ["seed", 2147483648],
+  ])("rejects an out-of-range %s", (field, value) => {
+    expect(schema.safeParse({ ...minimal, [field]: value }).success).toBe(
+      false
+    );
+  });
+});
+
 describe("wavespeed heygen/video-1.0/text-to-video", () => {
   // The payload tests/integration/wavespeed-heygen-video-1-0-text-to-video.test.ts
   // recorded.
@@ -1220,6 +1259,7 @@ describe("wavespeed heygen/video-1.0/reference-to-video", () => {
 
     expect(Object.keys(wavespeed.api.v3.heygen.video1p0)).toEqual([
       "textToVideo",
+      "imageToVideo",
       "referenceToVideo",
     ]);
     expect(wavespeed.api.v3.heygen.video1p0.referenceToVideo.schema).toBe(

@@ -5052,6 +5052,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/heygen/video-1.0/image-to-video",
+        asOf: "2026-11-18",
+      },
+    },
+    ["POST api.v3.heygen.video1p0.imageToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/heygen/video-1.0/text-to-video",
         asOf: "2026-11-04",
       },

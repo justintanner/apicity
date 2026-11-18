@@ -1063,6 +1063,7 @@ export const MODEL_SLUGS = {
   // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
+    "heygen/video-1.0/image-to-video": "heygenvideo",
     "heygen/video-1.0/text-to-video": "heygenvideo",
     "minimax/h3/text-to-video": "mmh3",
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
@@ -2181,6 +2182,7 @@ export const MODEL_DISPLAY = {
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",
+    "heygen/video-1.0/image-to-video": "HeyGen Video",
     "heygen/video-1.0/text-to-video": "HeyGen Video",
     "minimax/h3/text-to-video": "MiniMax H3",
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",

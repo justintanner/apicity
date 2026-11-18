@@ -217,6 +217,22 @@ export const wavespeed: Record<string, ModelPricing> = {
     rates: { "480p": 0.025, "768p": 0.045 },
     source: source("heygen/video-1.0/text-to-video"),
   },
+
+  // Five-second /model/price quotes on 2026-11-18: 0.125, 0.225, 0.6,
+  // and 0.6 USD. Turbo and quality prompt enhancement leave the quote unchanged.
+  "heygen/video-1.0/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "768p" },
+    ],
+    rates: { "480p": 0.025, "768p": 0.045, "1080p": 0.12, "2k": 0.12 },
+    source: {
+      url: "https://wavespeed.ai/models/heygen/video-1.0/image-to-video",
+      asOf: "2026-11-18",
+    },
+  },
   // base_price 100000 micros, discount_rate 100 on 2026-11-02. Formula:
   //   {"total_price": base_price * $min([duration, 15]) *
   //   (resolution = "768p" ? 1 : 1.4)}

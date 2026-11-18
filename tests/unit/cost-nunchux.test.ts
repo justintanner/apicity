@@ -87,6 +87,40 @@ describe("Nunchux Wan 3.0 video pricing", () => {
       expect(estimate.warnings.length).toBeGreaterThan(0);
     }
   });
+  it("prices the recorded HappyHorse 1.0 edit from the source clip's length", () => {
+    const edit = JSON.parse(
+      (
+        JSON.parse(
+          readFileSync(
+            "tests/recordings/nunchux_350094952/happyhorse-1-0-video-edit_3156347330/recording.har",
+            "utf8"
+          )
+        ) as {
+          log: { entries: HarEntry[] };
+        }
+      ).log.entries[0]!.request.postData!.text!
+    ) as Record<string, unknown>;
+    // 3 s out plus the 3 s source at 720P: 6 s.
+    expect(quote(edit, 3)).toMatchObject({ warnings: [] });
+    expect(quote(edit, 3).usd).toBeCloseTo(0.84, 9);
+    // The source bills at most 15 seconds; 1080P is the default tier.
+    expect(quote({ ...edit, parameters: { duration: 5 } }, 20).usd).toBeCloseTo(
+      4.8,
+      9
+    );
+    for (const seconds of [undefined, 0, -1, NaN]) {
+      const estimate = quote(edit, seconds);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+    for (const parameters of [{ resolution: "480P" }, { duration: 2 }]) {
+      const estimate = quote({ ...edit, parameters }, 3);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.length).toBeGreaterThan(0);
+    }
+  });
   it("bills reference video at the output rate, up to 15 input seconds", () => {
     const video = reference("reference_video");
     expect(quote(video, 8).usd).toBeCloseTo(1.3, 9);

@@ -113,6 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Wan 2.7 video edit (`wan2.7-videoedit`) restyles a 2–10 second source clip on the same `v1.alibaba.services.aigc.videoGeneration.videoSynthesis` call with one `video` media item. It is the Nunchux entry for Wan 2.7 on the video-editing frontier.
 
+- Nunchux HappyHorse 1.0 video edit (`happyhorse-1.0-video-edit`) restyles a source clip on the same `v1.alibaba.services.aigc.videoGeneration.videoSynthesis` call with one `video` media item. Nunchux's price feed lists it although the HappyHorse page documents only t2v, i2v and r2v; a free probe on 2026-11-18 showed it served. It is the Nunchux entry for HappyHorse-1.0 on the video-editing frontier.
+
 - `@apicity/nunchux` adds the free Wan/HappyHorse task poll `v1.alibaba.tasks(taskId)` (0 USD).
 
 - `@apicity/nunchux` adds the free Seedance task poll `v1.bytedance.contents.generations.tasks.retrieve(taskId)` (`GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}`, 0 USD).

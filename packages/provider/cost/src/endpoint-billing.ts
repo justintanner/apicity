@@ -96,6 +96,15 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     },
     ["GET v1.minimax.v2.query.videoGeneration"]
   ),
+  ...rows(
+    "nunchux",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+    },
+    ["POST v1.minimax.v2.videoGeneration"]
+  ),
   {
     match: { provider: "alibaba" },
     billing: {

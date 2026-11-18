@@ -19,6 +19,7 @@ import {
   NunchuxAlibabaVideoSynthesisRequestSchema,
   NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequestSchema,
+  NunchuxMinimaxVideoGenerationRequestSchema,
 } from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
 import { createWaveSpeed } from "@apicity/wavespeed";
@@ -616,6 +617,16 @@ function liveRegistry() {
             : id === "wan3.0-video" ||
               id === "wan3.0-video-prime" ||
               id.endsWith(`-${type}`))
+      );
+    }
+    // t2v only until N13 (i2v) and N14 (r2v) list MiniMax-H3 on those boards.
+    if (
+      type === "t2v" &&
+      entry.provider === "nunchux" &&
+      entry.dotPath === "v1.minimax.v2.videoGeneration"
+    ) {
+      return NunchuxMinimaxVideoGenerationRequestSchema.shape.model.options[0].options.some(
+        (id) => id === entry.modelId
       );
     }
     if (

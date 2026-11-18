@@ -1068,6 +1068,7 @@ export const MODEL_SLUGS = {
     "wan3.0-video": "wan3p0",
     "dreamina-seedance-2-5-260628": "sd2p5",
     "wan2.7-videoedit": "wan2p7",
+    "MiniMax-H3": "mmh3",
     "dreamina-seedance-2-0-260128": "sd2",
   },
   wavespeed: {
@@ -2198,6 +2199,7 @@ export const MODEL_DISPLAY = {
     "wan3.0-video": "Wan 3.0",
     "dreamina-seedance-2-5-260628": "Seedance 2.5",
     "wan2.7-videoedit": "Wan 2.7 Edit",
+    "MiniMax-H3": "MiniMax H3",
     "dreamina-seedance-2-0-260128": "Seedance 2",
   },
   wavespeed: {

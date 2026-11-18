@@ -10,6 +10,7 @@ import type {
   NunchuxProvider,
   NunchuxGoogleInteractionsResponse,
   NunchuxMinimaxTaskResponse,
+  NunchuxMinimaxVideoGenerationResponse,
 } from "./types";
 
 import {
@@ -19,6 +20,8 @@ import {
   type NunchuxBytedanceGenerationTasksRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
+  NunchuxMinimaxVideoGenerationRequestSchema,
+  type NunchuxMinimaxVideoGenerationRequest,
 } from "./zod";
 
 function errorEnvelope(body: unknown): { code?: string; message?: string } {
@@ -215,6 +218,22 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
               );
             },
           },
+          // POST https://api.nunchux.com/v1/minimax/v2/video_generation
+          // Docs: https://docs.nunchux.ai/partner-models/minimax
+          videoGeneration: Object.assign(
+            async (
+              body: NunchuxMinimaxVideoGenerationRequest,
+              signal?: AbortSignal
+            ) => {
+              return request<NunchuxMinimaxVideoGenerationResponse>(
+                "POST",
+                "/v1/minimax/v2/video_generation",
+                body,
+                signal
+              );
+            },
+            { schema: NunchuxMinimaxVideoGenerationRequestSchema }
+          ),
         },
       },
     },

@@ -206,3 +206,70 @@ export const NunchuxGoogleInteractionsRequestSchema = z.object({
 export type NunchuxGoogleInteractionsRequest = z.input<
   typeof NunchuxGoogleInteractionsRequestSchema
 >;
+
+const NunchuxMinimaxVideoModelAliasSchema = z
+  .string()
+  .regex(/^MiniMax-[A-Za-z0-9.-]+$/);
+const minimaxMediaUrl = z.object({
+  url: z.url().describe("Public URL the provider can fetch."),
+});
+
+export const NunchuxMinimaxVideoGenerationRequestSchema = z.object({
+  model: z
+    .enum(["MiniMax-H3"])
+    .or(NunchuxMinimaxVideoModelAliasSchema)
+    .describe(
+      "MiniMax video model. MiniMax-H3 serves text-to-video, image-to-video and reference-to-video; the content items pick the task."
+    ),
+  content: z
+    .array(
+      z.discriminatedUnion("type", [
+        z.object({
+          type: z.literal("text"),
+          text: z
+            .string()
+            .max(7000)
+            .describe("The prompt, up to 7,000 characters."),
+        }),
+        z.object({
+          type: z.literal("image_url"),
+          role: z.enum(["first_frame", "last_frame", "reference_image"]),
+          image_url: minimaxMediaUrl,
+        }),
+        z.object({
+          type: z.literal("video_url"),
+          role: z.literal("reference_video"),
+          video_url: minimaxMediaUrl,
+        }),
+        z.object({
+          type: z.literal("audio_url"),
+          role: z.literal("reference_audio"),
+          audio_url: minimaxMediaUrl,
+        }),
+      ])
+    )
+    .describe(
+      "Put the text item first. A first_frame (and optional last_frame) image gives image-to-video; reference_image, reference_video and reference_audio items give reference-to-video, and the two role sets never mix in one body. Up to 9 reference images, 3 reference clips (2–15 s each, 15 s in total) and 1 reference track, 12 files in all. Upstream accepts a role on the wrong container and then ignores it, so keep each role on its own container."
+    ),
+  resolution: z
+    .enum(["768P", "2K"])
+    .optional()
+    .describe(
+      "Output tier. 2K costs more per second. The docs state no default."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(4)
+    .max(15)
+    .describe("Clip length in whole seconds, 4–15, billed per second."),
+  ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional()
+    .describe(
+      "Required on a text-only body, where adaptive is rejected. Omit it when the body carries media: the output then follows the source."
+    ),
+});
+export type NunchuxMinimaxVideoGenerationRequest = z.input<
+  typeof NunchuxMinimaxVideoGenerationRequestSchema
+>;

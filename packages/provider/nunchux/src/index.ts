@@ -27,6 +27,7 @@ export type {
   NunchuxMinimaxTaskResponse,
   NunchuxMinimaxV2Namespace,
   NunchuxMinimaxV2QueryNamespace,
+  NunchuxMinimaxVideoGenerationResponse,
 } from "./types";
 export {
   NunchuxAlibabaVideoSynthesisRequestSchema,
@@ -35,4 +36,6 @@ export {
   type NunchuxBytedanceGenerationTasksRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
+  NunchuxMinimaxVideoGenerationRequestSchema,
+  type NunchuxMinimaxVideoGenerationRequest,
 } from "./zod";

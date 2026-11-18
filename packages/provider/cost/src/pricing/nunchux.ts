@@ -212,4 +212,55 @@ export const nunchux: Record<string, ModelPricing> = {
     rates: { "1K": 0.0336, "2K": 0.0504, "4K": 0.113 },
     source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
   },
+  // /pricing and /v1/pricing quote MiniMax-H3 at 0.072 / 0.117 per second
+  // (768P / 2K), 5 input images free and 0.036 per extra image, after
+  // MiniMax's standard 10% discount. The table stores list USD.
+  "MiniMax-H3": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const duration = p.duration;
+      if (
+        typeof duration !== "number" ||
+        !Number.isInteger(duration) ||
+        duration < 4 ||
+        duration > 15
+      )
+        return undefined;
+      if (minimaxReferences(p, "video_url") === 0) return duration;
+      const input = hintInputSeconds(hints);
+      return input === undefined ? undefined : duration + input;
+    },
+    warn: (p, hints) =>
+      minimaxReferences(p, "video_url") > 0 &&
+      hintInputSeconds(hints) === undefined
+        ? [
+            "MiniMax reference videos bill per second at the output rate. Pass their total seconds in costHints.inputDurationSeconds.",
+          ]
+        : [],
+    select: [
+      // The docs state no default resolution, so a missing one fails closed.
+      {
+        name: "resolution",
+        required: true,
+        pick: (p) => asString(p.resolution),
+      },
+    ],
+    rates: { "768P": 0.08, "2K": 0.13 },
+    extra: (p) => Math.max(0, minimaxReferences(p, "image_url") - 5) * 0.04,
+    source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
+  },
 };
+
+/** Reference media items of one container type in a MiniMax content array. */
+function minimaxReferences(
+  payload: Record<string, unknown>,
+  type: "image_url" | "video_url"
+): number {
+  const content = payload.content;
+  if (!Array.isArray(content)) return 0;
+  return content.filter((item) => {
+    const part = asObject(item);
+    return part?.type === type && String(part.role).startsWith("reference_");
+  }).length;
+}

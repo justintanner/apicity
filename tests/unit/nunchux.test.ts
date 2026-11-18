@@ -304,6 +304,42 @@ describe("nunchux", () => {
     expect(requests[0].init.method).toBe("GET");
     expect(requests[0].init.body).toBeUndefined();
   });
+  it("parses the recorded MiniMax H3 request and rejects off-grid controls", () => {
+    const { schema } = createNunchux().v1.minimax.v2.videoGeneration;
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/minimax-h3-text-to-video_1104830590/recording.har",
+        "utf8"
+      )
+    ) as {
+      log: { entries: { request: { postData: { text: string } } }[] };
+    };
+    const body = schema.parse(
+      JSON.parse(har.log.entries[0]!.request.postData.text)
+    );
+    expect(body).toMatchObject({
+      model: "MiniMax-H3",
+      resolution: "768P",
+      duration: 4,
+    });
+    expect(schema.safeParse({ ...body, duration: 3 }).success).toBe(false);
+    expect(schema.safeParse({ ...body, resolution: "1080P" }).success).toBe(
+      false
+    );
+    expect(
+      schema.safeParse({
+        ...body,
+        content: [
+          ...body.content,
+          {
+            type: "video_url",
+            role: "reference_image",
+            video_url: { url: "https://example.com/clip.mp4" },
+          },
+        ],
+      }).success
+    ).toBe(false);
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

@@ -407,3 +407,79 @@ describe("Nunchux Nano Banana 2.1 pricing", () => {
     expect(model.warnings.length).toBeGreaterThan(0);
   });
 });
+
+describe("Nunchux MiniMax H3 pricing", () => {
+  const body = JSON.parse(
+    (
+      JSON.parse(
+        readFileSync(
+          "tests/recordings/nunchux_350094952/minimax-h3-text-to-video_1104830590/recording.har",
+          "utf8"
+        )
+      ) as {
+        log: { entries: HarEntry[] };
+      }
+    ).log.entries[0]!.request.postData!.text!
+  ) as Record<string, unknown>;
+  const quote = (
+    payload: Record<string, unknown>,
+    inputDurationSeconds?: number
+  ) =>
+    computeEstimate({
+      provider: "nunchux",
+      payload,
+      costHints: { inputDurationSeconds },
+    });
+  const text = (body.content as unknown[])[0];
+  const image = {
+    type: "image_url",
+    role: "reference_image",
+    image_url: { url: "https://example.com/i.jpg" },
+  };
+  const video = {
+    type: "video_url",
+    role: "reference_video",
+    video_url: { url: "https://example.com/v.mp4" },
+  };
+
+  it("prices the recorded 768P four-second clip at list", () => {
+    expect(quote(body)).toMatchObject({ warnings: [] });
+    expect(quote(body).usd).toBeCloseTo(0.32, 9);
+    expect(quote({ ...body, resolution: "2K", duration: 15 }).usd).toBeCloseTo(
+      1.95,
+      9
+    );
+  });
+  it("adds 0.04 for each reference image beyond the first five", () => {
+    expect(
+      quote({ ...body, content: [text, ...Array(5).fill(image)] }).usd
+    ).toBeCloseTo(0.32, 9);
+    expect(
+      quote({ ...body, content: [text, ...Array(7).fill(image)] }).usd
+    ).toBeCloseTo(0.4, 9);
+  });
+  it("bills reference video seconds at the output rate from the hint", () => {
+    expect(quote({ ...body, content: [text, video] }, 5).usd).toBeCloseTo(
+      0.72,
+      9
+    );
+    for (const seconds of [undefined, 0, -1, NaN]) {
+      const estimate = quote({ ...body, content: [text, video] }, seconds);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+  });
+  it("fails closed without a resolution or with an off-grid duration", () => {
+    for (const payload of [
+      { ...body, resolution: undefined },
+      { ...body, duration: 3 },
+      { ...body, duration: 16 },
+    ]) {
+      const estimate = quote(payload);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.length).toBeGreaterThan(0);
+    }
+  });
+});

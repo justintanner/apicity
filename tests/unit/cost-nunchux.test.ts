@@ -3,6 +3,61 @@ import { describe, expect, it } from "vitest";
 import { computeEstimate, estimateEndpoint } from "@apicity/cost";
 import type { HarEntry } from "../har-data";
 
+describe("Nunchux Wan 3.0 video pricing", () => {
+  const har = JSON.parse(
+    readFileSync(
+      "tests/recordings/nunchux_350094952/wan-3-0-text-to-video_3837927036/recording.har",
+      "utf8"
+    )
+  ) as { log: { entries: HarEntry[] } };
+  const body = JSON.parse(
+    har.log.entries[0]!.request.postData!.text!
+  ) as Record<string, unknown>;
+  const quote = (
+    payload: Record<string, unknown>,
+    inputDurationSeconds?: number
+  ) =>
+    computeEstimate({
+      provider: "nunchux",
+      payload,
+      costHints: { inputDurationSeconds },
+    });
+  const reference = (type: string) => ({
+    ...body,
+    input: {
+      prompt: "Video 1",
+      media: [{ type, url: "https://example.com/ref" }],
+    },
+    parameters: { resolution: "720P", duration: 5 },
+  });
+
+  it("prices the recorded 480P clip and the 1080P five-second default", () => {
+    expect(quote(body).usd).toBeCloseTo(0.1, 9);
+    expect(quote({ ...body, parameters: undefined }).usd).toBeCloseTo(1, 9);
+  });
+  it("bills reference video at the output rate, up to 15 input seconds", () => {
+    const video = reference("reference_video");
+    expect(quote(video, 8).usd).toBeCloseTo(1.3, 9);
+    expect(quote(video, 16).usd).toBeCloseTo(2.0, 9);
+    for (const seconds of [undefined, 0, -1, NaN]) {
+      const estimate = quote(video, seconds);
+      expect(estimate.usd).toBe(0);
+      expect(estimate.warnings.join(" ")).toContain(
+        "costHints.inputDurationSeconds"
+      );
+    }
+    expect(
+      quote({ ...video, parameters: { duration: 28 } }, 8).warnings.length
+    ).toBeGreaterThan(0);
+  });
+  it.each(["reference_image", "reference_audio"])(
+    "does not bill %s inputs",
+    (type) => {
+      expect(quote(reference(type), 8).usd).toBeCloseTo(0.5, 9);
+    }
+  );
+});
+
 const har = JSON.parse(
   readFileSync(
     "tests/recordings/nunchux_350094952/nano-banana-2-1-text-to-image_903528036/recording.har",

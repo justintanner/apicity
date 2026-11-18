@@ -15,7 +15,10 @@ import {
   frontier,
   frontierType,
 } from "@apicity/cost";
-import { NunchuxGoogleInteractionsRequestSchema } from "@apicity/nunchux";
+import {
+  NunchuxAlibabaVideoSynthesisRequestSchema,
+  NunchuxGoogleInteractionsRequestSchema,
+} from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
 import { createWaveSpeed } from "@apicity/wavespeed";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
@@ -595,6 +598,20 @@ function liveRegistry() {
           pinned.provider === entry.provider &&
           pinned.dotPath === entry.dotPath &&
           pinned.modelId === entry.modelId
+      );
+    }
+    if (
+      type === "t2v" &&
+      entry.provider === "nunchux" &&
+      entry.dotPath ===
+        "v1.alibaba.services.aigc.videoGeneration.videoSynthesis"
+    ) {
+      return NunchuxAlibabaVideoSynthesisRequestSchema.shape.model.options[0].options.some(
+        (id) =>
+          id === entry.modelId &&
+          (id === "wan3.0-video" ||
+            id === "wan3.0-video-prime" ||
+            id.endsWith("-t2v"))
       );
     }
     if (type === "t2v" || type === "v2v" || type === "r2v") {

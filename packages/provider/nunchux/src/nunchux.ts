@@ -1,6 +1,7 @@
 import { attachExamples } from "./example";
 import { NunchuxError, isNunchuxErrorBody } from "./types";
 import type {
+  NunchuxAlibabaVideoSynthesisResponse,
   NunchuxAlibabaTaskResponse,
   NunchuxBytedanceTaskResponse,
   NunchuxOptions,
@@ -10,6 +11,8 @@ import type {
 } from "./types";
 
 import {
+  NunchuxAlibabaVideoSynthesisRequestSchema,
+  type NunchuxAlibabaVideoSynthesisRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
 } from "./zod";
@@ -94,6 +97,28 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
   return attachExamples({
     v1: {
       alibaba: {
+        services: {
+          aigc: {
+            videoGeneration: {
+              // POST https://api.nunchux.com/v1/alibaba/services/aigc/video-generation/video-synthesis
+              // Docs: https://docs.nunchux.ai/partner-models/wan
+              videoSynthesis: Object.assign(
+                async (
+                  body: NunchuxAlibabaVideoSynthesisRequest,
+                  signal?: AbortSignal
+                ) => {
+                  return request<NunchuxAlibabaVideoSynthesisResponse>(
+                    "POST",
+                    "/v1/alibaba/services/aigc/video-generation/video-synthesis",
+                    body,
+                    signal
+                  );
+                },
+                { schema: NunchuxAlibabaVideoSynthesisRequestSchema }
+              ),
+            },
+          },
+        },
         // GET https://api.nunchux.com/v1/alibaba/tasks/{task_id}
         // Docs: https://docs.nunchux.ai/partner-models/wan
         tasks: async (taskId: string, signal?: AbortSignal) => {

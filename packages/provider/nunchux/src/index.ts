@@ -1,6 +1,10 @@
 export { createNunchux } from "./nunchux";
 export { NunchuxError, isNunchuxErrorBody } from "./types";
 export type {
+  NunchuxAlibabaServicesNamespace,
+  NunchuxAlibabaAigcNamespace,
+  NunchuxAlibabaVideoGenerationNamespace,
+  NunchuxAlibabaVideoSynthesisResponse,
   NunchuxAlibabaNamespace,
   NunchuxAlibabaTaskResponse,
   NunchuxBytedanceContentsGenerationsNamespace,
@@ -20,6 +24,8 @@ export type {
   NunchuxGoogleInteractionsResponse,
 } from "./types";
 export {
+  NunchuxAlibabaVideoSynthesisRequestSchema,
+  type NunchuxAlibabaVideoSynthesisRequest,
   NunchuxGoogleInteractionsRequestSchema,
   type NunchuxGoogleInteractionsRequest,
 } from "./zod";

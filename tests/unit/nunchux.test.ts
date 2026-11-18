@@ -20,6 +20,24 @@ afterEach(() => {
 });
 
 describe("nunchux", () => {
+  it("parses the recorded Wan video request and rejects image models and off-grid controls", () => {
+    const { schema } =
+      createNunchux().v1.alibaba.services.aigc.videoGeneration.videoSynthesis;
+    const body = schema.parse(
+      examples["POST v1.alibaba.services.aigc.videoGeneration.videoSynthesis"]!
+        .payload
+    );
+    expect(body.model).toBe("wan3.0-video");
+    expect(schema.safeParse({ ...body, model: "wan2.7-image" }).success).toBe(
+      false
+    );
+    expect(
+      schema.safeParse({ ...body, parameters: { resolution: "4K" } }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({ ...body, parameters: { duration: 1 } }).success
+    ).toBe(false);
+  });
   it("encodes the task ID as one path segment without a GET body", async () => {
     const body = { output: { task_id: "task/id ?#", task_status: "UNKNOWN" } };
     const { fetch, requests } = capture(body);

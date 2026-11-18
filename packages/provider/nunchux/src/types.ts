@@ -1,4 +1,6 @@
 import type {
+  NunchuxAlibabaVideoSynthesisRequest,
+  NunchuxAlibabaVideoSynthesisRequestSchema,
   NunchuxGoogleInteractionsRequest,
   NunchuxGoogleInteractionsRequestSchema,
 } from "./zod";
@@ -77,12 +79,38 @@ export interface NunchuxCreditsResponse {
   spend_limit: NunchuxSpendLimit | null;
 }
 
+export interface NunchuxAlibabaVideoSynthesisResponse {
+  request_id?: string;
+  output: { task_id: string; task_status: "PENDING" };
+}
+
+export interface NunchuxAlibabaVideoGenerationNamespace {
+  videoSynthesis: {
+    (
+      body: NunchuxAlibabaVideoSynthesisRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxAlibabaVideoSynthesisResponse>;
+    schema: typeof NunchuxAlibabaVideoSynthesisRequestSchema;
+  };
+}
+
+export interface NunchuxAlibabaAigcNamespace {
+  videoGeneration: NunchuxAlibabaVideoGenerationNamespace;
+}
+
+export interface NunchuxAlibabaServicesNamespace {
+  aigc: NunchuxAlibabaAigcNamespace;
+}
+
 export interface NunchuxAlibabaTaskResponse {
   request_id?: string;
   output: {
     task_id: string;
     /** PENDING, RUNNING, SUCCEEDED, FAILED, CANCELED, or a new upstream status. */
     task_status: string;
+    model?: string;
+    resolution?: string;
+    duration?: number;
     /** Available on success; task IDs and video URLs expire after 24 hours. */
     video_url?: string;
     code?: string;
@@ -91,11 +119,14 @@ export interface NunchuxAlibabaTaskResponse {
   usage?: {
     input_video_duration?: number;
     output_video_duration?: number;
+    duration?: number;
+    video_count?: number;
     [key: string]: unknown;
   };
 }
 
 export interface NunchuxAlibabaNamespace {
+  services: NunchuxAlibabaServicesNamespace;
   /** Free Wan/HappyHorse task status read; takes no job slot. */
   tasks(
     taskId: string,

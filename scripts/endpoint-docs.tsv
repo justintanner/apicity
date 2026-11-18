@@ -1935,3 +1935,4 @@ nunchux	v1.google.v1beta.interactions	POST	https://api.nunchux.com/v1/google/v1b
 nunchux	v1.minimax.v2.query.videoGeneration	GET	https://api.nunchux.com/v1/minimax/v2/query/video_generation/{task_id}	https://docs.nunchux.ai/partner-models/minimax
 nunchux	v1.alibaba.services.aigc.videoGeneration.videoSynthesis	POST	https://api.nunchux.com/v1/alibaba/services/aigc/video-generation/video-synthesis	https://docs.nunchux.ai/partner-models/wan
 nunchux	v1.bytedance.contents.generations.tasks	POST	https://api.nunchux.com/v1/bytedance/contents/generations/tasks	https://docs.nunchux.ai/partner-models/seedance
+nunchux	v1.minimax.v2.videoGeneration	POST	https://api.nunchux.com/v1/minimax/v2/video_generation	https://docs.nunchux.ai/partner-models/minimax

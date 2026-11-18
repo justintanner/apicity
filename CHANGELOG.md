@@ -97,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen image requests support automatic sizing, model-specific rendering controls, GIF frames, SVG author settings, edit masks and markup, continued edits, and a safety identifier. `MACHGEN_IMAGE_SURFACES` lists supported settings for each registered model and task (ac-znkz5o).
+
 - MachGen supports GPT Image 2.6 Flare text-to-image and image-to-image on `api.v0.generate`, at the same output-token price as GPT Image 2.6 Sunburst. The recorded low-quality 1280×720 generation billed $0.009345 and the 720×1280 edit of one source image $0.156849, matching the estimates (ac-hgm6m1).
 
 - MachGen supports GPT Image 2.6 Sunburst text-to-image and image-to-image on `api.v0.generate`, with quality selection through `image_output.quality`.
@@ -457,6 +459,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `op inject`, with the configured token or `op`'s own sign-in.
 
 ### Changed
+
+- **Breaking:** MachGen request types now allow automatic image sizing. To read a numeric `height` from a request, first narrow its config with `if (config && config.size_mode !== "auto")`. The exported `MachGenImageConfig` explicit-size type still requires `height` (ac-znkz5o).
 
 - `apicity` discovery: `paid` now follows each endpoint's reviewed billing record instead of the pay-gate registry, so it says whether a call bills. On this base 595 of 1,933 rows read paid (27 before): metered, accrual and unpriced billing reads paid; free, followup and subscription do not. Two new fields: `billing` (the record's kind) and `gated` (in the pay-gate registry; the same 27 rows). `select(.gated)` gives what `select(.paid)` gave before. `CatalogEntry` gains the two required fields. Invocation is unchanged: only `gated` binds the `--otp` approval slot, so a billed endpoint outside the registry is still called with the body alone (ac-e65yyk).
 

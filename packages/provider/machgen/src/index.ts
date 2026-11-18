@@ -29,9 +29,12 @@ export type {
   MachGenUpscaleQuoteResponse,
   MachGenVideoConfig,
   MachGenImageConfig,
+  MachGenGenerateImageConfig,
+  MachGenImageAutoSizeConfig,
   MachGenImageOutput,
 } from "./types";
 export type {
+  MachGenImageSurface,
   MachGenSharpenGrid,
   MachGenUpscaleGrid,
   MachGenVideoGrid,
@@ -45,7 +48,10 @@ export {
   MachGenAdapterSamplingSchema,
   MACHGEN_IMAGE_MODELS,
   MACHGEN_I2I_MAX_IMAGES,
+  MACHGEN_IMAGE_SURFACES,
   MachGenImageConfigSchema,
+  MachGenGenerateImageConfigSchema,
+  MachGenImageAutoSizeConfigSchema,
   MachGenImageOutputSchema,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,

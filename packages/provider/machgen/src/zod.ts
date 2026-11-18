@@ -516,27 +516,339 @@ export const MACHGEN_I2I_MAX_IMAGES: Readonly<Record<string, number>> = {
 // video task keeps that ceiling; I2V and some R2V grids allow fewer.
 const VIDEO_MAX_IMAGES = 9;
 
-export const MachGenImageConfigSchema = z.object({
-  height: z.number().int().positive(),
-  width: z.number().int().positive().optional(),
-  aspect_ratio: z.string().optional(),
-  infer_steps: z.number().int().positive().optional(),
-  guidance_scale: z.array(z.number()).optional(),
-});
+const AUTO_SIZE_CONFLICT =
+  "Automatic image size requires a supported model and no explicit dimensions or ratio";
+
+export const MachGenImageConfigSchema = z
+  .object({
+    size_mode: z.literal("explicit").optional(),
+    height: z.number().int().positive(),
+    width: z.number().int().positive().optional(),
+    aspect_ratio: z.string().optional(),
+    infer_steps: z.number().int().positive().optional(),
+    guidance_scale: z.array(z.number()).optional(),
+  })
+  .describe(
+    "Set height and optionally width or aspect_ratio for explicit sizing (the default)."
+  );
+
+const autoDimension = z.never({ error: AUTO_SIZE_CONFLICT }).optional();
+export const MachGenImageAutoSizeConfigSchema = MachGenImageConfigSchema.extend(
+  {
+    size_mode: z.literal("auto"),
+    height: autoDimension,
+    width: autoDimension,
+    aspect_ratio: autoDimension,
+  }
+).describe(
+  "Let a GPT Image model choose the size. Omit height, width and aspect_ratio. @apicity/cost cannot estimate an automatically sized image."
+);
+
+export const MachGenGenerateImageConfigSchema = z.discriminatedUnion(
+  "size_mode",
+  [MachGenImageConfigSchema, MachGenImageAutoSizeConfigSchema]
+);
+
+const baselineQualities = ["auto", "low", "medium", "high"] as const;
+const qualities = [...baselineQualities, "xhigh", "max"] as const;
+const complexities = ["low", "medium", "high"] as const;
+const backgrounds = ["auto", "opaque", "transparent"] as const;
+const rasterFormats = ["png", "jpeg", "webp"] as const;
+const outputFormats = [...rasterFormats, "svg", "gif"] as const;
 
 export const MachGenImageOutputSchema = z
   .object({
     quality: z
-      .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+      .enum(qualities)
       .optional()
       .describe(
         "Omitted or auto lets the model choose. GPT Image 2.6 reserves the max price and bills the returned quality."
       ),
+    complexity: z
+      .enum(complexities)
+      .optional()
+      .describe("Planning effort before rendering on GPT Image 2.6."),
+    background: z
+      .enum(backgrounds)
+      .optional()
+      .describe("Transparent output requires PNG or WebP."),
+    output_format: z
+      .enum(outputFormats)
+      .optional()
+      .describe(
+        "GPT Image 2 and 2.5 support PNG, JPEG and WebP. GPT Image 2.6 also supports GIF and can generate SVG on T2I."
+      ),
+    output_compression: z
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .optional()
+      .describe("Compression setting for JPEG or WebP."),
+    frame_count: z
+      .number()
+      .int()
+      .min(2)
+      .max(16)
+      .optional()
+      .describe("Number of frames in a GIF."),
+    frame_duration_ms: z
+      .number()
+      .int()
+      .min(20)
+      .max(655350)
+      .optional()
+      .describe("Duration of each GIF frame in milliseconds."),
+    partial_images: z
+      .number()
+      .int()
+      .min(0)
+      .max(3)
+      .optional()
+      .describe("Intermediate previews for PNG, JPEG or WebP."),
+    svg: z
+      .object({
+        model: z
+          .enum(["gpt-5.5"])
+          .or(z.string().regex(/^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$/))
+          .describe("SVG author model, for example gpt-5.5."),
+        reasoning: z
+          .object({
+            effort: z
+              .enum([
+                "none",
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max",
+              ])
+              .optional(),
+          })
+          .optional(),
+      })
+      .optional()
+      .describe("Author model and reasoning settings for SVG output."),
   })
+  // Aliases can carry additional controls, including Seedream layers and watermark.
   .passthrough();
+
+export interface MachGenImageSurface {
+  qualities: readonly string[];
+  complexities: readonly string[];
+  backgrounds: readonly string[];
+  outputFormats: readonly string[];
+  defaultOutputFormat?: string;
+  autoSize: boolean;
+  mask: boolean;
+  markup: boolean;
+  continuation: boolean;
+  safetyIdentifier: boolean;
+}
+
+// GET /api/v0/models?kind=image, 2026-11-18. The web capability contract
+// supplies safetyIdentifier. The dated machgen-evidence fixture pins both.
+const gptImage2: MachGenImageSurface = {
+  qualities: baselineQualities,
+  complexities: [],
+  backgrounds,
+  outputFormats: rasterFormats,
+  defaultOutputFormat: "png",
+  autoSize: true,
+  mask: false,
+  markup: false,
+  continuation: false,
+  safetyIdentifier: true,
+};
+const gptImage25 = { ...gptImage2, qualities };
+const gptImage26 = { ...gptImage25, complexities, outputFormats };
+const gptImage25Tasks = {
+  T2I: gptImage25,
+  I2I: { ...gptImage25, mask: true, markup: true },
+};
+const gptImage26Tasks = {
+  T2I: gptImage26,
+  I2I: {
+    ...gptImage26,
+    outputFormats: [...rasterFormats, "gif"],
+    mask: true,
+    markup: true,
+    continuation: true,
+  },
+};
+const nanoBanana: MachGenImageSurface = {
+  qualities: [],
+  complexities: [],
+  backgrounds: [],
+  outputFormats: [],
+  autoSize: false,
+  mask: false,
+  markup: false,
+  continuation: false,
+  safetyIdentifier: false,
+};
+const nanoBananaTasks = { T2I: nanoBanana, I2I: nanoBanana };
+type ImageModel = (typeof MACHGEN_IMAGE_MODELS)[number];
+export const MACHGEN_IMAGE_SURFACES: Readonly<
+  Record<ImageModel, Readonly<Record<"T2I" | "I2I", MachGenImageSurface>>>
+> = {
+  "GPT-Image-2": { T2I: gptImage2, I2I: { ...gptImage2, mask: true } },
+  "GPT-Image-2.5-Sunburst": gptImage25Tasks,
+  "GPT-Image-2.5-Flare": gptImage25Tasks,
+  "GPT-Image-2.6-Sunburst": gptImage26Tasks,
+  "GPT-Image-2.6-Flare": gptImage26Tasks,
+  "Nano-Banana-2": nanoBananaTasks,
+  "Nano-Banana-2.1": nanoBananaTasks,
+};
+
+const isImageModel = (model: string): model is ImageModel =>
+  Object.hasOwn(MACHGEN_IMAGE_SURFACES, model);
+
+const imageSettingsFields = z.object({
+  image_config: MachGenGenerateImageConfigSchema.optional(),
+  image_output: MachGenImageOutputSchema.optional(),
+  src_mask_url: z
+    .string()
+    .optional()
+    .describe("Edit mask for GPT Image 2, 2.5 or 2.6 I2I."),
+  src_markup_url: z
+    .string()
+    .optional()
+    .describe(
+      "Markup layer for GPT Image 2.5 or 2.6 I2I. Omit the edit mask when using markup."
+    ),
+  continuation_task_id: z
+    .string()
+    .optional()
+    .describe(
+      "Continue a previous GPT Image 2.6 edit by task ID. Counts as an I2I source."
+    ),
+  safety_identifier: z
+    .string()
+    .max(128)
+    .optional()
+    .describe("End-user identifier for GPT Image 2, 2.5 and 2.6."),
+});
+
+type ImageSettings = z.infer<typeof imageSettingsFields>;
+type ReportIssue = (path: (string | number)[], message: string) => void;
+
+const UNSUPPORTED_MARKUP =
+  "This model and task type do not support image markup";
+const UNSUPPORTED_CONTINUATION =
+  "This model and task type do not support image continuation";
+const UNSUPPORTED_SAFETY_IDENTIFIER =
+  "This model does not support safety_identifier";
+
+function checkImageSettings(
+  req: ImageSettings,
+  modelTask: string,
+  surface: MachGenImageSurface,
+  issue: ReportIssue
+) {
+  const output = req.image_output ?? {};
+  for (const [field, allowed] of [
+    ["quality", surface.qualities],
+    ["complexity", surface.complexities],
+    ["background", surface.backgrounds],
+    ["output_format", surface.outputFormats],
+  ] as const) {
+    const value = output[field];
+    if (value !== undefined && !allowed.includes(value))
+      issue(
+        ["image_output", field],
+        `${modelTask} does not support ${field}='${value}'; allowed: ${list(allowed) || "none"}`
+      );
+  }
+
+  if (req.image_config?.size_mode === "auto" && !surface.autoSize)
+    issue(["image_config", "size_mode"], AUTO_SIZE_CONFLICT);
+  const mask = req.src_mask_url !== undefined;
+  const markup = req.src_markup_url !== undefined;
+  const continuation = req.continuation_task_id !== undefined;
+  const previews = (output.partial_images ?? 0) > 0;
+  if (mask && !surface.mask)
+    issue(
+      ["src_mask_url"],
+      "This model and task type do not support image masks"
+    );
+  if (markup && !surface.markup) issue(["src_markup_url"], UNSUPPORTED_MARKUP);
+  if (continuation && !surface.continuation)
+    issue(["continuation_task_id"], UNSUPPORTED_CONTINUATION);
+  if (req.safety_identifier !== undefined && !surface.safetyIdentifier)
+    issue(["safety_identifier"], UNSUPPORTED_SAFETY_IDENTIFIER);
+  if (mask && markup)
+    issue(
+      ["src_markup_url"],
+      "Image markup cannot be combined with an edit mask"
+    );
+  if (continuation && (mask || markup))
+    issue(
+      ["continuation_task_id"],
+      "Image continuation cannot be combined with markup or a mask"
+    );
+  if (continuation && previews)
+    issue(
+      ["image_output", "partial_images"],
+      "Intermediate previews are not supported for continued edits"
+    );
+
+  // Nano Banana publishes no default format or format-dependent settings.
+  const format = output.output_format ?? surface.defaultOutputFormat;
+  if (format === undefined) return;
+  if (
+    output.background === "transparent" &&
+    format !== "png" &&
+    format !== "webp"
+  )
+    issue(
+      ["image_output", "background"],
+      "Transparent backgrounds require output_format png or webp"
+    );
+  if (
+    output.output_compression !== undefined &&
+    format !== "jpeg" &&
+    format !== "webp"
+  )
+    issue(
+      ["image_output", "output_compression"],
+      "output_compression requires output_format jpeg or webp"
+    );
+  if (
+    (output.frame_count !== undefined ||
+      output.frame_duration_ms !== undefined) &&
+    format !== "gif"
+  )
+    issue(
+      ["image_output", "output_format"],
+      "Animation controls require GIF output"
+    );
+  if (output.svg !== undefined && format !== "svg")
+    issue(
+      ["image_output", "svg"],
+      "Vector author settings require supported SVG output"
+    );
+  if (rasterFormats.some((raster) => raster === format)) return;
+  if (previews)
+    issue(
+      ["image_output", "partial_images"],
+      "Partial images require PNG, JPEG or WebP output"
+    );
+  if (mask)
+    issue(["src_mask_url"], "Image masks require PNG, JPEG or WebP output");
+  if (markup)
+    issue(["src_markup_url"], "Image markup requires PNG, JPEG or WebP output");
+  if (continuation)
+    issue(
+      ["continuation_task_id"],
+      "Image continuation requires PNG, JPEG or WebP output"
+    );
+}
 
 export const MachGenGenerateRequestSchema = z
   .object({
+    ...imageSettingsFields.shape,
     model: z
       .enum(
         Object.keys(MACHGEN_VIDEO_MODEL_TASK_TYPES) as [
@@ -557,8 +869,6 @@ export const MachGenGenerateRequestSchema = z
     ]),
     prompt: z.string(),
     video_config: MachGenVideoConfigSchema.optional(),
-    image_config: MachGenImageConfigSchema.optional(),
-    image_output: MachGenImageOutputSchema.optional(),
     upscale_config: MachGenUpscaleConfigSchema.optional(),
     enhance_prompt: z.boolean().optional(),
     prompt_enhancement_level: z
@@ -614,9 +924,7 @@ export const MachGenGenerateRequestSchema = z
     const videos = req.src_video_urls ?? [];
     const audios = req.src_audio_urls ?? [];
     const keyframes = req.keyframe_indices;
-    const imageModel = (MACHGEN_IMAGE_MODELS as readonly string[]).includes(
-      req.model
-    );
+    const imageModel = isImageModel(req.model) ? req.model : undefined;
     if (req.task_type === "T2I" || req.task_type === "I2I") {
       if (Object.hasOwn(MACHGEN_VIDEO_MODEL_TASK_TYPES, req.model))
         issue(["task_type"], `${req.model} does not support ${req.task_type}`);
@@ -625,10 +933,18 @@ export const MachGenGenerateRequestSchema = z
       if (
         req.task_type === "I2I" &&
         !images.length &&
-        !req.src_task_ids?.length
+        !req.src_task_ids?.length &&
+        req.continuation_task_id === undefined
       )
         issue(["src_image_urls"], "I2I requires a source image or source task");
-      const cap = imageModel ? MACHGEN_I2I_MAX_IMAGES[req.model] : undefined;
+      if (imageModel)
+        checkImageSettings(
+          req,
+          `${imageModel} ${req.task_type}`,
+          MACHGEN_IMAGE_SURFACES[imageModel][req.task_type],
+          issue
+        );
+      const cap = imageModel ? MACHGEN_I2I_MAX_IMAGES[imageModel] : undefined;
       if (req.task_type === "I2I" && cap !== undefined && images.length > cap)
         issue(
           ["src_image_urls"],
@@ -645,6 +961,18 @@ export const MachGenGenerateRequestSchema = z
     }
     if (imageModel)
       issue(["task_type"], `${req.model} supports only T2I and I2I`);
+    if (req.image_config?.size_mode === "auto")
+      issue(["image_config", "size_mode"], AUTO_SIZE_CONFLICT);
+    if (Object.hasOwn(MACHGEN_VIDEO_MODEL_TASK_TYPES, req.model)) {
+      if (req.image_output !== undefined)
+        issue(["image_output"], "Image output controls require an image task");
+      if (req.src_markup_url !== undefined)
+        issue(["src_markup_url"], UNSUPPORTED_MARKUP);
+      if (req.continuation_task_id !== undefined)
+        issue(["continuation_task_id"], UNSUPPORTED_CONTINUATION);
+      if (req.safety_identifier !== undefined)
+        issue(["safety_identifier"], UNSUPPORTED_SAFETY_IDENTIFIER);
+    }
     // I2V and an R2V grid with its own image cap check a lower cap below.
     const r2v = req.task_type === "R2V";
     const gridImageCap = r2v

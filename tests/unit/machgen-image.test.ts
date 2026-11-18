@@ -191,10 +191,13 @@ describe("MachGen image tasks", () => {
   });
   it("accepts all six quality settings, preserves additional output fields and rejects an unknown quality", () => {
     for (const quality of ["auto", "low", "medium", "high", "xhigh", "max"]) {
-      const image_output = { quality, complexity: "medium" };
+      const image_output = { quality, complexity: "medium", watermark: false };
       expect(
-        MachGenGenerateRequestSchema.parse({ ...payload, image_output })
-          .image_output
+        MachGenGenerateRequestSchema.parse({
+          ...payload,
+          model: "GPT-Image-2.6-Sunburst",
+          image_output,
+        }).image_output
       ).toEqual(image_output);
     }
     expect(parse({ image_output: { quality: "lo" } }).success).toBe(false);

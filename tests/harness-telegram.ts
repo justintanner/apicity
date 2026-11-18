@@ -30,6 +30,7 @@ import {
   isSensitiveResponseHeaderName,
   scrubSensitiveRecording,
 } from "./har-scrub.js";
+import { isSignedUrlQueryParam } from "../scripts/lib/har-secrets.mjs";
 
 const ENDPOINT_DOCS_PATH = "scripts/endpoint-docs.tsv";
 const DEFAULT_OUT_PATH = "harness-telegram-messages.json";
@@ -54,13 +55,6 @@ const CREDIT_URL_PATTERNS = [
 const MEDIA_URL_EXT =
   /\.(mp4|webm|mov|png|jpe?g|gif|webp|wav|mp3|ogg|flac|m4a)(?:\?|$)/i;
 const REDACTED_QUERY_VALUE = "***";
-const SIGNED_MEDIA_QUERY_PARAMS = new Set([
-  "ossaccesskeyid",
-  "signature",
-  "x-oss-signature",
-  "x-amz-credential",
-  "x-amz-signature",
-]);
 
 const RESPONSE_HEADER_PREVIEW_EXCLUDES = new Set([
   "connection",
@@ -894,14 +888,12 @@ function shouldSkipMediaUrl(url: string): boolean {
     const params: Array<[string, string]> = [
       ...parsed.searchParams.entries(),
     ].map(([name, value]) => [name.toLowerCase(), value]);
-    const hasSignedParam = params.some(([name]) =>
-      SIGNED_MEDIA_QUERY_PARAMS.has(name)
-    );
+    const hasSignedParam = params.some(([name]) => isSignedUrlQueryParam(name));
     if (!hasSignedParam) return false;
 
     const hasRedactedCredential = params.some(
       ([name, value]) =>
-        SIGNED_MEDIA_QUERY_PARAMS.has(name) && value === REDACTED_QUERY_VALUE
+        isSignedUrlQueryParam(name) && value === REDACTED_QUERY_VALUE
     );
     const expires = params.find(([name]) => name === "expires")?.[1] ?? null;
     return hasRedactedCredential || isExpiredUnixTimestamp(expires);

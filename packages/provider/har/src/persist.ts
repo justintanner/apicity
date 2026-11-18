@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { types } from "node:util";
 import {
   PERSISTED_REQUEST_HEADER_PLACEHOLDERS,
+  isSignedUrlQueryParam,
   redactUrlSecrets,
   redactFalCheckpoints,
 } from "./har-secrets.mjs";
@@ -15,6 +16,7 @@ export interface PersistedHarRecording {
   _id?: string;
   request?: {
     url?: string;
+    queryString?: PersistedHarHeader[];
     bodySize?: number;
     headers?: PersistedHarHeader[];
     cookies?: HarCookieLike[];
@@ -451,11 +453,41 @@ function scrubRequestCookies(cookies: HarCookieLike[] | undefined): void {
 // tests/unit/har-request-secrets.test.ts holds every committed recording to.
 export { PERSISTED_REQUEST_HEADER_PLACEHOLDERS };
 
+// Polly stores the parsed query beside the URL, so a signed parameter removed
+// from the URL leaves this list too. Returns undefined when nothing changed.
+function redactQueryStringSecrets(
+  query: PersistedHarHeader[]
+): PersistedHarHeader[] | undefined {
+  let changed = false;
+  const kept: PersistedHarHeader[] = [];
+  for (const param of query) {
+    if (isSignedUrlQueryParam(param?.name)) {
+      changed = true;
+      continue;
+    }
+    const value =
+      typeof param?.value === "string"
+        ? redactUrlSecrets(param.value)
+        : param?.value;
+    if (value !== param?.value) {
+      changed = true;
+      kept.push({ ...param, value });
+    } else {
+      kept.push(param);
+    }
+  }
+  return changed ? kept : undefined;
+}
+
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
 ): void {
   if (recording.request?.url) {
     recording.request.url = redactUrlSecrets(recording.request.url);
+  }
+  if (Array.isArray(recording.request?.queryString)) {
+    const query = redactQueryStringSecrets(recording.request.queryString);
+    if (query) recording.request.queryString = query;
   }
 
   scrubRequestCookieHeaders(recording.request?.headers);

@@ -148,6 +148,11 @@ import { repoRoot } from "./provider-scope.mjs";
  * Polly's modules but starts no Polly instance. A recording added under one
  * provider is a provider-scoped diff, and the file is named after no provider,
  * so this entry is what runs it in the fast gates (ac-1zmydw).
+ * The same file holds every committed HAR and text fixture (`tests/recordings`,
+ * `tests/failures`, `tests/fixtures`) to no live value for a signed-URL
+ * credential parameter (`SIGNED_URL_QUERY_PARAMS`: AWS, OSS V1 and V4, TOS,
+ * GCS); a committed ElevenLabs history response held two expired GCS signed
+ * URLs until the list was widened (ac-rm9wz4).
  *
  * Example provenance checks match each example payload to its own successful
  * recorded exchange and validate static payloads against endpoint schemas.

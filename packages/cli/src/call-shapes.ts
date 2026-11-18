@@ -9790,4 +9790,20 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "nunchux\tGET\tv1.bytedance.contents.generations.tasks.retrieve": {
+    provider: "nunchux",
+    method: "GET",
+    dotPath: "v1.bytedance.contents.generations.tasks.retrieve",
+    positional: [
+      {
+        placeholder: "task_id",
+        param: "taskId",
+        optional: false,
+        alias: "task_id",
+      },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
 };

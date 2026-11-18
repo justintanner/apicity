@@ -2,6 +2,7 @@ import { attachExamples } from "./example";
 import { NunchuxError, isNunchuxErrorBody } from "./types";
 import type {
   NunchuxAlibabaTaskResponse,
+  NunchuxBytedanceTaskResponse,
   NunchuxOptions,
   NunchuxCreditsResponse,
   NunchuxProvider,
@@ -97,6 +98,25 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
             undefined,
             signal
           );
+        },
+      },
+      bytedance: {
+        contents: {
+          generations: {
+            tasks: {
+              // GET https://api.nunchux.com/v1/bytedance/contents/generations/tasks/{task_id}
+              // Docs: https://docs.nunchux.ai/partner-models/seedance
+              retrieve: async (taskId: string, signal?: AbortSignal) => {
+                const task_id = taskId;
+                return request<NunchuxBytedanceTaskResponse>(
+                  "GET",
+                  `/v1/bytedance/contents/generations/tasks/${encodeURIComponent(task_id)}`,
+                  undefined,
+                  signal
+                );
+              },
+            },
+          },
         },
       },
       // GET https://api.nunchux.com/v1/credits

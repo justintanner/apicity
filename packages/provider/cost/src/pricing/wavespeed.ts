@@ -1079,4 +1079,26 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-16",
     },
   },
+  // base_price 28000 micros, discount_rate 95 on 2026-11-16. No formula on the
+  // model page, only its price inputs (images, resolution). Free quotes read
+  // 2026-11-16, list price: 0.02 USD at 1k and 1.5k and 0.035 USD at 2k, plus
+  // 0.008 USD per input image (1, 2, 5 and 10 images at 1k: 0.028, 0.036, 0.06
+  // and 0.10; 1, 2 and 10 at 2k: 0.043, 0.051 and 0.115). aspect_ratio,
+  // output_format and background add nothing. An estimate without an `images`
+  // list fails closed.
+  "bytedance/seedream-v5.5/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1k" },
+    ],
+    rates: { "1k": 0.02, "1.5k": 0.02, "2k": 0.035 },
+    extra: (p) =>
+      Array.isArray(p.images) ? 0.008 * p.images.length : undefined,
+    source: {
+      url: "https://wavespeed.ai/models/bytedance/seedream-v5.5/edit",
+      asOf: "2026-11-16",
+    },
+  },
 };

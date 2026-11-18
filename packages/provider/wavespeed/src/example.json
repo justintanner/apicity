@@ -214,6 +214,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedreamV5p5.edit": {
+    "source": "wavespeed/bytedance-seedream-v5-5-edit",
+    "payload": {
+      "prompt": "Give the cat a small red knitted scarf.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ],
+      "resolution": "1k"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.google.geminiOmni1p1Flash.imageToVideo": {
     "source": "wavespeed/google-gemini-omni-1-1-flash-image-to-video",
     "payload": {

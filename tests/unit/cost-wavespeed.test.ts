@@ -2244,3 +2244,58 @@ describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
     ).toBeCloseTo(0.08, 9);
   });
 });
+
+describe("wavespeed bytedance/seedream-v5.5/edit", () => {
+  const model = "bytedance/seedream-v5.5/edit";
+  const image = "https://example.com/cat.jpg";
+  const images = (n: number) => Array.from({ length: n }, () => image);
+
+  it("prices the recorded payload at the 0.028 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.028, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-16, list price.
+  it("bills the resolution rate plus 0.008 USD per input image", () => {
+    for (const [resolution, count, usd] of [
+      [undefined, 1, 0.028],
+      ["1.5k", 1, 0.028],
+      ["1k", 2, 0.036],
+      ["1k", 5, 0.06],
+      ["1k", 10, 0.1],
+      ["2k", 1, 0.043],
+      ["2k", 2, 0.051],
+      ["2k", 10, 0.115],
+    ] as const) {
+      expect(
+        estimate(model, { prompt: PROMPT, images: images(count), resolution })
+          .usd,
+        `${resolution} x${count}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio, format or background", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        aspect_ratio: "21:9",
+        output_format: "jpeg",
+        background: "transparent",
+      }).usd
+    ).toBeCloseTo(0.028, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+    expect(result.usd).toBe(0);
+    expect(result.warnings).not.toEqual([]);
+  });
+});

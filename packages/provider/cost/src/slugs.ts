@@ -1107,6 +1107,7 @@ export const MODEL_SLUGS = {
     "pruna-ai/p-video-2-pro/image-to-video": "pvideo2p",
     "openai/gpt-image-2/text-to-image": "gi2",
     "x-ai/grok-imagine-image-v2.0/text-to-image": "grokimgi2p0",
+    "bytedance/seedream-v5.5/edit": "sd5p5",
   },
 } as const;
 
@@ -2224,6 +2225,7 @@ export const MODEL_DISPLAY = {
     "pruna-ai/p-video-2-pro/image-to-video": "P-Video-2-Pro",
     "openai/gpt-image-2/text-to-image": "GPT Image 2",
     "x-ai/grok-imagine-image-v2.0/text-to-image": "Grok Imagine Image 2.0",
+    "bytedance/seedream-v5.5/edit": "Seedream 5.5 Edit",
   },
 } as const;
 

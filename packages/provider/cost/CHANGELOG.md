@@ -217,6 +217,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Slug `pvideo2p`, display "P-Video-2-Pro"; it is the i2v frontier entry for
   P-Video-2-Pro (ac-cdx7ad).
 
+- WaveSpeed Seedream 5.5 edit (`bytedance/seedream-v5.5/edit`) bills 0.02 USD
+  at 1k and 1.5k (1k by default) or 0.035 USD at 2k, plus 0.008 USD per input
+  image, from free quotes (list price, read 2026-11-16). An estimate without an
+  `images` list fails closed. `MODEL_SLUGS.wavespeed` shares the family slug
+  `sd5p5` (ac-5ttwpq).
+
 - WaveSpeed Grok Imagine Image 2.0 text-to-image
   (`x-ai/grok-imagine-image-v2.0/text-to-image`) bills one image per request at
   0.04, 0.06, 0.06 and 0.08 USD for low 1k, low 2k, medium 1k and medium 2k (the

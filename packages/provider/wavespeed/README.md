@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-46 endpoints across 13 groups. Each method mirrors an upstream URL path.
+47 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -339,6 +339,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await wavespeed.api.v3.bytedance.seedance2p5.videoEdit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.bytedance.seedreamV5p5.edit</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/bytedance/seedream-v5.5/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/bytedance/seedream-v5.5/edit)
+
+```typescript
+const res = await wavespeed.api.v3.bytedance.seedreamV5p5.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

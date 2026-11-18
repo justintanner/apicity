@@ -20,6 +20,7 @@ import {
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedreamV5p5EditRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashReferenceToVideoRequestSchema,
   WaveSpeedGoogleGeminiOmni1p1FlashTextToVideoRequestSchema,
@@ -544,6 +545,7 @@ describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
     expect(Object.keys(wavespeed.api.v3.bytedance)).toEqual([
       "seedance2p5",
       "seedance2p0",
+      "seedreamV5p5",
     ]);
     expect(wavespeed.api.v3.bytedance.seedance2p0.textToVideo.schema).toBe(
       WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema
@@ -2616,6 +2618,66 @@ describe("wavespeed x-ai/grok-imagine-image-v2.0/text-to-image", () => {
           [field]: value,
         }).success,
         `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedream-v5.5/edit", () => {
+  // The payload tests/integration/wavespeed-bytedance-seedream-v5-5-edit.test.ts
+  // recorded.
+  const CAT_IMAGE =
+    "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [CAT_IMAGE],
+    resolution: "1k",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedreamV5p5)).toEqual([
+      "edit",
+    ]);
+    expect(wavespeed.api.v3.bytedance.seedreamV5p5.edit.schema).toBe(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema
+    );
+    expect(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("takes every documented option and ten images", () => {
+    expect(
+      WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse({
+        prompt: "Make it a watercolour",
+        images: Array.from({ length: 10 }, () => CAT_IMAGE),
+        aspect_ratio: "9:21",
+        resolution: "1.5k",
+        output_format: "jpeg",
+        background: "transparent",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["images", Array.from({ length: 11 }, () => CAT_IMAGE)],
+      ["images", undefined],
+      ["resolution", "4k"],
+      ["aspect_ratio", "7:5"],
+      ["output_format", "webp"],
+      ["background", "white"],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedreamV5p5EditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        field
       ).toBe(false);
     }
   });

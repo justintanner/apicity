@@ -259,6 +259,10 @@ describe("new shipped scrubber URL and authorization rules", () => {
   it.each([
     "X-Amz-Signature",
     "X-Amz-Credential",
+    "X-Amz-Security-Token",
+    "x-amz-security-token",
+    "X-AMZ-SECURITY-TOKEN",
+    "X%2DAmz%2DSecurity%2DToken",
     "OSSAccessKeyId",
     "Signature",
   ])("removes signed query %s", (key) => {
@@ -269,6 +273,92 @@ describe("new shipped scrubber URL and authorization rules", () => {
     expect(recording.request.url).toBe(
       "https://bucket.example/object?keep=one"
     );
+  });
+  // Synthetic presigned URLs: every signed value is a placeholder.
+  const presigned =
+    "https://bucket.example/out/video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256" +
+    "&X-Amz-Credential=placeholder-credential" +
+    "&X-Amz-Security-Token=placeholder-token" +
+    "&X-Amz-Signature=placeholder-signature&X-Amz-Expires=3600";
+  const scrubbed =
+    "https://bucket.example/out/video.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=3600";
+  it("removes presigned credentials from URLs nested in a JSON response", () => {
+    const recording = {
+      response: {
+        content: {
+          text: JSON.stringify({
+            task: { status: "succeeded", content: { url: presigned } },
+            outputs: [{ video: { url: presigned } }],
+          }),
+        },
+      },
+    };
+    redactPersistedHarSecrets(recording);
+    const text = recording.response.content.text;
+    expect(text).not.toMatch(/placeholder-|Security-Token|Signature=/i);
+    expect(JSON.parse(text)).toEqual({
+      task: { status: "succeeded", content: { url: scrubbed } },
+      outputs: [{ video: { url: scrubbed } }],
+    });
+  });
+  it("removes presigned credentials when JSON escapes & as \\u0026", () => {
+    const escaped = presigned.replaceAll("&", "\\u0026");
+    const recording = {
+      response: { content: { text: `{"url":"${escaped}","n":1}` } },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.response.content.text).toBe(
+      `{"url":"${scrubbed.replaceAll("&", "\\u0026")}","n":1}`
+    );
+    expect(JSON.parse(recording.response.content.text).url).toBe(scrubbed);
+  });
+  it("removes presigned credentials from a percent-encoded nested URL", () => {
+    const recording = {
+      response: {
+        content: {
+          text: JSON.stringify({
+            player: `https://cdn.example/watch?src=${encodeURIComponent(presigned)}&page=2`,
+          }),
+        },
+      },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(JSON.parse(recording.response.content.text).player).toBe(
+      `https://cdn.example/watch?src=${encodeURIComponent(scrubbed)}&page=2`
+    );
+  });
+  it("drops signed parameters from the recorded queryString as well", () => {
+    const recording = {
+      request: {
+        url: presigned,
+        queryString: [...new URL(presigned).searchParams].map(
+          ([name, value]) => ({ name, value })
+        ),
+      },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.request.url).toBe(scrubbed);
+    expect(recording.request.queryString).toEqual([
+      { name: "X-Amz-Algorithm", value: "AWS4-HMAC-SHA256" },
+      { name: "X-Amz-Expires", value: "3600" },
+    ]);
+  });
+  it("keeps the exact text of URLs that carry no signed parameter", () => {
+    const text =
+      '{"a":"https://bucket.example/a?keep=1\\u0026also=2",' +
+      JSON.stringify({
+        b: `https://cdn.example/watch?src=${encodeURIComponent("https://x.example/b?keep=1")}`,
+        c: "HTTPS://Example.COM/c?Keep=1",
+      }).slice(1);
+    expect(JSON.parse(text).a).toBe("https://bucket.example/a?keep=1&also=2");
+    const query = [{ name: "keep", value: "https://x.example/?keep=1" }];
+    const recording = {
+      request: { url: "https://example.com/?keep=1", queryString: query },
+      response: { content: { text } },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.response.content.text).toBe(text);
+    expect(recording.request.queryString).toBe(query);
   });
   it("preserves fal Key scheme and accepts both historical placeholders", () => {
     const recording = {

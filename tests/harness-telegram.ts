@@ -60,6 +60,7 @@ const SIGNED_MEDIA_QUERY_PARAMS = new Set([
   "x-oss-signature",
   "x-amz-credential",
   "x-amz-signature",
+  "x-amz-security-token",
 ]);
 
 const RESPONSE_HEADER_PREVIEW_EXCLUDES = new Set([

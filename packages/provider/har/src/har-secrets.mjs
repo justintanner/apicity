@@ -21,7 +21,22 @@ export const PROVIDER_PATH_SECRET_RULES = Object.freeze({
     /(https?:\/\/(?:www\.)?thesportsdb\.com\/api\/v1\/json\/)[^/?#"\\\s]+/gi,
 });
 
-/** Scrub signed query credentials.
+/** Signed-URL query parameters, in any letter case. */
+const SIGNED_URL_QUERY_PARAM =
+  /^(OSSAccessKeyId|Signature|X-Amz-Signature|X-Amz-Credential|X-Amz-Security-Token)$/i;
+
+/** True when a query parameter carries signed-URL credentials. The name is
+ * compared decoded, so `X%2DAmz%2DSecurity%2DToken` matches too.
+ * @param {unknown} name
+ * @returns {boolean}
+ */
+export function isSignedUrlQueryParam(name) {
+  return typeof name === "string" && SIGNED_URL_QUERY_PARAM.test(name);
+}
+
+/** Scrub signed query credentials. Also reaches a percent-encoded URL, such as
+ * one nested in another URL's query, and a URL inside JSON text whose `&` is
+ * escaped as `&`. A URL with nothing to remove keeps its exact text.
  * @param {string} url
  * @returns {string}
  */
@@ -33,21 +48,30 @@ export function redactUrlSecrets(url) {
   for (const pattern of Object.values(PROVIDER_PATH_SECRET_RULES)) {
     result = result.replace(pattern, "$1***");
   }
-  return result.replace(/https?:\/\/[^"\\\s]+/g, (value) => {
+  result = result.replace(/https?%3A%2F%2F[\w.~!*'()%-]*/gi, (value) => {
+    let decoded;
     try {
-      const parsed = new URL(value);
+      decoded = decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+    const clean = redactUrlSecrets(decoded);
+    return clean === decoded ? value : encodeURIComponent(clean);
+  });
+  return result.replace(/https?:\/\/(?:[^"\\\s]|\\u0026)+/gi, (value) => {
+    const escaped = /\\u0026/i.test(value);
+    try {
+      const parsed = new URL(escaped ? value.replace(/\\u0026/gi, "&") : value);
       let changed = false;
       for (const key of [...parsed.searchParams.keys()]) {
-        if (
-          /^(OSSAccessKeyId|Signature|X-Amz-Signature|X-Amz-Credential)$/i.test(
-            key
-          )
-        ) {
+        if (isSignedUrlQueryParam(key)) {
           parsed.searchParams.delete(key);
           changed = true;
         }
       }
-      return changed ? parsed.toString() : value;
+      if (!changed) return value;
+      const clean = parsed.toString();
+      return escaped ? clean.replaceAll("&", "\\u0026") : clean;
     } catch {
       return value;
     }

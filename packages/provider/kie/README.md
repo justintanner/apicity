@@ -681,6 +681,30 @@ pages and the Flare
 and [image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-flare-image-to-image.md)
 pages.
 
+KIE also serves GPT Image 2.6 through an economy channel, at a flat 5
+credits ($0.025) per image, as `gpt-image-2-6/economy-text-to-image`.
+It renders 1K only, and its contract is narrower: eight `aspect_ratio`
+values (`auto`, `1:1`, `16:9`, `9:16`, `3:2`, `2:3`, `21:9`, `4:3`),
+`background`, and png or gif output, with no `quality`, `resolution` or
+`complexity`. `prompt` (1-20,000 characters) and `aspect_ratio` are
+required. KIE documents an `auto` default for `aspect_ratio`, but a task
+sent without the field fails upstream with failCode 500 (refunded), so
+the schema rejects it before the call. The other fields default as
+documented: `background` `"auto"`, `output_format` `"png"`, and the
+GIF-only `frame_count` and `frame_duration_ms` `"auto"`. KIE publishes
+no gif price, so `@apicity/cost` quotes png output only. See KIE's
+[economy text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image.md)
+page.
+
+```typescript
+const economyTask = await kie.post.api.v1.jobs.createTask({
+  model: "gpt-image-2-6/economy-text-to-image",
+  input: { prompt: "A red balloon.", aspect_ratio: "auto" },
+});
+
+console.log(economyTask.data?.taskId);
+```
+
 ## Gemini Omni Flash 1.2
 
 KIE serves Gemini Omni Flash 1.2 through the shared

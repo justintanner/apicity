@@ -539,18 +539,19 @@ describe("Kie GPT Image 2.6 model ids", () => {
 
 describe("Kie GPT Image 2.6 registries and descriptors", () => {
   it("has the same ids in the roster, guards, and descriptors", () => {
-    const prefix = "gpt-image-2-6/";
-    expect(
-      KIE_MEDIA_MODELS.filter((model) => model.startsWith(prefix))
-    ).toEqual(GPT_IMAGE_26_MODELS);
-    expect(
-      Object.keys(CREATE_TASK_GUARDS).filter((model) =>
-        model.startsWith(prefix)
-      )
-    ).toEqual(GPT_IMAGE_26_MODELS);
-    expect(
-      Object.keys(modelInputSchemas).filter((model) => model.startsWith(prefix))
-    ).toEqual(GPT_IMAGE_26_MODELS);
+    // The economy channel has its own contract and its own tests
+    // (kie-gpt-image-2-6-economy-*.test.ts), so this roster is the
+    // token-billed Sunburst and Flare ids only.
+    const tokenBilled = (model: string) =>
+      model.startsWith("gpt-image-2-6/") &&
+      !model.startsWith("gpt-image-2-6/economy-");
+    expect(KIE_MEDIA_MODELS.filter(tokenBilled)).toEqual(GPT_IMAGE_26_MODELS);
+    expect(Object.keys(CREATE_TASK_GUARDS).filter(tokenBilled)).toEqual(
+      GPT_IMAGE_26_MODELS
+    );
+    expect(Object.keys(modelInputSchemas).filter(tokenBilled)).toEqual(
+      GPT_IMAGE_26_MODELS
+    );
     for (const contract of GPT_IMAGE_26_CONTRACTS) {
       expect(CREATE_TASK_GUARDS[contract.model]).toBe(contract.schema);
     }

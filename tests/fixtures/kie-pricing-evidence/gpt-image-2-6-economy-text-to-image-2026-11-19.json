@@ -1,0 +1,151 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-text-to-image",
+  "models": ["gpt-image-2-6/economy-text-to-image"],
+  "basis": "The live pricing-feed row anchored on https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-text-to-image and the live GET /api/v1/models pricingDesc agree: a flat 5 credits (0.025 USD) per 1K image, the channel's only size. Neither names a gif price, so only png is priced. Both reads match the 2026-11-12 survey. The docs callback example's creditsConsumed of 3 is a template: its task id and createTime repeat on five other GPT Image docs pages and predate this model. Both recordings below billed 5 at submission. Four earlier tasks that sent only the prompt failed upstream with failCode 500 and were refunded. The first recording sends every documented default explicitly, as the docs request example does; the second sends the prompt and aspect_ratio alone, which proves aspect_ratio is the field kie needs.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T20:59:21Z",
+    "rows": [
+      {
+        "modelDescription": "gpt-image-2-6-economy, text-to-image, 1K",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "5",
+        "creditUnit": "per image",
+        "usdPrice": "0.025",
+        "falPrice": "0.0527",
+        "discountRate": 52.56,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-text-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T20:59:29Z",
+    "entry": {
+      "model": "gpt-image-2-6/economy-text-to-image",
+      "slug": "gpt-image-2-6/economy-text-to-image",
+      "title": "GPT Image 2.6 (Economy) Text to Image",
+      "provider": "OpenAI",
+      "taskType": ["Text to Image"],
+      "description": "",
+      "pricingDesc": "GPT Image 2.6 (Economy) — just 5 credits ($0.025) per 1K image. Same GPT Image 2.6 model, served through our economy channel at a flat per-image price, 1K only. High-tier top-ups (+10% bonus) bring effective pricing down to ~10% off the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "gpt-image-2-6/economy-text-to-image",
+      "url": "https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image.md",
+      "fetchedAt": "2026-11-19T20:59:04Z",
+      "sha256": "13d84276b068ae26e9a09002c04e831143ac6066e8b500e4b884cccbb3922712",
+      "callbackExamples": [
+        {
+          "taskId": "ed578231bfed231f0884c564579a965d",
+          "state": "success",
+          "creditsConsumed": 3,
+          "request": {
+            "aspect_ratio": "auto"
+          },
+          "costTime": 83,
+          "note": "no billing figure for this model: the task id and createTime (2026-08-11) repeat on the gpt-image-2, 2.5 and 2.6 Sunburst and Flare docs pages, so it is a template"
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 0.25,
+  "unbilledFailures": [
+    {
+      "taskId": "55a900e2c9e3009ff2234e8018bc5a7f",
+      "at": "2026-11-12T14:23Z",
+      "request": {
+        "prompt": "A red balloon."
+      },
+      "failCode": "500",
+      "creditsConsumedWhileWaiting": 5.0,
+      "creditsConsumed": 0.0
+    },
+    {
+      "taskId": "6023e4dba0f00d5ad8269c7a89a149eb",
+      "at": "2026-11-12T14:25Z",
+      "request": {
+        "prompt": "A red balloon."
+      },
+      "failCode": "500",
+      "creditsConsumedWhileWaiting": 5.0,
+      "creditsConsumed": 0.0
+    },
+    {
+      "taskId": "5d330e971cdf1d7db00c9c082bc56da9",
+      "at": "2026-11-12T20:12Z",
+      "request": {
+        "prompt": "A red balloon."
+      },
+      "failCode": "500",
+      "creditsConsumedWhileWaiting": 5.0,
+      "creditsConsumed": 0.0
+    },
+    {
+      "taskId": "fc76b1421c3d1e04c7c9af33a298ff15",
+      "at": "2026-11-19T21:01Z",
+      "request": {
+        "prompt": "A red balloon."
+      },
+      "failCode": "500",
+      "creditsConsumedWhileWaiting": 5.0,
+      "creditsConsumed": 0.0
+    }
+  ],
+  "recordings": [
+    {
+      "model": "gpt-image-2-6/economy-text-to-image",
+      "har": "tests/recordings/kie_2079838932/gpt-image-2-6-economy-text-to-image_4125543329/recording.har",
+      "request": {
+        "prompt": "A red balloon.",
+        "aspect_ratio": "auto",
+        "background": "auto",
+        "output_format": "png",
+        "frame_count": "auto",
+        "frame_duration_ms": "auto"
+      },
+      "taskId": "c022f9de033374c8f33038da748f19cd",
+      "creditsConsumed": 5.0,
+      "creditsConsumedWhileWaiting": [
+        5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0
+      ],
+      "usd": 0.025,
+      "output": {
+        "format": "png",
+        "width": 1254,
+        "height": 1254,
+        "bytes": 1587806
+      }
+    },
+    {
+      "model": "gpt-image-2-6/economy-text-to-image",
+      "har": "tests/recordings/kie_2079838932/gpt-image-2-6-economy-text-to-image-aspect-ratio-only_3843256659/recording.har",
+      "request": {
+        "prompt": "A red balloon.",
+        "aspect_ratio": "auto"
+      },
+      "taskId": "d1d3f4da14ff82808ec6f335a4955aa0",
+      "creditsConsumed": 5.0,
+      "creditsConsumedWhileWaiting": [
+        5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0
+      ],
+      "usd": 0.025,
+      "output": {
+        "format": "png",
+        "width": 1254,
+        "height": 1254,
+        "bytes": 1554491
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57736.58,
+    "after": 57726.58
+  },
+  "observedTotalUsd": 0.05
+}

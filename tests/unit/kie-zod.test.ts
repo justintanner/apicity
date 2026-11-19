@@ -1665,6 +1665,7 @@ const MEDIA_MODEL_FAMILIES = [
       "gpt-image-2-6/sunburst-image-to-image",
       "gpt-image-2-6/flare-text-to-image",
       "gpt-image-2-6/flare-image-to-image",
+      "gpt-image-2-6/economy-text-to-image",
     ],
     aliases: [
       "gpt-image-3-text-to-image",

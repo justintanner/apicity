@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `gpt-image-2-6/economy-text-to-image` (GPT Image 2.6 through KIE's economy channel, 1K only) with typed inputs: a 1-20000 character `prompt`, eight `aspect_ratio` values, `background`, `output_format` `png` or `gif`, and the GIF-only `frame_count` and `frame_duration_ms` (`auto`, or an explicit value with gif). `aspect_ratio` is required, although KIE documents an `auto` default: a prompt-only task fails upstream with failCode 500 and a refund (three tasks on 2026-11-12 and one on 2026-11-19), while `prompt` plus `aspect_ratio` alone succeeded. The other fields keep their documented defaults. Two recordings are included, one with `aspect_ratio` alone and one with every default set. `GptImage26EconomyAspectRatioSchema`, `GptImage26EconomyOutputFormatSchema`, `GptImage26EconomyFrameCountSchema`, `GptImage26EconomyFrameDurationSchema` and `GptImage26EconomyTextToImageRequestSchema` are exported (ac-cqko9r).
+
 - `seedream/5-lite-text-to-image` and `seedream/5-lite-image-to-image` take `quality` `ultra` (4K) and an optional `output_format` (`png`, `jpeg`), as the docs list them on 2026-11-19; `quality` stays required. The descriptors' `high` now reads 3K and their aspect-ratio default 16:9, matching the docs and the schemas (ac-bxpbil).
 
 - `seedream/5-pro-text-to-image` and `seedream/5-pro-image-to-image` accept the aspect ratio `21:9`, as both docs pages list it on 2026-11-19; the default stays `1:1` (ac-51w0vl).

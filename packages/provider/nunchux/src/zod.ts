@@ -397,3 +397,125 @@ export const NunchuxOpenAiImagesGenerationsRequestSchema = z
 export type NunchuxOpenAiImagesGenerationsRequest = z.input<
   typeof NunchuxOpenAiImagesGenerationsRequestSchema
 >;
+
+const gptImageInputUrl = z
+  .string()
+  .min(1)
+  .refine(
+    (value) => value.startsWith("https://") || value.startsWith("data:image/"),
+    "An input image must be an https URL or a data:image URI."
+  );
+
+const gptImageInputImage = z
+  .object({
+    image_url: gptImageInputUrl.describe(
+      "A public https URL or a base64 data:image URI. OpenAI's file_id form is not accepted."
+    ),
+  })
+  .strict();
+
+export const NunchuxOpenAiImagesEditsRequestSchema = z
+  .object({
+    model: z
+      .enum(["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"])
+      .or(NunchuxGptImageModelAliasSchema)
+      .describe(
+        "GPT Image 2.6 model. Nunchux serves gpt-image-2.6-sunburst and gpt-image-2.6-flare. OpenAI's xhigh and max qualities are not offered, so the Artificial Analysis (max) setting cannot be reproduced; the highest quality is high."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(32_000)
+      .describe("How to change the input images, up to 32,000 characters."),
+    images: z
+      .array(gptImageInputImage)
+      .min(1)
+      .max(16)
+      .describe(
+        "The input images, 1 to 16. Each image_url is a public https URL or a base64 data:image URI."
+      ),
+    mask: gptImageInputImage
+      .optional()
+      .describe(
+        "A mask over the first input image. Transparent areas mark where the model may change the image. Send mask or markup, not both."
+      ),
+    markup: gptImageInputImage
+      .optional()
+      .describe(
+        "A PNG with transparent areas, laid over the first input image, with the same dimensions. Send mask or markup, not both."
+      ),
+    n: z
+      .number()
+      .int()
+      .min(1)
+      .max(10)
+      .optional()
+      .describe(
+        "How many images to return. Defaults to 1. Each image is billed."
+      ),
+    size: z
+      .string()
+      .optional()
+      .describe(
+        "auto, or WIDTHxHEIGHT such as 1024x1024. Defaults to auto, which Nunchux holds as 1536x1024. Both edges must be multiples of 16 and at most 3840, the long edge at most three times the short edge, and the image between 655360 and 8294400 pixels."
+      ),
+    quality: z
+      .enum(["low", "medium", "high", "auto"])
+      .optional()
+      .describe(
+        "Defaults to auto, which renders and bills at high. low, medium and high are the only explicit settings. OpenAI's xhigh and max are not offered."
+      ),
+    complexity: z
+      .enum(["low", "medium", "high"])
+      .optional()
+      .describe(
+        "How much effort the model spends planning the image. Leave it out for OpenAI's default. Separate from quality."
+      ),
+    output_format: z
+      .enum(["png", "jpeg", "webp"])
+      .optional()
+      .describe("Defaults to png. svg and gif are not offered."),
+    output_compression: z
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .optional()
+      .describe("Compression for jpeg and webp output, 0 to 100."),
+    background: z
+      .enum(["transparent", "opaque", "auto"])
+      .optional()
+      .describe(
+        "Defaults to auto. A transparent background needs png or webp output."
+      ),
+    moderation: z
+      .enum(["auto", "low"])
+      .optional()
+      .describe(
+        "Defaults to auto. low is available only on accounts Nunchux has approved; any other account gets 400."
+      ),
+  })
+  .strict()
+  .superRefine((body, ctx) => {
+    const problem = gptImageSizeProblem(body.size ?? "auto", body.n ?? 1);
+    if (problem !== undefined) {
+      ctx.addIssue({ code: "custom", path: ["size"], message: problem });
+    }
+    if (body.background === "transparent" && body.output_format === "jpeg") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["background"],
+        message: "A transparent background needs png or webp output.",
+      });
+    }
+    if (body.mask !== undefined && body.markup !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["markup"],
+        message: "Send mask or markup, not both.",
+      });
+    }
+  });
+export type NunchuxOpenAiImagesEditsRequest = z.input<
+  typeof NunchuxOpenAiImagesEditsRequestSchema
+>;

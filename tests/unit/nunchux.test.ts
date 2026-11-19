@@ -519,6 +519,93 @@ describe("nunchux", () => {
       quality: "low",
     });
   });
+  it("accepts an edit with images and rejects edit conflicts", () => {
+    const { schema } = createNunchux().v2.openai.images.edits;
+    const body = {
+      model: "gpt-image-2.6-flare" as const,
+      prompt: "make the lantern blue",
+      images: [{ image_url: "https://example.com/lantern.png" }],
+      size: "1024x1024",
+      quality: "low" as const,
+    };
+    expect(schema.parse(body)).toEqual(body);
+    expect(
+      schema.parse({
+        ...body,
+        images: [{ image_url: "data:image/jpeg;base64,YQ==" }],
+      }).images[0]?.image_url
+    ).toBe("data:image/jpeg;base64,YQ==");
+    expect(
+      schema.safeParse({ ...body, model: "gpt-image-2.6-sunburst" }).success
+    ).toBe(true);
+    expect(schema.safeParse({ ...body, images: [] }).success).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        images: [{ image_url: "http://example.com/lantern.png" }],
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        images: [{ file_id: "file_123" }],
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        mask: { image_url: "https://example.com/mask.png" },
+        markup: { image_url: "https://example.com/markup.png" },
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        mask: { image_url: "https://example.com/mask.png" },
+      }).success
+    ).toBe(true);
+    for (const extra of [{ stream: true }, { partial_images: 1 }]) {
+      expect(schema.safeParse({ ...body, ...extra }).success).toBe(false);
+    }
+    for (const quality of ["xhigh", "max"]) {
+      expect(schema.safeParse({ ...body, quality }).success).toBe(false);
+    }
+    expect(schema.shape.model.options[0].options).toEqual([
+      "gpt-image-2.6-sunburst",
+      "gpt-image-2.6-flare",
+    ]);
+  });
+  it("posts a GPT Image edit to the v2 route", async () => {
+    const { fetch, requests } = capture({
+      created: 1,
+      data: [{ b64_json: "aW1hZ2U=" }],
+    });
+    const response = await createNunchux({
+      apiKey: "sk-nunchux-test",
+      fetch,
+    }).v2.openai.images.edits({
+      model: "gpt-image-2.6-flare",
+      prompt: "make the lantern blue",
+      images: [{ image_url: "https://example.com/lantern.png" }],
+      size: "1024x1024",
+      quality: "low",
+    });
+    expect(response.data[0]?.b64_json).toBe("aW1hZ2U=");
+    expect(requests[0]).toMatchObject({
+      url: "https://api.nunchux.com/v2/openai/images/edits",
+      init: {
+        method: "POST",
+        headers: { Authorization: "Bearer sk-nunchux-test" },
+      },
+    });
+    expect(JSON.parse(String(requests[0]?.init.body))).toEqual({
+      model: "gpt-image-2.6-flare",
+      prompt: "make the lantern blue",
+      images: [{ image_url: "https://example.com/lantern.png" }],
+      size: "1024x1024",
+      quality: "low",
+    });
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

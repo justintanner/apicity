@@ -382,6 +382,11 @@ export const FRONTIER = {
             dotPath: "api.v3.openai.gptImage2p6Sunburst.edit",
             pricingKey: "openai/gpt-image-2.6-sunburst/edit",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v2.openai.images.edits",
+            modelId: "gpt-image-2.6-sunburst",
+          },
         ],
       },
       {
@@ -409,6 +414,11 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.openai.gptImage2p6Flare.edit",
             pricingKey: "openai/gpt-image-2.6-flare/edit",
+          },
+          {
+            provider: "nunchux",
+            dotPath: "v2.openai.images.edits",
+            modelId: "gpt-image-2.6-flare",
           },
         ],
       },

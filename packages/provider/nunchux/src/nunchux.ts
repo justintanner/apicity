@@ -23,6 +23,8 @@ import {
   type NunchuxGoogleInteractionsRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
   type NunchuxMinimaxVideoGenerationRequest,
+  NunchuxOpenAiImagesEditsRequestSchema,
+  type NunchuxOpenAiImagesEditsRequest,
   NunchuxOpenAiImagesGenerationsRequestSchema,
   type NunchuxOpenAiImagesGenerationsRequest,
 } from "./zod";
@@ -258,6 +260,22 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
               );
             },
             { schema: NunchuxOpenAiImagesGenerationsRequestSchema }
+          ),
+          // POST https://api.nunchux.com/v2/openai/images/edits
+          // Docs: https://docs.nunchux.ai/partner-models/gpt-image
+          edits: Object.assign(
+            async (
+              body: NunchuxOpenAiImagesEditsRequest,
+              signal?: AbortSignal
+            ) => {
+              return request<NunchuxOpenAiImagesGenerationsResponse>(
+                "POST",
+                "/v2/openai/images/edits",
+                body,
+                signal
+              );
+            },
+            { schema: NunchuxOpenAiImagesEditsRequestSchema }
           ),
         },
       },

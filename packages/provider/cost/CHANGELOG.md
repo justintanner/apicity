@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux GPT Image 2.6 edits use the same declared-usage rates as
+  generations: $5 / $8 / $30 per 1M text-input / image-input /
+  image-output tokens. Input images, the mask and the markup count as
+  image input. A recorded Flare edit (22 text tokens, 768 image-input
+  tokens and 824 image-output tokens) prices at 0.030974 USD, the same
+  debit the wallet showed (ac-die87i).
+
 - Nunchux GPT Image 2.6 Sunburst and Flare (`gpt-image-2.6-sunburst`,
   `gpt-image-2.6-flare`, slugs `gi2p6sb` and `gi2p6fl`) are priced from
   declared usage at $5 / $8 / $30 per 1M text-input / image-input /

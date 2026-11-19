@@ -31,7 +31,7 @@ const nunchux = createNunchux({ apiKey: process.env.NUNCHUX_API_KEY! });
 
 ## API Reference
 
-9 endpoints across 6 groups. Each method mirrors an upstream URL path.
+10 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -180,6 +180,25 @@ Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
 </details>
 
 ### openai
+
+<details>
+<summary><code>POST</code> <b><code>nunchux.v2.openai.images.edits</code></b></summary>
+
+<code>POST https://api.nunchux.com/v2/openai/images/edits</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.nunchux.ai/partner-models/gpt-image)
+
+> **Board setting:** Artificial Analysis ranks GPT Image 2.6 Sunburst and Flare at quality max. Nunchux does not offer OpenAI's `xhigh` or `max` (re-read 2026-11-19, [GPT Image](https://docs.nunchux.ai/partner-models/gpt-image)), so that setting cannot be reproduced. The highest quality on this route is `high`, and `auto` renders at `high`. Both `gpt-image-2.6-sunburst` and `gpt-image-2.6-flare` bill $5 / $8 / $30 per 1M text-input / image-input / image-output tokens ([pricing](https://nunchux.ai/pricing)). Input images, the mask and the markup count as image input. The call is synchronous and returns base64. `images` is required, 1 to 16 `image_url` values, each an https URL or a `data:image` URI. Send `mask` or `markup`, not both. `stream` and `partial_images` are not offered.
+
+```typescript
+const res = await nunchux.v2.openai.images.edits({ /* ... */ });
+```
+
+Source: [`packages/provider/nunchux/src/nunchux.ts`](src/nunchux.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>nunchux.v2.openai.images.generations</code></b></summary>

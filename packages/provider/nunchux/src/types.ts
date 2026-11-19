@@ -7,6 +7,8 @@ import type {
   NunchuxGoogleInteractionsRequestSchema,
   NunchuxMinimaxVideoGenerationRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
+  NunchuxOpenAiImagesEditsRequest,
+  NunchuxOpenAiImagesEditsRequestSchema,
   NunchuxOpenAiImagesGenerationsRequest,
   NunchuxOpenAiImagesGenerationsRequestSchema,
 } from "./zod";
@@ -342,6 +344,18 @@ export interface NunchuxOpenAiImagesNamespace {
       signal?: AbortSignal
     ): Promise<NunchuxOpenAiImagesGenerationsResponse>;
     schema: typeof NunchuxOpenAiImagesGenerationsRequestSchema;
+  };
+  /**
+   * Synchronous image edit. The response has the same shape as generations.
+   * OpenAI's xhigh and max qualities are not offered; high is the top
+   * setting, and auto renders at high.
+   */
+  edits: {
+    (
+      body: NunchuxOpenAiImagesEditsRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxOpenAiImagesGenerationsResponse>;
+    schema: typeof NunchuxOpenAiImagesEditsRequestSchema;
   };
 }
 

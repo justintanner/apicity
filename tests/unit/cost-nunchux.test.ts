@@ -638,4 +638,48 @@ describe("Nunchux GPT Image 2.6 pricing", () => {
     expect(estimate.warnings).toEqual([]);
     expect(estimate.usd).toBeCloseTo(credits[0]! - credits[1]!, 9);
   });
+
+  it("matches the recorded Flare low square edit", () => {
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/gpt-image-2-6-flare-image-edit_1630864014/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const edit = har.log.entries.find(
+      (entry) => entry.request.method === "POST"
+    );
+    const body = JSON.parse(edit?.response.content.text ?? "{}") as {
+      usage: {
+        input_tokens: number;
+        input_tokens_details: { image_tokens: number; text_tokens: number };
+        output_tokens: number;
+      };
+    };
+    const credits = har.log.entries
+      .filter((entry) => entry.request.url.endsWith("/v1/credits"))
+      .map(
+        (entry) =>
+          (
+            JSON.parse(entry.response.content.text ?? "{}") as {
+              credits_remaining: number;
+            }
+          ).credits_remaining
+      );
+    const estimate = quote("gpt-image-2.6-flare", {
+      inputTokens: body.usage.input_tokens,
+      imageInputTokens: body.usage.input_tokens_details.image_tokens,
+      imageOutputTokens: body.usage.output_tokens,
+      outputTokens: body.usage.output_tokens,
+    });
+    expect(body.usage.input_tokens_details).toEqual({
+      image_tokens: 768,
+      text_tokens: 22,
+    });
+    expect(body.usage.output_tokens).toBe(824);
+    expect(credits).toEqual([17.074477, 17.043503]);
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(credits[0]! - credits[1]!, 9);
+    expect(estimate.usd).toBeCloseTo(0.030974, 9);
+  });
 });

@@ -20,6 +20,7 @@ import {
   NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequestSchema,
   NunchuxMinimaxVideoGenerationRequestSchema,
+  NunchuxOpenAiImagesEditsRequestSchema,
   NunchuxOpenAiImagesGenerationsRequestSchema,
 } from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
@@ -595,8 +596,22 @@ function liveRegistry() {
         entry.provider === "nunchux" &&
         entry.dotPath === "v2.openai.images.generations"
       ) {
-        return NunchuxOpenAiImagesGenerationsRequestSchema.shape.model.options[0].options.some(
-          (id) => id === entry.modelId
+        return (
+          type === "t2i" &&
+          NunchuxOpenAiImagesGenerationsRequestSchema.shape.model.options[0].options.some(
+            (id) => id === entry.modelId
+          )
+        );
+      }
+      if (
+        entry.provider === "nunchux" &&
+        entry.dotPath === "v2.openai.images.edits"
+      ) {
+        return (
+          type === "i2i" &&
+          NunchuxOpenAiImagesEditsRequestSchema.shape.model.options[0].options.some(
+            (id) => id === entry.modelId
+          )
         );
       }
       if (entry.provider === "googleflow" && entry.dotPath === "v1.images") {
@@ -1124,6 +1139,33 @@ describe("frontier image snapshots", () => {
     ).toBe(false);
     expect(
       NunchuxOpenAiImagesGenerationsRequestSchema.shape.model.options[0].options
+    ).toEqual(["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"]);
+  });
+
+  it("lists Nunchux GPT Image 2.6 edits below max quality", () => {
+    const nunchux = {
+      provider: "nunchux",
+      dotPath: "v2.openai.images.edits",
+    };
+    expect(i2i.endpointMap["GPT Image 2.6 Sunburst (max)"]).toContainEqual({
+      ...nunchux,
+      modelId: "gpt-image-2.6-sunburst",
+    });
+    expect(i2i.endpointMap["GPT Image 2.6 Flare (max)"]).toContainEqual({
+      ...nunchux,
+      modelId: "gpt-image-2.6-flare",
+    });
+    // The board's (max) setting is not on this route.
+    expect(
+      NunchuxOpenAiImagesEditsRequestSchema.safeParse({
+        model: "gpt-image-2.6-sunburst",
+        prompt: "make the lantern blue",
+        images: [{ image_url: "https://example.com/lantern.png" }],
+        quality: "max",
+      }).success
+    ).toBe(false);
+    expect(
+      NunchuxOpenAiImagesEditsRequestSchema.shape.model.options[0].options
     ).toEqual(["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"]);
   });
 

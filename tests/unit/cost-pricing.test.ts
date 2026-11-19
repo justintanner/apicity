@@ -3821,7 +3821,6 @@ describe("kie stale-family refresh (REQ-004)", () => {
   it("restamps the unchanged Grok Image 2.0 pricing evidence", () => {
     for (const [model, rate] of [
       ["grok-imagine-image-2-0/text-to-image", 0.02],
-      ["grok-imagine-image-2-0/image-edit", 0.02],
       ["grok-imagine-image-2-0/segment-map", 0],
     ] as const) {
       expect(PRICING.kie[model]).toMatchObject({
@@ -3831,6 +3830,17 @@ describe("kie stale-family refresh (REQ-004)", () => {
         source: { asOf: "2026-08-22" },
       });
     }
+    // image-edit was re-pointed to image_urls (ac-sb6m5h); the 2026-11-19
+    // feed row still prints 4 credits per image.
+    expect(PRICING.kie["grok-imagine-image-2-0/image-edit"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.02 },
+      source: {
+        url: "https://kie.ai/grok-imagine-image-2?model=grok-imagine-image-2-0%2Fimage-edit",
+        asOf: "2026-11-19",
+      },
+    });
   });
 
   it("prices Grok Image 2.0 segment-edit from its recorded credit charge", () => {

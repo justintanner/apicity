@@ -1894,7 +1894,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
-  // https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+  // https://docs.kie.ai/market/grok-imagine-image-2-0/image-to-image
   "grok-imagine-image-2-0/image-edit": {
     type: "image",
     fields: {
@@ -1902,20 +1902,23 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         required: true,
         minLength: 1,
-        description: "Image editing prompt (minimum 1 character)",
+        maxLength: 8000,
+        description: "Image editing prompt (1-8000 characters)",
       },
-      task_id: {
+      aspect_ratio: {
         type: "string",
         required: true,
-        minLength: 1,
-        description: "Existing task ID to edit (minimum 1 character)",
+        enum: ["1:1", "2:3", "3:2", "16:9", "9:16", "auto"],
+        description: "Required output aspect ratio; no upstream default",
       },
-      mask_indexs: {
+      image_urls: {
         type: "array",
+        required: true,
         minItems: 1,
-        items: { type: "integer", minimum: 0 },
+        maxItems: 5,
+        items: { type: "string" },
         description:
-          "Optional mask selection with at least 1 item; each index must be a nonnegative integer (upstream spelling preserved)",
+          "1-5 reference image URLs to edit; for the task_id and mask_indexs form use grok-imagine-image-2-0/segment-edit",
       },
     },
   },

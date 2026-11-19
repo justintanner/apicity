@@ -110,6 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `GrokImagineImage2ImageEditRequestSchema` (`grok-imagine-image-2-0/image-edit`) takes the contract KIE documents since 2026-11-19: a `prompt` (1-8,000 characters), a required `aspect_ratio` (`1:1`, `2:3`, `3:2`, `16:9`, `9:16`, `auto`) and 1-5 required `image_urls`. It no longer takes `task_id` or `mask_indexs`. KIE moved that form to `grok-imagine-image-2-0/segment-edit` and now answers it with 422 "image_urls is required". Migration: send the old body with `model: "grok-imagine-image-2-0/segment-edit"` (one-based `mask_indexs`), or pass image URLs to image-edit. `GrokImagineImage2ImageEditAspectRatioSchema` is exported (ac-sb6m5h).
+
 - **Breaking:** `Seedance25RequestSchema` and `Seedance25InputSchema` now
   default `input.generate_audio` to `false`, not `true`, and the
   `modelInputSchemas["bytedance/seedance-2-5"]` descriptor says so. KIE's

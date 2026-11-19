@@ -3540,16 +3540,31 @@ export const GrokImagineImage2SegmentMapRequestSchema = z
     }
   });
 
-// Edits an existing task, optionally restricted to selected mask indices.
-// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+// Edits 1-5 reference images. KIE re-pointed this id by 2026-11-19
+// (ac-sb6m5h): its page is now .../grok-imagine-image-2-0/image-to-image,
+// titled "Grok Imagine Image 2.0 Image Edit", and takes a prompt (up to 8,000
+// characters), a required aspect_ratio and required image_urls. The old
+// task_id + mask_indexs form moved to grok-imagine-image-2-0/segment-edit
+// (documented on .../image-edit); a free probe of the old body on this id
+// answered 422 "image_urls is required".
+// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-to-image
+export const GrokImagineImage2ImageEditAspectRatioSchema = z.enum([
+  "1:1",
+  "2:3",
+  "3:2",
+  "16:9",
+  "9:16",
+  "auto",
+]);
+
 export const GrokImagineImage2ImageEditRequestSchema = z.object({
   model: z.literal("grok-imagine-image-2-0/image-edit"),
   callBackUrl: z.string().url().optional(),
   input: z
     .object({
-      prompt: z.string().min(1),
-      task_id: z.string().min(1),
-      mask_indexs: z.array(z.number().int().min(0)).min(1).optional(),
+      prompt: z.string().min(1).max(8000),
+      aspect_ratio: GrokImagineImage2ImageEditAspectRatioSchema,
+      image_urls: z.array(z.string().url()).min(1).max(5),
     })
     .strict(),
 });
@@ -10656,6 +10671,9 @@ export type GrokImagineImage2SegmentMapRequestInput =
   GrokImagineImage2SegmentMapRequest;
 export type GrokImagineImage2SegmentMapParsedRequest = z.output<
   typeof GrokImagineImage2SegmentMapRequestSchema
+>;
+export type GrokImagineImage2ImageEditAspectRatio = z.infer<
+  typeof GrokImagineImage2ImageEditAspectRatioSchema
 >;
 export type GrokImagineImage2ImageEditRequest = z.input<
   typeof GrokImagineImage2ImageEditRequestSchema

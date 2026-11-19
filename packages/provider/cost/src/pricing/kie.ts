@@ -252,6 +252,13 @@ const kling40ImageReferenceExtra = (
   return references * 0.0025;
 };
 
+// The source resolution a Gemini Omni Flash 1.2 extend bills at, from
+// costHints.inputResolution; anything but 360p or 720p counts as absent.
+const omniExtendResolution = (hints?: CostHints): string | undefined => {
+  const value = asString(hints?.inputResolution);
+  return value === "360p" || value === "720p" ? value : undefined;
+};
+
 type SecondsResolver = PerUnitPricing["units"];
 
 // kie's "(input video duration + output video duration) x unit price" rule,
@@ -4063,6 +4070,49 @@ export const kie: Record<string, ModelPricing> = {
     "720p",
     "2026-11-12"
   ),
+
+  // google/gemini-omni-flash-1-2-extend (ac-20k2yx) bills only the added
+  // seconds (input.duration, 3-10) at the 1.2 rates of the source's
+  // resolution, which the output keeps: 4 credits ($0.02) per second at 360p
+  // and 9 ($0.045) at 720p; 1080p and 4k sources cannot be extended yet. The
+  // 2026-11-19 feed rows ("google/gemini-omni-flash-1-2-extend, video, 360p /
+  // 720p") and the models API pricingDesc agree (evidence in
+  // tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-extend-2026-11-19.json).
+  // The request names a source task, not its resolution, so the estimate
+  // needs costHints.inputResolution ("360p" or "720p") and fails closed
+  // without it.
+  "google/gemini-omni-flash-1-2-extend": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      if (omniExtendResolution(hints) === undefined) return undefined;
+      const added = asObject(p.input)?.duration;
+      return typeof added === "number" &&
+        Number.isInteger(added) &&
+        added >= 3 &&
+        added <= 10
+        ? added
+        : undefined;
+    },
+    select: [
+      {
+        name: "resolution",
+        required: true,
+        pick: (_p, hints) => omniExtendResolution(hints),
+      },
+    ],
+    rates: { "360p": 0.02, "720p": 0.045 },
+    warn: (_p, hints) =>
+      omniExtendResolution(hints) === undefined
+        ? [
+            "kie 'google/gemini-omni-flash-1-2-extend': the request names a source task, not its resolution, and the added seconds bill at that resolution; declare costHints.inputResolution (360p or 720p)",
+          ]
+        : [],
+    source: pricePage(
+      "https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend",
+      "2026-11-19"
+    ),
+  },
 
   // The two other OTP pay-gated Gemini Omni routes — `api.v1.omni.audio.create`
   // and `api.v1.omni.character.create` (paid-endpoints.ts) — are INTENTIONALLY

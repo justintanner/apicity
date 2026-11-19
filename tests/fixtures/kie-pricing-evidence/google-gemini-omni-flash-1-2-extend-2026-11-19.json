@@ -1,0 +1,94 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend",
+  "models": ["google/gemini-omni-flash-1-2-extend"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend and the GET /api/v1/models pricingDesc agree: 4 credits (0.02 USD) per added second at 360p and 9 credits (0.045 USD) at 720p. Only the added seconds (input.duration, 3-10) bill, at the source task's resolution, which the output keeps; the docs allow only 360p and 720p sources of at most 15 s. The recording below extended a fresh 3 s 360p source by 3 s: the extend billed 12 credits, exactly 3 x 4.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T14:53:00.470Z",
+    "rows": [
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2-extend, video, 720p",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "9",
+        "creditUnit": "per second",
+        "usdPrice": "0.045",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "google/gemini-omni-flash-1-2-extend, video, 360p",
+        "interfaceType": "video",
+        "provider": "Google",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.02",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T16:18:38Z",
+    "entry": {
+      "model": "google/gemini-omni-flash-1-2-extend",
+      "slug": "google/gemini-omni-flash-1-2-extend",
+      "title": "Gemini Omni Flash 1.2 Extend",
+      "provider": "Google",
+      "taskType": ["Text to Video", "Image to Video", "Video to Video"],
+      "description": "",
+      "pricingDesc": "- 360P: 4 credits/s ($0.02)\n - 720P: 9 credits/s ($0.045)\n\nBilled only for the added seconds (duration). Source videos must be 360P or 720P.\n\nHigh-tier top-ups include 10% bonus credits, making the effective cost approximately 90% of the listed prices."
+    }
+  },
+  "docs": [
+    {
+      "model": "google/gemini-omni-flash-1-2-extend",
+      "url": "https://docs.kie.ai/market/google/gemini-omni-flash-1-2-extend.md",
+      "fetchedAt": "2026-11-19T16:15:57Z",
+      "sha256": "1eb6ecfff00eed31b8adb4210b5bfa86ad2973a9bc1f57fb24706d6beb4e20c5"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "google/gemini-omni-flash-1-2",
+      "role": "source",
+      "har": "tests/recordings/kie_2079838932/gemini-omni-flash-1-2-extend_2580123261/recording.har",
+      "request": {
+        "prompt": "A red panda waves once, then holds still.",
+        "duration": 3,
+        "resolution": "360p",
+        "aspect_ratio": "16:9"
+      },
+      "taskId": "bc3f893c09da3b78b63a4ca91720fcab",
+      "creditsConsumed": 12,
+      "usd": 0.06
+    },
+    {
+      "model": "google/gemini-omni-flash-1-2-extend",
+      "role": "extend",
+      "har": "tests/recordings/kie_2079838932/gemini-omni-flash-1-2-extend_2580123261/recording.har",
+      "request": {
+        "task_id": "bc3f893c09da3b78b63a4ca91720fcab",
+        "prompt": "The red panda turns and walks out of frame.",
+        "duration": 3
+      },
+      "sourceResolution": "360p",
+      "taskId": "159a4e399f50c2d6245333fe7533bb11",
+      "creditsConsumed": 12,
+      "usd": 0.06,
+      "costTimeSeconds": 45
+    }
+  ],
+  "balanceCredits": {
+    "before": 57811.58,
+    "after": 57787.58
+  },
+  "observedTotalUsd": 0.12
+}

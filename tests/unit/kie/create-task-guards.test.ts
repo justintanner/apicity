@@ -396,8 +396,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 178-entry pin when the guarded model set changes"
-    ).toHaveLength(178);
+      "Update this deliberate 179-entry pin when the guarded model set changes"
+    ).toHaveLength(179);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -547,6 +547,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "google/gemini-3-8-flash-lite-tts",
         "google/gemini-omni-flash-1-1",
         "google/gemini-omni-flash-1-2",
+        "google/gemini-omni-flash-1-2-extend",
         "google/imagen4",
         "google/imagen4-fast",
         "google/imagen4-ultra",

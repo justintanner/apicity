@@ -1928,10 +1928,13 @@ const GOOGLE_GEMINI_TTS_REJECTED_MODELS = [
 const GOOGLE_GEMINI_OMNI_EXACT_ONLY_MODELS = [
   "google/gemini-omni-flash-1-1",
   "google/gemini-omni-flash-1-2",
+  "google/gemini-omni-flash-1-2-extend",
 ] as const;
 
 const GOOGLE_GEMINI_OMNI_REJECTED_MODELS = [
   "google/gemini-omni-flash-1-3",
+  "google/gemini-omni-flash-1-1-extend",
+  "google/gemini-omni-flash-1-2-extended",
   "gemini-omni-flash-1-1",
   "google/gemini-omni-flash",
   "GOOGLE/GEMINI-OMNI-FLASH-1-1",

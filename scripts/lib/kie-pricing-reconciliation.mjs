@@ -828,7 +828,13 @@ function representativePayload(
 // declared (ac-ge9l10 for Wan 3.0, ac-u8y5xg for the Seedance families and
 // MiniMax H3), and representativePricingMetadata.costHints is the only
 // channel the guard's runtimeCase reads.
-function representativeCostHints(key, inventories, auditedUnit, payload) {
+function representativeCostHints(
+  key,
+  inventories,
+  auditedUnit,
+  payload,
+  official
+) {
   const hints = {};
   if (auditedUnit.unit === "seconds") {
     if (key !== "wan/2-2-a14b-speech-to-video-turbo") {
@@ -855,6 +861,14 @@ function representativeCostHints(key, inventories, auditedUnit, payload) {
   if (key === "kie/image-upscale") {
     hints.inputWidth = 1024;
     hints.inputHeight = 1024;
+  }
+  // A Gemini Omni Flash 1.2 extend bills the added seconds at its source's
+  // resolution, which the request cannot carry: each feed row names it.
+  if (key === "google/gemini-omni-flash-1-2-extend") {
+    const resolution = String(official?.modelDescription ?? "").match(
+      /(?:^|[-,\s])(360p|720p)(?:$|[-,\s])/i
+    );
+    if (resolution) hints.inputResolution = resolution[1].toLowerCase();
   }
   return Object.keys(hints).length ? hints : undefined;
 }
@@ -1183,7 +1197,8 @@ function classifyRawRow(raw, inventories, live = false) {
       key,
       inventories,
       auditedUnit,
-      representative
+      representative,
+      official
     );
     if (pricingMetadata || costHints) {
       result.representativePricingMetadata = {

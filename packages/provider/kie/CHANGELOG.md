@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `google/gemini-omni-flash-1-2-extend` (Gemini Omni Flash 1.2 Extend) with typed inputs: a required `task_id` (a completed 1.2 or extend task, 360p or 720p, at most 15 s), a 1-20000 character `prompt`, a required integer `duration` of 3-10 added seconds, and up to 3 `image_urls`, plus a recorded extend. The id is enum-only like the other Omni ids. `GoogleGeminiOmniFlash12ExtendRequestSchema` is exported (ac-20k2yx).
+
 - Added `kling-4-0/image` (Kling 4.0 Image, text-to-image and image-to-image) with typed inputs: a 1-20000 character `prompt`, up to 10 `image_urls` and `elements` together (each element with 2-4 `image_urls`, an optional `tag` and `description`, and a name that is not `image_N` or `object_N`), `resolution` `2k`/`4k`/`8k` (default `2k`), `aspect_ratio` (default `auto`), and `mode`: `default` takes `count` 1-9, while `series` requires `count` 2-10. The input is strict, and a recorded image is included. The id's dashed version keeps it enum-only, outside the Kling alias. `Kling40ImageModeSchema`, `Kling40ImageResolutionSchema`, `Kling40ImageAspectRatioSchema`, `Kling40ImageElementSchema`, `Kling40ImageInputSchema` and `Kling40ImageRequestSchema` are exported (ac-i4vebc).
 
 - `bytedance/seedance-2-mini` takes `first_frame_url` and `last_frame_url` (an image URL or `asset://{assetId}`), per KIE's docs of 2026-11-19. A frame cannot be combined with a non-empty `reference_image_urls`, `reference_video_urls` or `reference_audio_urls` (ac-7cp4o7).

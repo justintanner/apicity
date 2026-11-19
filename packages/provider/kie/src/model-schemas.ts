@@ -7247,6 +7247,43 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/google/gemini-omni-flash-1-2-extend
+  "google/gemini-omni-flash-1-2-extend": {
+    type: "video",
+    fields: {
+      task_id: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description:
+          "A completed google/gemini-omni-flash-1-2 or extend task whose video is 360p or 720p and at most 15 s long",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "What happens next (1-20000 characters): action, camera, environment and sound",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 3,
+        maximum: 10,
+        description:
+          "Seconds to add at the end, 3-10; the output is about the source length plus this. Only these seconds bill",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 3,
+        items: { type: "string" },
+        description:
+          "Up to 3 public png, jpeg or webp reference images (20 MB each) that keep people and objects consistent",
+      },
+    },
+  },
+
   // Sources:
   // - https://docs.kie.ai/market/minimax-h3/text-to-video
   // - https://docs.kie.ai/market/minimax-h3/image-to-video

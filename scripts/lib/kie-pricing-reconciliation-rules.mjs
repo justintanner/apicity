@@ -341,6 +341,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     })
   ),
 
+  ...["360p", "720p"].map((variant) => ({
+    key: "google/gemini-omni-flash-1-2-extend",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-extend-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 4/9 credits = 0.02/0.045 USD per added second at 360p/720p",
+    rationale:
+      "Gemini Omni Flash 1.2 Extend was added after the frozen September catalog; the dated feed capture supplies the rates (only the added seconds bill, at the source's resolution), and the billed recording confirms the 360p cell.",
+  })),
+
   ...["2k", "4k", "8k"].map((variant) => ({
     key: "kling-4-0/image",
     variant,

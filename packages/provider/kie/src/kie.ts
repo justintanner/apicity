@@ -47,6 +47,7 @@ import {
   GeminiOmniVideoRequestSchema,
   GoogleGeminiOmniFlash11RequestSchema,
   GoogleGeminiOmniFlash12RequestSchema,
+  GoogleGeminiOmniFlash12ExtendRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
   GeminiOmniCharacterCreateRequestSchema,
   GeminiOmniCharacterCreateResponseSchema,
@@ -469,6 +470,8 @@ export const CREATE_TASK_GUARDS = {
   "google/gemini-3-8-flash-lite-tts": GoogleGemini38FlashLiteTtsRequestSchema,
   "google/gemini-omni-flash-1-1": GoogleGeminiOmniFlash11RequestSchema,
   "google/gemini-omni-flash-1-2": GoogleGeminiOmniFlash12RequestSchema,
+  "google/gemini-omni-flash-1-2-extend":
+    GoogleGeminiOmniFlash12ExtendRequestSchema,
   "google/imagen4": GoogleImagen4RequestSchema,
   "google/imagen4-fast": GoogleImagen4FastRequestSchema,
   "google/imagen4-ultra": GoogleImagen4UltraRequestSchema,

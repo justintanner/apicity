@@ -430,6 +430,7 @@ describe("KIE Zod schema validation", () => {
           "generate_audio",
           "last_frame_url",
           "nsfw_checker",
+          "omni_reference_task_type",
           "output_format",
           "prompt",
           "reference_audio_urls",
@@ -440,6 +441,9 @@ describe("KIE Zod schema validation", () => {
           "web_search",
         ].sort()
       );
+      expect(Object.keys(fields).sort()).toEqual(
+        Object.keys(Seedance25InputSchema.shape).sort()
+      );
       expect(fields.duration).toMatchObject({
         type: "integer",
         enum: [-1, ...Array.from({ length: 27 }, (_, index) => index + 4)],
@@ -447,7 +451,7 @@ describe("KIE Zod schema validation", () => {
       });
       expect(fields.resolution).toMatchObject({
         type: "string",
-        enum: ["480p", "720p", "1080p"],
+        enum: ["480p", "720p", "1080p", "4k"],
         default: "720p",
       });
       for (const resolution of fields.resolution.enum ?? []) {
@@ -482,7 +486,7 @@ describe("KIE Zod schema validation", () => {
       },
     });
 
-    it.each(["480p", "720p", "1080p"])(
+    it.each(["480p", "720p", "1080p", "4k"])(
       "accepts and round-trips %s",
       (resolution) => {
         const result = Seedance25RequestSchema.safeParse(
@@ -493,7 +497,9 @@ describe("KIE Zod schema validation", () => {
       }
     );
 
-    it.each(["1080P", "4k", "2160p", "720"])(
+    // The docs spell the 4K tier "4k" (ac-vggwxn); the feed's "4K" label is
+    // not a request value.
+    it.each(["1080P", "4K", "2160p", "720"])(
       "rejects %s as an out-of-vocabulary resolution",
       (resolution) => {
         const result = Seedance25RequestSchema.safeParse(

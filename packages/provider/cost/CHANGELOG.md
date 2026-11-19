@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Seedance 2.5 (`bytedance/seedance-2-5`) prices its 4K tier: 1.255 USD
+  per second without video input and 0.775 USD with it (251 / 155 credits),
+  on input + output seconds, from the 2026-11-19 price feed and models API.
+  The entry's rates are dated 2026-11-19 (ac-vggwxn).
+
 - KIE Seedance 2.5 Flash (`bytedance/seedance-2-5-flash`, slug `sd2p5flash`)
   is priced per second: 0.0925 / 0.205 USD at 480p / 720p without video
   input, and 0.0575 / 0.1275 USD with it, on input + output seconds (the

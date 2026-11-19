@@ -126,10 +126,11 @@ describe("apicity frontier", () => {
     const kie = envelope.data.find((row) => row.provider === "kie");
     expect(kie?.configured).toBe(true);
     expect(kie?.modelId).not.toBe("-");
+    // Seedance 2.5's 4K tier (ac-vggwxn) tops the range.
     expect(kie?.price).toMatchObject({
       unit: "seconds",
       min: 0.085,
-      max: 0.79,
+      max: 1.255,
     });
 
     const quiet = capture();

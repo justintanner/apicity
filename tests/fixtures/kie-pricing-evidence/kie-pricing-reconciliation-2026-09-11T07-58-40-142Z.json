@@ -1820,10 +1820,10 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:0abf1f5577a29ac71230d366d50017ea391bfeed028934e91816c0b19a9bd2c3",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:4058efd4ca6785715dd01451844d11a503880ef5517bdff0d83edd69dd217409",
+      "packages/provider/kie/src/zod.ts": "sha256:39569a1f60dd3b091cedcacfd22d45d92231d6eb1c6db35273c9c9f810b61c95",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:b1a67b8f626ee87ebc169ef9b5485ff4305df42f4567f02404c0a00d99ad96b9",
       "packages/provider/kie/src/kie.ts": "sha256:87d47672b87bfa861dc6d2ef5b2c291811ff3c6ce21e886efe341ea3d2081841",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:86fbc33dd2bd3352850e5b06b0778783294bb19be1ecf36b4fe0d31d90687fac",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:841c81f041715e44e1cc20b96b81255eb7de30f2614d292f4b5a4ee642fb7661",
       "packages/provider/cost/src/slugs.ts": "sha256:07dc438fcaa7009de66298181432c37701b7bcbdda9d17b08384e8910ffddce5",
       "scripts/endpoint-docs.tsv": "sha256:d83bfab658f21e94ac02a951e2e36521c81d45da8023688580aeeb5541bd6f09"
     }
@@ -29638,6 +29638,20 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/seedance-2-5-flash-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.5/18.5/25.5/41 credits = 0.0575/0.0925/0.1275/0.205 USD per billed second at 480p/720p with/without video input",
         "rationale": "Seedance 2.5 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (with video input, the input and output seconds are billed), and the billed recording confirms the 480p no-video cell."
+      },
+      {
+        "key": "bytedance/seedance-2-5",
+        "variant": "4k|video",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedance-2-5-4k-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 155/251 credits = 0.775/1.255 USD per billed second at 4K with/without video input",
+        "rationale": "Seedance 2.5's 4K tier was added on 2026-11-19, after the frozen September catalog; the dated feed capture supplies the rates (with video input, the input and output seconds are billed). The draft render model stays 1080p only."
+      },
+      {
+        "key": "bytedance/seedance-2-5",
+        "variant": "4k|no-video",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedance-2-5-4k-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 155/251 credits = 0.775/1.255 USD per billed second at 4K with/without video input",
+        "rationale": "Seedance 2.5's 4K tier was added on 2026-11-19, after the frozen September catalog; the dated feed capture supplies the rates (with video input, the input and output seconds are billed). The draft render model stays 1080p only."
       },
       {
         "key": "bytedance/seedance-2-5",

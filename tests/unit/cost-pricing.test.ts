@@ -3702,6 +3702,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
     { resolution: "720p", generate_audio: true, rate: 0.315 },
     { resolution: "1080p", generate_audio: true, rate: 0.79 },
     { resolution: "1080p", generate_audio: false, rate: 0.79 },
+    { resolution: "4k", generate_audio: true, rate: 1.255 },
+    { resolution: "4k", generate_audio: false, rate: 1.255 },
   ])(
     "prices Seedance 2.5 $resolution generate_audio=$generate_audio (no video) at $rate/s",
     ({ resolution, generate_audio, rate }) => {
@@ -3733,6 +3735,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     { resolution: "480p", rate: 0.085 },
     { resolution: "720p", rate: 0.19 },
     { resolution: "1080p", rate: 0.475 },
+    { resolution: "4k", rate: 0.775 },
   ])(
     "prices Seedance 2.5 $resolution with video at $rate/s on input + output seconds",
     ({ resolution, rate }) => {
@@ -3770,7 +3773,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  it("pins Seedance 2.5's six published pricing cells", () => {
+  it("pins Seedance 2.5's eight published pricing cells", () => {
     const entry = PRICING.kie["bytedance/seedance-2-5"];
     expect(entry.kind).toBe("perUnit");
     if (entry.kind !== "perUnit") return;
@@ -3780,6 +3783,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
       "1080p|video",
       "480p|no-video",
       "480p|video",
+      "4k|no-video",
+      "4k|video",
       "720p|no-video",
       "720p|video",
     ]);
@@ -3809,7 +3814,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     });
     expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
       url: "https://kie.ai/seedance-2-5",
-      asOf: "2026-10-22",
+      asOf: "2026-11-19",
     });
   });
 
@@ -4896,7 +4901,7 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
         usd: 2.28,
         units: 12,
         perUnitUsd: 0.19,
-        rateAsOf: "2026-10-22",
+        rateAsOf: "2026-11-19",
       },
       {
         label:
@@ -5355,8 +5360,10 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
           "720p|no-video": 0.315,
           "1080p|video": 0.475,
           "1080p|no-video": 0.79,
+          "4k|video": 0.775,
+          "4k|no-video": 1.255,
         },
-        source: { url: "https://kie.ai/seedance-2-5", asOf: "2026-10-22" },
+        source: { url: "https://kie.ai/seedance-2-5", asOf: "2026-11-19" },
       },
       {
         model: "minimax-h3/reference-to-video",

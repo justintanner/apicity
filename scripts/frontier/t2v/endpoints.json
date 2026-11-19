@@ -96,6 +96,7 @@
       "modelId": "dreamina-seedance-2-5-260628"
     }
   ],
+  "Hyperflow H3": [],
   "FLUX 3 Max": [
     {
       "provider": "fal",
@@ -154,13 +155,6 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.blackForestLabs.flux3.textToVideo",
       "pricingKey": "black-forest-labs/flux-3/text-to-video"
-    }
-  ],
-  "SkyReels V4": [
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.skyworkAi.skyreelsV4.textToVideo",
-      "pricingKey": "skywork-ai/skyreels-v4/text-to-video"
     }
   ]
 }

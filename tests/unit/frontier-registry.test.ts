@@ -92,37 +92,33 @@ const T2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1261],
   [2, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1229],
   [3, "GPT Image 2.6 Flare (max)", "OpenAI", 1227],
-  [4, "GPT Image 2.5 Flare (max)", "OpenAI", 1210],
-  [5, "GPT Image 2 (high)", "OpenAI", 1192],
-  [6, "Kling Image 4.0 (preview)", "KlingAI", 1180],
-  [7, "Nano Banana 2.1", "Google", 1176],
-  [8, "MAI-Image-2.6", "Microsoft AI", 1168],
-  [9, "Grok Imagine Image 2.0", "SpaceXAI", 1167],
-  [10, "Canva Craft", "Canva", 1158],
+  [4, "MAI-Image-2.7", "Microsoft AI", 1214],
+  [5, "GPT Image 2.5 Flare (max)", "OpenAI", 1210],
+  [6, "GPT Image 2 (high)", "OpenAI", 1192],
+  [7, "Kling Image 4.0", "KlingAI", 1180],
+  [8, "Nano Banana 2.1", "Google", 1176],
+  [9, "MAI-Image-2.6", "Microsoft AI", 1168],
+  [10, "Grok Imagine Image 2.0", "SpaceXAI", 1167],
 ];
 
 const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1211],
-  [2, "GPT Image 2.6 Flare (max)", "OpenAI", 1205],
-  [3, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1202],
-  [4, "MAI-Image-2.7-Preview", "Microsoft AI", 1197],
+  [1, "MAI-Image-2.7", "Microsoft AI", 1215],
+  [2, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1211],
+  [3, "GPT Image 2.6 Flare (max)", "OpenAI", 1205],
+  [4, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1202],
   [5, "GPT Image 2.5 Flare (max)", "OpenAI", 1185],
-  [6, "Kling Image 4.0 (preview)", "KlingAI", 1183],
-  [7, "Seedream 5.5", "ByteDance Seed", 1160],
-  [8, "Krea 3 (Ultra)", "Krea", 1154],
-  [9, "Nano Banana 2.1", "Google", 1152],
-  [10, "MAI-Image-2.6", "Microsoft AI", 1150],
+  [6, "Kling Image 4.0", "KlingAI", 1183],
+  [7, "MAI-Image-2.7-Flash", "Microsoft AI", 1179],
+  [8, "Seedream 5.5", "ByteDance Seed", 1160],
+  [9, "Krea 3 (Ultra)", "Krea", 1154],
+  [10, "Nano Banana 2.1", "Google", 1152],
 ];
 
-const T2I_UNMAPPED = [
-  "Kling Image 4.0 (preview)",
-  "MAI-Image-2.6",
-  "Canva Craft",
-];
+const T2I_UNMAPPED = ["MAI-Image-2.7", "Kling Image 4.0", "MAI-Image-2.6"];
 const I2I_UNMAPPED = [
-  "MAI-Image-2.7-Preview",
-  "Kling Image 4.0 (preview)",
-  "MAI-Image-2.6",
+  "MAI-Image-2.7",
+  "Kling Image 4.0",
+  "MAI-Image-2.7-Flash",
 ];
 
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
@@ -143,12 +139,12 @@ const T2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [2, "Utopai X", "Utopai Studios", 1168],
   [3, "MiniMax H3 (768p)", "MiniMax", 1159],
   [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1156],
-  [5, "FLUX 3 Max", "Fal", 1152],
-  [6, "Gemini Omni Flash 1.2", "Google", 1151],
-  [7, "HeyGen Video 1", "HeyGen", 1149],
-  [8, "MiniMax H3 Max", "Fal", 1143],
-  [9, "FLUX 3", "Black Forest Labs", 1136],
-  [10, "SkyReels V4", "Skywork AI", 1134],
+  [5, "Hyperflow H3", "Video Rebirth", 1154],
+  [6, "FLUX 3 Max", "Fal", 1152],
+  [7, "Gemini Omni Flash 1.2", "Google", 1151],
+  [8, "HeyGen Video 1", "HeyGen", 1149],
+  [9, "MiniMax H3 Max", "Fal", 1143],
+  [10, "FLUX 3", "Black Forest Labs", 1136],
 ];
 
 /** The video-editing board has 11 models; the top 10 are listed. */
@@ -179,7 +175,7 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
 ];
 
-const T2V_UNMAPPED = ["Utopai X"];
+const T2V_UNMAPPED = ["Utopai X", "Hyperflow H3"];
 const I2V_UNMAPPED = [
   "Utopai X",
   "SkyReels V4",
@@ -191,10 +187,10 @@ const V2V_UNMAPPED = ["Hyperflow H3", "Pika H3 Flex"];
 /** t2v and i2v top-10 models with no reference-to-video endpoint. */
 const R2V_LEFT_OUT = [
   "Utopai X",
+  "Hyperflow H3",
   "FLUX 3 Max",
   "FLUX 3",
   "SkyReels V4",
-  "Hyperflow H3",
   "P-Video-2-Pro",
   "Pika H3 Flex",
 ];
@@ -896,7 +892,7 @@ describe("frontier snapshots", () => {
     expect(snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/image-to-video"
     );
-    expect(snapshot.capturedOn).toBe("2026-11-16");
+    expect(snapshot.capturedOn).toBe("2026-11-19");
     expect(snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
@@ -1039,7 +1035,7 @@ describe("frontier image snapshots", () => {
     expect(t2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/text-to-image"
     );
-    expect(t2i.snapshot.capturedOn).toBe("2026-11-16");
+    expect(t2i.snapshot.capturedOn).toBe("2026-11-19");
     expect(t2i.snapshot.methodology).toBe(
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators."
     );
@@ -1062,7 +1058,7 @@ describe("frontier image snapshots", () => {
     expect(i2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/editing"
     );
-    expect(i2i.snapshot.capturedOn).toBe("2026-11-16");
+    expect(i2i.snapshot.capturedOn).toBe("2026-11-19");
     expect(i2i.snapshot.methodology).toBe(
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes."
     );
@@ -1332,14 +1328,14 @@ describe("frontier video snapshots", () => {
     expect(t2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/text-to-video"
     );
-    expect(t2v.snapshot.capturedOn).toBe("2026-11-16");
+    expect(t2v.snapshot.capturedOn).toBe("2026-11-19");
     expect(t2v.snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
     expect(seedRows(t2v.snapshot)).toEqual(T2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2v.snapshot)).toEqual([]);
     expect(unmappedNames(t2v.endpointMap)).toEqual(T2V_UNMAPPED);
-    expect(mappedCount(t2v.endpointMap)).toBe(9);
+    expect(mappedCount(t2v.endpointMap)).toBe(8);
     expect(Object.keys(t2v.endpointMap)).toHaveLength(10);
   });
 
@@ -1348,7 +1344,7 @@ describe("frontier video snapshots", () => {
     expect(v2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/video-editing"
     );
-    expect(v2v.snapshot.capturedOn).toBe("2026-11-16");
+    expect(v2v.snapshot.capturedOn).toBe("2026-11-19");
     expect(v2v.snapshot.methodology).toBe(
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes."
     );
@@ -1367,7 +1363,7 @@ describe("frontier video snapshots", () => {
     ]);
     expect(r2v.snapshot).not.toHaveProperty("leaderboardId");
     expect(r2v.snapshot.sourceUrl).toBe(t2v.snapshot.sourceUrl);
-    expect(r2v.snapshot.capturedOn).toBe("2026-11-16");
+    expect(r2v.snapshot.capturedOn).toBe("2026-11-19");
     expect(r2v.snapshot.methodology).toBe(
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard."
     );
@@ -1785,7 +1781,7 @@ describe("frontier generated registry", () => {
       leaderboardId: "",
       sourceUrl:
         "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-      capturedOn: "2026-11-16",
+      capturedOn: "2026-11-19",
     });
     expect(frontier("video-editing")).toEqual(frontier("v2v"));
     expect(
@@ -1821,11 +1817,11 @@ describe("frontier generated registry", () => {
       "reference-to-video is derived because no leaderboard"
     );
     expect(doc).toContain("leaderboard\nexists.");
-    expect(doc).toContain("image-to-video),\ncaptured 2026-11-16");
-    expect(doc).toContain("text-to-image),\ncaptured 2026-11-16");
-    expect(doc).toContain("editing),\ncaptured 2026-11-16");
-    expect(doc).toContain("text-to-video),\ncaptured 2026-11-16");
-    expect(doc).toContain("video-editing),\ncaptured 2026-11-16");
+    expect(doc).toContain("image-to-video),\ncaptured 2026-11-19");
+    expect(doc).toContain("text-to-image),\ncaptured 2026-11-19");
+    expect(doc).toContain("editing),\ncaptured 2026-11-19");
+    expect(doc).toContain("text-to-video),\ncaptured 2026-11-19");
+    expect(doc).toContain("video-editing),\ncaptured 2026-11-19");
     expect(doc).toContain("not yet in apicity");
     expect(doc).not.toMatch(/^, captured /m);
     expect(doc).not.toContain("no data yet");
@@ -1841,7 +1837,7 @@ describe("frontier generated registry", () => {
     }
     const derived = doc.slice(doc.indexOf("## reference-to-video"));
     expect(derived).toContain(
-      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v2.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-11-16. Derived:"
+      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v2.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-11-19. Derived:"
     );
     expect(doc).toContain("fal `minimax.h3.imageToVideo`");
     expect(doc).toContain("kie `minimax-h3/image-to-video`");

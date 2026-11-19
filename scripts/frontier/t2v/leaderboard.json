@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Video-T2V v2.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-  "capturedOn": "2026-11-16",
+  "capturedOn": "2026-11-19",
   "methodology": "Elo from blind comparisons by validated private evaluators.",
   "entries": [
     {
@@ -30,39 +30,39 @@
     },
     {
       "rank": 5,
+      "model": "Hyperflow H3",
+      "creator": "Video Rebirth",
+      "elo": 1154
+    },
+    {
+      "rank": 6,
       "model": "FLUX 3 Max",
       "creator": "Fal",
       "elo": 1152
     },
     {
-      "rank": 6,
+      "rank": 7,
       "model": "Gemini Omni Flash 1.2",
       "creator": "Google",
       "elo": 1151
     },
     {
-      "rank": 7,
+      "rank": 8,
       "model": "HeyGen Video 1",
       "creator": "HeyGen",
       "elo": 1149
     },
     {
-      "rank": 8,
+      "rank": 9,
       "model": "MiniMax H3 Max",
       "creator": "Fal",
       "elo": 1143
     },
     {
-      "rank": 9,
+      "rank": 10,
       "model": "FLUX 3",
       "creator": "Black Forest Labs",
       "elo": 1136
-    },
-    {
-      "rank": 10,
-      "model": "SkyReels V4",
-      "creator": "Skywork AI",
-      "elo": 1134
     }
   ]
 }

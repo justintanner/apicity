@@ -2,7 +2,7 @@
   "derived": true,
   "sources": ["AA-Video-T2V v2.1", "AA-Video-I2V v2.1"],
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-  "capturedOn": "2026-11-16",
+  "capturedOn": "2026-11-19",
   "methodology": "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
   "entries": [
     {

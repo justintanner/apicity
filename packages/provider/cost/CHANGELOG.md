@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE `gpt-image-2-6/economy-text-to-image` (slug `gi2p6ec`, display "GPT Image 2.6 Economy") is priced at a flat 5 credits ($0.025) per png image, the 1K feed row and the models API pricingDesc read 2026-11-19. Two recordings each billed 5 credits. KIE publishes no gif price, so a gif request quotes nothing and warns (ac-cqko9r).
+
 - Nunchux GPT Image 2.6 edits use the same declared-usage rates as
   generations: $5 / $8 / $30 per 1M text-input / image-input /
   image-output tokens. Input images, the mask and the markup count as

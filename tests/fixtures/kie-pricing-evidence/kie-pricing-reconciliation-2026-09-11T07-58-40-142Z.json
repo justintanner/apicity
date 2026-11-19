@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 180,
-      "pricingKeys": 245,
-      "slugKeys": 247,
-      "displayKeys": 247,
+      "models": 181,
+      "pricingKeys": 246,
+      "slugKeys": 248,
+      "displayKeys": 248,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 79
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:4e7ac1cb15ba6502df8ce9c047162aa37771045e0ef46ff8b4c8932a8555fa76",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:140d1858fd7bcd0281934f26c3d1e90ff1ce55cc3340194e415e885989d6640f",
-      "packages/provider/kie/src/kie.ts": "sha256:f91b007eebbb156b5ab8693d5018b4f098718068fac4cb2063904523e72255f5",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:c19a95a7e6b8b960955ecb25b0a6f1a17b13c560775fad5c168d1eab01c250d0",
-      "packages/provider/cost/src/slugs.ts": "sha256:2e72d973e4ef4914ce8b1a6a45e1c4cdd88f10e82a2000887934dc71013a167e",
+      "packages/provider/kie/src/zod.ts": "sha256:1c75206ef41e7ea9e05a3f8c5987f7b8c53d8fbbec23b56f2490246df8b2659e",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:d092c5a9e52d02a6490587f453408119bb2973e170ecf0b991d674e892a706a1",
+      "packages/provider/kie/src/kie.ts": "sha256:cf97060e409453e1076c26da1d92f37fa053dfe88aface044676b7c54954797b",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:ebf06a21a6f4f65130eff40f5a5d71e7c3833c236a600740f596f639c1bf1046",
+      "packages/provider/cost/src/slugs.ts": "sha256:29a296cb44192b7b2b155a6364ee3a55b3cee1da58348c88573abe854d49ab8f",
       "scripts/endpoint-docs.tsv": "sha256:cec66ae8a234cfaacf915dc0f3af9958879c5554d5d4861dcdd3d3c907877a04"
     }
   },
@@ -21812,6 +21812,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "gpt-image-2-6/economy-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-6/economy-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "seedream/5-lite-image-to-image",
         "descriptor": true,
         "guard": true,
@@ -25082,6 +25091,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "gpt-image-2-6/economy-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "wan/2-7-image",
         "linkedRows": [
           "sha256:8ad52c3321102b56e4592ce13c896f578e59855ff8c05c43ad63229ad2b85a24#1"
@@ -26789,6 +26804,10 @@
         "disposition": "supported"
       },
       {
+        "key": "gpt-image-2-6/economy-text-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-7-image",
         "disposition": "supported"
       },
@@ -27779,6 +27798,10 @@
         "disposition": "supported"
       },
       {
+        "key": "gpt-image-2-6/economy-text-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-7-image",
         "disposition": "supported"
       },
@@ -28737,16 +28760,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 180,
-        "descriptors": 180,
-        "guards": 180,
+        "count": 181,
+        "descriptors": 181,
+        "guards": 181,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 81
+          "upstream-unmappable": 82
         },
         "unclassified": 0
       },
@@ -28764,20 +28787,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 245,
+        "count": 246,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 95
+          "upstream-unmappable": 96
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 247,
+        "count": 248,
         "dispositionCounts": {
-          "supported": 247,
+          "supported": 248,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28786,9 +28809,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 247,
+        "count": 248,
         "dispositionCounts": {
-          "supported": 247,
+          "supported": 248,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29330,6 +29353,13 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/omnihuman-2-0-2026-10-25.json: feed row and https://kie.ai/omnihuman-2-0 read 2026-10-25: 14 credits = 0.07 USD per output second",
         "rationale": "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it."
+      },
+      {
+        "key": "gpt-image-2-6/economy-text-to-image",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-text-to-image-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 5 credits = 0.025 USD per 1K image, png only",
+        "rationale": "GPT Image 2.6 economy was added after the frozen September catalog; the dated feed capture supplies the flat rate (kie states no gif price, so only png is priced), and the billed recording confirms it."
       },
       {
         "key": "seedream/5-5-image-to-image",

@@ -364,6 +364,11 @@ describe("modelSlug", () => {
       slug: "kling4f",
       display: "Kling 4.0 Flash Reference-to-Video",
     },
+    {
+      model: "gpt-image-2-6/economy-text-to-image",
+      slug: "gi2p6ec",
+      display: "GPT Image 2.6 Economy",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

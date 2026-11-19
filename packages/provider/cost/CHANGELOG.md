@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Gemini Omni Flash 1.2 Extend (`google/gemini-omni-flash-1-2-extend`,
+  slug `geminiomni1p2fext`) is priced per added second at the source's
+  resolution: 0.02 USD at 360p and 0.045 USD at 720p (4 / 9 credits). The
+  request has no resolution, so the estimate reads `costHints.inputResolution`
+  (`360p` or `720p`) and fails closed without it. A recorded 3 s extend of a
+  360p source billed 12 credits (ac-20k2yx).
+
 - KIE Kling 4.0 Image (`kling-4-0/image`, slug `kling4i`) is priced per
   output image: 0.0565 / 0.085 / 0.1415 USD (11.3 / 17 / 28.3 credits) at
   2k / 4k / 8k, times `count` (default 1; series mode requires it), plus

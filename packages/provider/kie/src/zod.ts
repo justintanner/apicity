@@ -407,6 +407,7 @@ export const KIE_MEDIA_MODELS = [
   // Gemini Omni Flash 1.1 and 1.2 — google/ namespaced, enum-only (no alias).
   "google/gemini-omni-flash-1-1",
   "google/gemini-omni-flash-1-2",
+  "google/gemini-omni-flash-1-2-extend",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
   "google/imagen4",
   "google/imagen4-fast",
@@ -5885,6 +5886,51 @@ export const GoogleGeminiOmniFlash12RequestSchema = z
     }
   });
 
+// Gemini Omni Flash 1.2 Extend, from
+// https://docs.kie.ai/market/google/gemini-omni-flash-1-2-extend as read on
+// 2026-11-19 (ac-20k2yx). It appends 3-10 s to the end of a completed
+// google/gemini-omni-flash-1-2 task, or of a completed extend task, whose
+// video must be 360p or 720p (1080p and 4k are not supported yet) and at most
+// 15 s long. The output keeps the source resolution, a successful extend
+// returns a new task id that can be extended again while the result stays
+// within 15 s, and only the added seconds bill. The request has no resolution
+// field, so a cost estimate needs the source's as costHints.inputResolution.
+// Docs: https://docs.kie.ai/market/google/gemini-omni-flash-1-2-extend
+export const GoogleGeminiOmniFlash12ExtendRequestSchema = z.object({
+  model: z.literal("google/gemini-omni-flash-1-2-extend"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    task_id: z
+      .string()
+      .min(1)
+      .describe(
+        "A completed google/gemini-omni-flash-1-2 or extend task whose video is 360p or 720p and at most 15 s long"
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(20000)
+      .describe(
+        "What happens next (1-20000 characters): action, camera, environment and sound"
+      ),
+    duration: z
+      .number()
+      .int()
+      .min(3)
+      .max(10)
+      .describe(
+        "Seconds to add at the end, 3-10; the output is about the source length plus this. Only these seconds bill"
+      ),
+    image_urls: z
+      .array(z.string().url())
+      .max(3)
+      .optional()
+      .describe(
+        "Up to 3 public png, jpeg or webp reference images (20 MB each) that keep people and objects consistent"
+      ),
+  }),
+});
+
 export const ElevenLabsTextToSpeechNumericContract = {
   stability: { minimum: 0, maximum: 1, default: 0.5 },
   similarity_boost: { minimum: 0, maximum: 1, default: 0.75 },
@@ -10171,6 +10217,7 @@ export const MediaGenerationRequestSchema = z.union([
   GeminiOmniVideoRequestSchema,
   GoogleGeminiOmniFlash11RequestSchema,
   GoogleGeminiOmniFlash12RequestSchema,
+  GoogleGeminiOmniFlash12ExtendRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -11803,6 +11850,14 @@ export type GoogleGeminiOmniFlash12RequestInput =
   GoogleGeminiOmniFlash12Request;
 export type GoogleGeminiOmniFlash12ParsedRequest = z.output<
   typeof GoogleGeminiOmniFlash12RequestSchema
+>;
+export type GoogleGeminiOmniFlash12ExtendRequest = z.input<
+  typeof GoogleGeminiOmniFlash12ExtendRequestSchema
+>;
+export type GoogleGeminiOmniFlash12ExtendRequestInput =
+  GoogleGeminiOmniFlash12ExtendRequest;
+export type GoogleGeminiOmniFlash12ExtendParsedRequest = z.output<
+  typeof GoogleGeminiOmniFlash12ExtendRequestSchema
 >;
 export type ElevenLabsAudioIsolationRequest = z.input<
   typeof ElevenLabsAudioIsolationRequestSchema

@@ -983,6 +983,91 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // Gemini Omni Flash 1.2 Extend bills the added seconds at its source's
+  // resolution. Its rows share the 1.2 rates, so before the extend key existed
+  // they read as 1.2 cells; now each is compared with the extend key's own
+  // cell, via the resolution the row names (2026-11-19 feed, ac-20k2yx).
+  it("compares the gemini-omni-flash-1-2-extend rows with the extend key", async () => {
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "video",
+        provider: "Google",
+        creditPrice,
+        creditUnit: "per second",
+        usdPrice,
+        anchor,
+      },
+    });
+    const extend =
+      "https://kie.ai/gemini-omni-1-2-flash?model=google%2Fgemini-omni-flash-1-2-extend";
+    const extendRow = (res: string, credits: string, usd: string) =>
+      row(
+        `google/gemini-omni-flash-1-2-extend, video, ${res}`,
+        credits,
+        usd,
+        extend
+      );
+    const base = row(
+      "google/gemini-omni-flash-1-2, video, 360p",
+      "4",
+      "0.02",
+      "https://kie.ai/gemini-omni-1-2-flash"
+    );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([
+        extendRow("360p", "4", "0.02"),
+        extendRow("720p", "9", "0.045"),
+        base,
+      ]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(3);
+      expect(result.notCompared).toEqual([]);
+
+      const moved = await write([
+        extendRow("360p", "5", "0.025"),
+        extendRow("720p", "10", "0.05"),
+        base,
+      ]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "google/gemini-omni-flash-1-2-extend",
+          variant: "360p",
+          tableUsd: 0.02,
+        }),
+        expect.objectContaining({
+          key: "google/gemini-omni-flash-1-2-extend",
+          variant: "720p",
+          tableUsd: 0.045,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   // Kie Image Upscale bills one tier by output pixels, which the request
   // cannot carry. Each row's representative case is the docs table's 1024 x
   // 1024 input at the factor that reaches its tier, so every row compares

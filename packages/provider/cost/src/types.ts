@@ -163,7 +163,9 @@ export interface CostHints {
   // `xai/grok-imagine-video/extend-video`. The output keeps it, at most 720p,
   // and bills by it, and the request has no resolution field. A larger source
   // declares "720p". Any value but "480p" or "720p" counts as absent, and the
-  // estimate fails closed with a warning that names this field. The
+  // estimate fails closed with a warning that names this field. KIE
+  // `google/gemini-omni-flash-1-2-extend` reads it the same way, with "360p"
+  // or "720p", the two resolutions an extend source can have. The
   // (string & {}) member keeps autocomplete for the known values while still
   // accepting a runtime-sourced value. Cost-only, like the rest of CostHints:
   // never merged into payload, never canonicalHash'd, never signed.

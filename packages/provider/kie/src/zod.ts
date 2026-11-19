@@ -3489,16 +3489,56 @@ export const GrokImagineImage2TextToImageRequestSchema = z.object({
 });
 
 // Results include `segments[]` entries shaped as `{ maskUrl, name, index }`.
+// The docs (re-read 2026-11-19, ac-mtdgxe) take `input` as oneOf { task_id }
+// (an existing grok-imagine-image-2-0/text-to-image task) or { image_url } (a
+// direct image URL). The input stays a plain object so consumers can read
+// `.shape`; the request-level refinement takes exactly one of the two.
 // Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map
-export const GrokImagineImage2SegmentMapRequestSchema = z.object({
-  model: z.literal("grok-imagine-image-2-0/segment-map"),
-  callBackUrl: z.string().url().optional(),
-  input: z
-    .object({
-      task_id: z.string().min(1),
-    })
-    .strict(),
-});
+export const GrokImagineImage2SegmentMapInputSchema = z
+  .object({
+    task_id: z
+      .string()
+      .min(1)
+      .optional()
+      .describe(
+        "ID of an existing grok-imagine-image-2-0/text-to-image task; exactly one of task_id or image_url"
+      ),
+    image_url: z
+      .string()
+      .url()
+      .regex(/^https?:\/\/.+/, "Expected a public http(s) URL")
+      .optional()
+      .describe(
+        "Public http(s) URL of the image to segment; exactly one of task_id or image_url"
+      ),
+  })
+  .strict();
+
+export const GrokImagineImage2SegmentMapRequestSchema = z
+  .object({
+    model: z.literal("grok-imagine-image-2-0/segment-map"),
+    callBackUrl: z.string().url().optional(),
+    input: GrokImagineImage2SegmentMapInputSchema,
+  })
+  .superRefine((v, ctx) => {
+    const hasTask = v.input.task_id !== undefined;
+    const hasImage = v.input.image_url !== undefined;
+    if (hasTask && hasImage) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine-image-2-0/segment-map takes task_id or image_url, not both",
+        path: ["input", "image_url"],
+      });
+    } else if (!hasTask && !hasImage) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine-image-2-0/segment-map requires task_id or image_url",
+        path: ["input", "task_id"],
+      });
+    }
+  });
 
 // Edits an existing task, optionally restricted to selected mask indices.
 // Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit

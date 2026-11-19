@@ -192,6 +192,7 @@ export {
   Gpt4oImageSizeSchema,
   Gpt4oImageFallbackModelSchema,
   GrokImagineImage2TextToImageRequestSchema,
+  GrokImagineImage2SegmentMapInputSchema,
   GrokImagineImage2SegmentMapRequestSchema,
   GrokImagineImage2ImageEditRequestSchema,
   GrokImagineImage2SegmentEditRequestSchema,

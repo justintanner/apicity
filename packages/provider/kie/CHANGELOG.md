@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `grok-imagine-image-2-0/segment-map` takes a direct http(s) `image_url` in place of `task_id`, per KIE's docs of 2026-11-19 (`input` is oneOf the two): exactly one of them is required, and a recorded run on an uploaded photo billed 0 credits. `GrokImagineImage2SegmentMapInputSchema` is exported (ac-mtdgxe).
+
 - `bytedance/seedance-2-5` accepts `resolution: "4k"` (3840x2160 at 16:9, H.265 (HEVC) 10-bit, per KIE's docs of 2026-11-19) and `omni_reference_task_type` (`auto`, `reference`, `edit`, `extend`) with the rules Seedance 2.5 Flash has: reference materials only, `edit` and `extend` need `reference_video_urls` and the `adaptive` aspect ratio, and `edit` needs `duration: -1`. Both models share the exported `Seedance25OmniReferenceTaskTypeSchema` (ac-vggwxn).
 
 - Added `bytedance/seedance-2-5-flash` (Seedance 2.5 Flash) with typed inputs: the Seedance 2.5 fields at the Flash limits (a 20480-character prompt, 10 reference images, 5 videos, 5 audio clips, 480p or 720p, no draft, no `duration` default), `omni_reference_task_type` with its edit and extend rules, a prompt required for text-to-video, and a recorded clip. `Seedance25FlashInputSchema` and `Seedance25FlashRequestSchema` are exported.

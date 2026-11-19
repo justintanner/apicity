@@ -1882,10 +1882,14 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       task_id: {
         type: "string",
-        required: true,
         minLength: 1,
         description:
-          "Existing task ID; results arrive as named mask layers in segments[] with maskUrl, name, and index",
+          "Existing grok-imagine-image-2-0/text-to-image task ID; exactly one of task_id or image_url. Results arrive as named mask layers in segments[] with maskUrl, name, and index",
+      },
+      image_url: {
+        type: "string",
+        description:
+          "Public http(s) URL of the image to segment; exactly one of task_id or image_url",
       },
     },
   },

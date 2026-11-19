@@ -156,6 +156,57 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
     }
   });
 
+  // The docs (2026-11-19) take input as oneOf { task_id } | { image_url }.
+  describe("segment-map image_url", () => {
+    const parse = (input: Record<string, unknown>) =>
+      GrokImagineImage2SegmentMapRequestSchema.safeParse({
+        model: "grok-imagine-image-2-0/segment-map",
+        input,
+      });
+
+    it("accepts a direct http(s) image URL in place of a task id", () => {
+      for (const image_url of [
+        "https://example.com/cat.jpg",
+        "http://example.com/cat.png",
+      ]) {
+        const result = parse({ image_url });
+        expect(result.success, image_url).toBe(true);
+        expect(result.data?.input).toEqual({ image_url });
+      }
+    });
+
+    it("rejects a non-URL or non-http image_url", () => {
+      for (const image_url of ["", "cat.jpg", "ftp://example.com/cat.jpg"]) {
+        const result = parse({ image_url });
+        expect(result.success, image_url).toBe(false);
+        expect(issueAt(result, ["input", "image_url"])).toBe(true);
+      }
+    });
+
+    it("takes exactly one of task_id or image_url", () => {
+      const both = parse({
+        task_id: "task-cat-source",
+        image_url: "https://example.com/cat.jpg",
+      });
+      expect(both.success).toBe(false);
+      expect(both.error?.issues.map((issue) => issue.message)).toEqual([
+        "grok-imagine-image-2-0/segment-map takes task_id or image_url, not both",
+      ]);
+      expect(issueAt(both, ["input", "image_url"])).toBe(true);
+
+      const neither = parse({});
+      expect(neither.error?.issues.map((issue) => issue.message)).toEqual([
+        "grok-imagine-image-2-0/segment-map requires task_id or image_url",
+      ]);
+    });
+
+    it("still refuses unknown input fields", () => {
+      expect(
+        parse({ image_url: "https://example.com/cat.jpg", mask: "x" }).success
+      ).toBe(false);
+    });
+  });
+
   it("rejects invalid image-edit prompts, task ids, and mask indices", () => {
     const base = GROK_IMAGINE_IMAGE_2_CONTRACTS[2].request;
     const cases = [
@@ -289,12 +340,23 @@ describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
 
     const segmentMap = modelInputSchemas["grok-imagine-image-2-0/segment-map"];
     expect(segmentMap.type).toBe("image");
-    expect(Object.keys(segmentMap.fields)).toEqual(["task_id"]);
+    expect(Object.keys(segmentMap.fields)).toEqual(["task_id", "image_url"]);
+    expect(Object.keys(segmentMap.fields)).toEqual(
+      Object.keys(GrokImagineImage2SegmentMapRequestSchema.shape.input.shape)
+    );
+    // oneOf { task_id } | { image_url } (ac-mtdgxe): neither is required alone.
     expect(segmentMap.fields.task_id).toMatchObject({
       type: "string",
-      required: true,
       minLength: 1,
     });
+    expect(segmentMap.fields.task_id.required).toBeUndefined();
+    expect(segmentMap.fields.image_url).toMatchObject({ type: "string" });
+    expect(segmentMap.fields.image_url.required).toBeUndefined();
+    for (const field of ["task_id", "image_url"]) {
+      expect(segmentMap.fields[field].description).toContain(
+        "exactly one of task_id or image_url"
+      );
+    }
     expect(segmentMap.fields.task_id.description).toContain("segments[]");
     expect(segmentMap.fields.task_id.description).toContain("maskUrl");
     expect(segmentMap.fields.task_id.description).toContain("name");

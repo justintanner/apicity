@@ -7,6 +7,8 @@ import type {
   NunchuxGoogleInteractionsRequestSchema,
   NunchuxMinimaxVideoGenerationRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
+  NunchuxOpenAiImagesGenerationsRequest,
+  NunchuxOpenAiImagesGenerationsRequestSchema,
 } from "./zod";
 
 /** HTTP status; 408 for timeout, 499 for caller abort, 500 for transport errors. */
@@ -205,6 +207,7 @@ export interface NunchuxV1Namespace {
 
 export interface NunchuxProvider {
   v1: NunchuxV1Namespace;
+  v2: NunchuxV2Namespace;
 }
 
 export interface NunchuxGoogleInteractionsResponse {
@@ -297,4 +300,55 @@ export interface NunchuxMinimaxV2Namespace {
 
 export interface NunchuxMinimaxNamespace {
   v2: NunchuxMinimaxV2Namespace;
+}
+
+export interface NunchuxOpenAiImageUsage {
+  input_tokens: number;
+  input_tokens_details?: {
+    image_tokens?: number;
+    text_tokens?: number;
+  };
+  output_tokens: number;
+  output_tokens_details?: {
+    image_tokens?: number;
+    text_tokens?: number;
+  };
+  total_tokens: number;
+}
+
+export interface NunchuxOpenAiImagesGenerationsResponse {
+  created: number;
+  background?: string;
+  output_format?: string;
+  quality?: string;
+  size?: string;
+  data: {
+    /** The image, base64-encoded. GPT Image returns no image URL. */
+    b64_json: string;
+    generation_id?: string;
+  }[];
+  /** Tokens Nunchux billed. Absent only when the hold is charged in full. */
+  usage?: NunchuxOpenAiImageUsage;
+}
+
+export interface NunchuxOpenAiImagesNamespace {
+  /**
+   * Synchronous text-to-image. OpenAI's xhigh and max qualities are not
+   * offered; high is the top setting, and auto renders at high.
+   */
+  generations: {
+    (
+      body: NunchuxOpenAiImagesGenerationsRequest,
+      signal?: AbortSignal
+    ): Promise<NunchuxOpenAiImagesGenerationsResponse>;
+    schema: typeof NunchuxOpenAiImagesGenerationsRequestSchema;
+  };
+}
+
+export interface NunchuxOpenAiNamespace {
+  images: NunchuxOpenAiImagesNamespace;
+}
+
+export interface NunchuxV2Namespace {
+  openai: NunchuxOpenAiNamespace;
 }

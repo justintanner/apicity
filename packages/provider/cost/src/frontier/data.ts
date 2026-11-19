@@ -108,6 +108,11 @@ export const FRONTIER = {
             dotPath: "api.v3.openai.gptImage2p6Sunburst.textToImage",
             pricingKey: "openai/gpt-image-2.6-sunburst/text-to-image",
           },
+          {
+            provider: "nunchux",
+            dotPath: "v2.openai.images.generations",
+            modelId: "gpt-image-2.6-sunburst",
+          },
         ],
       },
       {
@@ -168,6 +173,11 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.openai.gptImage2p6Flare.textToImage",
             pricingKey: "openai/gpt-image-2.6-flare/text-to-image",
+          },
+          {
+            provider: "nunchux",
+            dotPath: "v2.openai.images.generations",
+            modelId: "gpt-image-2.6-flare",
           },
         ],
       },

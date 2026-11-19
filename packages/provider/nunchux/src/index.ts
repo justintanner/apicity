@@ -28,6 +28,11 @@ export type {
   NunchuxMinimaxV2Namespace,
   NunchuxMinimaxV2QueryNamespace,
   NunchuxMinimaxVideoGenerationResponse,
+  NunchuxOpenAiImageUsage,
+  NunchuxOpenAiImagesGenerationsResponse,
+  NunchuxOpenAiImagesNamespace,
+  NunchuxOpenAiNamespace,
+  NunchuxV2Namespace,
 } from "./types";
 export {
   NunchuxAlibabaVideoSynthesisRequestSchema,
@@ -38,4 +43,6 @@ export {
   type NunchuxGoogleInteractionsRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
   type NunchuxMinimaxVideoGenerationRequest,
+  NunchuxOpenAiImagesGenerationsRequestSchema,
+  type NunchuxOpenAiImagesGenerationsRequest,
 } from "./zod";

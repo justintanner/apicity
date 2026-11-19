@@ -1031,6 +1031,7 @@ nunchux	v1.alibaba.services.aigc.videoGeneration.videoSynthesis	POST	metered	sec
 nunchux	v1.bytedance.contents.generations.tasks	POST	metered	tokens		https://nunchux.ai/pricing	2026-11-18
 nunchux	v1.google.v1beta.interactions	POST	metered	images		https://nunchux.ai/pricing	2026-11-18
 nunchux	v1.minimax.v2.videoGeneration	POST	metered	seconds		https://nunchux.ai/pricing	2026-11-18
+nunchux	v2.openai.images.generations	POST	metered	tokens		https://nunchux.ai/pricing	2026-11-19
 omkar	feed.explore	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04
 omkar	feed.explore.categories	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04
 omkar	feed.trending	GET	subscription	calls	Calls draw a monthly plan quota: Basic is free for 1,000 a month; Pro 16 USD for 20,000, Ultra 48 for 100,000, Mega 148 for 400,000. Only HTTP 200 consumes quota, and the flat plan has zero marginal USD.	https://www.omkar.cloud/tools/tiktok-scraper	2026-11-04

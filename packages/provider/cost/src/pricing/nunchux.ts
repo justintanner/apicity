@@ -97,6 +97,100 @@ function seedancePricing(
   };
 }
 
+// Both models, re-read 2026-11-19 from GET https://api.nunchux.com/pricing
+// (credit_value_usd 1) and https://nunchux.ai/pricing: $5 / $8 / $30 per 1M
+// text-input / image-input / image-output tokens. The request does not carry
+// those counts. OpenAI's xhigh and max are not offered, so a frontier row
+// marked (max) cannot be reproduced; high is the top quality.
+const GPT_IMAGE_TEXT_PER_TOKEN = 5 / 1e6;
+const GPT_IMAGE_IMAGE_IN_PER_TOKEN = 8 / 1e6;
+const GPT_IMAGE_IMAGE_OUT_PER_TOKEN = 30 / 1e6;
+
+function tokenCount(value: unknown): number | undefined {
+  return typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 0 &&
+    value <= Number.MAX_SAFE_INTEGER
+    ? value
+    : undefined;
+}
+
+interface GptImageTokens {
+  text: number;
+  imageIn: number;
+  imageOut: number;
+}
+
+function gptImageTokens(hints?: CostHints): GptImageTokens | string {
+  if (
+    hints?.inputTokens === undefined ||
+    hints.imageInputTokens === undefined ||
+    hints.imageOutputTokens === undefined
+  ) {
+    return (
+      "GPT Image bills text input at $5, image input at $8 and image output " +
+      "at $30 per 1M tokens. Pass costHints.inputTokens, " +
+      "costHints.imageInputTokens and costHints.imageOutputTokens from the " +
+      "response usage. No estimate is quoted without them."
+    );
+  }
+  const input = tokenCount(hints.inputTokens);
+  const imageIn = tokenCount(hints.imageInputTokens);
+  const imageOut = tokenCount(hints.imageOutputTokens);
+  if (input === undefined || imageIn === undefined || imageOut === undefined) {
+    return "costHints token counts must be non-negative integers";
+  }
+  if (imageIn > input) {
+    return "costHints.imageInputTokens cannot exceed costHints.inputTokens";
+  }
+  if (hints.outputTokens !== undefined) {
+    const output = tokenCount(hints.outputTokens);
+    if (output === undefined) {
+      return "costHints.outputTokens must be a non-negative integer";
+    }
+    if (imageOut > output) {
+      return "costHints.imageOutputTokens cannot exceed costHints.outputTokens";
+    }
+    if (output !== imageOut) {
+      return (
+        "GPT Image publishes no text-output rate. costHints.outputTokens " +
+        "must equal costHints.imageOutputTokens."
+      );
+    }
+  }
+  return { text: input - imageIn, imageIn, imageOut };
+}
+
+function gptImagePricing(): PerUnitPricing {
+  return {
+    kind: "perUnit",
+    unit: "tokens",
+    units: (_payload, hints) => {
+      const tokens = gptImageTokens(hints);
+      return typeof tokens === "string" ? undefined : tokens.imageOut;
+    },
+    select: [{ name: "component", pick: () => "image_output" }],
+    rates: {
+      text_input: GPT_IMAGE_TEXT_PER_TOKEN,
+      image_input: GPT_IMAGE_IMAGE_IN_PER_TOKEN,
+      image_output: GPT_IMAGE_IMAGE_OUT_PER_TOKEN,
+    },
+    extra: (_payload, hints) => {
+      const tokens = gptImageTokens(hints);
+      if (typeof tokens === "string") return undefined;
+      return (
+        tokens.text * GPT_IMAGE_TEXT_PER_TOKEN +
+        tokens.imageIn * GPT_IMAGE_IMAGE_IN_PER_TOKEN
+      );
+    },
+    warn: (_payload, hints) => {
+      const tokens = gptImageTokens(hints);
+      return typeof tokens === "string" ? [tokens] : [];
+    },
+    source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-19" },
+  };
+}
+
 export const nunchux: Record<string, ModelPricing> = {
   // Both /pricing and /v1/pricing list 480P/720P/1080P at $0.05/$0.10/$0.20
   // per second, with at most 15 seconds of billable reference video.
@@ -290,6 +384,8 @@ export const nunchux: Record<string, ModelPricing> = {
     extra: (p) => Math.max(0, minimaxReferences(p, "image_url") - 5) * 0.04,
     source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-18" },
   },
+  "gpt-image-2.6-sunburst": gptImagePricing(),
+  "gpt-image-2.6-flare": gptImagePricing(),
 };
 
 /** Reference media items of one container type in a MiniMax content array. */

@@ -549,3 +549,93 @@ describe("Nunchux MiniMax H3 pricing", () => {
     }
   });
 });
+
+describe("Nunchux GPT Image 2.6 pricing", () => {
+  // Docs example: 28 text-input, 0 image-input, 1643 image-output tokens.
+  const docsHints = {
+    inputTokens: 28,
+    imageInputTokens: 0,
+    imageOutputTokens: 1643,
+    outputTokens: 1643,
+  };
+  const quote = (model: string, costHints?: Record<string, number>) =>
+    computeEstimate({
+      provider: "nunchux",
+      payload: { model, prompt: "a red paper lantern" },
+      costHints,
+    });
+
+  it("prices the docs usage for both 2.6 models", () => {
+    const usd = (28 * 5 + 1643 * 30) / 1e6;
+    for (const model of ["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"]) {
+      const estimate = quote(model, docsHints);
+      expect(estimate.warnings).toEqual([]);
+      expect(estimate.usd).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds image-input tokens at $8 per million", () => {
+    const estimate = quote("gpt-image-2.6-flare", {
+      inputTokens: 150,
+      imageInputTokens: 100,
+      imageOutputTokens: 10,
+    });
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo((50 * 5 + 100 * 8 + 10 * 30) / 1e6, 9);
+  });
+
+  it("fails closed without the three usage hints", () => {
+    const estimate = quote("gpt-image-2.6-flare");
+    expect(estimate.usd).toBe(0);
+    expect(estimate.warnings.join(" ")).toContain("costHints.inputTokens");
+  });
+
+  it("rejects an output count that includes unpublished text output", () => {
+    const estimate = quote("gpt-image-2.6-flare", {
+      inputTokens: 28,
+      imageInputTokens: 0,
+      imageOutputTokens: 1643,
+      outputTokens: 1700,
+    });
+    expect(estimate.usd).toBe(0);
+    expect(estimate.warnings.join(" ")).toContain("no text-output rate");
+  });
+
+  it("matches the recorded Flare low square charge", () => {
+    const har = JSON.parse(
+      readFileSync(
+        "tests/recordings/nunchux_350094952/gpt-image-2-6-flare-text-to-image_1265807457/recording.har",
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const generation = har.log.entries.find(
+      (entry) => entry.request.method === "POST"
+    );
+    const body = JSON.parse(generation?.response.content.text ?? "{}") as {
+      usage: {
+        input_tokens: number;
+        input_tokens_details: { image_tokens: number };
+        output_tokens: number;
+      };
+    };
+    const credits = har.log.entries
+      .filter((entry) => entry.request.url.endsWith("/v1/credits"))
+      .map(
+        (entry) =>
+          (
+            JSON.parse(entry.response.content.text ?? "{}") as {
+              credits_remaining: number;
+            }
+          ).credits_remaining
+      );
+    const estimate = quote("gpt-image-2.6-flare", {
+      inputTokens: body.usage.input_tokens,
+      imageInputTokens: body.usage.input_tokens_details.image_tokens,
+      imageOutputTokens: body.usage.output_tokens,
+      outputTokens: body.usage.output_tokens,
+    });
+    expect(credits).toEqual([17.099247, 17.074477]);
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeCloseTo(credits[0]! - credits[1]!, 9);
+  });
+});

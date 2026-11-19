@@ -11,6 +11,7 @@ import type {
   NunchuxGoogleInteractionsResponse,
   NunchuxMinimaxTaskResponse,
   NunchuxMinimaxVideoGenerationResponse,
+  NunchuxOpenAiImagesGenerationsResponse,
 } from "./types";
 
 import {
@@ -22,6 +23,8 @@ import {
   type NunchuxGoogleInteractionsRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
   type NunchuxMinimaxVideoGenerationRequest,
+  NunchuxOpenAiImagesGenerationsRequestSchema,
+  type NunchuxOpenAiImagesGenerationsRequest,
 } from "./zod";
 
 function errorEnvelope(body: unknown): { code?: string; message?: string } {
@@ -233,6 +236,28 @@ export function createNunchux(options: NunchuxOptions = {}): NunchuxProvider {
               );
             },
             { schema: NunchuxMinimaxVideoGenerationRequestSchema }
+          ),
+        },
+      },
+    },
+    v2: {
+      openai: {
+        images: {
+          // POST https://api.nunchux.com/v2/openai/images/generations
+          // Docs: https://docs.nunchux.ai/partner-models/gpt-image
+          generations: Object.assign(
+            async (
+              body: NunchuxOpenAiImagesGenerationsRequest,
+              signal?: AbortSignal
+            ) => {
+              return request<NunchuxOpenAiImagesGenerationsResponse>(
+                "POST",
+                "/v2/openai/images/generations",
+                body,
+                signal
+              );
+            },
+            { schema: NunchuxOpenAiImagesGenerationsRequestSchema }
           ),
         },
       },

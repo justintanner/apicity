@@ -427,6 +427,98 @@ describe("nunchux", () => {
       }).success
     ).toBe(false);
   });
+  it("accepts both GPT Image 2.6 models and rejects generation conflicts", () => {
+    const { schema } = createNunchux().v2.openai.images.generations;
+    const body = {
+      model: "gpt-image-2.6-flare" as const,
+      prompt: "a red paper lantern",
+      size: "1024x1024",
+      quality: "low" as const,
+    };
+    expect(schema.parse(body)).toEqual(body);
+    expect(
+      schema.parse({ ...body, model: "gpt-image-2.6-sunburst" }).model
+    ).toBe("gpt-image-2.6-sunburst");
+    expect(
+      schema.safeParse({ ...body, model: "gpt-image-2.6-sunburst-2099-01-01" })
+        .success
+    ).toBe(true);
+    expect(
+      schema.safeParse({ ...body, model: "gpt-image-2.6-bogus" }).success
+    ).toBe(false);
+    for (const quality of ["xhigh", "max"]) {
+      expect(schema.safeParse({ ...body, quality }).success).toBe(false);
+    }
+    for (const extra of [
+      { images: [{ image_url: "https://example.com/cat.jpg" }] },
+      { stream: true },
+      { partial_images: 1 },
+      { mask: { image_url: "https://example.com/mask.png" } },
+      { markup: { image_url: "https://example.com/markup.png" } },
+    ]) {
+      expect(schema.safeParse({ ...body, ...extra }).success).toBe(false);
+    }
+    expect(schema.safeParse({ ...body, output_format: "gif" }).success).toBe(
+      false
+    );
+    expect(schema.safeParse({ ...body, output_format: "svg" }).success).toBe(
+      false
+    );
+    expect(schema.safeParse({ ...body, n: 0 }).success).toBe(false);
+    expect(schema.safeParse({ ...body, n: 11 }).success).toBe(false);
+    expect(schema.safeParse({ ...body, size: "100x100" }).success).toBe(false);
+    expect(schema.safeParse({ ...body, size: "4000x1024" }).success).toBe(
+      false
+    );
+    expect(schema.safeParse({ ...body, prompt: "" }).success).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        background: "transparent",
+        output_format: "jpeg",
+      }).success
+    ).toBe(false);
+    expect(
+      schema.safeParse({
+        ...body,
+        background: "transparent",
+        output_format: "png",
+      }).success
+    ).toBe(true);
+    expect(schema.shape.model.options[0].options).toEqual([
+      "gpt-image-2.6-sunburst",
+      "gpt-image-2.6-flare",
+    ]);
+  });
+  it("posts a GPT Image generation to the v2 route", async () => {
+    const { fetch, requests } = capture({
+      created: 1,
+      data: [{ b64_json: "aW1hZ2U=" }],
+    });
+    const response = await createNunchux({
+      apiKey: "sk-nunchux-test",
+      fetch,
+    }).v2.openai.images.generations({
+      model: "gpt-image-2.6-flare",
+      prompt: "a red paper lantern",
+      size: "1024x1024",
+      quality: "low",
+    });
+    expect(response.data[0]?.b64_json).toBe("aW1hZ2U=");
+    expect(requests[0]).toMatchObject({
+      url: "https://api.nunchux.com/v2/openai/images/generations",
+      init: {
+        method: "POST",
+        headers: { Authorization: "Bearer sk-nunchux-test" },
+      },
+    });
+    expect(JSON.parse(String(requests[0]?.init.body))).toEqual({
+      model: "gpt-image-2.6-flare",
+      prompt: "a red paper lantern",
+      size: "1024x1024",
+      quality: "low",
+    });
+  });
   it("uses the configured base URL and environment key", async () => {
     vi.stubEnv("NUNCHUX_API_KEY", "env-key");
     const { fetch, requests } = capture({});

@@ -2065,9 +2065,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       mask_indexs: {
         type: "array",
         minItems: 1,
-        items: { type: "integer", minimum: 1 },
+        items: { type: "integer", minimum: 0 },
         description:
-          "Optional segment selection with at least 1 item; each index must be a positive integer, one-based unlike image-edit (upstream spelling preserved)",
+          "Optional segment selection with at least 1 item; each entry is a segment's index from the segment-map result, counted from 0 (upstream spelling preserved)",
       },
     },
   },

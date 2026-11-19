@@ -1476,9 +1476,10 @@ await waitForSuccess(sourceTaskId);
 ```
 
 Segment-map consumes that source task. After polling the segment task to
-`success`, select an index of 1 or greater from its `segments` output and
-pass it to segment-edit, with Kie's upstream `mask_indexs` spelling. Its
-entries are one-based:
+`success`, pick a segment from its `segments` output and pass its `index`
+to segment-edit, with Kie's upstream `mask_indexs` spelling. Pass the
+index values unchanged: segment-map counts from 0, and index 0 is usually
+the main subject (here the cat):
 
 ```typescript
 const segmentTask = await kie.post.api.v1.jobs.createTask({
@@ -1493,7 +1494,7 @@ const segmentResult = JSON.parse(segmentResultJson) as {
   resultObject?: { segments?: Array<{ index: number }> };
 };
 const maskIndex = segmentResult.resultObject?.segments?.find(
-  ({ index }) => index >= 1,
+  ({ index }) => index === 0,
 )?.index;
 if (maskIndex === undefined) throw new Error("No editable segment");
 

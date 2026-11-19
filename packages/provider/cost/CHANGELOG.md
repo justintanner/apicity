@@ -777,6 +777,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- KIE Gemini 4 Argon (`gemini-4-argon`, `gemini-4-argon-openai`) estimates are unchanged: KIE has published a cached-input rate of $0.04 per million tokens since 2026-11-19, but its response reports no cached-token count, so every input token is still quoted at $0.80 per million, an upper bound while cached input is discounted. A declared cached count still gets no quote (ac-b0lrbg; follow-up ac-pillso).
+
 - fal MiniMax H3 Max text-to-video, image-to-video and camera-controls are the card's standard 0.05, 0.08 and 0.16 USD/s at 480P, 768P and 1080P, and H3 Max Turbo text-to-video and image-to-video are 0.025, 0.04 and 0.08 USD/s. The November promotion ended 2026-11-15; the cards were re-read on 2026-11-16. `fal-ai/vidu/q4` keeps list rates through its promotion ending 2026-11-30 (ac-cukhhs).
 
 - The frontier registry (`frontier()`, `docs/frontier.md`) now follows the

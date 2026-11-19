@@ -322,4 +322,6 @@ every pass. The release formula also runs it before the version bump, and a diff
 stops the release. It is free and needs no key, but it reads the live feed, so CI cannot
 run it. It exits 1 and names the cell when one differs. If the row's words
 are what it cannot read, add a rule to `SELECTOR_RULES` or `PAYLOAD_RULES`; if the price
-moved, correct the cell as Wan 2.6 was.
+moved, correct the cell as Wan 2.6 was. A `NOTICE` line names a watched disposition that
+matched no row of the pull (today only Gemini 4 Argon's unapplied cached-input rate,
+follow-up `ac-pillso`). It never changes the exit code.

@@ -7,8 +7,9 @@
  *   pnpm run check:kie-feed-drift -- --json
  *
  * Exit 0 when every comparable cell agrees, 1 when one differs, 2 when the check
- * could not run. CI replays with no network, so this is a routine to run, not a
- * gate: see "When to repeat" in docs/cost-learning-pass-1.md.
+ * could not run. A NOTICE line (a watched disposition that matched no row) never
+ * changes the exit code. CI replays with no network, so this is a routine to
+ * run, not a gate: see "When to repeat" in docs/cost-learning-pass-1.md.
  */
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -96,6 +97,7 @@ async function main() {
     if (report.uncoveredKeys.length) {
       console.log(`NO FEED ROW ${report.uncoveredKeys.join(", ")}`);
     }
+    for (const { notice } of report.notices) console.log(`NOTICE ${notice}`);
   }
   return report.differ.length ? 1 : 0;
 }

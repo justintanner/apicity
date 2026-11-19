@@ -1418,6 +1418,18 @@ const segmentEditTask = await kie.post.api.v1.jobs.createTask({
 console.log(segmentEditTask.data?.taskId);
 ```
 
+Segment-map also takes a direct http(s) `image_url` in place of a source
+task, exactly one of the two. It is free either way: a recorded run on an
+uploaded photo billed 0 credits and returned 36 named segments.
+
+```typescript
+const imageSegmentTask = await kie.post.api.v1.jobs.createTask({
+  model: "grok-imagine-image-2-0/segment-map",
+  input: { image_url: "https://example.com/cat.jpg" },
+});
+console.log(imageSegmentTask.data?.taskId);
+```
+
 ## API Reference
 
 67 endpoints across 31 groups. Each method mirrors an upstream URL path.

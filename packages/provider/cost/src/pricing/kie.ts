@@ -2155,7 +2155,10 @@ export const kie: Record<string, ModelPricing> = {
   },
   // tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/
   // recording.har reports creditsConsumed: 0.0 for the successful segment-map
-  // task. This is an evidenced free operation, not a fail-closed sentinel.
+  // task. This is an evidenced free operation, not a fail-closed sentinel. The
+  // image_url input (ac-mtdgxe) is free too: the 2026-11-19 feed row prints 0
+  // credits per image, the models API says "Generate segment map is free", and
+  // grok-imagine-image-2-segment-map-image-url_4225565567 billed 0.0.
   "grok-imagine-image-2-0/segment-map": {
     kind: "perUnit",
     unit: "generations",

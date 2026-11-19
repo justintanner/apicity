@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Grok Imagine Upscale (`grok-imagine/upscale`) is priced per upscale
+  from its source-to-target pair: 0.05 USD for 480p to 720p, 0.15 USD for
+  480p to 1080p and 0.10 USD for 720p to 1080p (10 / 30 / 20 credits), from
+  the feed rows and the models API pricingDesc read 2026-11-19. The target is
+  `input.resolution` (720p by default). The source is
+  `costHints.inputResolution` (`480p` or `720p`); the estimate fails closed
+  without it and on a 720p source at the 720p target, which KIE does not
+  price. It used to fail closed on every request (ac-xnzcl4).
+
 - MachGen `Gemini-Omni-1.2-Flash` text-to-video, image-to-video and
   reference-to-video are priced from the public pricebook, re-read
   2026-11-19: 0.023172 / 0.069504 / 0.104256 / 0.208512 USD per second at

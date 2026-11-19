@@ -900,7 +900,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.12, 6);
   });
 
-  it("kie grok-imagine/upscale fails closed without source/target resolution", () => {
+  it("kie grok-imagine/upscale fails closed without the source resolution", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -913,6 +913,21 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown).toEqual({});
     expect(r.usd).toBe(0);
     expect(r.warnings.some((w) => w.includes("fails closed"))).toBe(true);
+  });
+
+  it("kie grok-imagine/upscale prices 480p to 1080p from the source hint", () => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/upscale",
+        input: { task_id: "abc", resolution: "1080p" },
+      },
+      costHints: { inputResolution: "480p" },
+    });
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.perUnitUsd).toBe(0.15);
+    expect(r.usd).toBeCloseTo(0.15, 10);
   });
 
   it("missing max_tokens emits warning", () => {

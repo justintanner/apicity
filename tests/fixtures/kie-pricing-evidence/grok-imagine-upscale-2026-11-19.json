@@ -1,0 +1,113 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+  "models": ["grok-imagine/upscale"],
+  "basis": "KIE documents input.resolution on grok-imagine/upscale: the target, 720p (default) or 1080p. The source is the resolution of the referenced grok-imagine/text-to-video or image-to-video task, which the request does not carry. The pricing-feed rows anchored on https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale and the live GET /api/v1/models pricingDesc agree on one flat fee per upscale: 10 credits (0.05 USD) for 480p to 720p, 30 credits (0.15 USD) for 480p to 1080p and 20 credits (0.10 USD) for 720p to 1080p. No 720p-to-720p tier is published. The frozen 2026-09-11 pull printed the 10-credit row as 360p to 720p; the live feed names it 480p to 720p, the same price. The docs page and the feed rows are unchanged from the survey reads of 09:14-09:30Z (ac-vmq3cy). No upscale was billed: a recording would need a paid source video, so this tier is priced from the feed alone.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T22:30:10Z",
+    "rows": [
+      {
+        "modelDescription": "grok-imagine, upscale, 720P → 1080P",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "20",
+        "creditUnit": "per upscale",
+        "usdPrice": "0.10",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine, upscale, 480P → 1080P",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "30",
+        "creditUnit": "per upscale",
+        "usdPrice": "0.15",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine, upscale, 480p→720p",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "10.0",
+        "creditUnit": "per upscale",
+        "usdPrice": "0.05",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+        "discountPrice": false
+      }
+    ],
+    "frozenRows": {
+      "pull": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-09-11T07-58-40-142Z.json",
+      "rows": [
+        {
+          "modelDescription": "grok-imagine, upscale, 720P → 1080P",
+          "interfaceType": "video",
+          "provider": "Grok",
+          "creditPrice": "20",
+          "creditUnit": "per upscale",
+          "usdPrice": "0.10",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-imagine, upscale, 480P → 1080P",
+          "interfaceType": "video",
+          "provider": "Grok",
+          "creditPrice": "30",
+          "creditUnit": "per upscale",
+          "usdPrice": "0.15",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+          "discountPrice": false
+        },
+        {
+          "modelDescription": "grok-imagine, upscale, 360p→720p",
+          "interfaceType": "video",
+          "provider": "Grok",
+          "creditPrice": "10.0",
+          "creditUnit": "per upscale",
+          "usdPrice": "0.05",
+          "falPrice": "",
+          "discountRate": 0,
+          "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+          "discountPrice": false
+        }
+      ]
+    }
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T22:30:01Z",
+    "entry": {
+      "model": "grok-imagine/upscale",
+      "slug": "grok-imagine/upscale",
+      "title": "Grok Imagine Upscale",
+      "provider": "Grok",
+      "taskType": ["Video to Video"],
+      "description": null,
+      "pricingDesc": "• 480P → 720P: 10 credits (~$0.05)\n• 480P → 1080P: 30 credits (~$0.15)\n• 720P → 1080P: 20 credits (~$0.10)\n\nHigh-tier top-ups (+10% bonus) bring effective pricing down to ~10% off the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "grok-imagine/upscale",
+      "url": "https://docs.kie.ai/market/grok-imagine/upscale.md",
+      "fetchedAt": "2026-11-19T22:29:53Z",
+      "sha256": "886e2d57ccedfc767bdf457f74f01999bc1ff401e5ea6f2b281f467b6820bece",
+      "resolution": ["720p", "1080p"],
+      "resolutionDefault": "720p"
+    }
+  ],
+  "recordings": []
+}

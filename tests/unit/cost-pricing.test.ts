@@ -2719,7 +2719,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "grok-imagine/text-to-video",
       "grok-imagine/image-to-video",
       "grok-imagine/extend",
-      "grok-imagine/upscale",
       "gemini-omni-video",
       "bytedance/seedance-2",
     ]) {
@@ -4120,25 +4119,78 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  // OQ-2's resolution: the upscale schema carries only `task_id`, so none of
-  // the task-dependent tiers can be selected. The estimate fails closed.
-  it("fails closed for grok-imagine/upscale without task resolutions", () => {
-    const result = kieEstimate({
-      model: "grok-imagine/upscale",
-      input: { task_id: "abc" },
-    });
+  // ac-xnzcl4: the upscale request names its target in input.resolution
+  // (720p by default, or 1080p), and the source video's resolution travels as
+  // costHints.inputResolution. KIE prices each source-to-target pair (feed
+  // rows and models pricingDesc, 2026-11-19). Without the source, or on a
+  // pair KIE does not price, the estimate fails closed.
+  it.each([
+    { source: "480p", resolution: undefined, usd: 0.05 },
+    { source: "480p", resolution: "720p", usd: 0.05 },
+    { source: "480p", resolution: "1080p", usd: 0.15 },
+    { source: "720p", resolution: "1080p", usd: 0.1 },
+  ])(
+    "prices grok-imagine/upscale $source to $resolution as $usd",
+    ({ source, resolution, usd }) => {
+      const result = kieEstimate(
+        {
+          model: "grok-imagine/upscale",
+          input: { task_id: "abc", ...(resolution ? { resolution } : {}) },
+        },
+        { costHints: { inputResolution: source } }
+      );
 
-    expect(result.usd).toBe(0);
-    expect(result.breakdown).toEqual({});
-    expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain("360p→720p");
-    expect(result.warnings[0]).toContain("720P→1080P ($0.10)");
-    expect(result.warnings[0]).toContain("480P→1080P ($0.15)");
-    expect(result.warnings[0]).toContain("fails closed");
-    expect(PRICING.kie["grok-imagine/upscale"]).toMatchObject({
-      rates: { "": 0 },
-    });
-  });
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toMatchObject({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+      expect(result.warnings).toEqual([]);
+      expect(result.rateAsOf).toBe("2026-11-19");
+    }
+  );
+
+  it.each([
+    {
+      name: "no source hint",
+      input: { task_id: "abc", resolution: "1080p" },
+      hint: undefined,
+      warning: "declare costHints.inputResolution (480p or 720p)",
+    },
+    {
+      name: "a source with no tier",
+      input: { task_id: "abc", resolution: "1080p" },
+      hint: "1080p",
+      warning: "declare costHints.inputResolution (480p or 720p)",
+    },
+    {
+      name: "a 720p source at the 720p default",
+      input: { task_id: "abc" },
+      hint: "720p",
+      warning: "KIE publishes no 720p→720p tier",
+    },
+    {
+      name: "an undocumented target",
+      input: { task_id: "abc", resolution: "4k" },
+      hint: "480p",
+      warning: "input.resolution must be 720p or 1080p",
+    },
+  ])(
+    "fails grok-imagine/upscale closed on $name",
+    ({ input, hint, warning }) => {
+      const result = kieEstimate(
+        { model: "grok-imagine/upscale", input },
+        hint ? { costHints: { inputResolution: hint } } : {}
+      );
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain(warning);
+      expect(result.warnings[0]).toContain("fails closed");
+    }
+  );
 
   it.each([
     { model: "happyhorse/text-to-video", resolution: "720p", rate: 0.14 },

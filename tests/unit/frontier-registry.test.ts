@@ -20,6 +20,7 @@ import {
   NunchuxBytedanceGenerationTasksRequestSchema,
   NunchuxGoogleInteractionsRequestSchema,
   NunchuxMinimaxVideoGenerationRequestSchema,
+  NunchuxOpenAiImagesGenerationsRequestSchema,
 } from "@apicity/nunchux";
 import { createFal } from "@apicity/fal";
 import { createWaveSpeed } from "@apicity/wavespeed";
@@ -590,6 +591,14 @@ function liveRegistry() {
           (id) => id === entry.modelId
         );
       }
+      if (
+        entry.provider === "nunchux" &&
+        entry.dotPath === "v2.openai.images.generations"
+      ) {
+        return NunchuxOpenAiImagesGenerationsRequestSchema.shape.model.options[0].options.some(
+          (id) => id === entry.modelId
+        );
+      }
       if (entry.provider === "googleflow" && entry.dotPath === "v1.images") {
         return googleflowImages.has(entry.modelId);
       }
@@ -1090,6 +1099,32 @@ describe("frontier image snapshots", () => {
     expect(edit.has("grok-imagine-image-2-0/text-to-image")).toBe(false);
     expect(edit.has("seedream/5-pro-image-to-image")).toBe(true);
     expect(text.has("seedream/5-pro-text-to-image")).toBe(true);
+  });
+
+  it("lists Nunchux GPT Image 2.6 text-to-image below max quality", () => {
+    const nunchux = {
+      provider: "nunchux",
+      dotPath: "v2.openai.images.generations",
+    };
+    expect(t2i.endpointMap["GPT Image 2.6 Sunburst (max)"]).toContainEqual({
+      ...nunchux,
+      modelId: "gpt-image-2.6-sunburst",
+    });
+    expect(t2i.endpointMap["GPT Image 2.6 Flare (max)"]).toContainEqual({
+      ...nunchux,
+      modelId: "gpt-image-2.6-flare",
+    });
+    // The board's (max) setting is not on this route.
+    expect(
+      NunchuxOpenAiImagesGenerationsRequestSchema.safeParse({
+        model: "gpt-image-2.6-sunburst",
+        prompt: "a red paper lantern",
+        quality: "max",
+      }).success
+    ).toBe(false);
+    expect(
+      NunchuxOpenAiImagesGenerationsRequestSchema.shape.model.options[0].options
+    ).toEqual(["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"]);
   });
 
   it("lists Google Flow Nano Banana 2.1 for both image modes", () => {

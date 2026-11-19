@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Nunchux GPT Image 2.6 Sunburst and Flare (`gpt-image-2.6-sunburst`,
+  `gpt-image-2.6-flare`, slugs `gi2p6sb` and `gi2p6fl`) are priced from
+  declared usage at $5 / $8 / $30 per 1M text-input / image-input /
+  image-output tokens, re-read 2026-11-19 from the pricing page and
+  `GET https://api.nunchux.com/pricing` (`credit_value_usd` 1). The request
+  does not carry the counts, so an estimate without
+  `costHints.inputTokens`, `costHints.imageInputTokens` and
+  `costHints.imageOutputTokens` fails closed. Nunchux offers no `xhigh` or
+  `max` quality, so the frontier (max) rows cannot be reproduced. A
+  recorded Flare image (10 text tokens and 824 image-output tokens) prices
+  at 0.02477 USD, the same debit the wallet showed (ac-qggnrr).
+
 - The frontier registry lists Google Flow Nano Banana 2.1 for text-to-image and image-to-image, and lists WaveSpeed Gemini Omni Flash 1.2 and MachGen Seedance 2.5 for video editing (ac-757evu).
 
 - KIE Kling 4.0 Long Image (`kling-4-0/long-image`, slug `kling4li`) is priced

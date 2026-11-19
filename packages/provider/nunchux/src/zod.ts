@@ -274,3 +274,126 @@ export const NunchuxMinimaxVideoGenerationRequestSchema = z.object({
 export type NunchuxMinimaxVideoGenerationRequest = z.input<
   typeof NunchuxMinimaxVideoGenerationRequestSchema
 >;
+
+// Published ids: gpt-image-2, gpt-image-2.5-sunburst, gpt-image-2.5-flare,
+// gpt-image-2.6-sunburst, gpt-image-2.6-flare, plus a -YYYY-MM-DD snapshot.
+// Re-read 2026-11-19 from the model list and the GPT Image page.
+const NunchuxGptImageModelAliasSchema = z
+  .string()
+  .regex(
+    /^gpt-image-\d+(?:\.\d+)?(?:-(?:sunburst|flare))?(?:-\d{4}-\d{2}-\d{2})?$/
+  );
+
+const GPT_IMAGE_MIN_PIXELS = 655_360;
+const GPT_IMAGE_MAX_PIXELS = 8_294_400;
+const GPT_IMAGE_MAX_EDGE = 3840;
+const GPT_IMAGE_MAX_BATCH_PIXELS = 24_000_000;
+
+function gptImageSizeProblem(size: string, n: number): string | undefined {
+  if (size === "auto") return undefined;
+  const match = /^(\d+)x(\d+)$/.exec(size);
+  if (!match) return "size must be auto or WIDTHxHEIGHT";
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (width % 16 !== 0 || height % 16 !== 0) {
+    return "size edges must be multiples of 16";
+  }
+  if (width > GPT_IMAGE_MAX_EDGE || height > GPT_IMAGE_MAX_EDGE) {
+    return "size edges must be at most 3840";
+  }
+  const long = Math.max(width, height);
+  const short = Math.min(width, height);
+  if (short === 0 || long > short * 3) {
+    return "the long edge can be at most three times the short edge";
+  }
+  const pixels = width * height;
+  if (pixels < GPT_IMAGE_MIN_PIXELS || pixels > GPT_IMAGE_MAX_PIXELS) {
+    return "size must have between 655360 and 8294400 pixels";
+  }
+  if (n * pixels > GPT_IMAGE_MAX_BATCH_PIXELS) {
+    return "n times the image size must be at most 24000000 pixels";
+  }
+  return undefined;
+}
+
+export const NunchuxOpenAiImagesGenerationsRequestSchema = z
+  .object({
+    model: z
+      .enum(["gpt-image-2.6-sunburst", "gpt-image-2.6-flare"])
+      .or(NunchuxGptImageModelAliasSchema)
+      .describe(
+        "GPT Image 2.6 model. Nunchux serves gpt-image-2.6-sunburst and gpt-image-2.6-flare. OpenAI's xhigh and max qualities are not offered, so the Artificial Analysis (max) setting cannot be reproduced; the highest quality is high."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(32_000)
+      .describe("What to generate, up to 32,000 characters."),
+    n: z
+      .number()
+      .int()
+      .min(1)
+      .max(10)
+      .optional()
+      .describe(
+        "How many images to return. Defaults to 1. Each image is billed."
+      ),
+    size: z
+      .string()
+      .optional()
+      .describe(
+        "auto, or WIDTHxHEIGHT such as 1024x1024. Defaults to auto, which Nunchux holds as 1536x1024. Both edges must be multiples of 16 and at most 3840, the long edge at most three times the short edge, and the image between 655360 and 8294400 pixels."
+      ),
+    quality: z
+      .enum(["low", "medium", "high", "auto"])
+      .optional()
+      .describe(
+        "Defaults to auto, which renders and bills at high. low, medium and high are the only explicit settings. OpenAI's xhigh and max are not offered."
+      ),
+    complexity: z
+      .enum(["low", "medium", "high"])
+      .optional()
+      .describe(
+        "How much effort the model spends planning the image. Leave it out for OpenAI's default. Separate from quality."
+      ),
+    output_format: z
+      .enum(["png", "jpeg", "webp"])
+      .optional()
+      .describe("Defaults to png. svg and gif are not offered."),
+    output_compression: z
+      .number()
+      .int()
+      .min(0)
+      .max(100)
+      .optional()
+      .describe("Compression for jpeg and webp output, 0 to 100."),
+    background: z
+      .enum(["transparent", "opaque", "auto"])
+      .optional()
+      .describe(
+        "Defaults to auto. A transparent background needs png or webp output."
+      ),
+    moderation: z
+      .enum(["auto", "low"])
+      .optional()
+      .describe(
+        "Defaults to auto. low is available only on accounts Nunchux has approved; any other account gets 400."
+      ),
+  })
+  .strict()
+  .superRefine((body, ctx) => {
+    const problem = gptImageSizeProblem(body.size ?? "auto", body.n ?? 1);
+    if (problem !== undefined) {
+      ctx.addIssue({ code: "custom", path: ["size"], message: problem });
+    }
+    if (body.background === "transparent" && body.output_format === "jpeg") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["background"],
+        message: "A transparent background needs png or webp output.",
+      });
+    }
+  });
+export type NunchuxOpenAiImagesGenerationsRequest = z.input<
+  typeof NunchuxOpenAiImagesGenerationsRequestSchema
+>;

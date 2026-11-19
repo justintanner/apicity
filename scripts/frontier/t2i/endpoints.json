@@ -19,6 +19,11 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.openai.gptImage2p6Sunburst.textToImage",
       "pricingKey": "openai/gpt-image-2.6-sunburst/text-to-image"
+    },
+    {
+      "provider": "nunchux",
+      "dotPath": "v2.openai.images.generations",
+      "modelId": "gpt-image-2.6-sunburst"
     }
   ],
   "GPT Image 2.5 Sunburst (max)": [
@@ -68,6 +73,11 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.openai.gptImage2p6Flare.textToImage",
       "pricingKey": "openai/gpt-image-2.6-flare/text-to-image"
+    },
+    {
+      "provider": "nunchux",
+      "dotPath": "v2.openai.images.generations",
+      "modelId": "gpt-image-2.6-flare"
     }
   ],
   "MAI-Image-2.7": [],

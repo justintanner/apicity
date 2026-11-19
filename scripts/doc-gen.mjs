@@ -626,6 +626,22 @@ const FIREWORKS_AUDIO_BATCH_STATE = [
  */
 export const ENDPOINT_NOTES = new Map([
   [
+    "nunchux\tv2.openai.images.generations\tPOST",
+    [
+      "> **Board setting:** Artificial Analysis ranks GPT Image 2.6 Sunburst",
+      "and Flare at quality max. Nunchux does not offer OpenAI's `xhigh` or",
+      "`max` (re-read 2026-11-19,",
+      "[GPT Image](https://docs.nunchux.ai/partner-models/gpt-image)), so that",
+      "setting cannot be reproduced. The highest quality on this route is",
+      "`high`, and `auto` renders at `high`. `quality` of `xhigh` or `max`",
+      "is rejected. Both `gpt-image-2.6-sunburst` and `gpt-image-2.6-flare`",
+      "bill $5 / $8 / $30 per 1M text-input / image-input / image-output",
+      "tokens ([pricing](https://nunchux.ai/pricing)). The call is",
+      "synchronous and returns base64. A generation body must not send",
+      "`images`, `mask`, `markup`, `stream` or `partial_images`.",
+    ].join(" "),
+  ],
+  [
     "fireworks\tinference.v1.audio.transcriptions\tPOST",
     fireworksDeprecatedAudioNote(FIREWORKS_AUDIO_HOSTS_STATE),
   ],
@@ -5318,7 +5334,7 @@ const DEP_NOTES = {
 
 const PROVIDER_DEP_NOTES = {
   nunchux: {
-    zod: "reserved for request schemas; the credits read takes no parameters",
+    zod: "request schemas attached to POST endpoints as `.schema`; the credits read takes no parameters",
   },
   openai: {
     ws: "WebSocket client for the Realtime server control channel in `@apicity/openai/realtime`",

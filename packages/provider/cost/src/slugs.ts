@@ -1075,6 +1075,8 @@ export const MODEL_SLUGS = {
     "MiniMax-H3": "mmh3",
     "dreamina-seedance-2-0-260128": "sd2",
     "happyhorse-1.0-video-edit": "hh",
+    "gpt-image-2.6-sunburst": "gi2p6sb",
+    "gpt-image-2.6-flare": "gi2p6fl",
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "wan3p0",
@@ -2211,6 +2213,8 @@ export const MODEL_DISPLAY = {
     "MiniMax-H3": "MiniMax H3",
     "dreamina-seedance-2-0-260128": "Seedance 2",
     "happyhorse-1.0-video-edit": "HappyHorse Edit",
+    "gpt-image-2.6-sunburst": "GPT Image 2.6 Sunburst",
+    "gpt-image-2.6-flare": "GPT Image 2.6 Flare",
   },
   wavespeed: {
     "alibaba/wan-3.0/text-to-video": "Wan 3.0",

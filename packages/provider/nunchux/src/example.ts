@@ -83,6 +83,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST v2.openai.images.generations": {
+    "source": "nunchux/gpt-image-2-6-flare-text-to-image",
+    "payload": {
+      "model": "gpt-image-2.6-flare",
+      "prompt": "a red paper lantern",
+      "size": "1024x1024",
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

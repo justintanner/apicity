@@ -101,6 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `@apicity/nunchux` `v2.openai.images.generations` generates with GPT Image 2.6 Sunburst and Flare. `@apicity/cost` prices both from declared token usage at $5 / $8 / $30 per 1M text-input / image-input / image-output tokens. Nunchux does not offer `xhigh` or `max`, so the frontier (max) setting cannot be reproduced. A recorded Flare image at `low` and `1024x1024` billed 0.02477 USD (ac-qggnrr).
+
 - KIE Seedream 5.0 Lite (`seedream/5-lite-text-to-image`, `seedream/5-lite-image-to-image`) takes `quality` `ultra` (4K) beside `basic` (2K) and `high` (3K), and an optional `output_format` (`png` or `jpeg`), from the docs read on 2026-11-19. `quality` stays required, and an omitted `output_format` is not filled in. The descriptors now say `high` is 3K, where they said 4K, and give the schemas' `16:9` aspect-ratio default. KIE bills a flat 5.5 credits per image at every tier, so the price is unchanged (ac-bxpbil).
 
 - KIE Seedream 5 Pro (`seedream/5-pro-text-to-image`, `seedream/5-pro-image-to-image`) accepts the aspect ratio `21:9`, which both docs pages list as read on 2026-11-19, so the two tasks take the eight documented ratios. The default stays `1:1`. Prices are unchanged at 7 and 14 credits per image at 1K and 2K (ac-51w0vl).

@@ -988,6 +988,13 @@ and `aspect_ratio` is one of `16:9`, `4:3`, `1:1`, `3:4`, `9:16`,
 `resolution: "720p"`, `aspect_ratio: "16:9"`, `duration: 5`,
 `web_search: false`, and `nsfw_checker: true`.
 
+For image-to-video, pass `first_frame_url`, or `first_frame_url` and
+`last_frame_url` (an image URL or `asset://{assetId}`) instead of
+references: the docs make first frame, first and last frames, and
+multimodal reference mutually exclusive, so a frame with any non-empty
+`reference_*_urls` is refused. A frame is an image, so it bills in the
+no-video column.
+
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 
 KIE's Kling 3.0 Turbo Quick Start exposes two createTask slugs:

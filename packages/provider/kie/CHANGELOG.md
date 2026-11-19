@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `bytedance/seedance-2-mini` takes `first_frame_url` and `last_frame_url` (an image URL or `asset://{assetId}`), per KIE's docs of 2026-11-19. A frame cannot be combined with a non-empty `reference_image_urls`, `reference_video_urls` or `reference_audio_urls` (ac-7cp4o7).
+
 - `gpt-image-2-text-to-image` and `gpt-image-2-image-to-image` take an optional `background` (`transparent`, `opaque`, `auto`), which the docs of 2026-11-19 support at 1K only; a 2K or 4K request with `background` is refused. `gpt-image-2-image-to-image` gains the aspect ratios `2:1`, `1:2`, `3:1`, `1:3` and `9:21`, the sixteen text-to-image has. `GptImage2BackgroundSchema` and the `GptImage2Background` type are exported (ac-ftdouc).
 
 - `grok-imagine-image-2-0/segment-map` takes a direct http(s) `image_url` in place of `task_id`, per KIE's docs of 2026-11-19 (`input` is oneOf the two): exactly one of them is required, and a recorded run on an uploaded photo billed 0 credits. `GrokImagineImage2SegmentMapInputSchema` is exported (ac-mtdgxe).

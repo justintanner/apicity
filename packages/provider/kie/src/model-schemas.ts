@@ -2371,6 +2371,16 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maxLength: 20000,
         description: "Text prompt or description for the generated video",
       },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First frame image URL or asset://{assetId}; cannot be combined with reference_*_urls",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last frame image URL or asset://{assetId}, for the first-and-last-frames scenario; cannot be combined with reference_*_urls",
+      },
       reference_image_urls: {
         type: "array",
         default: [],

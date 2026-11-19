@@ -5210,20 +5210,34 @@ export const SeedreamTextToImageRequestSchema = z.object({
   }),
 });
 
+// The eight Seedream 5 Pro aspect ratios, shared by text-to-image and
+// image-to-image. Both docs pages list 21:9, as read on 2026-11-19
+// (ac-51w0vl); the models shipped with the first seven.
+// Docs: https://docs.kie.ai/market/seedream/5-pro-text-to-image
+export const SeedreamProAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "2:3",
+  "3:2",
+  "21:9",
+]);
+
 // seedream/5-pro-image-to-image is the higher-fidelity sibling of the lite
-// variant: fewer input images (max 10 vs 14), no 21:9 aspect ratio, and an
-// extra png/jpeg output_format. Like the lite models, Kie rejects createTask
-// with `"This field is required"` when `quality` is missing despite docs
-// listing a default, so treat it as required at the SDK boundary.
+// variant: fewer input images (max 10 vs 14) and an extra png/jpeg
+// output_format. Like the lite models, Kie rejects createTask with
+// `"This field is required"` when `quality` is missing despite docs listing a
+// default, so treat it as required at the SDK boundary.
+// Docs: https://docs.kie.ai/market/seedream/5-pro-image-to-image
 export const SeedreamProImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-pro-image-to-image"),
   callBackUrl: z.string().optional(),
   input: z.object({
     image_urls: z.array(z.string()).min(1).max(10),
     prompt: z.string().min(3).max(3000),
-    aspect_ratio: z
-      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"])
-      .default("1:1"),
+    aspect_ratio: SeedreamProAspectRatioSchema.default("1:1"),
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
     nsfw_checker: z.boolean().default(false),
@@ -5236,14 +5250,13 @@ export const SeedreamProImageToImageRequestSchema = z.object({
 // Kie rejects createTask with `"This field is required"` when `quality` is
 // missing despite the docs listing a default, so treat it as required at the
 // SDK boundary.
+// Docs: https://docs.kie.ai/market/seedream/5-pro-text-to-image
 export const SeedreamProTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-pro-text-to-image"),
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(3).max(3000),
-    aspect_ratio: z
-      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"])
-      .default("1:1"),
+    aspect_ratio: SeedreamProAspectRatioSchema.default("1:1"),
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
     nsfw_checker: z.boolean().default(false),

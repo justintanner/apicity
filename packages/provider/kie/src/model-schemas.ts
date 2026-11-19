@@ -3918,7 +3918,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"],
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
         description: "Output aspect ratio (default 1:1)",
       },
       quality: {
@@ -3950,7 +3950,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"],
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
         description: "Output aspect ratio (default 1:1)",
       },
       quality: {

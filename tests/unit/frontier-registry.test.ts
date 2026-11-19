@@ -27,6 +27,7 @@ import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
 import { VeoGenerateRequestSchema } from "@apicity/kie/zod";
 import {
   MACHGEN_IMAGE_MODELS,
+  MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
 } from "@apicity/machgen";
 import {
@@ -249,6 +250,11 @@ const MACHGEN_IMAGE_IDS: Readonly<Record<string, string>> = {
  * image model runs both T2I and I2I, and no video task.
  */
 function machgenHas(type: string, modelId: string): boolean {
+  if (type === "v2v") {
+    return (
+      MACHGEN_VIDEO_GRIDS[modelId]?.R2V?.operations?.includes("edit") ?? false
+    );
+  }
   const task = MACHGEN_TASK[type];
   if (task === undefined) return false;
   if (task === "T2I" || task === "I2I") {
@@ -1086,6 +1092,16 @@ describe("frontier image snapshots", () => {
     expect(text.has("seedream/5-pro-text-to-image")).toBe(true);
   });
 
+  it("lists Google Flow Nano Banana 2.1 for both image modes", () => {
+    for (const board of [t2i, i2i]) {
+      expect(board.endpointMap["Nano Banana 2.1"]).toContainEqual({
+        provider: "googleflow",
+        dotPath: "v1.images",
+        modelId: "nano-banana-2",
+      });
+    }
+  });
+
   it("resolves every mapped t2i and i2i endpoint", () => {
     expect(resolutionProblems("t2i", t2i.endpointMap, liveRegistry())).toEqual(
       []
@@ -1655,7 +1671,7 @@ describe("frontier video snapshots", () => {
     ).toBe(true);
   });
 
-  it("lists MachGen through its generate call for t2v, i2v and r2v", () => {
+  it("lists MachGen through its generate call for each supported video mode", () => {
     const expected = (models: string[]) => machgenGenerate(models, MACHGEN_IDS);
     expect(machgenRows(t2v.endpointMap)).toEqual(
       expected(["Wan 3.0", "MiniMax H3 (768p)", "Dreamina Seedance 2.5"])
@@ -1670,7 +1686,9 @@ describe("frontier video snapshots", () => {
     expect(machgenRows(r2v.endpointMap)).toEqual(
       expected(Object.keys(MACHGEN_IDS))
     );
-    expect(machgenRows(v2v.endpointMap)).toEqual({});
+    expect(machgenRows(v2v.endpointMap)).toEqual(
+      expected(["Dreamina Seedance 2.5"])
+    );
   });
 
   it("refuses a MachGen id on a type MachGen does not run it for", () => {
@@ -1691,7 +1709,9 @@ describe("frontier video snapshots", () => {
     }
     expect(refused("i2v", "MiniMax-H3-Turbo")).toBe(false);
     expect(refused("t2v", "Vidu-Q4-Preview")).toBe(true);
-    expect(refused("v2v", "Seedance-2.5")).toBe(true);
+    expect(refused("v2v", "Seedance-2.5")).toBe(false);
+    expect(refused("v2v", "Seedance-2.0")).toBe(true);
+    expect(refused("v2v", "Alibaba-Wan-3.0")).toBe(true);
     expect(refused("t2i", "MiniMax-H3")).toBe(true);
     expect(refused("t2i", "GPT-Image-2")).toBe(false);
     expect(refused("i2i", "Nano-Banana-2")).toBe(false);

@@ -241,6 +241,7 @@ describe("apicity frontier", () => {
     const table = out.join("\n");
     expect(table).toContain("geminiOmniFlash.v1p1.edit");
     expect(table).toContain("geminiOmniFlash.v1p2.edit");
+    expect(table).toContain("api.v3.google.geminiOmni1p2Flash.videoEdit");
     expect(table).toContain("wan.v2p7.editVideo");
     expect(table).toContain("wan2.7-videoedit");
     expect(table).toContain("happyhorse/video-edit");
@@ -290,7 +291,7 @@ describe("apicity frontier", () => {
   it("filters the image and video types to MachGen's generate rows", async () => {
     const env = { MACHGEN_API_KEY: "present" };
     const counts: Record<string, number> = {};
-    for (const type of ["t2i", "i2i", "t2v", "i2v", "r2v"]) {
+    for (const type of ["t2i", "i2i", "t2v", "i2v", "v2v", "r2v"]) {
       const { writer, out } = capture();
       await expect(
         runMain(["frontier", type, "--provider", "machgen", "--json"], writer, {
@@ -308,16 +309,7 @@ describe("apicity frontier", () => {
       ).toBe(true);
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 3, i2v: 3, r2v: 4 });
-
-    const { writer, err } = capture();
-    await expect(
-      runMain(["frontier", "v2v", "--provider", "machgen"], writer, {
-        stdoutIsTTY: false,
-        env: {},
-      })
-    ).resolves.toBe(2);
-    expect(err.join("\n")).toContain("run: apicity frontier v2v");
+    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 3, i2v: 3, v2v: 1, r2v: 4 });
   });
 
   it("rejects an unknown type and names the six codes", async () => {

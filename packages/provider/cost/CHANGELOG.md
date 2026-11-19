@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The frontier registry lists Google Flow Nano Banana 2.1 for text-to-image and image-to-image, and lists WaveSpeed Gemini Omni Flash 1.2 and MachGen Seedance 2.5 for video editing (ac-757evu).
+
 - KIE Kling 4.0 Long Image (`kling-4-0/long-image`, slug `kling4li`) is priced
   per long image by skill, length and resolution, as the feed rows do (the
   docs' 'resolution only' sentence disagrees): ecommerce Short 0.2125 / 0.255,

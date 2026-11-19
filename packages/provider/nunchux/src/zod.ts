@@ -47,7 +47,7 @@ export const NunchuxAlibabaVideoSynthesisRequestSchema = z.object({
       )
       .optional()
       .describe(
-        "Omit for text-to-video. A first frame and a reference set cannot be combined. Wan 3.0 accepts up to 10 reference images and 5 reference audio items totaling 15 seconds. Wan 2.7 accepts up to 5 reference images or a 2–10 second edit source clip."
+        "Omit for text-to-video. A first frame and a reference set cannot be combined. Wan 3.0 and Prime accept up to 10 reference images, reference_video clips with up to 15 billable input seconds (30 seconds maximum including output), and up to 5 reference audio items totaling 15 seconds. Wan 2.7 accepts up to 5 reference images or reference clips. Wan 2.7 Video Edit takes a 2–10 second source clip."
       ),
   }),
   parameters: z

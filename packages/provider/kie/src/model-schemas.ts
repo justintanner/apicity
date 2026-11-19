@@ -3048,23 +3048,34 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: [
           "auto",
           "1:1",
-          "5:4",
-          "9:16",
-          "21:9",
-          "16:9",
-          "4:3",
           "3:2",
-          "4:5",
-          "3:4",
           "2:3",
+          "4:3",
+          "3:4",
+          "5:4",
+          "4:5",
+          "16:9",
+          "9:16",
+          "2:1",
+          "1:2",
+          "3:1",
+          "1:3",
+          "21:9",
+          "9:21",
         ],
-        description: "Output aspect ratio (default auto)",
+        description:
+          "Output aspect ratio (default auto). 2K does not support 5:4, 4:5, 3:1, 1:3 or 9:21; 4K does not support 3:1, 1:3 or 9:21",
       },
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
         description:
           "Output resolution. 1:1 cannot upscale to 4K; auto/unset aspect_ratio is 1K only — other combos fail at task creation.",
+      },
+      background: {
+        type: "string",
+        enum: ["transparent", "opaque", "auto"],
+        description: "Image background; only supported at 1K resolution",
       },
       nsfw_checker: {
         type: "boolean",
@@ -3102,13 +3113,19 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "21:9",
           "9:21",
         ],
-        description: "Output aspect ratio (default auto)",
+        description:
+          "Output aspect ratio (default auto). 2K does not support 5:4, 4:5, 3:1, 1:3 or 9:21; 4K does not support 3:1, 1:3 or 9:21",
       },
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
         description:
           "Output resolution. 1:1 cannot upscale to 4K; auto/unset aspect_ratio is 1K only — other combos fail at task creation.",
+      },
+      background: {
+        type: "string",
+        enum: ["transparent", "opaque", "auto"],
+        description: "Image background; only supported at 1K resolution",
       },
       nsfw_checker: {
         type: "boolean",

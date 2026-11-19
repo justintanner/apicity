@@ -4405,33 +4405,74 @@ export const GptImage15TextToImageRequestSchema = z.object({
   }),
 });
 
+// GPT Image 2 text-to-image and image-to-image, from the docs read on
+// 2026-11-19 (ac-ftdouc). Both pages now take the same 16 aspect ratios
+// (image-to-image gained 2:1, 1:2, 3:1, 1:3 and 9:21) and an optional
+// `background`, "only supported when the resolution is 1K"; that rule is
+// enforced below. The pages also say 2K does not support 5:4, 4:5, 3:1, 1:3
+// or 9:21 and 4K does not support 3:1, 1:3 or 9:21. Those combinations are
+// described on the fields but not refused locally: text-to-image has accepted
+// them since it shipped, so refusing them now would break callers (the
+// mayor's no-tightening ruling of 2026-11-19), and KIE refuses them at task
+// creation.
+export const GptImage2BackgroundSchema = z.enum([
+  "transparent",
+  "opaque",
+  "auto",
+]);
+
+const refineGptImage2Background = (
+  value: { input: { resolution?: string; background?: string } },
+  ctx: z.RefinementCtx
+) => {
+  if (
+    value.input.background !== undefined &&
+    value.input.resolution !== undefined &&
+    value.input.resolution !== "1K"
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "background is only supported at 1K resolution",
+      path: ["input", "background"],
+    });
+  }
+};
+
 export const GptImage2ImageToImageAspectRatioSchema = z.enum([
   "auto",
   "1:1",
-  "5:4",
-  "9:16",
-  "21:9",
-  "16:9",
-  "4:3",
   "3:2",
-  "4:5",
-  "3:4",
   "2:3",
+  "4:3",
+  "3:4",
+  "5:4",
+  "4:5",
+  "16:9",
+  "9:16",
+  "2:1",
+  "1:2",
+  "3:1",
+  "1:3",
+  "21:9",
+  "9:21",
 ]);
 
 export const GptImage2ImageToImageResolutionSchema = z.enum(["1K", "2K", "4K"]);
 
-export const GptImage2ImageToImageRequestSchema = z.object({
-  model: z.literal("gpt-image-2-image-to-image"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().min(1).max(20000),
-    input_urls: z.array(z.string()).min(1).max(16),
-    aspect_ratio: GptImage2ImageToImageAspectRatioSchema.default("auto"),
-    resolution: GptImage2ImageToImageResolutionSchema.default("1K"),
-    nsfw_checker: z.boolean().default(false),
-  }),
-});
+export const GptImage2ImageToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-image-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      input_urls: z.array(z.string()).min(1).max(16),
+      aspect_ratio: GptImage2ImageToImageAspectRatioSchema.default("auto"),
+      resolution: GptImage2ImageToImageResolutionSchema.default("1K"),
+      background: GptImage2BackgroundSchema.optional(),
+      nsfw_checker: z.boolean().default(false),
+    }),
+  })
+  .superRefine(refineGptImage2Background);
 
 export const GptImage2TextToImageAspectRatioSchema = z.enum([
   "auto",
@@ -4454,16 +4495,19 @@ export const GptImage2TextToImageAspectRatioSchema = z.enum([
 
 export const GptImage2TextToImageResolutionSchema = z.enum(["1K", "2K", "4K"]);
 
-export const GptImage2TextToImageRequestSchema = z.object({
-  model: z.literal("gpt-image-2-text-to-image"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().min(1).max(20000),
-    aspect_ratio: GptImage2TextToImageAspectRatioSchema.default("auto"),
-    resolution: GptImage2TextToImageResolutionSchema.default("1K"),
-    nsfw_checker: z.boolean().default(false),
-  }),
-});
+export const GptImage2TextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      aspect_ratio: GptImage2TextToImageAspectRatioSchema.default("auto"),
+      resolution: GptImage2TextToImageResolutionSchema.default("1K"),
+      background: GptImage2BackgroundSchema.optional(),
+      nsfw_checker: z.boolean().default(false),
+    }),
+  })
+  .superRefine(refineGptImage2Background);
 
 export const GptImage25AspectRatioSchema = z.enum([
   "auto",
@@ -10773,6 +10817,7 @@ export type GptImage15TextToImageRequestInput = GptImage15TextToImageRequest;
 export type GptImage15TextToImageParsedRequest = z.output<
   typeof GptImage15TextToImageRequestSchema
 >;
+export type GptImage2Background = z.infer<typeof GptImage2BackgroundSchema>;
 export type GptImage2ImageToImageAspectRatio = z.infer<
   typeof GptImage2ImageToImageAspectRatioSchema
 >;

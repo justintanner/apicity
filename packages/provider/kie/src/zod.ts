@@ -4000,8 +4000,23 @@ export const Seedance25FlashRequestSchema =
     addSeedance25OmniReferenceIssues(input, ctx);
   });
 
+// Seedance 2.0 Mini. The docs, re-read on 2026-11-19 (ac-7cp4o7), add
+// first_frame_url and last_frame_url (an image URL or asset://{assetId}) and
+// list three mutually exclusive scenarios: first frame, first and last
+// frames, and multimodal reference. "Do not combine first_frame_url /
+// last_frame_url with any reference_* field" is enforced on the request
+// schema. Unlike Seedance 2.5, the Mini page states no adaptive aspect_ratio
+// requirement for a frame and does not say last_frame_url needs
+// first_frame_url, so neither is enforced. The input stays a plain object so
+// consumers can read `.shape`.
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
+  first_frame_url: Seedance25MediaReferenceSchema.optional().describe(
+    "First frame image URL or asset://{assetId}; cannot be combined with reference_*_urls"
+  ),
+  last_frame_url: Seedance25MediaReferenceSchema.optional().describe(
+    "Last frame image URL or asset://{assetId}, for the first-and-last-frames scenario; cannot be combined with reference_*_urls"
+  ),
   reference_image_urls: z.array(z.string()).max(9).default([]),
   reference_video_urls: z.array(z.string()).max(3).default([]),
   reference_audio_urls: z.array(z.string()).max(3).default([]),
@@ -4013,11 +4028,25 @@ export const Seedance2MiniInputSchema = z.object({
   nsfw_checker: z.boolean().default(true),
 });
 
-export const Seedance2MiniRequestSchema = z.object({
-  model: z.literal("bytedance/seedance-2-mini"),
-  callBackUrl: z.string().url().optional(),
-  input: Seedance2MiniInputSchema,
-});
+export const Seedance2MiniRequestSchema = z
+  .object({
+    model: z.literal("bytedance/seedance-2-mini"),
+    callBackUrl: z.string().url().optional(),
+    input: Seedance2MiniInputSchema,
+  })
+  .superRefine((value, ctx) => {
+    const { input } = value;
+    if (!input.first_frame_url && !input.last_frame_url) return;
+    for (const field of SEEDANCE_25_REFERENCE_FIELDS) {
+      if ((input[field]?.length ?? 0) > 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: `${field} cannot be combined with first_frame_url or last_frame_url`,
+          path: ["input", field],
+        });
+      }
+    }
+  });
 
 // ---------------------------------------------------------------------------
 // ByteDance non-Seedance createTask models (ac-ww94di)

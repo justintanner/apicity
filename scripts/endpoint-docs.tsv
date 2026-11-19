@@ -1937,3 +1937,4 @@ nunchux	v1.alibaba.services.aigc.videoGeneration.videoSynthesis	POST	https://api
 nunchux	v1.bytedance.contents.generations.tasks	POST	https://api.nunchux.com/v1/bytedance/contents/generations/tasks	https://docs.nunchux.ai/partner-models/seedance
 nunchux	v1.minimax.v2.videoGeneration	POST	https://api.nunchux.com/v1/minimax/v2/video_generation	https://docs.nunchux.ai/partner-models/minimax
 nunchux	v2.openai.images.generations	POST	https://api.nunchux.com/v2/openai/images/generations	https://docs.nunchux.ai/partner-models/gpt-image
+nunchux	v2.openai.images.edits	POST	https://api.nunchux.com/v2/openai/images/edits	https://docs.nunchux.ai/partner-models/gpt-image

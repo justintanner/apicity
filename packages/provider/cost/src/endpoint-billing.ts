@@ -112,7 +112,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       unit: "tokens",
       source: { url: "https://nunchux.ai/pricing", asOf: "2026-11-19" },
     },
-    ["POST v2.openai.images.generations"]
+    ["POST v2.openai.images.generations", "POST v2.openai.images.edits"]
   ),
   {
     match: { provider: "alibaba" },

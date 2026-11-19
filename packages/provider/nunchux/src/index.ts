@@ -43,6 +43,8 @@ export {
   type NunchuxGoogleInteractionsRequest,
   NunchuxMinimaxVideoGenerationRequestSchema,
   type NunchuxMinimaxVideoGenerationRequest,
+  NunchuxOpenAiImagesEditsRequestSchema,
+  type NunchuxOpenAiImagesEditsRequest,
   NunchuxOpenAiImagesGenerationsRequestSchema,
   type NunchuxOpenAiImagesGenerationsRequest,
 } from "./zod";

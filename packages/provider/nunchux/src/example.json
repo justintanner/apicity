@@ -68,6 +68,22 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST v2.openai.images.edits": {
+    "source": "nunchux/gpt-image-2-6-flare-image-edit",
+    "payload": {
+      "model": "gpt-image-2.6-flare",
+      "prompt": "add a small red bow tie",
+      "images": [
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>"
+        }
+      ],
+      "size": "1024x1024",
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v2.openai.images.generations": {
     "source": "nunchux/gpt-image-2-6-flare-text-to-image",
     "payload": {

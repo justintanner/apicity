@@ -174,16 +174,15 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
 ];
 
-const T2V_UNMAPPED = ["Utopai X", "Hyperflow H3"];
-const I2V_UNMAPPED = [
-  "Utopai X",
-  "SkyReels V4",
-  "Hyperflow H3",
-  "Pika H3 Flex",
-];
-const V2V_UNMAPPED = ["Hyperflow H3", "Pika H3 Flex"];
+const T2V_UNMAPPED = ["Utopai X"];
+const I2V_UNMAPPED = ["Utopai X", "SkyReels V4"];
+const V2V_UNMAPPED: string[] = [];
 
-/** t2v and i2v top-10 models with no reference-to-video endpoint. */
+/**
+ * t2v and i2v top-10 models with no reference-to-video endpoint on the
+ * derived board. Hyperflow H3 and Pika H3 Flex stay here: their
+ * video-reference route is the v2v adapter row, not an r2v row.
+ */
 const R2V_LEFT_OUT = [
   "Utopai X",
   "Hyperflow H3",
@@ -571,9 +570,26 @@ function liveRegistry() {
   };
   const registryHas = (
     type: string,
-    entry: { provider: string; dotPath: string; modelId?: string }
+    entry: {
+      provider: string;
+      dotPath: string;
+      modelId?: string;
+      adapter?: string;
+    }
   ) => {
     if (entry.provider === "machgen" && entry.dotPath === "api.v0.generate") {
+      // v2v for an adapter is R2V with a video reference. The wire model
+      // stays off v2v unless its grid documents an edit.
+      if (type === "v2v" && entry.adapter) {
+        const videos =
+          MACHGEN_VIDEO_GRIDS[entry.modelId ?? ""]?.R2V?.references?.videos ??
+          0;
+        return (
+          videos > 0 &&
+          entry.modelId !== undefined &&
+          machgenHas("r2v", entry.modelId)
+        );
+      }
       return entry.modelId !== undefined && machgenHas(type, entry.modelId);
     }
     if (type === "t2i" || type === "i2i") {
@@ -741,6 +757,8 @@ interface EndpointRecord {
   dotPath: string;
   modelId?: string;
   pricingKey?: string;
+  adapter?: string;
+  note?: string;
 }
 
 /** Each model's MachGen rows; a model with none is left out. */
@@ -850,6 +868,9 @@ function impliedEndpoint(
       : undefined;
   }
   if (entry.modelId.endsWith("-to-video")) return undefined;
+  // An adapter names one board's product. It does not pull that product
+  // onto the derived reference-to-video board: v2v is its video-reference row.
+  if (to === "r2v" && entry.adapter) return undefined;
   return ctx.registryHas(to, entry) ? entry : undefined;
 }
 
@@ -877,7 +898,8 @@ function crossTypeProblems(
             (candidate) =>
               candidate.provider === implied.provider &&
               candidate.dotPath === implied.dotPath &&
-              candidate.modelId === implied.modelId
+              candidate.modelId === implied.modelId &&
+              candidate.adapter === implied.adapter
           );
           if (!listed) {
             problems.push(
@@ -933,7 +955,7 @@ describe("frontier snapshots", () => {
     ).toEqual(I2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(snapshot)).toEqual([]);
     expect(unmappedNames(endpointMap)).toEqual(I2V_UNMAPPED);
-    expect(mappedCount(endpointMap)).toBe(6);
+    expect(mappedCount(endpointMap)).toBe(8);
     expect(Object.keys(endpointMap)).toHaveLength(10);
   });
 
@@ -1425,7 +1447,7 @@ describe("frontier video snapshots", () => {
     expect(seedRows(t2v.snapshot)).toEqual(T2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(t2v.snapshot)).toEqual([]);
     expect(unmappedNames(t2v.endpointMap)).toEqual(T2V_UNMAPPED);
-    expect(mappedCount(t2v.endpointMap)).toBe(8);
+    expect(mappedCount(t2v.endpointMap)).toBe(9);
     expect(Object.keys(t2v.endpointMap)).toHaveLength(10);
   });
 
@@ -1441,7 +1463,7 @@ describe("frontier video snapshots", () => {
     expect(seedRows(v2v.snapshot)).toEqual(V2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(v2v.snapshot)).toEqual([]);
     expect(unmappedNames(v2v.endpointMap)).toEqual(V2V_UNMAPPED);
-    expect(mappedCount(v2v.endpointMap)).toBe(8);
+    expect(mappedCount(v2v.endpointMap)).toBe(10);
     expect(Object.keys(v2v.endpointMap)).toHaveLength(10);
   });
 
@@ -1751,27 +1773,46 @@ describe("frontier video snapshots", () => {
 
   it("lists MachGen through its generate call for each supported video mode", () => {
     const expected = (models: string[]) => machgenGenerate(models, MACHGEN_IDS);
-    expect(machgenRows(t2v.endpointMap)).toEqual(
-      expected([
+    const hyperflow = {
+      provider: "machgen",
+      dotPath: "api.v0.generate",
+      modelId: "MiniMax-H3-Turbo",
+      adapter: "hyperflow",
+      note: "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference.",
+    };
+    const pika = {
+      provider: "machgen",
+      dotPath: "api.v0.generate",
+      modelId: "MiniMax-H3-Turbo",
+      adapter: "pika_h3_flex",
+      note: "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference.",
+    };
+    expect(machgenRows(t2v.endpointMap)).toEqual({
+      ...expected([
         "Wan 3.0",
         "MiniMax H3 (768p)",
         "Dreamina Seedance 2.5",
         "Gemini Omni Flash 1.2",
-      ])
-    );
-    expect(machgenRows(i2v.endpointMap)).toEqual(
-      expected([
+      ]),
+      "Hyperflow H3": [hyperflow],
+    });
+    expect(machgenRows(i2v.endpointMap)).toEqual({
+      ...expected([
         "Dreamina Seedance 2.5",
         "Dreamina Seedance 2.0",
         "MiniMax H3 (768p)",
-      ])
-    );
+      ]),
+      "Hyperflow H3": [hyperflow],
+      "Pika H3 Flex": [pika],
+    });
     expect(machgenRows(r2v.endpointMap)).toEqual(
       expected(Object.keys(MACHGEN_IDS))
     );
-    expect(machgenRows(v2v.endpointMap)).toEqual(
-      expected(["Gemini Omni Flash 1.2", "Dreamina Seedance 2.5"])
-    );
+    expect(machgenRows(v2v.endpointMap)).toEqual({
+      ...expected(["Gemini Omni Flash 1.2", "Dreamina Seedance 2.5"]),
+      "Hyperflow H3": [hyperflow],
+      "Pika H3 Flex": [pika],
+    });
   });
 
   it("refuses a MachGen id on a type MachGen does not run it for", () => {
@@ -1792,6 +1833,36 @@ describe("frontier video snapshots", () => {
     }
     expect(refused("i2v", "MiniMax-H3-Turbo")).toBe(false);
     expect(refused("t2v", "Vidu-Q4-Preview")).toBe(true);
+    expect(refused("v2v", "MiniMax-H3-Turbo")).toBe(true);
+    expect(
+      resolutionProblems(
+        "v2v",
+        {
+          Demo: [
+            {
+              provider: "machgen",
+              dotPath: "api.v0.generate",
+              modelId: "MiniMax-H3-Turbo",
+              adapter: "hyperflow",
+            },
+          ],
+        },
+        ctx
+      )
+    ).toEqual([]);
+    expect(
+      impliedEndpoint(
+        {
+          provider: "machgen",
+          dotPath: "api.v0.generate",
+          modelId: "MiniMax-H3-Turbo",
+          adapter: "hyperflow",
+        },
+        "t2v",
+        "r2v",
+        ctx
+      )
+    ).toBeUndefined();
     expect(refused("v2v", "Seedance-2.5")).toBe(false);
     expect(refused("v2v", "Gemini-Omni-1.2-Flash")).toBe(false);
     expect(refused("t2v", "Gemini-Omni-1.2-Flash")).toBe(false);
@@ -1902,6 +1973,17 @@ describe("frontier generated registry", () => {
       )
     );
     expect(frontier("image-to-video")).toEqual(rows);
+    expect(
+      frontier("t2v").find((row) => row.model === "Hyperflow H3")
+    ).toMatchObject({
+      provider: "machgen",
+      dotPath: "api.v0.generate",
+      modelId: "MiniMax-H3-Turbo",
+      adapter: "hyperflow",
+    });
+    expect(
+      frontier("v2v").find((row) => row.model === "Pika H3 Flex")?.note
+    ).toContain("1080p");
     expect(frontierType("image-editing")).toBe("i2i");
     expect(frontierType("nope")).toBeUndefined();
     expect(() => frontier("nope")).toThrow(RangeError);
@@ -1947,6 +2029,9 @@ describe("frontier generated registry", () => {
     expect(doc).toContain("fal `geminiOmniFlash.v1p1.edit`");
     expect(doc).toContain("xai `grok-imagine-image-2.0`");
     expect(doc).toContain("machgen `Alibaba-Wan-3.0`");
+    expect(doc).toContain("machgen `MiniMax-H3-Turbo adapter=hyperflow`");
+    expect(doc).toContain("machgen `MiniMax-H3-Turbo adapter=pika_h3_flex`");
+    expect(doc).toContain("which apicity does not wrap");
     expect(doc).toContain("## Refresh");
     expect(doc).toContain("re-derives `r2v`");
     expect(doc).toMatch(

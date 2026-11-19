@@ -413,6 +413,8 @@ interface FrontierDetailRow {
   provider: string;
   dotPath: string;
   modelId: string;
+  adapter?: string;
+  note?: string;
   price: FrontierHelperPrice;
   configured: boolean;
 }
@@ -483,7 +485,7 @@ export async function runFrontier(
       configured = isProviderConfigured(row.provider, env, sources);
       configuredByProvider.set(row.provider, configured);
     }
-    return {
+    const detail: FrontierDetailRow = {
       rank: row.rank,
       model: row.model,
       elo: row.elo,
@@ -493,6 +495,9 @@ export async function runFrontier(
       price: row.price,
       configured,
     };
+    if (row.adapter !== undefined) detail.adapter = row.adapter;
+    if (row.note !== undefined) detail.note = row.note;
+    return detail;
   });
 
   const unmapped = (helpers.FRONTIER[info.type]?.entries ?? [])
@@ -501,8 +506,19 @@ export async function runFrontier(
 
   return respond(writer, options, rows, () => {
     const table = frontierRowsTable(rows, helpers.formatFrontierPrice);
-    if (unmapped.length === 0) return table;
-    return `${table}\nnot yet in apicity: ${unmapped.join(", ")}`;
+    const lines = [table];
+    if (unmapped.length > 0) {
+      lines.push(`not yet in apicity: ${unmapped.join(", ")}`);
+    }
+    const notes = [
+      ...new Set(
+        rows
+          .filter((row) => row.note !== undefined)
+          .map((row) => `${row.model}: ${row.note}`)
+      ),
+    ];
+    lines.push(...notes);
+    return lines.join("\n");
   });
 }
 
@@ -530,7 +546,7 @@ function frontierRowsTable(
     String(row.elo),
     row.provider,
     row.dotPath,
-    row.modelId,
+    row.adapter ? `${row.modelId} (${row.adapter})` : row.modelId,
     formatPrice(row.price),
     row.configured ? "yes" : "no",
   ]);

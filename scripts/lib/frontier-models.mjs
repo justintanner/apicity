@@ -118,6 +118,8 @@ const ENDPOINT_FIELDS = new Set([
   "dotPath",
   "modelId",
   "pricingKey",
+  "adapter",
+  "note",
 ]);
 
 function isObject(value) {
@@ -505,6 +507,20 @@ function endpointRecordProblems(entry, where) {
       `${where} needs pricingKey (a PRICING key, a fal endpoint id, or "unpriced")`
     );
   }
+  if (
+    entry.adapter !== undefined &&
+    (typeof entry.adapter !== "string" || entry.adapter === "")
+  ) {
+    problems.push(`${where}.adapter must be a non-empty string when present`);
+  } else if (entry.adapter !== undefined && entry.modelId === undefined) {
+    problems.push(`${where}.adapter requires modelId`);
+  }
+  if (
+    entry.note !== undefined &&
+    (typeof entry.note !== "string" || entry.note === "")
+  ) {
+    problems.push(`${where}.note must be a non-empty string when present`);
+  }
   return problems;
 }
 
@@ -540,10 +556,15 @@ export function endpointMapProblems(snapshot, endpointMap) {
       const where = `endpoint map ${JSON.stringify(model)}[${index}]`;
       problems.push(...endpointRecordProblems(entry, where));
       if (!isObject(entry)) return;
-      const key = `${entry.provider}\t${entry.dotPath}\t${entry.modelId ?? ""}`;
+      const key = [
+        entry.provider,
+        entry.dotPath,
+        entry.modelId ?? "",
+        entry.adapter ?? "",
+      ].join("\t");
       if (seen.has(key)) {
         problems.push(
-          `${where} duplicates ${entry.provider} ${entry.dotPath} ${entry.modelId ?? ""}`
+          `${where} duplicates ${entry.provider} ${entry.dotPath} ${entry.modelId ?? ""} ${entry.adapter ?? ""}`
         );
       } else {
         seen.add(key);
@@ -908,7 +929,8 @@ function endpointHref(provider, dotPath, readmes) {
 }
 
 function endpointLink(entry, readmes) {
-  const label = entry.modelId ?? entry.dotPath;
+  const name = entry.modelId ?? entry.dotPath;
+  const label = entry.adapter ? `${name} adapter=${entry.adapter}` : name;
   const href = endpointHref(entry.provider, entry.dotPath, readmes);
   return `[${entry.provider} \`${label}\`](${href})`;
 }
@@ -994,6 +1016,29 @@ function pricedCells(type, entry, catalog) {
   return { text: texts.length === 0 ? "-" : texts.join(", "), dates };
 }
 
+/** One line per model whose endpoints carry a limitation note. */
+function limitationLines(entries) {
+  const lines = [];
+  const seen = new Set();
+  for (const entry of entries) {
+    if (!Array.isArray(entry.endpoints)) continue;
+    const notes = [
+      ...new Set(
+        entry.endpoints
+          .map((endpoint) => endpoint.note)
+          .filter((note) => typeof note === "string" && note !== "")
+      ),
+    ];
+    for (const note of notes) {
+      const line = `${entry.model}: ${note}`;
+      if (seen.has(line)) continue;
+      seen.add(line);
+      lines.push(line);
+    }
+  }
+  return lines;
+}
+
 function typeSection(info, snapshot, sources, readmes, catalog) {
   const heading = `## ${info.name} (\`${info.type}\`)`;
   if (snapshot.entries.length === 0) {
@@ -1030,6 +1075,11 @@ function typeSection(info, snapshot, sources, readmes, catalog) {
       `| ${row.entry.rank} | ${row.entry.model} | ${row.entry.creator} | ${row.entry.elo} | ${row.price} | ${formatEndpoints(row.entry.endpoints, readmes)} |`
     );
   }
+  const limitations = limitationLines(snapshot.entries);
+  if (limitations.length > 0) {
+    lines.push("");
+    lines.push(limitations.map((line) => wrapProse(line)).join("\n\n"));
+  }
   return `${lines.join("\n")}\n`;
 }
 
@@ -1061,7 +1111,7 @@ export async function renderFrontierDocument(repoRoot = REPO_ROOT) {
     )
   );
   const refresh = wrapProse(
-    'Run `pnpm run fetch:frontier` to download every leaderboard into `scripts/frontier/<type>/leaderboard.json` (name types to refresh only those, `--dry-run` to preview), or paste a new leaderboard by hand. The script gives a new model an empty list in `scripts/frontier/<type>/endpoints.json` and drops a model that left the board; fill in the empty lists so every model has an endpoint list or an explicit empty list. A dedicated leaf sets pricingKey to its PRICING key (for fal, the upstream endpoint id) or "unpriced". A shared callable prices by modelId. Keep ranks contiguous from 1 and stop at 10, or list every model when the board has fewer than 10. Bump the capture date, run `pnpm run gen:frontier` and `pnpm run doc-gen`, and commit the JSON with the regenerated registry and this file. A `t2v` or `i2v` refresh also re-derives `r2v`, which the script does from the models already in the `r2v` endpoint map: list the models of both top 10 that have a reference-to-video endpoint, better Elo first, each with that Elo and that board\'s creator. The generator refuses a derived list that no longer matches its sources. `pnpm run fetch:frontier` is the only code that downloads a leaderboard, and only when a person runs it: nothing in the build, tests, or CI may download a leaderboard or a price.'
+    'Run `pnpm run fetch:frontier` to download every leaderboard into `scripts/frontier/<type>/leaderboard.json` (name types to refresh only those, `--dry-run` to preview), or paste a new leaderboard by hand. The script gives a new model an empty list in `scripts/frontier/<type>/endpoints.json` and drops a model that left the board; fill in the empty lists so every model has an endpoint list or an explicit empty list. A dedicated leaf sets pricingKey to its PRICING key (for fal, the upstream endpoint id) or "unpriced". A shared callable prices by modelId. Keep ranks contiguous from 1 and stop at 10, or list every model when the board has fewer than 10. Bump the capture date, run `pnpm run gen:frontier` and `pnpm run doc-gen`, and commit the JSON with the regenerated registry and this file. A `t2v` or `i2v` refresh also re-derives `r2v`, which the script does from the models already in the `r2v` endpoint map: list the models of both top 10 that have a reference-to-video endpoint, better Elo first, each with that Elo and that board\'s creator. The generator refuses a derived list that no longer matches its sources. `pnpm run fetch:frontier` is the only code that downloads a leaderboard, and only when a person runs it: nothing in the build, tests, or CI may download a leaderboard or a price. An adapter row sets adapter to the upstream selector and note to the limitation that selector carries.'
   );
   const source = [
     "# Frontier models",

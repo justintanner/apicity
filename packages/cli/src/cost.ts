@@ -12,6 +12,8 @@ export interface FrontierHelperEndpoint {
   provider: string;
   dotPath: string;
   modelId?: string;
+  adapter?: string;
+  note?: string;
 }
 
 export interface FrontierHelperEntry {
@@ -53,6 +55,8 @@ export interface FrontierHelperRow {
   provider: string;
   dotPath: string;
   modelId?: string;
+  adapter?: string;
+  note?: string;
   price: FrontierHelperPrice;
 }
 

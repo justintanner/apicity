@@ -37,7 +37,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("leaderboard");
     expect(table).toContain("i2v");
     expect(table).toContain("image-to-video");
-    expect(table).toContain("6/10");
+    expect(table).toContain("9/10");
+    expect(table).toContain("10/10");
     expect(table).toContain("2026-11-19");
     expect(table).toContain("derived");
     expect(table).toContain("7/7");
@@ -65,15 +66,15 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "6/10", captured: "2026-11-19" });
+    expect(i2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
     expect(t2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
     expect(i2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
-    expect(t2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
+    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
+    expect(v2v).toMatchObject({ models: "10/10", captured: "2026-11-19" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
@@ -165,9 +166,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("0.04-0.065 USD/s");
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
-    expect(table).toContain(
-      "not yet in apicity: Utopai X, SkyReels V4, Hyperflow H3, Pika H3 Flex"
-    );
+    expect(table).not.toContain("machgen");
+    expect(table).toContain("not yet in apicity: Utopai X, SkyReels V4");
     expect(table).not.toContain("present");
   });
 
@@ -227,7 +227,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("MiniMax-H3");
     // SkyReels V4 left the t2v board on 2026-11-19; Hyperflow H3 entered.
     expect(table).not.toContain("api.v3.skyworkAi.skyreelsV4.textToVideo");
-    expect(table).toContain("not yet in apicity: Utopai X, Hyperflow H3");
+    expect(table).toContain("MiniMax-H3-Turbo (hyperflow)");
+    expect(table).toContain("not yet in apicity: Utopai X");
+    expect(table).not.toContain("Pika H3 Flex");
   });
 
   it("prints v2v rows through the video-editing alias", async () => {
@@ -249,7 +251,10 @@ describe("apicity frontier", () => {
     expect(table).toContain("api.v3.alibaba.wan3p0.videoEdit");
     expect(table).toContain("api.v3.wavespeedAi.minimaxH3.videoEdit");
     expect(table).toContain("api.v3.bytedance.seedance2p0.videoEdit");
-    expect(table).toContain("not yet in apicity: Hyperflow H3, Pika H3 Flex");
+    expect(table).toContain("MiniMax-H3-Turbo (hyperflow)");
+    expect(table).toContain("MiniMax-H3-Turbo (pika_h3_flex)");
+    expect(table).toContain("own 1080p service");
+    expect(table).not.toContain("not yet in apicity");
   });
 
   it("prints the derived r2v rows with no gaps", async () => {
@@ -300,16 +305,40 @@ describe("apicity frontier", () => {
         })
       ).resolves.toBe(0);
       const envelope = JSON.parse(out.join("\n")) as {
-        data: Array<{ dotPath: string; modelId: string; configured: boolean }>;
+        data: Array<{
+          dotPath: string;
+          modelId: string;
+          adapter?: string;
+          note?: string;
+          configured: boolean;
+        }>;
       };
       expect(
         envelope.data.every(
           (row) => row.dotPath === "api.v0.generate" && row.configured
         )
       ).toBe(true);
+      if (type === "t2v") {
+        expect(
+          envelope.data.some(
+            (row) =>
+              row.adapter === "hyperflow" &&
+              row.modelId === "MiniMax-H3-Turbo" &&
+              row.note?.includes("open weights")
+          )
+        ).toBe(true);
+      }
+      if (type === "v2v") {
+        expect(
+          envelope.data.some(
+            (row) =>
+              row.adapter === "pika_h3_flex" && row.note?.includes("1080p")
+          )
+        ).toBe(true);
+      }
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 4, i2v: 3, v2v: 2, r2v: 5 });
+    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 5, i2v: 5, v2v: 4, r2v: 5 });
   });
 
   it("rejects an unknown type and names the six codes", async () => {

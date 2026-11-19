@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Frontier rows can name an `adapter` and a `note`. Hyperflow H3 and
+  Pika H3 Flex are reached through MachGen `MiniMax-H3-Turbo`
+  (`hyperflow` and `pika_h3_flex`) at 480p and 768p. The
+  MiniMax-H3-Turbo promotion was re-read 2026-11-19 and is unchanged
+  at 0.015 USD/s, with and without input video, through
+  2027-01-01T07:59Z. A recorded 480p 1 s Hyperflow text-to-video billed
+  0.015 USD (ac-deyq9x).
+
 - KIE Grok Imagine Upscale (`grok-imagine/upscale`) is priced per upscale
   from its source-to-target pair: 0.05 USD for 480p to 720p, 0.15 USD for
   480p to 1080p and 0.10 USD for 720p to 1080p (10 / 30 / 20 credits), from

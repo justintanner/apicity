@@ -34,6 +34,13 @@ export interface FrontierEndpoint {
    * Omitted on a shared callable whose `modelId` is that key.
    */
   pricingKey?: string;
+  /**
+   * Upstream selector on a shared callable. The model id stays the wire
+   * model; this names which adapter that call runs.
+   */
+  adapter?: string;
+  /** Limitation of this mapping. It is not a second price. */
+  note?: string;
 }
 
 export interface FrontierEntry {
@@ -73,6 +80,8 @@ export interface FrontierRow {
   provider: string;
   dotPath: string;
   modelId?: string;
+  adapter?: string;
+  note?: string;
   /** Bundled per-unit range, `{ unit: "dynamic" }`, or null. */
   price: FrontierPrice | null;
 }
@@ -107,7 +116,8 @@ export function frontierType(input: string): FrontierType | undefined {
  *
  * An unknown type throws a `RangeError` that names the six codes. Models
  * with an empty endpoint list are omitted. `modelId` is set only for a
- * shared callable. `price` comes from the bundled tables.
+ * shared callable. `adapter` and `note` are set only when the row carries
+ * them. `price` comes from the bundled tables.
  */
 export function frontier(
   type: string,
@@ -136,6 +146,8 @@ export function frontier(
         price: frontierPrice(endpoint),
       };
       if (endpoint.modelId !== undefined) row.modelId = endpoint.modelId;
+      if (endpoint.adapter !== undefined) row.adapter = endpoint.adapter;
+      if (endpoint.note !== undefined) row.note = endpoint.note;
       rows.push(row);
     }
   }

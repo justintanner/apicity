@@ -3859,14 +3859,20 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       aspect_ratio: {
         type: "string",
         enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
-        description: "Output aspect ratio (default 1:1)",
+        description: "Output aspect ratio (default 16:9)",
       },
       quality: {
         type: "string",
         required: true,
-        enum: ["basic", "high"],
+        enum: ["basic", "high", "ultra"],
         description:
-          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
+          "Output quality (basic=2K, high=3K, ultra=4K). Required — Kie rejects createTask without it.",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        description:
+          "Output image format. Optional with no default; the docs ask callers to set it explicitly.",
       },
       nsfw_checker: {
         type: "boolean",
@@ -3886,14 +3892,20 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       aspect_ratio: {
         type: "string",
         enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
-        description: "Output aspect ratio (default 1:1)",
+        description: "Output aspect ratio (default 16:9)",
       },
       quality: {
         type: "string",
         required: true,
-        enum: ["basic", "high"],
+        enum: ["basic", "high", "ultra"],
         description:
-          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
+          "Output quality (basic=2K, high=3K, ultra=4K). Required — Kie rejects createTask without it.",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        description:
+          "Output image format. Optional with no default; the docs ask callers to set it explicitly.",
       },
       nsfw_checker: {
         type: "boolean",

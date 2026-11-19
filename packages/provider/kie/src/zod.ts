@@ -5170,6 +5170,19 @@ export const GptImage26FlareImageToImageRequestSchema = z
   .superRefine(refineGptImage26Output)
   .superRefine(refineGptImage26Edit);
 
+// Seedream 5.0 Lite quality tiers and output formats, from the text-to-image
+// and image-to-image docs read on 2026-11-19 (ac-bxpbil): basic outputs 2K,
+// high 3K and ultra 4K images. The models shipped with basic and high and no
+// output format. KIE bills a flat 5.5 credits per image at every tier.
+// Docs: https://docs.kie.ai/market/seedream/5-lite-text-to-image
+export const SeedreamLiteQualitySchema = z.enum(["basic", "high", "ultra"]);
+
+// The docs list png and jpeg with no default and say "Set this field
+// explicitly", without making it required. It stays optional with no local
+// default, so an omitted format is never sent and existing callers keep
+// working.
+export const SeedreamLiteOutputFormatSchema = z.enum(["png", "jpeg"]);
+
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
 // answers 422 with `{"code":422,"msg":"This field is required"}` when the key
@@ -5177,8 +5190,9 @@ export const GptImage26FlareImageToImageRequestSchema = z
 // for the seedream/5-lite models. Omitting `.default("basic")` here is
 // deliberate: defaulting locally would paper over the upstream 422 and send a
 // quality the caller never chose. Required-ness forces callers to pick
-// basic/high explicitly. Do not relax to `.optional()` or `.default()` without
-// re-confirming against a live createTask call.
+// basic/high/ultra explicitly. Do not relax to `.optional()` or `.default()`
+// without re-confirming against a live createTask call.
+// Docs: https://docs.kie.ai/market/seedream-5-lite-image-to-image
 export const SeedreamImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-image-to-image"),
   callBackUrl: z.string().optional(),
@@ -5188,7 +5202,8 @@ export const SeedreamImageToImageRequestSchema = z.object({
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .default("16:9"),
-    quality: z.enum(["basic", "high"]),
+    quality: SeedreamLiteQualitySchema,
+    output_format: SeedreamLiteOutputFormatSchema.optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -5197,6 +5212,7 @@ export const SeedreamImageToImageRequestSchema = z.object({
 // above: Kie documents a `basic` default, but seedream/5-lite createTask
 // answers `"This field is required"` when the key is absent. See the note on
 // SeedreamImageToImageRequestSchema.
+// Docs: https://docs.kie.ai/market/seedream/5-lite-text-to-image
 export const SeedreamTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-text-to-image"),
   callBackUrl: z.string().optional(),
@@ -5205,7 +5221,8 @@ export const SeedreamTextToImageRequestSchema = z.object({
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .default("16:9"),
-    quality: z.enum(["basic", "high"]),
+    quality: SeedreamLiteQualitySchema,
+    output_format: SeedreamLiteOutputFormatSchema.optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });

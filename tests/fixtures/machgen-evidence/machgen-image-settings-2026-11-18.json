@@ -1,0 +1,2922 @@
+{
+  "capturedAt": "2026-11-18",
+  "source": "Free reads of MachGen on 2026-11-18 for the image settings of GPT-Image-2, GPT-Image-2.5-Sunburst, GPT-Image-2.5-Flare, GPT-Image-2.6-Sunburst, GPT-Image-2.6-Flare, Nano-Banana-2 and Nano-Banana-2.1: this account's model list (GET /api/v0/models, keyed and free), the docs, the web app's capability contract, 77 POST /api/v0/generate requests built to be refused, which MachGen all answered HTTP 400 before accepting a task, and 9 POST /api/v0/upscale/quote requests, which are free and create no task. Nothing was billed: the wallet read 14207825 micro-USD before the first request and after the last.",
+  "modelList": {
+    "source": "https://api.machgen.ai/api/v0/models?kind=image",
+    "readAt": "2026-11-18T14:49:54Z",
+    "note": "Rows trimmed to the image-setting keys. The same keys were equal in the 05:00:40Z read of that day.",
+    "models": {
+      "GPT-Image-2": {
+        "I2I": {
+          "image_qualities": ["auto", "low", "medium", "high"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": true,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": 16,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        },
+        "T2I": {
+          "image_qualities": ["auto", "low", "medium", "high"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": null,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        }
+      },
+      "GPT-Image-2.5-Sunburst": {
+        "I2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": true,
+          "supports_image_markup": true,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": 16,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        },
+        "T2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": null,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        }
+      },
+      "GPT-Image-2.5-Flare": {
+        "I2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": true,
+          "supports_image_markup": true,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": 16,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        },
+        "T2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": [],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": null,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        }
+      },
+      "GPT-Image-2.6-Sunburst": {
+        "I2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": ["low", "medium", "high"],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp", "gif"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": true,
+          "supports_image_markup": true,
+          "image_continuation": {
+            "maxTurns": 8,
+            "retentionDays": 29,
+            "maxPromptChars": 64000,
+            "outputFormats": ["png", "jpeg", "webp"]
+          },
+          "default_image_frames": 9,
+          "max_input_images": 16,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        },
+        "T2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": ["low", "medium", "high"],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp", "svg", "gif"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": 9,
+          "max_input_images": null,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        }
+      },
+      "GPT-Image-2.6-Flare": {
+        "I2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": ["low", "medium", "high"],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp", "gif"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": true,
+          "supports_image_markup": true,
+          "image_continuation": {
+            "maxTurns": 8,
+            "retentionDays": 29,
+            "maxPromptChars": 64000,
+            "outputFormats": ["png", "jpeg", "webp"]
+          },
+          "default_image_frames": 9,
+          "max_input_images": 16,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        },
+        "T2I": {
+          "image_qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+          "image_complexities": ["low", "medium", "high"],
+          "image_backgrounds": ["auto", "opaque", "transparent"],
+          "output_formats": ["png", "jpeg", "webp", "svg", "gif"],
+          "default_output_format": "png",
+          "supports_auto_image_size": true,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": 9,
+          "max_input_images": null,
+          "custom_image_size": {
+            "edge_multiple": 16,
+            "max_edge": 3840,
+            "min_pixels": 655360,
+            "max_pixels": 8294400,
+            "min_aspect_ratio": 0.3333333333333333,
+            "max_aspect_ratio": 3.0
+          }
+        }
+      },
+      "Nano-Banana-2": {
+        "I2I": {
+          "image_qualities": [],
+          "image_complexities": [],
+          "image_backgrounds": [],
+          "output_formats": [],
+          "default_output_format": null,
+          "supports_auto_image_size": false,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": 14,
+          "custom_image_size": null
+        },
+        "T2I": {
+          "image_qualities": [],
+          "image_complexities": [],
+          "image_backgrounds": [],
+          "output_formats": [],
+          "default_output_format": null,
+          "supports_auto_image_size": false,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": null,
+          "custom_image_size": null
+        }
+      },
+      "Nano-Banana-2.1": {
+        "I2I": {
+          "image_qualities": [],
+          "image_complexities": [],
+          "image_backgrounds": [],
+          "output_formats": [],
+          "default_output_format": null,
+          "supports_auto_image_size": false,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": 14,
+          "custom_image_size": null
+        },
+        "T2I": {
+          "image_qualities": [],
+          "image_complexities": [],
+          "image_backgrounds": [],
+          "output_formats": [],
+          "default_output_format": null,
+          "supports_auto_image_size": false,
+          "supports_image_mask": false,
+          "supports_image_markup": false,
+          "image_continuation": null,
+          "default_image_frames": null,
+          "max_input_images": null,
+          "custom_image_size": null
+        }
+      }
+    },
+    "allModelsReadAt": "2026-11-18T14:51:27Z",
+    "allModels": {
+      "count": 54,
+      "supports_image_mask": [
+        "GPT-Image-2 I2I",
+        "GPT-Image-2.5-Flare I2I",
+        "GPT-Image-2.5-Sunburst I2I",
+        "GPT-Image-2.6-Flare I2I",
+        "GPT-Image-2.6-Sunburst I2I"
+      ],
+      "supports_image_markup": [
+        "GPT-Image-2.5-Flare I2I",
+        "GPT-Image-2.5-Sunburst I2I",
+        "GPT-Image-2.6-Flare I2I",
+        "GPT-Image-2.6-Sunburst I2I"
+      ],
+      "image_continuation": [
+        "GPT-Image-2.6-Flare I2I",
+        "GPT-Image-2.6-Sunburst I2I"
+      ],
+      "supports_auto_image_size": [
+        "GPT-Image-2 I2I",
+        "GPT-Image-2 T2I",
+        "GPT-Image-2.5-Flare I2I",
+        "GPT-Image-2.5-Flare T2I",
+        "GPT-Image-2.5-Sunburst I2I",
+        "GPT-Image-2.5-Sunburst T2I",
+        "GPT-Image-2.6-Flare I2I",
+        "GPT-Image-2.6-Flare T2I",
+        "GPT-Image-2.6-Sunburst I2I",
+        "GPT-Image-2.6-Sunburst T2I",
+        "Seedream-5.5 I2I",
+        "Seedream-5.5 T2I"
+      ],
+      "image_qualities": [
+        "GPT-Image-2",
+        "GPT-Image-2.5-Flare",
+        "GPT-Image-2.5-Sunburst",
+        "GPT-Image-2.6-Flare",
+        "GPT-Image-2.6-Sunburst"
+      ]
+    }
+  },
+  "contract": {
+    "chunk": "/_next/static/chunks/3-1j9qbczs3n0.js",
+    "page": "https://www.machgen.ai/generate",
+    "note": "The model list has no safety-identifier field; the web app's capability contract is the only place that states it. !0 is true.",
+    "gptImageSharedBlock": "C={outputFormats:[\"png\",\"jpeg\",\"webp\"],defaultOutputFormat:\"png\",maxPartialImages:3,maxImageOutputs:10,supportsSafetyIdentifier:!0,supportsImageModeration:!0,supportsAutoImageSize:!0,customImageSize:{edgeMultiple:16,maxEdge:3840,minPixels:655360,maxPixels:8294400,minAspectRatio:1/3,maxAspectRatio:3},imageBackgrounds:[\"auto\",\"opaque\",\"transparent\"]}",
+    "GPT-Image-2": "gptimage2:{modelId:\"GPT-Image-2\",displayName:\"GPT Image 2\",badgeLabel:\"GPT IMAGE 2\",order:150,color:\"bg-model-openai\",description:\"High-fidelity text-to-image and image editing.\",tags:[\"partner\"],t2i:{...F,maxPromptChars:32e3,supportsOptimizationLevel:!0,optimizationLevels:[\"STANDARD\",\"EXPRESS\"],priceByOptimizationLevel:!0,sizeGrid:L,supportsSeed:!1,pricing:\"by_size\"},i2i:{...F,maxPromptChars:32e3,supportsImageMask:!0,referenceInputLimits:O,supportsOptimizationLevel:!0,optimizationLevels:[\"STANDARD\",\"EXPRESS\"],priceByOptimizationLevel:!0,sizeGrid:L,maxInputImages:16,supportsSeed:!1,pricing:\"by_size\"}}",
+    "Nano-Banana-2": "nanobanana2:{modelId:\"Nano-Banana-2\",displayName:\"Nano Banana 2\",badgeLabel:\"NANO BANANA 2\",order:120,color:\"bg-model-gemini\",description:\"Gemini image model for high-quality text-to-image and editing.\",tags:[\"partner\"],t2i:{heights:I,resolutionTierLabels:E,aspectRatios:i,supportsSeed:!0,minSeed:0,maxSeed:0x7fffffff,pricing:\"by_height\"},i2i:{heights:I,resolutionTierLabels:E,aspectRatios:i,maxInputImages:14,referenceImageLimits:{objects:10,characters:4,styles:null},supportsSeed:!0,minSeed:0,maxSeed:0x7fffffff,pricing:\"by_height\"}}",
+    "Nano-Banana-2.1": "nanobanana21:{modelId:\"Nano-Banana-2.1\",displayName:\"Nano Banana 2.1\",badgeLabel:\"NANO BANANA 2.1\",order:121,color:\"bg-model-gemini\",description:\"Gemini image generation and editing with improved detail and text rendering.\",tags:[\"partner\"],t2i:{heights:I,resolutionTierLabels:E,aspectRatios:i,supportsSeed:!1,pricing:\"by_height\"},i2i:{heights:I,resolutionTierLabels:E,aspectRatios:i,maxInputImages:14,referenceImageLimits:{objects:10,characters:4,styles:null},referenceInputLimits:{image:{formats:[\"png\",\"jpeg\",\"webp\",\"heic\",\"heif\"],maxBytes:7e6}},supportsSeed:!1,pricing:\"by_height\"}}"
+  },
+  "surfaces": {
+    "GPT-Image-2": {
+      "T2I": {
+        "qualities": ["auto", "low", "medium", "high"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      },
+      "I2I": {
+        "qualities": ["auto", "low", "medium", "high"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": true,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      }
+    },
+    "GPT-Image-2.5-Sunburst": {
+      "T2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      },
+      "I2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": true,
+        "markup": true,
+        "continuation": false,
+        "safetyIdentifier": true
+      }
+    },
+    "GPT-Image-2.5-Flare": {
+      "T2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      },
+      "I2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": [],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": true,
+        "markup": true,
+        "continuation": false,
+        "safetyIdentifier": true
+      }
+    },
+    "GPT-Image-2.6-Sunburst": {
+      "T2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": ["low", "medium", "high"],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp", "svg", "gif"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      },
+      "I2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": ["low", "medium", "high"],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp", "gif"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": true,
+        "markup": true,
+        "continuation": true,
+        "safetyIdentifier": true
+      }
+    },
+    "GPT-Image-2.6-Flare": {
+      "T2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": ["low", "medium", "high"],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp", "svg", "gif"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": true
+      },
+      "I2I": {
+        "qualities": ["auto", "low", "medium", "high", "xhigh", "max"],
+        "complexities": ["low", "medium", "high"],
+        "backgrounds": ["auto", "opaque", "transparent"],
+        "outputFormats": ["png", "jpeg", "webp", "gif"],
+        "defaultOutputFormat": "png",
+        "autoSize": true,
+        "mask": true,
+        "markup": true,
+        "continuation": true,
+        "safetyIdentifier": true
+      }
+    },
+    "Nano-Banana-2": {
+      "T2I": {
+        "qualities": [],
+        "complexities": [],
+        "backgrounds": [],
+        "outputFormats": [],
+        "autoSize": false,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": false
+      },
+      "I2I": {
+        "qualities": [],
+        "complexities": [],
+        "backgrounds": [],
+        "outputFormats": [],
+        "autoSize": false,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": false
+      }
+    },
+    "Nano-Banana-2.1": {
+      "T2I": {
+        "qualities": [],
+        "complexities": [],
+        "backgrounds": [],
+        "outputFormats": [],
+        "autoSize": false,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": false
+      },
+      "I2I": {
+        "qualities": [],
+        "complexities": [],
+        "backgrounds": [],
+        "outputFormats": [],
+        "autoSize": false,
+        "mask": false,
+        "markup": false,
+        "continuation": false,
+        "safetyIdentifier": false
+      }
+    }
+  },
+  "docs": [
+    {
+      "url": "https://www.machgen.ai/docs/reference#imageconfig",
+      "text": "| `size_mode` | `Literal[explicit, auto]` | - | `'explicit'` | Use explicit dimensions or let a supported model choose the output size. Auto cannot be combined with width, height or aspect\\_ratio. |\n| `height` | `int \\| None` | - | `None` | Output height in pixels. Required for explicit sizing; omit when size\\_mode is auto. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#imageoutputoptions",
+      "text": "Optional `image_output` controls for image generation and editing. Supported options depend on the model; transparent backgrounds require PNG or WebP. Models with GIF output can also accept frame count and frame delay. Automatic dimensions are selected separately with `image_config.size_mode`."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#imageoutputoptions",
+      "text": "| `partial_images` | `int \\| None` | - | `None` | Maximum number of intermediate image previews, from 0 to 3. Supported raster models may return fewer previews. Each generated preview is billed separately from the final image. |\n| `svg` | `VectorOutputOptions \\| None` | - | `None` | Optional author settings for SVG output. |\n| `layers` | `ImageLayerOptions \\| None` | - | `None` | Decompose one reference image into a base image and layers on supported models. |\n| `watermark` | `bool \\| None` | - | `None` | Add a visible AI-generated watermark on supported models. Seedream defaults to enabled. |\n| `frame_count` | `int \\| None` | - | `None` | Number of frames for animated image output. Omit to use the model default. |\n| `frame_duration_ms` | `int \\| None` | - | `None` | Delay per animation frame in milliseconds. GIF rounds the delay to the nearest 10 milliseconds. |\n| `complexity` | `Literal[low, medium, high] \\| None` | - | `None` | Planning effort before rendering. Omit to use the model default. |\n| `quality` | `Literal[auto, low, medium, high, xhigh, max] \\| None` | - | `None` | Rendering quality. Supported values depend on the model. Omit to keep its default. |\n| `background` | `Literal[auto, opaque, transparent] \\| None` | - | `None` | Background appearance. Transparent output requires PNG or WebP. |\n| `output_format` | `Literal[png, jpeg, webp, svg, gif]` | - | `'png'` | Format of the generated image file. |\n| `output_compression` | `int \\| None` | - | `None` | Compression setting from 0 to 100 for JPEG or WebP. Omit to use the model default. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#vectoroutputoptions",
+      "text": "| `model` | `str` | Yes | - | Model used to author the SVG from the generated reference image. |\n| `reasoning` | `ImageReasoningOptions \\| None` | - | `None` | Optional reasoning settings for the vector author. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#imagereasoningoptions",
+      "text": "| `effort` | `Literal[none, minimal, low, medium, high, xhigh, max] \\| None` | - | `None` | Reasoning effort for the vector author. Omit to use its default. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#taskinput",
+      "text": "| `safety_identifier` | `str \\| None` | - | `None` | Stable identifier for safety monitoring. Use a pseudonymous value rather than personal information. Supported by models with safety identifier controls. Seedream accepts up to 64 ASCII characters and stores and echoes the value on the platform; upstream forwarding is not guaranteed. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/reference#taskinput",
+      "text": "| `src_mask_url` | `str \\| None` | - | `None` | Optional PNG edit mask matching the first reference image. Transparent areas identify the region to edit. Supported only by models that accept masks. |\n| `src_markup_url` | `str \\| None` | - | `None` | Optional transparent PNG annotation layer matching the first reference image after orientation. Keep the original image separate. Cannot be combined with an edit mask. Supported only by models that accept markup. |\n| `continuation_task_id` | `str \\| None` | - | `None` | Optional completed image task ID to continue editing with its prompt and image history. The task must belong to you and use the same model. Submit as I2I; additional reference images are optional. Supported only by models that accept image continuation. |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api#list-available-models",
+      "text": "Image surfaces also list `image_qualities`, `image_complexities` and `image_backgrounds`. These are the allowed values for `quality`, `complexity` and `background` in `image_output`; omit controls whose list is empty."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-5",
+      "text": "* `quality`: `auto`, `low`, `medium` or `high`. The 2.5 models also accept `xhigh` and `max`. In the compatible API quality defaults to `auto`. Native requests without quality keep their model default: `high` for GPT Image 2 STANDARD, `low` for EXPRESS, and `max` for 2.5. Azure GPT Image 2 takes only `low`, `medium`, or `high` in native requests. The compatible API uses `high` for that model when quality is omitted or `auto`. * `background`: `auto`, `opaque` or `transparent`. Transparency requires PNG or WebP. GPT Image 2 transparent output is subject to upstream preview access. * `output_format`: `png` (default), `jpeg` or `webp`. `output_compression` is an integer from 0 to 100 for JPEG or WebP."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-5",
+      "text": "Reduced moderation requires account permission. Use a pseudonymous `safety_identifier` of at most 128 characters; when only legacy `user` is sent, the compatible API hashes it together with your MachGen account ID before forwarding."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#edit-an-image",
+      "text": "Editing accepts 1-16 ordered reference images. PNG, JPEG and WebP inputs must be smaller than 50 MB each. Prompts may contain up to 32,000 characters. A text instruction can guide edits to the whole image or describe a region. For a masked edit, add `src_mask_url` with an uploaded or external PNG mask. The mask must have an alpha channel, be smaller than 50 MB and match the first reference image's dimensions. Transparent areas identify the region to edit. Masks cannot be combined with GIF output. For annotated edits, add `src_markup_url` alongside `src_image_urls`. Upload a separate transparent PNG containing your circles, arrows or sketches, and explain the intended change in `prompt`. Keep the original image first in `src_image_urls`; do not flatten the annotations into it. The annotation layer must contain transparent pixels, be smaller than 50 MB and match the first image after orientation. Each may contain at most 16,777,216 pixels. Markup requires PNG, JPEG or WebP output, cannot be combined with `src_mask_url`, and adds no reference-image charge. This option is currently available through the API only."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#continue-an-edit",
+      "text": "Send another `I2I` request with `continuation_task_id` set to your previous completed task ID and keep the same model. You can refer to earlier instructions, for example, “restore the original background.” Additional reference images are optional. Continue using the new task ID after each successful edit."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#continue-an-edit",
+      "text": "Continuations support PNG, JPEG and WebP output. They currently cannot include an edit mask or markup layer. These controls remain available in ordinary image edits. The OpenAI-compatible `/images/edits` endpoint also accepts `continuation_task_id`; no image upload is required when continuing a task."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#dimensions-and-aspect-ratios",
+      "text": "To let the model choose the dimensions, use `\"image_config\": {\"size_mode\": \"auto\"}` without width, height or aspect ratio. The completed task reports its actual dimensions. See the [official image guide](https://developers.openai.com/api/docs/guides/image-generation#size-and-quality-options)."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#image-settings",
+      "text": "| Field | Values | When omitted |\n| `complexity` | `low`, `medium`, `high` | `high` |\n| `quality` | `low`, `medium`, `high`, `xhigh`, `max`, `auto` | `auto` |\n| `background` | `auto`, `opaque`, `transparent` | `auto` |\n| `output_format` | `png`, `jpeg`, `webp`, `svg` (generation only), `gif` | `png` |\n| `output_compression` | Integer from 0 to 100, JPEG/WebP only | `100` for JPEG/WebP |\n| `frame_count` | Integer from 2 to 16, GIF only | `9` |\n| `frame_duration_ms` | Integer from 20 to 655350, GIF only | `200` |"
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#image-settings",
+      "text": "Transparent backgrounds require PNG or WebP. For a cutout, use `\"background\": \"transparent\", \"output_format\": \"png\"` and describe the subject in your prompt. Downloads retain the selected format and transparency. Changing to PNG clears compression in the UI; the API rejects that combination."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#image-settings",
+      "text": "For SVG, select `\"output_format\": \"svg\"` on a text-to-image request. The downloaded file retains its vector paths. SVG is not accepted as an editing input. To select the author, add `\"svg\": {\"model\": \"gpt-5.5\", \"reasoning\": {\"effort\": \"high\"}}` inside `image_output`. Without it, the author is `gpt-5.5` with its default effort. Supported effort values depend on the selected author model and upstream access. Optionally send a top-level `safety_identifier` of up to 128 characters for safety monitoring. Use a pseudonymous identifier, not personal information. It does not change which account owns or pays for the image."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#image-settings",
+      "text": "For animation, select `\"output_format\": \"gif\"` and describe the movement and loop. GIF supports generation and editing with still references; it does not support masks or custom compression. Frame delays are rounded to 10 ms. Explicit frame dimensions must be positive multiples of 16; small canvases such as 512×512 are supported by the platform. Upstream GIF size limits and preview access also apply. GIF files are checked against the requested pixel and frame budget rather than a fixed 50 MiB limit. Both URL and base64 delivery support larger animations."
+    },
+    {
+      "url": "https://www.machgen.ai/docs/rest_api/models/gpt-image-2-6#streaming-previews",
+      "text": "For the native API, set `image_output.partial_images`. Poll the task or subscribe to task updates; `image_previews` lists authenticated preview URLs. These are intermediate images, not completed outputs. Previews are retained for seven days; expired preview URLs return 404. Completed output images are unaffected. Previews support PNG, JPEG and WebP; GIF, SVG and continued edits do not support intermediate previews. A continued edit can still use `stream=true` to receive its final image as an event."
+    }
+  ],
+  "probes": [
+    {
+      "label": "K01-gpt2-control-bad-size",
+      "at": "2026-11-18T14:43:26Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "optimization_level": "EXPRESS"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "7f660660-39b4-46c5-bbf4-cb86955bad82"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "K02-25-control-bad-size",
+      "at": "2026-11-18T14:43:28Z",
+      "request": {
+        "model": "GPT-Image-2.5-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "0752b4b7-f5dc-486e-8546-ef34b5d00e67"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "A00-two-body-errors",
+      "at": "2026-11-18T14:43:30Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "bogus",
+          "complexity": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.complexity: Input should be 'low', 'medium' or 'high'; image_output.quality: Input should be 'auto', 'low', 'medium', 'high', 'xhigh' or 'max'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A01-complexity-bogus",
+      "at": "2026-11-18T14:43:32Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "complexity": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.complexity: Input should be 'low', 'medium' or 'high'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A02-background-bogus",
+      "at": "2026-11-18T14:43:33Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "background": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.background: Input should be 'auto', 'opaque' or 'transparent'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A03-output-format-bogus",
+      "at": "2026-11-18T14:43:35Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "bogus"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.output_format: Input should be 'png', 'jpeg', 'webp', 'svg' or 'gif'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A04-compression-101-jpeg",
+      "at": "2026-11-18T14:43:37Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "jpeg",
+          "output_compression": 101
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.output_compression: Input should be less than or equal to 100"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A05-compression-minus1-jpeg",
+      "at": "2026-11-18T14:43:38Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "jpeg",
+          "output_compression": -1
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.output_compression: Input should be greater than or equal to 0"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A06-frame-count-1-gif",
+      "at": "2026-11-18T14:43:40Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "frame_count": 1
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.frame_count: Input should be greater than or equal to 2"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A07-frame-count-17-gif",
+      "at": "2026-11-18T14:43:42Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "frame_count": 17
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.frame_count: Input should be less than or equal to 16"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A08-frame-duration-19-gif",
+      "at": "2026-11-18T14:43:43Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "frame_duration_ms": 19
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.frame_duration_ms: Input should be greater than or equal to 20"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A09-frame-duration-655351-gif",
+      "at": "2026-11-18T14:43:45Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "frame_duration_ms": 655351
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.frame_duration_ms: Input should be less than or equal to 655350"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A10-partial-images-4",
+      "at": "2026-11-18T14:43:47Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "partial_images": 4
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.partial_images: Input should be less than or equal to 3"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A11-partial-images-minus1",
+      "at": "2026-11-18T14:43:48Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "partial_images": -1
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.partial_images: Input should be greater than or equal to 0"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A12-size-mode-bogus",
+      "at": "2026-11-18T14:43:50Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "bogus",
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_config.size_mode: Input should be 'explicit' or 'auto'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A13-auto-with-dims-and-bogus-quality",
+      "at": "2026-11-18T14:43:52Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "auto",
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "bogus"
+        },
+        "keyframe_indices": [5]
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.quality: Input should be 'auto', 'low', 'medium', 'high', 'xhigh' or 'max'; keyframe_indices.0: Input should be 0 or -1"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A15-mask-and-markup",
+      "at": "2026-11-18T14:43:54Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low"
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png",
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image markup cannot be combined with an edit mask",
+        "task_id": "080ef4f1-01cd-46b5-9990-4afd0e204ec6"
+      },
+      "stage": "admission",
+      "rule": "mask-and-markup",
+      "local": "reject",
+      "localPhrase": "Image markup cannot be combined with an edit mask"
+    },
+    {
+      "label": "A16-safety-identifier-129",
+      "at": "2026-11-18T14:43:55Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "safety_identifier": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "status": 400,
+      "response": {
+        "detail": "safety_identifier: String should have at most 128 characters"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A17-svg-effort-bogus",
+      "at": "2026-11-18T14:43:57Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "svg",
+          "svg": {
+            "model": "gpt-5.5",
+            "reasoning": {
+              "effort": "bogus"
+            }
+          }
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.svg.reasoning.effort: Input should be 'none', 'minimal', 'low', 'medium', 'high', 'xhigh' or 'max'"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A18-svg-model-missing",
+      "at": "2026-11-18T14:43:59Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "svg",
+          "svg": {
+            "reasoning": {
+              "effort": "high"
+            }
+          }
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "image_output.svg.model: Field required"
+      },
+      "stage": "body",
+      "rule": "body",
+      "local": "reject"
+    },
+    {
+      "label": "A22-unknown-top-level-key",
+      "at": "2026-11-18T14:44:01Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "not_a_real_field": 1
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "a6931e1b-c122-4025-bd8b-d0fe3ee4e296"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "B01-gpt2-quality-max",
+      "at": "2026-11-18T14:44:02Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "max"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "GPT-Image-2 T2I does not support quality='max'; allowed: ['auto', 'low', 'medium', 'high']",
+        "task_id": "d2a2f339-d1ee-437c-b5e5-eba340eea981"
+      },
+      "stage": "admission",
+      "rule": "model-quality",
+      "local": "reject",
+      "localPhrase": "GPT-Image-2 T2I does not support quality='max'"
+    },
+    {
+      "label": "B03-gpt2-complexity-low",
+      "at": "2026-11-18T14:44:04Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "complexity": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "GPT-Image-2 T2I does not support complexity='low'; allowed: []",
+        "task_id": "4a999cd3-75f4-4686-8761-a241cd480d4e"
+      },
+      "stage": "admission",
+      "rule": "model-complexity",
+      "local": "reject",
+      "localPhrase": "GPT-Image-2 T2I does not support complexity='low'"
+    },
+    {
+      "label": "B04-25-output-format-gif",
+      "at": "2026-11-18T14:44:06Z",
+      "request": {
+        "model": "GPT-Image-2.5-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "GPT-Image-2.5-Sunburst T2I does not support output_format='gif'; allowed: ['png', 'jpeg', 'webp']",
+        "task_id": "d7a189b9-bca1-4dc3-ab30-e68813da99d6"
+      },
+      "stage": "admission",
+      "rule": "model-output-format",
+      "local": "reject",
+      "localPhrase": "GPT-Image-2.5-Sunburst T2I does not support output_format='gif'"
+    },
+    {
+      "label": "B05-26-i2i-output-format-svg",
+      "at": "2026-11-18T14:44:08Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low",
+          "output_format": "svg"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "GPT-Image-2.6-Sunburst I2I does not support output_format='svg'; allowed: ['png', 'jpeg', 'webp', 'gif']",
+        "task_id": "3f683136-9403-41cc-9e11-2f38bc51f74a"
+      },
+      "stage": "admission",
+      "rule": "model-output-format",
+      "local": "reject",
+      "localPhrase": "GPT-Image-2.6-Sunburst I2I does not support output_format='svg'"
+    },
+    {
+      "label": "B06-gpt2-i2i-markup",
+      "at": "2026-11-18T14:44:10Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low"
+        },
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image markup",
+        "task_id": "e0fa56be-fda8-4f98-a22a-bfe41852113e"
+      },
+      "stage": "admission",
+      "rule": "model-markup",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image markup"
+    },
+    {
+      "label": "B07-26-t2i-mask",
+      "at": "2026-11-18T14:44:11Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image masks",
+        "task_id": "0cb1cf03-5327-45e0-a525-95afde8aae2b"
+      },
+      "stage": "admission",
+      "rule": "model-mask",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image masks"
+    },
+    {
+      "label": "B08-25-i2i-continuation",
+      "at": "2026-11-18T14:44:13Z",
+      "request": {
+        "model": "GPT-Image-2.5-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low"
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image continuation",
+        "task_id": "e0195059-d70c-4641-b016-f4176dc3b23f"
+      },
+      "stage": "admission",
+      "rule": "model-continuation",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image continuation"
+    },
+    {
+      "label": "B09-26-transparent-jpeg",
+      "at": "2026-11-18T14:44:15Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "background": "transparent",
+          "output_format": "jpeg"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Transparent backgrounds require output_format png or webp",
+        "task_id": "cac96fb1-f3fc-47dd-b6f8-a0ee06e6eb03"
+      },
+      "stage": "admission",
+      "rule": "transparent-format",
+      "local": "reject",
+      "localPhrase": "Transparent backgrounds require output_format png or webp"
+    },
+    {
+      "label": "B10-26-compression-80-png",
+      "at": "2026-11-18T14:44:17Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "bc09333f-cb11-4945-8f9f-07c797986192"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "output_compression requires output_format jpeg or webp"
+    },
+    {
+      "label": "B11-26-i2i-gif-mask",
+      "at": "2026-11-18T14:44:19Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif"
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image masks require PNG, JPEG or WebP output",
+        "task_id": "7016e769-7efd-4d3f-902a-cac0060796cd"
+      },
+      "stage": "admission",
+      "rule": "mask-format",
+      "local": "reject",
+      "localPhrase": "Image masks require PNG, JPEG or WebP output"
+    },
+    {
+      "label": "B12-26-frame-count-4-png",
+      "at": "2026-11-18T14:44:21Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "frame_count": 4
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Animation controls require GIF output",
+        "task_id": "24b41c00-1d9d-435f-a889-cc2d3d010cc0"
+      },
+      "stage": "admission",
+      "rule": "animation-format",
+      "local": "reject",
+      "localPhrase": "Animation controls require GIF output"
+    },
+    {
+      "label": "B13-26-partial-2-gif",
+      "at": "2026-11-18T14:44:23Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "partial_images": 2
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Partial images require PNG, JPEG or WebP output",
+        "task_id": "69ef865f-2a4e-490b-ad0b-27669ddcdff5"
+      },
+      "stage": "admission",
+      "rule": "partial-format",
+      "local": "reject",
+      "localPhrase": "Partial images require PNG, JPEG or WebP output"
+    },
+    {
+      "label": "B14-26-svg-settings-png",
+      "at": "2026-11-18T14:44:25Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "svg": {
+            "model": "gpt-5.5"
+          }
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Vector author settings require supported SVG output",
+        "task_id": "31ce0f60-28e3-4a26-8fd7-a29e64be0d48"
+      },
+      "stage": "admission",
+      "rule": "svg-settings-format",
+      "local": "reject",
+      "localPhrase": "Vector author settings require supported SVG output"
+    },
+    {
+      "label": "B15-26-compression-80-gif",
+      "at": "2026-11-18T14:44:26Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "a7bcfe13-503b-46f4-aa28-35e30f46ee58"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "output_compression requires output_format jpeg or webp"
+    },
+    {
+      "label": "B16-26-i2i-markup-gif",
+      "at": "2026-11-18T14:44:29Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif"
+        },
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image markup requires PNG, JPEG or WebP output",
+        "task_id": "5cf1869a-8fc5-474c-b279-7f0ced5977d4"
+      },
+      "stage": "admission",
+      "rule": "markup-format",
+      "local": "reject",
+      "localPhrase": "Image markup requires PNG, JPEG or WebP output"
+    },
+    {
+      "label": "B17-26-i2i-continuation-gif",
+      "at": "2026-11-18T14:44:31Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif"
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation requires PNG, JPEG or WebP output",
+        "task_id": "8042ac92-8367-448f-b83d-024cb3ba6b51"
+      },
+      "stage": "admission",
+      "rule": "continuation-format",
+      "local": "reject",
+      "localPhrase": "Image continuation requires PNG, JPEG or WebP output"
+    },
+    {
+      "label": "B18-26-t2i-continuation",
+      "at": "2026-11-18T14:44:33Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image continuation",
+        "task_id": "ed319027-16d3-44c6-adc3-3cc56e445042"
+      },
+      "stage": "admission",
+      "rule": "model-continuation",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image continuation"
+    },
+    {
+      "label": "B20-26-i2i-continuation-mask",
+      "at": "2026-11-18T14:44:35Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_output": {
+          "quality": "low"
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation cannot be combined with markup or a mask",
+        "task_id": "8131a828-2d98-4d78-b167-05f267c98a9c"
+      },
+      "stage": "admission",
+      "rule": "continuation-mask",
+      "local": "reject",
+      "localPhrase": "Image continuation cannot be combined with markup or a mask"
+    },
+    {
+      "label": "C01-26-i2i-continuation-no-source",
+      "at": "2026-11-18T14:44:37Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation task was not found",
+        "task_id": "0acb05e1-3cfc-4672-94c2-4e765083706b"
+      },
+      "stage": "admission",
+      "rule": "continuation-lookup",
+      "local": "accept"
+    },
+    {
+      "label": "C02-26-i2i-no-source",
+      "at": "2026-11-18T14:44:39Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "7be87406-8dce-4b88-8698-b3481ba10384"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "reject",
+      "localPhrase": "I2I requires a source image or source task"
+    },
+    {
+      "label": "V00-h3-t2v-control-duration-999",
+      "at": "2026-11-18T14:47:15Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support T2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]",
+        "task_id": "13136042-a11c-4297-953b-c1afd190a76a"
+      },
+      "stage": "admission",
+      "rule": "video-grid",
+      "local": "reject",
+      "localPhrase": "does not support T2V duration_secs=999"
+    },
+    {
+      "label": "D01-auto-with-width-height",
+      "at": "2026-11-18T14:47:17Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "auto",
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "cde0884d-911d-41e8-9a91-c475a559b0a9"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "D02-auto-with-aspect-ratio",
+      "at": "2026-11-18T14:47:18Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "auto",
+          "aspect_ratio": "1:1"
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "54c2dff9-335d-40a9-9780-264768b22394"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "D03-auto-with-height",
+      "at": "2026-11-18T14:47:20Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "auto",
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "977c18ca-ef48-47e9-8966-948b00bbcbcc"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "D04-explicit-without-height",
+      "at": "2026-11-18T14:47:22Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "explicit",
+          "width": 1024
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Value error, height is required in the config for task_type=T2I"
+      },
+      "stage": "body",
+      "rule": "body-height-required",
+      "local": "reject"
+    },
+    {
+      "label": "D05-width-only",
+      "at": "2026-11-18T14:47:24Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Value error, height is required in the config for task_type=T2I"
+      },
+      "stage": "body",
+      "rule": "body-height-required",
+      "local": "reject"
+    },
+    {
+      "label": "D06-empty-image-config",
+      "at": "2026-11-18T14:47:25Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {},
+        "image_output": {
+          "quality": "low",
+          "output_format": "png",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Value error, height is required in the config for task_type=T2I"
+      },
+      "stage": "body",
+      "rule": "body-height-required",
+      "local": "reject"
+    },
+    {
+      "label": "D08-svg-with-partial-images",
+      "at": "2026-11-18T14:47:27Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "svg",
+          "svg": {
+            "model": "gpt-5.5"
+          },
+          "partial_images": 2
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Partial images require PNG, JPEG or WebP output",
+        "task_id": "97c1f73e-c236-4038-b906-a4d9230b2804"
+      },
+      "stage": "admission",
+      "rule": "partial-format",
+      "local": "reject",
+      "localPhrase": "Partial images require PNG, JPEG or WebP output"
+    },
+    {
+      "label": "D07-svg-author-unknown",
+      "at": "2026-11-18T14:47:29Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "svg",
+          "svg": {
+            "model": "not-a-model"
+          },
+          "partial_images": 2
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Partial images require PNG, JPEG or WebP output",
+        "task_id": "5dcc1eac-aaa5-4d90-90b3-67cd79623bbf"
+      },
+      "stage": "admission",
+      "rule": "partial-format",
+      "local": "reject",
+      "localPhrase": "Partial images require PNG, JPEG or WebP output"
+    },
+    {
+      "label": "D11-i2i-continuation-partial",
+      "at": "2026-11-18T14:47:31Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Restore the original background.",
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low",
+          "partial_images": 2
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Intermediate previews are not supported for continued edits",
+        "task_id": "ab9a989b-85c3-4a98-adb1-ea27583a209d"
+      },
+      "stage": "admission",
+      "rule": "continuation-partial",
+      "local": "reject",
+      "localPhrase": "Intermediate previews are not supported for continued edits"
+    },
+    {
+      "label": "V01-h3-t2v-image-output",
+      "at": "2026-11-18T14:47:33Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image output controls require an image task",
+        "task_id": "5e66160c-e301-4e7a-ab25-1eab8187fb75"
+      },
+      "stage": "admission",
+      "rule": "image-output-on-other-task",
+      "local": "reject",
+      "localPhrase": "Image output controls require an image task"
+    },
+    {
+      "label": "V02-h3-t2v-mask",
+      "at": "2026-11-18T14:47:35Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support T2V duration_secs=999; allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]",
+        "task_id": "ac1ff811-1858-4c7e-9b32-31e5797f85aa"
+      },
+      "stage": "admission",
+      "rule": "video-grid",
+      "local": "reject",
+      "localPhrase": "does not support T2V duration_secs=999"
+    },
+    {
+      "label": "V03-h3-t2v-continuation",
+      "at": "2026-11-18T14:47:36Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image continuation",
+        "task_id": "62ab5034-84eb-452e-9a0e-73e05c3be80c"
+      },
+      "stage": "admission",
+      "rule": "model-continuation",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image continuation"
+    },
+    {
+      "label": "V04-h3-t2v-image-config-auto",
+      "at": "2026-11-18T14:47:38Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "image_config": {
+          "size_mode": "auto"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Automatic image size requires a supported model and no explicit dimensions or ratio",
+        "task_id": "3ecdf9a5-07dc-4465-a7e1-6285039374c2"
+      },
+      "stage": "admission",
+      "rule": "auto-size",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "V05-h3-t2v-safety-identifier",
+      "at": "2026-11-18T14:47:40Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "safety_identifier": "apicity-probe"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model does not support safety_identifier",
+        "task_id": "0e1a3dbf-619f-4001-9e64-016366ea930e"
+      },
+      "stage": "admission",
+      "rule": "model-safety-identifier",
+      "local": "reject",
+      "localPhrase": "This model does not support safety_identifier"
+    },
+    {
+      "label": "V06-h3-t2v-markup",
+      "at": "2026-11-18T14:47:42Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image markup",
+        "task_id": "0d61d063-ed60-4d45-b7fb-f1c0148bf782"
+      },
+      "stage": "admission",
+      "rule": "model-markup",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image markup"
+    },
+    {
+      "label": "Q00-quote-control",
+      "at": "2026-11-18T14:47:45Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        }
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 596000
+      },
+      "stage": "quote",
+      "rule": "quote-accepted",
+      "local": "accept"
+    },
+    {
+      "label": "Q01-quote-mask",
+      "at": "2026-11-18T14:47:48Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 200,
+      "response": {
+        "cost_micros": 596000
+      },
+      "stage": "quote",
+      "rule": "quote-accepted",
+      "local": "accept"
+    },
+    {
+      "label": "Q02-quote-image-output",
+      "at": "2026-11-18T14:47:49Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image output controls require an image task"
+      },
+      "stage": "quote",
+      "rule": "image-output-on-other-task",
+      "local": "reject",
+      "localPhrase": "Image output controls require an image task"
+    },
+    {
+      "label": "Q03-quote-continuation",
+      "at": "2026-11-18T14:47:51Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image continuation"
+      },
+      "stage": "quote",
+      "rule": "model-continuation",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image continuation"
+    },
+    {
+      "label": "Q04-quote-image-config-auto",
+      "at": "2026-11-18T14:47:53Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "image_config": {
+          "size_mode": "auto"
+        }
+      },
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": ["body"],
+            "msg": "Value error, UPSCALE carries video_config or image_config, not both"
+          }
+        ]
+      },
+      "stage": "quote",
+      "rule": "upscale-two-configs",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "Q05-quote-safety-identifier",
+      "at": "2026-11-18T14:47:55Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "safety_identifier": "apicity-probe"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model does not support safety_identifier"
+      },
+      "stage": "quote",
+      "rule": "model-safety-identifier",
+      "local": "reject",
+      "localPhrase": "This model does not support safety_identifier"
+    },
+    {
+      "label": "Q06-quote-markup",
+      "at": "2026-11-18T14:47:56Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "This model and task type do not support image markup"
+      },
+      "stage": "quote",
+      "rule": "model-markup",
+      "local": "reject",
+      "localPhrase": "This model and task type do not support image markup"
+    },
+    {
+      "label": "E01-auto-with-width-height",
+      "at": "2026-11-18T14:49:09Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "size_mode": "auto",
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Automatic image size requires a supported model and no explicit dimensions or ratio",
+        "task_id": "d414ab08-a583-42f4-964f-52ed2600041d"
+      },
+      "stage": "admission",
+      "rule": "auto-size",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "E02-auto-with-aspect-ratio",
+      "at": "2026-11-18T14:49:11Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Restore the original background.",
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "image_config": {
+          "size_mode": "auto",
+          "aspect_ratio": "1:1"
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation task was not found",
+        "task_id": "97886603-85a0-4c37-8f4a-56bd92d7d927"
+      },
+      "stage": "admission",
+      "rule": "continuation-lookup",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "E03-auto-with-height",
+      "at": "2026-11-18T14:49:13Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Restore the original background.",
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "image_config": {
+          "size_mode": "auto",
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation task was not found",
+        "task_id": "c4da992d-ac2c-4844-a2ea-5d6d0c76670e"
+      },
+      "stage": "admission",
+      "rule": "continuation-lookup",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "E04-auto-with-width",
+      "at": "2026-11-18T14:49:15Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Restore the original background.",
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "image_config": {
+          "size_mode": "auto",
+          "width": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation task was not found",
+        "task_id": "7ff8222c-a6c0-4c55-9ddf-30a57e5b58b9"
+      },
+      "stage": "admission",
+      "rule": "continuation-lookup",
+      "local": "reject",
+      "localPhrase": "Automatic image size requires a supported model and no explicit dimensions or ratio"
+    },
+    {
+      "label": "E05-h3-t2v-empty-image-output",
+      "at": "2026-11-18T14:49:17Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "image_output": {}
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image output controls require an image task",
+        "task_id": "e70efe92-5c2d-4771-bf8b-57a39da7965f"
+      },
+      "stage": "admission",
+      "rule": "image-output-on-other-task",
+      "local": "reject",
+      "localPhrase": "Image output controls require an image task"
+    },
+    {
+      "label": "E06-h3-t2v-explicit-image-config",
+      "at": "2026-11-18T14:49:19Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "image_config": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support T2V height=720; allowed heights: [480, 540, 768, 1080, 1440]",
+        "task_id": "46feecc7-6d34-46df-beaf-452b4342db3b"
+      },
+      "stage": "admission",
+      "rule": "video-grid",
+      "local": "reject",
+      "localPhrase": "does not support T2V duration_secs=999"
+    },
+    {
+      "label": "E10-26-t2i-with-video-config",
+      "at": "2026-11-18T14:49:21Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "video_config": {
+          "height": 480,
+          "duration_secs": 5
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "f8416ab6-0a71-48ab-99ce-92133f3e5cf6"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "E13-26-t2i-safety-identifier",
+      "at": "2026-11-18T14:49:23Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "safety_identifier": "apicity-probe"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "ea57ba7f-333f-409b-8c59-3ff2cc6080b4"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "E14-gpt2-t2i-safety-identifier",
+      "at": "2026-11-18T14:49:25Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "safety_identifier": "apicity-probe",
+        "optimization_level": "EXPRESS"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "d93d56ef-185b-4eff-81fe-86cf72781561"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "E15-25-t2i-safety-identifier",
+      "at": "2026-11-18T14:49:26Z",
+      "request": {
+        "model": "GPT-Image-2.5-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "safety_identifier": "apicity-probe"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "7583b070-2559-4924-88fd-7f2c0e834dfb"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "E07-quote-explicit-image-config",
+      "at": "2026-11-18T14:49:28Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "image_config": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": ["body"],
+            "msg": "Value error, UPSCALE carries video_config or image_config, not both"
+          }
+        ]
+      },
+      "stage": "quote",
+      "rule": "upscale-two-configs",
+      "local": "accept"
+    },
+    {
+      "label": "E08-quote-empty-image-output",
+      "at": "2026-11-18T14:49:30Z",
+      "endpoint": "POST /api/v0/upscale/quote",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Generative-Fast",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-fast-2"
+        },
+        "video_config": {
+          "height": 2160,
+          "duration_secs": 4
+        },
+        "image_output": {}
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image output controls require an image task"
+      },
+      "stage": "quote",
+      "rule": "image-output-on-other-task",
+      "local": "reject",
+      "localPhrase": "Image output controls require an image task"
+    },
+    {
+      "label": "F01-compression-without-format",
+      "at": "2026-11-18T14:51:51Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_compression": 80
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "output_compression requires output_format jpeg or webp",
+        "task_id": "f7ec6de9-e323-4a1e-aae3-d702c04e2bef"
+      },
+      "stage": "admission",
+      "rule": "compression-format",
+      "local": "reject",
+      "localPhrase": "output_compression requires output_format jpeg or webp"
+    },
+    {
+      "label": "F02-frame-count-without-format",
+      "at": "2026-11-18T14:51:52Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "frame_count": 4
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Animation controls require GIF output",
+        "task_id": "164e3e7b-24ec-4708-89c2-a5c6f0980ada"
+      },
+      "stage": "admission",
+      "rule": "animation-format",
+      "local": "reject",
+      "localPhrase": "Animation controls require GIF output"
+    },
+    {
+      "label": "F03-svg-settings-without-format",
+      "at": "2026-11-18T14:51:54Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "svg": {
+            "model": "gpt-5.5"
+          }
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Vector author settings require supported SVG output",
+        "task_id": "45b78b44-57e9-48bb-a437-c81de5487fe3"
+      },
+      "stage": "admission",
+      "rule": "svg-settings-format",
+      "local": "reject",
+      "localPhrase": "Vector author settings require supported SVG output"
+    },
+    {
+      "label": "F05-gpt2-i2i-mask-control",
+      "at": "2026-11-18T14:51:56Z",
+      "request": {
+        "model": "GPT-Image-2",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "src_mask_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png",
+        "optimization_level": "EXPRESS"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "7dee0ddd-9a90-4f3b-ab56-121bc0e95260"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "F06-25-i2i-markup-control",
+      "at": "2026-11-18T14:51:58Z",
+      "request": {
+        "model": "GPT-Image-2.5-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low"
+        },
+        "src_markup_url": "https://raw.githubusercontent.com/justintanner/apicity/52bfd77bfaa3633ef4f6664e922269d1effe7d5f/tests/fixtures/red.png"
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "c7b11625-df34-4377-a607-f60e82ef623e"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "F07-26-i2i-gif-control",
+      "at": "2026-11-18T14:52:00Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Turn the photo into a watercolor painting.",
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ],
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "46f41ae4-75a1-46be-9398-927d9fb433a0"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "F10-26-transparent-gif",
+      "at": "2026-11-18T14:52:02Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "background": "transparent"
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Transparent backgrounds require output_format png or webp",
+        "task_id": "44d78492-79e0-40d5-8d74-126956562a4a"
+      },
+      "stage": "admission",
+      "rule": "transparent-format",
+      "local": "reject",
+      "localPhrase": "Transparent backgrounds require output_format png or webp"
+    },
+    {
+      "label": "F11-26-partial-0-gif",
+      "at": "2026-11-18T14:52:04Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "output_format": "gif",
+          "partial_images": 0
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image width and height must be multiples of 16",
+        "task_id": "1783bfde-3dca-418a-9e29-9aac84743f30"
+      },
+      "stage": "admission",
+      "rule": "size",
+      "local": "accept"
+    },
+    {
+      "label": "F12-26-i2i-continuation-partial-0",
+      "at": "2026-11-18T14:52:06Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "I2I",
+        "prompt": "Restore the original background.",
+        "continuation_task_id": "00000000-0000-0000-0000-000000000000",
+        "image_config": {
+          "width": 632,
+          "height": 1024
+        },
+        "image_output": {
+          "quality": "low",
+          "partial_images": 0
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Image continuation task was not found",
+        "task_id": "3ba84236-2122-45ac-a600-3678e1e8d782"
+      },
+      "stage": "admission",
+      "rule": "continuation-lookup",
+      "local": "accept"
+    },
+    {
+      "label": "F13-26-frame-duration-without-format",
+      "at": "2026-11-18T14:52:07Z",
+      "request": {
+        "model": "GPT-Image-2.6-Sunburst",
+        "task_type": "T2I",
+        "prompt": "A small red circle centered on a plain white background.",
+        "image_config": {
+          "width": 1024,
+          "height": 632
+        },
+        "image_output": {
+          "quality": "low",
+          "frame_duration_ms": 200
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Animation controls require GIF output",
+        "task_id": "ce5f2ebb-6890-4bb4-9c41-7835e3cde8a0"
+      },
+      "stage": "admission",
+      "rule": "animation-format",
+      "local": "reject",
+      "localPhrase": "Animation controls require GIF output"
+    }
+  ],
+  "wallet": [
+    {
+      "at": "2026-11-18T14:41:55Z",
+      "balance_micros": 14207825,
+      "note": "before the first request; 0 pending and 0 running tasks"
+    },
+    {
+      "at": "2026-11-18T14:45:29Z",
+      "balance_micros": 14207825,
+      "note": "after requests K01 to C02"
+    },
+    {
+      "at": "2026-11-18T14:47:59Z",
+      "balance_micros": 14207825,
+      "note": "after requests V00 to Q06"
+    },
+    {
+      "at": "2026-11-18T14:49:33Z",
+      "balance_micros": 14207825,
+      "note": "after requests E01 to E08"
+    },
+    {
+      "at": "2026-11-18T14:52:10Z",
+      "balance_micros": 14207825,
+      "note": "after requests F01 to F13"
+    }
+  ],
+  "notes": [
+    "MachGen checks a generate request in two stages. A request-body failure answers HTTP 400 with a field path and no task_id (stage body), lists every failing field, and happens before the model is looked at. Every later failure carries a task_id (stage admission) and reports only the first failing check.",
+    "Every image probe carries a width or height that is not a multiple of 16, which MachGen refuses on the five GPT image models ('Image width and height must be multiples of 16'), or a second rule MachGen had already refused. So a response naming another rule shows that rule is checked before the size, and a response naming the size shows the rest of the request passed every earlier check.",
+    "Per-model settings follow the model list exactly: MachGen's own 400s quote the list ('allowed: [...]', and 'allowed: []' for an empty one).",
+    "An omitted output_format counts as the model's default_output_format (png on the five GPT models): F01, F02, F03 and F13 were refused as if png had been sent.",
+    "partial_images 0 is accepted with GIF (F11) and with a continued edit (F12); the two preview rules fire only above 0.",
+    "A continuation_task_id is a source for I2I: C01 and F12 sent no src_image_urls and MachGen went on to look the task up.",
+    "No Nano Banana request was sent. Its sizes are a fixed grid, so no Nano Banana request can be built that MachGen is known to refuse; its rows come from the model list and the contract alone.",
+    "Not probed, because no such request can be built to be refused for certain: which SVG author models MachGen accepts, and size_mode auto on its own.",
+    "src_mask_url is the one image setting MachGen did not refuse outside an image task: the upscale quote priced a request that carried it (Q01), and on T2V the duration check fired first (V02).",
+    "Two answers concern rules older than these settings and are recorded only: the upscale quote refuses a request that carries both video_config and image_config (E07, HTTP 422), and on T2V MachGen read the height from image_config instead of video_config (E06).",
+    "D01, D02 and D03 break two rules at once. MachGen names the compression rule; the schema names the size_mode rule, because a failure inside image_config stops zod before the request-level refinement runs. Both refuse the request.",
+    "local is what MachGenGenerateRequestSchema (MachGenUpscaleQuoteRequestSchema for the quote rows) answers for the same body: reject where the schema restates the rule, accept where MachGen refused for the size, for a task it could not find, or accepted the request. C02 is rejected by the older 'I2I requires a source' rule, which MachGen checks after the size."
+  ]
+}

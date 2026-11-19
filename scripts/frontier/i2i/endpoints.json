@@ -1,4 +1,5 @@
 {
+  "MAI-Image-2.7": [],
   "GPT Image 2.6 Sunburst (max)": [
     {
       "provider": "fal",
@@ -65,7 +66,6 @@
       "modelId": "gpt-image-2.5-sunburst"
     }
   ],
-  "MAI-Image-2.7-Preview": [],
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",
@@ -88,7 +88,8 @@
       "modelId": "gpt-image-2.5-flare"
     }
   ],
-  "Kling Image 4.0 (preview)": [],
+  "Kling Image 4.0": [],
+  "MAI-Image-2.7-Flash": [],
   "Seedream 5.5": [
     {
       "provider": "kie",
@@ -134,6 +135,5 @@
       "dotPath": "v1.google.v1beta.interactions",
       "modelId": "gemini-nano-banana-2.1"
     }
-  ],
-  "MAI-Image-2.6": []
+  ]
 }

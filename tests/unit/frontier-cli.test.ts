@@ -38,7 +38,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("i2v");
     expect(table).toContain("image-to-video");
     expect(table).toContain("6/10");
-    expect(table).toContain("2026-11-16");
+    expect(table).toContain("2026-11-19");
     expect(table).toContain("derived");
     expect(table).toContain("7/7");
     expect(table).not.toContain("0/0");
@@ -65,20 +65,20 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "6/10", captured: "2026-11-16" });
+    expect(i2v).toMatchObject({ models: "6/10", captured: "2026-11-19" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "7/10", captured: "2026-11-16" });
+    expect(t2i).toMatchObject({ models: "7/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "7/10", captured: "2026-11-16" });
+    expect(i2i).toMatchObject({ models: "7/10", captured: "2026-11-19" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
-    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-16" });
+    expect(t2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-16" });
+    expect(v2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
       models: "7/7",
-      captured: "2026-11-16",
+      captured: "2026-11-19",
     });
   });
 
@@ -190,7 +190,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("grok-imagine-image-2.0");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
     expect(table).toContain(
-      "not yet in apicity: Kling Image 4.0 (preview), MAI-Image-2.6, Canva Craft"
+      "not yet in apicity: MAI-Image-2.7, Kling Image 4.0, MAI-Image-2.6"
     );
   });
 
@@ -210,7 +210,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("Krea 3 (Ultra)");
     expect(table).toContain("krea.v3.edit");
     expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.7-Preview, Kling Image 4.0 (preview), MAI-Image-2.6"
+      "not yet in apicity: MAI-Image-2.7, Kling Image 4.0, MAI-Image-2.7-Flash"
     );
   });
 
@@ -227,9 +227,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("alibaba.wan3p0.textToVideo");
     expect(table).toContain("wan/3-0-video-prime");
     expect(table).toContain("MiniMax-H3");
-    expect(table).toContain("api.v3.skyworkAi.skyreelsV4.textToVideo");
-    expect(table).toContain("not yet in apicity: Utopai X");
-    expect(table).not.toContain("not yet in apicity: Utopai X, SkyReels V4");
+    // SkyReels V4 left the t2v board on 2026-11-19; Hyperflow H3 entered.
+    expect(table).not.toContain("api.v3.skyworkAi.skyreelsV4.textToVideo");
+    expect(table).toContain("not yet in apicity: Utopai X, Hyperflow H3");
   });
 
   it("prints v2v rows through the video-editing alias", async () => {

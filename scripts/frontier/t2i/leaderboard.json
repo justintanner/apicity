@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Image-T2I v2.1",
   "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-  "capturedOn": "2026-11-16",
+  "capturedOn": "2026-11-19",
   "methodology": "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
   "entries": [
     {
@@ -24,45 +24,45 @@
     },
     {
       "rank": 4,
+      "model": "MAI-Image-2.7",
+      "creator": "Microsoft AI",
+      "elo": 1214
+    },
+    {
+      "rank": 5,
       "model": "GPT Image 2.5 Flare (max)",
       "creator": "OpenAI",
       "elo": 1210
     },
     {
-      "rank": 5,
+      "rank": 6,
       "model": "GPT Image 2 (high)",
       "creator": "OpenAI",
       "elo": 1192
     },
     {
-      "rank": 6,
-      "model": "Kling Image 4.0 (preview)",
+      "rank": 7,
+      "model": "Kling Image 4.0",
       "creator": "KlingAI",
       "elo": 1180
     },
     {
-      "rank": 7,
+      "rank": 8,
       "model": "Nano Banana 2.1",
       "creator": "Google",
       "elo": 1176
     },
     {
-      "rank": 8,
+      "rank": 9,
       "model": "MAI-Image-2.6",
       "creator": "Microsoft AI",
       "elo": 1168
     },
     {
-      "rank": 9,
+      "rank": 10,
       "model": "Grok Imagine Image 2.0",
       "creator": "SpaceXAI",
       "elo": 1167
-    },
-    {
-      "rank": 10,
-      "model": "Canva Craft",
-      "creator": "Canva",
-      "elo": 1158
     }
   ]
 }

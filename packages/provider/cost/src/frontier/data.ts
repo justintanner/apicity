@@ -14,7 +14,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     derived: false,
@@ -25,7 +25,7 @@ export const FRONTIER_TYPES = [
     aliases: ["image-editing"],
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     derived: false,
@@ -36,7 +36,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -46,7 +46,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -56,7 +56,7 @@ export const FRONTIER_TYPES = [
     aliases: ["video-editing"],
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     derived: false,
@@ -67,7 +67,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     derived: true,
@@ -78,7 +78,7 @@ export const FRONTIER = {
   t2i: {
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     entries: [
@@ -173,6 +173,13 @@ export const FRONTIER = {
       },
       {
         rank: 4,
+        model: "MAI-Image-2.7",
+        creator: "Microsoft AI",
+        elo: 1214,
+        endpoints: [],
+      },
+      {
+        rank: 5,
         model: "GPT Image 2.5 Flare (max)",
         creator: "OpenAI",
         elo: 1210,
@@ -205,7 +212,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 6,
         model: "GPT Image 2 (high)",
         creator: "OpenAI",
         elo: 1192,
@@ -238,14 +245,14 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
-        model: "Kling Image 4.0 (preview)",
+        rank: 7,
+        model: "Kling Image 4.0",
         creator: "KlingAI",
         elo: 1180,
         endpoints: [],
       },
       {
-        rank: 7,
+        rank: 8,
         model: "Nano Banana 2.1",
         creator: "Google",
         elo: 1176,
@@ -278,14 +285,14 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
         model: "MAI-Image-2.6",
         creator: "Microsoft AI",
         elo: 1168,
         endpoints: [],
       },
       {
-        rank: 9,
+        rank: 10,
         model: "Grok Imagine Image 2.0",
         creator: "SpaceXAI",
         elo: 1167,
@@ -312,24 +319,24 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 10,
-        model: "Canva Craft",
-        creator: "Canva",
-        elo: 1158,
-        endpoints: [],
-      },
     ],
   },
   i2i: {
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     entries: [
       {
         rank: 1,
+        model: "MAI-Image-2.7",
+        creator: "Microsoft AI",
+        elo: 1215,
+        endpoints: [],
+      },
+      {
+        rank: 2,
         model: "GPT Image 2.6 Sunburst (max)",
         creator: "OpenAI",
         elo: 1211,
@@ -357,7 +364,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 2,
+        rank: 3,
         model: "GPT Image 2.6 Flare (max)",
         creator: "OpenAI",
         elo: 1205,
@@ -385,7 +392,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
+        rank: 4,
         model: "GPT Image 2.5 Sunburst (max)",
         creator: "OpenAI",
         elo: 1202,
@@ -411,13 +418,6 @@ export const FRONTIER = {
             modelId: "gpt-image-2.5-sunburst",
           },
         ],
-      },
-      {
-        rank: 4,
-        model: "MAI-Image-2.7-Preview",
-        creator: "Microsoft AI",
-        elo: 1197,
-        endpoints: [],
       },
       {
         rank: 5,
@@ -449,13 +449,20 @@ export const FRONTIER = {
       },
       {
         rank: 6,
-        model: "Kling Image 4.0 (preview)",
+        model: "Kling Image 4.0",
         creator: "KlingAI",
         elo: 1183,
         endpoints: [],
       },
       {
         rank: 7,
+        model: "MAI-Image-2.7-Flash",
+        creator: "Microsoft AI",
+        elo: 1179,
+        endpoints: [],
+      },
+      {
+        rank: 8,
         model: "Seedream 5.5",
         creator: "ByteDance Seed",
         elo: 1160,
@@ -473,7 +480,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
         model: "Krea 3 (Ultra)",
         creator: "Krea",
         elo: 1154,
@@ -486,7 +493,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 9,
+        rank: 10,
         model: "Nano Banana 2.1",
         creator: "Google",
         elo: 1152,
@@ -518,19 +525,12 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 10,
-        model: "MAI-Image-2.6",
-        creator: "Microsoft AI",
-        elo: 1150,
-        endpoints: [],
-      },
     ],
   },
   t2v: {
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
@@ -656,6 +656,13 @@ export const FRONTIER = {
       },
       {
         rank: 5,
+        model: "Hyperflow H3",
+        creator: "Video Rebirth",
+        elo: 1154,
+        endpoints: [],
+      },
+      {
+        rank: 6,
         model: "FLUX 3 Max",
         creator: "Fal",
         elo: 1152,
@@ -668,7 +675,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
+        rank: 7,
         model: "Gemini Omni Flash 1.2",
         creator: "Google",
         elo: 1151,
@@ -691,7 +698,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 8,
         model: "HeyGen Video 1",
         creator: "HeyGen",
         elo: 1149,
@@ -709,7 +716,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
         model: "MiniMax H3 Max",
         creator: "Fal",
         elo: 1143,
@@ -727,7 +734,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 9,
+        rank: 10,
         model: "FLUX 3",
         creator: "Black Forest Labs",
         elo: 1136,
@@ -744,25 +751,12 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 10,
-        model: "SkyReels V4",
-        creator: "Skywork AI",
-        elo: 1134,
-        endpoints: [
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.skyworkAi.skyreelsV4.textToVideo",
-            pricingKey: "skywork-ai/skyreels-v4/text-to-video",
-          },
-        ],
-      },
     ],
   },
   i2v: {
     leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
@@ -956,7 +950,7 @@ export const FRONTIER = {
   v2v: {
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     entries: [
@@ -1168,7 +1162,7 @@ export const FRONTIER = {
   r2v: {
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-16",
+    capturedOn: "2026-11-19",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     entries: [

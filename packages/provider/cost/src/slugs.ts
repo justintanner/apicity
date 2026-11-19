@@ -264,6 +264,7 @@ export const MODEL_SLUGS = {
     "gpt-image-2-6/flare-text-to-image": "gi2p6fl",
     "gpt-image-2-6/flare-image-to-image": "gi2p6fl",
     "gpt-image-2-6/economy-text-to-image": "gi2p6ec",
+    "gpt-image-2-6/economy-image-to-image": "gi2p6ec",
 
     // Image — Wan 2.7
     "wan/2-7-image": "wan2p7",
@@ -1361,6 +1362,7 @@ export const MODEL_DISPLAY = {
     "gpt-image-2-6/flare-text-to-image": "GPT Image 2.6 Flare",
     "gpt-image-2-6/flare-image-to-image": "GPT Image 2.6 Flare Edit",
     "gpt-image-2-6/economy-text-to-image": "GPT Image 2.6 Economy",
+    "gpt-image-2-6/economy-image-to-image": "GPT Image 2.6 Economy Edit",
 
     "wan/2-7-image": "Wan 2.7",
     "wan/2-7-image-pro": "Wan 2.7 Pro",

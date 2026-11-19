@@ -692,9 +692,14 @@ sent without the field fails upstream with failCode 500 (refunded), so
 the schema rejects it before the call. The other fields default as
 documented: `background` `"auto"`, `output_format` `"png"`, and the
 GIF-only `frame_count` and `frame_duration_ms` `"auto"`. KIE publishes
-no gif price, so `@apicity/cost` quotes png output only. See KIE's
-[economy text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image.md)
-page.
+no gif price, so `@apicity/cost` quotes png output only.
+`gpt-image-2-6/economy-image-to-image` takes the same fields without the
+GIF ones, png output only, and up to 16 optional `input_urls`, at the
+same 5 credits per image whatever the input count; `aspect_ratio` is
+required there too. See KIE's economy
+[text-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-text-to-image.md)
+and [image-to-image](https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-image-to-image.md)
+pages.
 
 ```typescript
 const economyTask = await kie.post.api.v1.jobs.createTask({
@@ -702,7 +707,16 @@ const economyTask = await kie.post.api.v1.jobs.createTask({
   input: { prompt: "A red balloon.", aspect_ratio: "auto" },
 });
 
-console.log(economyTask.data?.taskId);
+const economyEdit = await kie.post.api.v1.jobs.createTask({
+  model: "gpt-image-2-6/economy-image-to-image",
+  input: {
+    prompt: "Add a small red scarf to the cat.",
+    input_urls: [reference],
+    aspect_ratio: "auto",
+  },
+});
+
+console.log(economyTask.data?.taskId, economyEdit.data?.taskId);
 ```
 
 ## Gemini Omni Flash 1.2

@@ -3308,6 +3308,22 @@ export const kie: Record<string, ModelPricing> = {
       "2026-11-19"
     ),
   },
+  // Image-to-image on the economy channel bills the same flat 5 credits
+  // ($0.025) per 1K image (feed row "gpt-image-2-6-economy, image-to-image,
+  // 1K" and the models API pricingDesc, read 2026-11-12 and 2026-11-19), with
+  // no charge per input image. It takes png output only.
+  "gpt-image-2-6/economy-image-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: gptImage26EconomyImages,
+    select: [],
+    rates: { "": 0.025 },
+    warn: gptImage26EconomyWarnings("gpt-image-2-6/economy-image-to-image"),
+    source: pricePage(
+      "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-image-to-image",
+      "2026-11-19"
+    ),
+  },
   "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
   "wan/2-7-image-pro": flatImage(
     0.06,

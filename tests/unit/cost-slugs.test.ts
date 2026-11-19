@@ -369,6 +369,11 @@ describe("modelSlug", () => {
       slug: "gi2p6ec",
       display: "GPT Image 2.6 Economy",
     },
+    {
+      model: "gpt-image-2-6/economy-image-to-image",
+      slug: "gi2p6ec",
+      display: "GPT Image 2.6 Economy Edit",
+    },
   ])("resolves $model slug and display", ({ model, slug, display }) => {
     expect(modelSlug("kie", model as never)).toBe(slug);
     expect(modelDisplay("kie", model as never)).toBe(display);

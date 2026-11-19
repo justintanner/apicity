@@ -165,7 +165,9 @@ export interface CostHints {
   // declares "720p". Any value but "480p" or "720p" counts as absent, and the
   // estimate fails closed with a warning that names this field. KIE
   // `google/gemini-omni-flash-1-2-extend` reads it the same way, with "360p"
-  // or "720p", the two resolutions an extend source can have. The
+  // or "720p", the two resolutions an extend source can have. KIE
+  // `grok-imagine/upscale` reads it as the source of the upscale, "480p" or
+  // "720p", beside the target in `input.resolution`. The
   // (string & {}) member keeps autocomplete for the known values while still
   // accepting a runtime-sourced value. Cost-only, like the rest of CostHints:
   // never merged into payload, never canonicalHash'd, never signed.

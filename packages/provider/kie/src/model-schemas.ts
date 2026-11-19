@@ -1974,6 +1974,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maxLength: 100,
         description: "Video task ID to upscale (max 100 chars)",
       },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description:
+          "Target resolution (default 720p); KIE prices the source-to-target pair: 480p to 720p, 480p to 1080p, 720p to 1080p",
+      },
     },
   },
 

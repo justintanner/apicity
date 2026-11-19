@@ -626,12 +626,12 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   })),
   {
     key: "grok-imagine/upscale",
-    variant: "",
-    status: "unreachable",
+    variant: "480p|720p",
+    status: "pricing-only",
     provenance:
-      "live PRICING.kie contains a zero-rate fail-closed sentinel; the frozen source has no callable selector for Grok upscale",
+      "tests/fixtures/kie-pricing-evidence/grok-imagine-upscale-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 480p→720p 10 credits = 0.05 USD per upscale",
     rationale:
-      "The zero entry is an unreachable sentinel, never a free estimate, because source and target resolution selectors are absent from the task request.",
+      "The frozen September pull prices this 10-credit tier as 360p→720p, a source no grok-imagine video has; the dated feed capture names it 480p→720p (the source is costHints.inputResolution).",
   },
   {
     key: "topaz/image-upscale",
@@ -1005,6 +1005,18 @@ const SELECTOR_RULES = Object.freeze([
     },
   },
   {
+    family: "grok-upscale-target",
+    matches: (key) => key === "grok-imagine/upscale",
+    apply: (_key, text, candidates) => {
+      // An upscale row names its source and target ("480P → 1080P",
+      // "480p→720p"). The request carries only the target, in
+      // input.resolution; the source is costHints.inputResolution.
+      const target = grokUpscaleResolutions(text)?.target;
+      if (target) candidates.resolution = target;
+      else delete candidates.resolution;
+    },
+  },
+  {
     family: "vidu-q4-resolution",
     matches: (key) => key.startsWith("vidu-q4/"),
     apply: (_key, text, candidates) => {
@@ -1148,6 +1160,15 @@ const SELECTOR_RULES = Object.freeze([
     },
   },
 ]);
+
+// The source and target a Grok Imagine upscale feed row names, lower-cased:
+// "grok-imagine, upscale, 480P → 1080P" is { source: "480p", target: "1080p" }.
+export function grokUpscaleResolutions(text) {
+  const match = String(text).match(/\b(\d+p)\s*→\s*(\d+p)\b/i);
+  return match
+    ? { source: match[1].toLowerCase(), target: match[2].toLowerCase() }
+    : undefined;
+}
 
 export function applySelectorRules({ key, text, candidates, context }) {
   for (const rule of SELECTOR_RULES) {
@@ -1649,10 +1670,11 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       "Topaz image pricing is keyed by output resolution, but the callable request only carries an unmapped upscale factor; the estimator must fail closed.",
   },
   {
-    family: "grok-upscale",
-    matches: (description) => /grok-imagine,\s*upscale/i.test(description),
+    family: "grok-upscale-360p",
+    matches: (description) =>
+      /grok-imagine,\s*upscale,\s*360p/i.test(description),
     message:
-      "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed.",
+      "The frozen Grok upscale row names a 360p source, which no grok-imagine video has; the 2026-11-19 feed prices the same 10-credit tier as 480p→720p, a pricing-only cell.",
   },
   {
     family: "suno-advanced-split",

@@ -920,12 +920,52 @@ describe("Kie pricing reconciliation", () => {
     });
     expect(pixverseExtend540pAudio.representativePayload).toBeUndefined();
 
+    // Grok upscale rows name a source and a target. The request carries the
+    // target (input.resolution) and the source travels as
+    // costHints.inputResolution (ac-xnzcl4). The frozen 360p→720p row names a
+    // source no grok-imagine video has; the 2026-11-19 feed prices that tier
+    // as 480p→720p, a pricing-only cell.
+    const grokUpscale = rowsMatching(/^grok-imagine, upscale/i);
+    expect(grokUpscale).toHaveLength(3);
     expect(
-      rowsMatching(/^(?:grok-imagine, )?upscale/i)
-        .filter((row) => description(row).startsWith("grok-imagine, upscale"))
-        .every((row) => row.disposition === "upstream-unmappable")
-    ).toBe(true);
-    expect(rowsMatching(/^grok-imagine, upscale/i)).toHaveLength(3);
+      grokUpscale.map((row) => ({
+        description: description(row),
+        disposition: row.disposition,
+        keys: row.mappedApiCityKeys,
+        input: (
+          row.representativePayload?.input as
+            | { resolution?: string }
+            | undefined
+        )?.resolution,
+        source: (
+          row.representativePricingMetadata?.costHints as
+            | { inputResolution?: string }
+            | undefined
+        )?.inputResolution,
+      }))
+    ).toEqual([
+      {
+        description: "grok-imagine, upscale, 720P → 1080P",
+        disposition: "implemented",
+        keys: ["grok-imagine/upscale"],
+        input: "1080p",
+        source: "720p",
+      },
+      {
+        description: "grok-imagine, upscale, 480P → 1080P",
+        disposition: "implemented",
+        keys: ["grok-imagine/upscale"],
+        input: "1080p",
+        source: "480p",
+      },
+      {
+        description: "grok-imagine, upscale, 360p→720p",
+        disposition: "upstream-unmappable",
+        keys: [],
+        input: undefined,
+        source: undefined,
+      },
+    ]);
     expect(rowsMatching(/^Topaz Image Upscaler, image-upscale/i)).toHaveLength(
       3
     );

@@ -11,6 +11,7 @@ import {
   endpointPayloadOverrides,
   explicitOperationKey as registryExplicitOperationKey,
   familyMappingCandidates,
+  grokUpscaleResolutions,
   knownFalseMapping as registryKnownFalseMapping,
   MODEL_FAMILY_REGISTRATIONS,
   representativePayloadOverride,
@@ -666,6 +667,8 @@ function unitInfo(raw) {
     ["per million", { unit: "tokens", quantity: 1_000_000 }],
     ["per 1000 characters", { unit: "characters", quantity: 1_000 }],
     ["per megapixel", { unit: "megapixels", quantity: 1 }],
+    // Grok Imagine upscale bills one flat fee per upscaled video.
+    ["per upscale", { unit: "generations", quantity: 1 }],
   ]);
   if (direct.has(unit)) return direct.get(unit);
   const batchImages = unit.match(/^per (\d+(?:\.\d+)?) images?$/);
@@ -869,6 +872,12 @@ function representativeCostHints(
       /(?:^|[-,\s])(360p|720p)(?:$|[-,\s])/i
     );
     if (resolution) hints.inputResolution = resolution[1].toLowerCase();
+  }
+  // A Grok Imagine upscale bills by source and target; the request carries
+  // only the target, and each feed row names the source.
+  if (key === "grok-imagine/upscale") {
+    const source = grokUpscaleResolutions(official?.modelDescription)?.source;
+    if (source) hints.inputResolution = source;
   }
   return Object.keys(hints).length ? hints : undefined;
 }
@@ -2451,7 +2460,7 @@ export function renderReconciliationMarkdown(manifest) {
     "",
     "## Runtime Variant Coverage",
     "",
-    `Every live Kie per-unit rate variant is covered by an executable official case or one of **${runtimeExceptions.length}** explicit exceptions below. Zero-rate Grok and Topaz entries are unreachable sentinels, not free variants.`,
+    `Every live Kie per-unit rate variant is covered by an executable official case or one of **${runtimeExceptions.length}** explicit exceptions below. The zero-rate Topaz entry is an unreachable sentinel, not a free variant.`,
     "",
     "| Runtime identity | Status | Provenance | Rationale |",
     "| --- | --- | --- | --- |",

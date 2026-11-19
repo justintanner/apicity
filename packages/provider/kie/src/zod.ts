@@ -3687,11 +3687,19 @@ export const GrokVideoExtendRequestSchema = z.object({
   }),
 });
 
+// The docs (re-read 2026-11-19, ac-xnzcl4) take `input.resolution`, the
+// target: 720p (default) or 1080p. The source is the referenced
+// grok-imagine/text-to-video or image-to-video task's resolution, which the
+// request does not carry; KIE prices each source-to-target pair.
+// Docs: https://docs.kie.ai/market/grok-imagine/upscale
+export const GrokVideoUpscaleResolutionSchema = z.enum(["720p", "1080p"]);
+
 export const GrokVideoUpscaleRequestSchema = z.object({
   model: z.literal("grok-imagine/upscale"),
   callBackUrl: z.string().optional(),
   input: z.object({
     task_id: z.string().min(1).max(100),
+    resolution: GrokVideoUpscaleResolutionSchema.default("720p"),
   }),
 });
 

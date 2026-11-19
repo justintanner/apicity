@@ -1820,10 +1820,10 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:972363987ae003101d6ec4040ab8518685040d2e2525bc0d34934cfc9e06023e",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:048e162208fe4b8fe82a305c05766a4667766b9a62fb50bf5e37b70e28119a86",
+      "packages/provider/kie/src/zod.ts": "sha256:c0536edab7ee8db26628a03120ae7bd3b99c6b6912cf4326b206423e36d9f72d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:e4fc64697a9cffd43aa7a17ef462a5a6435ba4d5cb28219b4be0a1d227981b1d",
       "packages/provider/kie/src/kie.ts": "sha256:7a65aa35a817752a952f8e698af1118f62ade21639b01fe5b4977db70722b801",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:da130a92f6259d929ccc0a63e88c22d89f6a1c707232cc21409c45904f1b4e00",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:268827a6f57d7c7d6f4baad273ae38539048d864e009803299b1a27573b7ff40",
       "packages/provider/cost/src/slugs.ts": "sha256:ea58e70df85cb9f627077066e257d325e77b4054edfe1bf5d5ce577dc4264186",
       "scripts/endpoint-docs.tsv": "sha256:cec66ae8a234cfaacf915dc0f3af9958879c5554d5d4861dcdd3d3c907877a04"
     }
@@ -14273,15 +14273,41 @@
         "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["grok-imagine/upscale"],
       "evidence": {
         "url": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed.",
-      "officialCellIssues": ["credit-unit-format"],
-      "technicalBlocker": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "generations",
+      "officialUnit": "generations",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "20",
+        "creditUnit": "per upscale",
+        "usdPrice": "0.10",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1080p"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:grok-imagine/upscale"
+      },
+      "representativePricingMetadata": {
+        "costHints": {
+          "inputResolution": "720p"
+        }
+      },
+      "representativePayload": {
+        "model": "grok-imagine/upscale",
+        "input": {
+          "resolution": "1080p",
+          "task_id": "https://example.com/a.png"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:a10694f106bbff6148e97d3c996f73d56bfafa3f008a86a65551cad32b3e0255#1",
@@ -14299,15 +14325,41 @@
         "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["grok-imagine/upscale"],
       "evidence": {
         "url": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed.",
-      "officialCellIssues": ["credit-unit-format"],
-      "technicalBlocker": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "generations",
+      "officialUnit": "generations",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "30",
+        "creditUnit": "per upscale",
+        "usdPrice": "0.15",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1080p"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:grok-imagine/upscale"
+      },
+      "representativePricingMetadata": {
+        "costHints": {
+          "inputResolution": "480p"
+        }
+      },
+      "representativePayload": {
+        "model": "grok-imagine/upscale",
+        "input": {
+          "resolution": "1080p",
+          "task_id": "https://example.com/a.png"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:07ab28044579e7281765f1123b449573bf5dc7e652398e5dfa04de54fe05efa4#1",
@@ -14730,9 +14782,8 @@
         "url": "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed.",
-      "officialCellIssues": ["credit-unit-format"],
-      "technicalBlocker": "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed."
+      "rationale": "The frozen Grok upscale row names a 360p source, which no grok-imagine video has; the 2026-11-19 feed prices the same 10-credit tier as 480p→720p, a pricing-only cell.",
+      "technicalBlocker": "The frozen Grok upscale row names a 360p source, which no grok-imagine video has; the 2026-11-19 feed prices the same 10-credit tier as 480p→720p, a pricing-only cell."
     },
     {
       "occurrenceId": "sha256:e207971e38d40d7f4d2663bde7394739ec02211ab750f5958847f9fa07ff396f#1",
@@ -21984,9 +22035,12 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "grok-imagine/upscale",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "linkedRows": [
+          "sha256:a9373cc8950d57a3fb850b9944e8f984b645a74d6077b198a216a269ceff0f1a#1",
+          "sha256:a10694f106bbff6148e97d3c996f73d56bfafa3f008a86a65551cad32b3e0255#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "grok-imagine-image-2-0/text-to-image",
@@ -24614,9 +24668,12 @@
       },
       {
         "key": "grok-imagine/upscale",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+        "linkedRows": [
+          "sha256:a9373cc8950d57a3fb850b9944e8f984b645a74d6077b198a216a269ceff0f1a#1",
+          "sha256:a10694f106bbff6148e97d3c996f73d56bfafa3f008a86a65551cad32b3e0255#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
         "key": "happyhorse/text-to-video",
@@ -28757,13 +28814,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 209,
+        "implemented": 211,
         "canonical-alias": 104,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 84
+        "upstream-unmappable": 82
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -28788,11 +28845,11 @@
         "guards": 182,
         "withoutPricing": 4,
         "dispositionCounts": {
-          "supported": 99,
+          "supported": 100,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 83
+          "upstream-unmappable": 82
         },
         "unclassified": 0
       },
@@ -28812,11 +28869,11 @@
       "pricingKeys": {
         "count": 247,
         "dispositionCounts": {
-          "supported": 150,
+          "supported": 151,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 97
+          "upstream-unmappable": 96
         },
         "unclassified": 0
       },
@@ -30408,10 +30465,10 @@
       },
       {
         "key": "grok-imagine/upscale",
-        "variant": "",
-        "status": "unreachable",
-        "provenance": "live PRICING.kie contains a zero-rate fail-closed sentinel; the frozen source has no callable selector for Grok upscale",
-        "rationale": "The zero entry is an unreachable sentinel, never a free estimate, because source and target resolution selectors are absent from the task request."
+        "variant": "480p|720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/grok-imagine-upscale-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 480p→720p 10 credits = 0.05 USD per upscale",
+        "rationale": "The frozen September pull prices this 10-credit tier as 360p→720p, a source no grok-imagine video has; the dated feed capture names it 480p→720p (the source is costHints.inputResolution)."
       },
       {
         "key": "topaz/image-upscale",

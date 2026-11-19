@@ -1152,6 +1152,83 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // Grok Imagine upscale bills one flat fee per source-to-target pair. The
+  // request carries the target (input.resolution) and the source travels as
+  // costHints.inputResolution, so each row now compares with its own cell;
+  // before ac-xnzcl4 all three were NOT COMPARED (2026-11-19 feed).
+  it("compares each grok-imagine/upscale row with its source and target cell", async () => {
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "video",
+        provider: "Grok",
+        creditPrice,
+        creditUnit: "per upscale",
+        usdPrice,
+        anchor: "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+      },
+    });
+    const to1080From720 = row(
+      "grok-imagine, upscale, 720P → 1080P",
+      "20",
+      "0.10"
+    );
+    const to1080From480 = (creditPrice: string, usdPrice: string) =>
+      row("grok-imagine, upscale, 480P → 1080P", creditPrice, usdPrice);
+    const to720From480 = row(
+      "grok-imagine, upscale, 480p→720p",
+      "10.0",
+      "0.05"
+    );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([
+        to1080From720,
+        to1080From480("30", "0.15"),
+        to720From480,
+      ]);
+      expect(result.differ).toEqual([]);
+      expect(result.notCompared).toEqual([]);
+      expect(result.same).toBe(3);
+      expect(result.compared).toBe(3);
+
+      const moved = await write([
+        to1080From720,
+        to1080From480("32", "0.16"),
+        to720From480,
+      ]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "grok-imagine/upscale",
+          variant: "480p|1080p",
+          tableUsd: 0.15,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   describe("the command", () => {
     const run = (args: string[]) =>
       promisify(execFile)(

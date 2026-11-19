@@ -259,6 +259,29 @@ const omniExtendResolution = (hints?: CostHints): string | undefined => {
   return value === "360p" || value === "720p" ? value : undefined;
 };
 
+// The resolution a Grok Imagine upscale starts from, from
+// costHints.inputResolution: 480p or 720p, the two sources KIE prices an
+// upscale from. Anything else counts as absent.
+const grokUpscaleSource = (hints?: CostHints): string | undefined => {
+  const value = asString(hints?.inputResolution);
+  return value === "480p" || value === "720p" ? value : undefined;
+};
+
+// The upscale target, input.resolution: 720p when omitted (the docs default)
+// or 1080p. Any other value counts as absent.
+const grokUpscaleTarget = (p: Record<string, unknown>): string | undefined => {
+  const value = asObject(p.input)?.resolution;
+  if (value === undefined) return "720p";
+  return value === "720p" || value === "1080p" ? value : undefined;
+};
+
+// Grok Imagine upscale rates, USD per upscale, keyed "<source>|<target>".
+const GROK_UPSCALE_RATES: Record<string, number> = {
+  "480p|720p": 0.05,
+  "480p|1080p": 0.15,
+  "720p|1080p": 0.1,
+};
+
 // Kling 4.0 Long Image adds 0.5 credits ($0.0025) for each input image: the
 // product images in image_urls and a webpage style_image or subject_image.
 // A non-array image_urls or a non-string single image fails closed.
@@ -2399,25 +2422,56 @@ export const kie: Record<string, ModelPricing> = {
     ),
   },
 
-  // grok-imagine/upscale: the schema carries only `task_id`, so no tier is
-  // selectable from a request. Kie publishes 360p→720p at $0.05,
-  // 720P→1080P at $0.10, and 480P→1080P at $0.15; all depend on source and
-  // target resolutions of the referenced task. Fail closed because no
-  // nonzero tier is exact from this payload.
+  // grok-imagine/upscale (ac-xnzcl4) bills one flat fee per upscale, keyed by
+  // the source video's resolution and the target: 10 credits ($0.05) for
+  // 480p→720p, 30 ($0.15) for 480p→1080p and 20 ($0.10) for 720p→1080p. The
+  // 2026-11-19 feed rows and the models API pricingDesc agree (evidence in
+  // tests/fixtures/kie-pricing-evidence/grok-imagine-upscale-2026-11-19.json).
+  // The target is `input.resolution`, 720p by default or 1080p. The request
+  // names the source task, not its resolution, so the estimate needs
+  // costHints.inputResolution ("480p" or "720p"). It fails closed without
+  // it, and on a pair KIE does not price (a 720p source at the 720p target).
   "grok-imagine/upscale": {
     kind: "perUnit",
     unit: "generations",
-    units: () => undefined,
-    select: [],
-    rates: { "": 0 },
-    warn: () => [
-      "kie 'grok-imagine/upscale': source/target resolutions are not present " +
-        "in the task_id-only request, so the estimate fails closed rather " +
-        "than selecting among the published 360p→720p ($0.05), " +
-        "720P→1080P ($0.10), and 480P→1080P ($0.15) tiers",
+    units: (p, hints) =>
+      Object.hasOwn(
+        GROK_UPSCALE_RATES,
+        `${grokUpscaleSource(hints)}|${grokUpscaleTarget(p)}`
+      )
+        ? 1
+        : undefined,
+    select: [
+      {
+        name: "inputResolution",
+        required: true,
+        pick: (_p, hints) => grokUpscaleSource(hints),
+      },
+      { name: "resolution", required: true, pick: grokUpscaleTarget },
     ],
+    rates: GROK_UPSCALE_RATES,
+    warn: (p, hints) => {
+      const source = grokUpscaleSource(hints);
+      const target = grokUpscaleTarget(p);
+      if (source === undefined) {
+        return [
+          "kie 'grok-imagine/upscale': the request names a source task, not its resolution, and KIE prices each source-to-target pair, so the estimate fails closed; declare costHints.inputResolution (480p or 720p)",
+        ];
+      }
+      if (target === undefined) {
+        return [
+          "kie 'grok-imagine/upscale': input.resolution must be 720p or 1080p, so the estimate fails closed",
+        ];
+      }
+      return Object.hasOwn(GROK_UPSCALE_RATES, `${source}|${target}`)
+        ? []
+        : [
+            `kie 'grok-imagine/upscale': KIE publishes no ${source}→${target} tier (only 480p→720p, 480p→1080p and 720p→1080p), so the estimate fails closed`,
+          ];
+    },
     source: pricePage(
-      "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale"
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale",
+      "2026-11-19"
     ),
   },
 

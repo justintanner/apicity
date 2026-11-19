@@ -464,7 +464,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** MachGen request types now allow automatic image sizing. To read a numeric `height` from a request, first narrow its config with `if (config && config.size_mode !== "auto")`. The exported `MachGenImageConfig` explicit-size type still requires `height` (ac-znkz5o).
+- **Breaking:** MachGen request types now allow automatic image sizing. To read a numeric `height` from a request, first narrow its config with `if (config && config.size_mode !== "auto")`. The exported `MachGenImageConfig` explicit-size type still requires `height`. The generate request schema also validates image settings by model and task. For example, version 0.28.1 accepted `xhigh` and `max` quality for `GPT-Image-2` in `.safeParse()`. Use `auto`, `low`, `medium` or `high` for that model (ac-znkz5o).
 
 - `apicity` discovery: `paid` now follows each endpoint's reviewed billing record instead of the pay-gate registry, so it says whether a call bills. On this base 595 of 1,933 rows read paid (27 before): metered, accrual and unpriced billing reads paid; free, followup and subscription do not. Two new fields: `billing` (the record's kind) and `gated` (in the pay-gate registry; the same 27 rows). `select(.gated)` gives what `select(.paid)` gave before. `CatalogEntry` gains the two required fields. Invocation is unchanged: only `gated` binds the `--otp` approval slot, so a billed endpoint outside the registry is still called with the body alone (ac-e65yyk).
 

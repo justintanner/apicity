@@ -43,6 +43,7 @@ export const MODEL_SLUGS = {
     "kling-4.0/flash-keyframe-to-video": "kling4f",
     "kling-4.0/flash-reference-to-video": "kling4f",
     "kling-4-0/image": "kling4i",
+    "kling-4-0/long-image": "kling4li",
 
     // Video — Wan 2.2 (A14B Turbo trio + the Animate pair). All five share the
     // family slug: there is no separately-priced non-turbo wan 2.2 generation
@@ -1184,6 +1185,7 @@ export const MODEL_DISPLAY = {
     "kling-4.0/flash-keyframe-to-video": "Kling 4.0 Flash Keyframe-to-Video",
     "kling-4.0/flash-reference-to-video": "Kling 4.0 Flash Reference-to-Video",
     "kling-4-0/image": "Kling 4.0 Image",
+    "kling-4-0/long-image": "Kling 4.0 Long Image",
 
     "wan/2-2-a14b-text-to-video-turbo": "Wan 2.2",
     "wan/2-2-a14b-image-to-video-turbo": "Wan 2.2",

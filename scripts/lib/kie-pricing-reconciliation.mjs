@@ -1168,6 +1168,12 @@ function classifyRawRow(raw, inventories, live = false) {
     ) {
       result.billingComponent = "extra";
     }
+    if (
+      key === "kling-4-0/long-image" &&
+      /input image \(each\)/i.test(String(official.modelDescription ?? ""))
+    ) {
+      result.billingComponent = "extra";
+    }
     result.rateBasis = {
       kind: "official-usd-price",
       creditPrice: official.creditPrice,

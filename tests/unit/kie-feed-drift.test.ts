@@ -955,16 +955,22 @@ describe("KIE feed drift", () => {
         longImage,
       ]);
       expect(result.differ).toEqual([]);
-      expect(result.same).toBe(4);
-      expect(result.compared).toBe(4);
-      expect(result.notCompared.map(({ description }) => description)).toEqual([
-        "kling image 4.0, long-image, Webpage 1K",
-      ]);
+      // The long-image row compares with kling-4-0/long-image (ac-zakqnf),
+      // never with a kling-4-0/image cell.
+      expect(result.same).toBe(5);
+      expect(result.compared).toBe(5);
+      expect(result.notCompared).toEqual([]);
 
       const moved = await write([
         row("kling image 4.0, image, 2K", "12", "0.06"),
         ...tiers.slice(1),
         referenceRow("1", "0.005"),
+        row(
+          "kling image 4.0, long-image, Webpage 1K",
+          "100",
+          "0.5",
+          "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image"
+        ),
       ]);
       expect(moved.differ).toEqual([
         expect.objectContaining({
@@ -976,6 +982,11 @@ describe("KIE feed drift", () => {
           key: "kling-4-0/image",
           variant: "extra",
           tableUsd: 0.0025,
+        }),
+        expect.objectContaining({
+          key: "kling-4-0/long-image",
+          variant: "webpage|1k",
+          tableUsd: 0.495,
         }),
       ]);
     } finally {

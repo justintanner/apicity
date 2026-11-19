@@ -1637,6 +1637,58 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/kling-4-0/long-image
+  "kling-4-0/long-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "Prompt (1-20000 characters). ecommerce: mention product images as @image_1, @image_2, ...; webpage: mention style_image as @style and subject_image as @subject",
+      },
+      skill: {
+        type: "string",
+        required: true,
+        enum: ["ecommerce", "webpage"],
+        description:
+          "ecommerce: a product detail page from image_urls, with length; webpage: a web page design, with optional style_image and subject_image",
+      },
+      image_urls: {
+        type: "array",
+        minItems: 1,
+        maxItems: 3,
+        items: { type: "string" },
+        description:
+          "ecommerce only, required there: 1-3 public jpg, jpeg or png product images (20 MB each). Each adds 0.5 credits",
+      },
+      style_image: {
+        type: "string",
+        description:
+          "webpage only: a style reference image, mentioned as @style. Adds 0.5 credits",
+      },
+      subject_image: {
+        type: "string",
+        description:
+          "webpage only: a subject reference image kept in the output, mentioned as @subject. Adds 0.5 credits",
+      },
+      length: {
+        type: "string",
+        enum: ["short", "medium", "long"],
+        description:
+          "ecommerce only: short (about 2-5 sections), medium (6-10, the default) or long (11-18)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1k", "2k"],
+        default: "2k",
+        description: "Output resolution, 1k or 2k (default 2k)",
+      },
+    },
+  },
+
   "grok-imagine/text-to-image": {
     type: "image",
     fields: {

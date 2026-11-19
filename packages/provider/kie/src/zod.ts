@@ -267,6 +267,7 @@ export const KIE_MEDIA_MODELS = [
   // enum-only: widening the Kling alias to dashed versions would also admit
   // typos such as `kling-3-0/video`.
   "kling-4-0/image",
+  "kling-4-0/long-image",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -3151,6 +3152,87 @@ export const Kling40ImageRequestSchema = z
       }
       seen.add(element.name.toLowerCase());
     });
+  });
+
+// Kling 4.0 Long Image, from https://docs.kie.ai/market/kling-4-0/long-image
+// as read on 2026-11-19 (ac-zakqnf). One tall image in one of two skills:
+// `ecommerce` (a product detail page from 1-3 product images, mentioned as
+// @image_1..., with a `length` of short, medium or long, default medium) or
+// `webpage` (a web page design, with an optional `style_image` mentioned as
+// @style and `subject_image` as @subject). KIE answers a field of the other
+// skill with 422, which the request schema refuses first. `length` carries
+// no zod default so that a parsed webpage request does not hold one. The
+// docs say the price depends only on resolution, but the feed rows and the
+// pricingDesc price each skill and length separately; @apicity/cost follows
+// the feed.
+export const Kling40LongImageSkillSchema = z.enum(["ecommerce", "webpage"]);
+export const Kling40LongImageLengthSchema = z.enum(["short", "medium", "long"]);
+export const Kling40LongImageResolutionSchema = z.enum(["1k", "2k"]);
+
+export const Kling40LongImageInputSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(20000)
+      .describe(
+        "Prompt (1-20000 characters). ecommerce: mention product images as @image_1, @image_2, ...; webpage: mention style_image as @style and subject_image as @subject. Any @ followed by a letter, digit, underscore or Chinese character is read as a mention"
+      ),
+    skill: Kling40LongImageSkillSchema.describe(
+      "ecommerce: a product detail page from image_urls, with length; webpage: a web page design, with optional style_image and subject_image"
+    ),
+    image_urls: z
+      .array(Kling40MediaUrlSchema)
+      .min(1)
+      .max(3)
+      .optional()
+      .describe(
+        "ecommerce only, required there: 1-3 public jpg, jpeg or png product images (20 MB each), mentioned as @image_1... Each adds 0.5 credits"
+      ),
+    style_image: Kling40MediaUrlSchema.optional().describe(
+      "webpage only: a style reference image, mentioned as @style. Adds 0.5 credits"
+    ),
+    subject_image: Kling40MediaUrlSchema.optional().describe(
+      "webpage only: a subject reference image kept in the output, mentioned as @subject. Adds 0.5 credits"
+    ),
+    length: Kling40LongImageLengthSchema.optional().describe(
+      "ecommerce only: short (about 2-5 sections), medium (6-10, the default) or long (11-18)"
+    ),
+    resolution: Kling40LongImageResolutionSchema.default("2k").describe(
+      "Output resolution, 1k or 2k (default 2k)"
+    ),
+  })
+  .strict();
+
+export const Kling40LongImageRequestSchema = z
+  .object({
+    model: z.literal("kling-4-0/long-image"),
+    callBackUrl: z.string().url().optional(),
+    input: Kling40LongImageInputSchema,
+  })
+  .superRefine((value, ctx) => {
+    const { input } = value;
+    const issue = (message: string, field: string) =>
+      ctx.addIssue({ code: "custom", message, path: ["input", field] });
+    if (input.skill === "ecommerce") {
+      if (input.image_urls === undefined) {
+        issue(
+          "ecommerce requires image_urls (1-3 product images)",
+          "image_urls"
+        );
+      }
+      for (const field of ["style_image", "subject_image"] as const) {
+        if (input[field] !== undefined) {
+          issue(`${field} is webpage only`, field);
+        }
+      }
+    } else {
+      for (const field of ["image_urls", "length"] as const) {
+        if (input[field] !== undefined) {
+          issue(`${field} is ecommerce only`, field);
+        }
+      }
+    }
   });
 
 export const GrokTextToImageRequestSchema = z.object({
@@ -10115,6 +10197,7 @@ export const MediaGenerationRequestSchema = z.union([
   Kling40FlashKeyframeToVideoRequestSchema,
   Kling40FlashReferenceToVideoRequestSchema,
   Kling40ImageRequestSchema,
+  Kling40LongImageRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -10721,6 +10804,20 @@ export type Kling40ImageRequest = z.input<typeof Kling40ImageRequestSchema>;
 export type Kling40ImageRequestInput = Kling40ImageRequest;
 export type Kling40ImageParsedRequest = z.output<
   typeof Kling40ImageRequestSchema
+>;
+export type Kling40LongImageSkill = z.infer<typeof Kling40LongImageSkillSchema>;
+export type Kling40LongImageLength = z.infer<
+  typeof Kling40LongImageLengthSchema
+>;
+export type Kling40LongImageResolution = z.infer<
+  typeof Kling40LongImageResolutionSchema
+>;
+export type Kling40LongImageRequest = z.input<
+  typeof Kling40LongImageRequestSchema
+>;
+export type Kling40LongImageRequestInput = Kling40LongImageRequest;
+export type Kling40LongImageParsedRequest = z.output<
+  typeof Kling40LongImageRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

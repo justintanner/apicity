@@ -1,0 +1,171 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+  "models": ["kling-4-0/long-image"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image and the GET /api/v1/models pricingDesc agree: per long image, ecommerce Short 42.5 / 51, Medium 84.5 / 99, Long 141 / 155 credits and webpage 99 / 107.5 credits at 1K / 2K, plus 0.5 credits for each input image (product, style or subject). The docs' resolution description says the price depends only on resolution, not skill or length; the feed rows and the pricingDesc price each skill and length separately, and are followed. The recording below billed 43 credits for an ecommerce Short 1K page from one product image (42.5 + 0.5), charged at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T14:53:00.470Z",
+    "rows": [
+      {
+        "modelDescription": "kling image 4.0, long-image, input image (each)",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "falPrice": "0.003",
+        "discountRate": 16.67,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Long 2K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "155",
+        "creditUnit": "per image",
+        "usdPrice": "0.775",
+        "falPrice": "0.862",
+        "discountRate": 10.09,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Long 1K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "141",
+        "creditUnit": "per image",
+        "usdPrice": "0.705",
+        "falPrice": "0.784",
+        "discountRate": 10.08,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Medium 2K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "99",
+        "creditUnit": "per image",
+        "usdPrice": "0.495",
+        "falPrice": "0.549",
+        "discountRate": 9.84,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Medium 1K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "84.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.4225",
+        "falPrice": "0.47",
+        "discountRate": 10.11,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Short 2K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "51",
+        "creditUnit": "per image",
+        "usdPrice": "0.255",
+        "falPrice": "0.282",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, E-commerce Short 1K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, Webpage 2K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "107.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.5375",
+        "falPrice": "0.596",
+        "discountRate": 9.82,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, long-image, Webpage 1K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "99",
+        "creditUnit": "per image",
+        "usdPrice": "0.495",
+        "falPrice": "0.549",
+        "discountRate": 9.84,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T17:15:54Z",
+    "entry": {
+      "model": "kling-4-0/long-image",
+      "slug": "kling-4-0/long-image",
+      "title": "Kling 4.0 Long Image",
+      "provider": "Kling",
+      "taskType": ["Text to Image", "Image to Image"],
+      "description": "",
+      "pricingDesc": "Webpage: 99 credits ($0.495) at 1K, 107.5 credits ($0.5375) at 2K.\nE-commerce detail page (1K / 2K): Short 42.5 / 51 credits ($0.2125 / $0.255), Medium 84.5 / 99 credits ($0.4225 / $0.495), Long 141 / 155 credits ($0.705 / $0.775).\nPriced per long image. Each input image (product, style or subject image) adds 0.5 credits ($0.0025). All tiers about 10% below Kling's official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "kling-4-0/long-image",
+      "url": "https://docs.kie.ai/market/kling-4-0/long-image.md",
+      "fetchedAt": "2026-11-19T17:13:46Z",
+      "sha256": "f6ffdc261834cd3ecd8e99cdbaf4810e3cb66f62ad6264c4224a1b1a9a91aac9"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "kling-4-0/long-image",
+      "har": "tests/recordings/kie_2079838932/kling-4-0-long-image_99077183/recording.har",
+      "request": {
+        "prompt": "A short product detail page for @image_1, a cat-themed plush toy, on a clean white background",
+        "skill": "ecommerce",
+        "image_urls": [
+          "https://tempfile.redpandaai.co/kieai/136592/images/test-uploads/1795108673305-pub5g9b4kl.jpg"
+        ],
+        "length": "short",
+        "resolution": "1k"
+      },
+      "taskId": "50e41d5bcb328f6c5a54b1e302695ebb",
+      "creditsConsumed": 43,
+      "chargedAtSubmission": true,
+      "usd": 0.215,
+      "costTimeSeconds": 111,
+      "output": {
+        "format": "jpg",
+        "images": 1
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57787.58,
+    "after": 57744.58
+  },
+  "observedTotalUsd": 0.215
+}

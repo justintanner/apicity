@@ -3795,9 +3795,11 @@ export const GrokImagineImage2ImageEditRequestSchema = z.object({
 // required" for this id and 422 "The model name you specified is not
 // supported" for an unknown sibling.
 //
-// `mask_indexs` entries start at 1 here, unlike image-edit's zero-based
-// `.min(0)` — that is the vendor's own documented bound for this id
-// (`items.minimum: 1`), kept rather than widened to match its sibling.
+// `mask_indexs` entries are the `index` values of the segment-map result,
+// which counts its segments from 0 (index 0 is usually the main subject). The
+// docs read on 2026-11-19 give `items.minimum: 0` ("0-based"); the 2026-08-28
+// page said `minimum: 1`, and a recorded segment-edit sent index 0
+// (ac-4asuok).
 // Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
 export const GrokImagineImage2SegmentEditRequestSchema = z.object({
   model: z.literal("grok-imagine-image-2-0/segment-edit"),
@@ -3806,7 +3808,7 @@ export const GrokImagineImage2SegmentEditRequestSchema = z.object({
     .object({
       prompt: z.string().min(1),
       task_id: z.string().min(1),
-      mask_indexs: z.array(z.number().int().min(1)).min(1).optional(),
+      mask_indexs: z.array(z.number().int().min(0)).min(1).optional(),
     })
     .strict(),
 });

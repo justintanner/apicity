@@ -271,7 +271,7 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
     }
   });
 
-  it("rejects segment-edit inputs and its one-based mask indices", () => {
+  it("rejects segment-edit inputs and mask indices below 0", () => {
     const base = GROK_IMAGINE_IMAGE_2_CONTRACTS[3].request;
     const cases = [
       { input: { task_id: base.input.task_id }, path: ["input", "prompt"] },
@@ -287,9 +287,10 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
         input: { ...base.input, mask_indexs: [] },
         path: ["input", "mask_indexs"],
       },
-      // image-edit accepts index 0; segment-edit documents `minimum: 1`.
+      // The segment-map result counts from 0, and segment-edit documents
+      // `minimum: 0` since 2026-11-19 (ac-4asuok); -1 names no segment.
       {
-        input: { ...base.input, mask_indexs: [0] },
+        input: { ...base.input, mask_indexs: [-1] },
         path: ["input", "mask_indexs", "0"],
       },
       {
@@ -307,6 +308,19 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
       expect(issueAt(result, [...invalid.path])).toBe(true);
     }
   });
+
+  it.each([[[0]], [[1]], [[0, 2]]])(
+    "accepts segment-edit mask_indexs %j",
+    (mask_indexs) => {
+      const base = GROK_IMAGINE_IMAGE_2_CONTRACTS[3].request;
+      const result = GrokImagineImage2SegmentEditRequestSchema.safeParse({
+        model: base.model,
+        input: { ...base.input, mask_indexs },
+      });
+      expect(result.success).toBe(true);
+      expect(result.data?.input.mask_indexs).toEqual(mask_indexs);
+    }
+  );
 
   it("keeps every input object strict", () => {
     for (const contract of GROK_IMAGINE_IMAGE_2_CONTRACTS) {
@@ -437,8 +451,14 @@ describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
     expect(segmentEdit.fields.mask_indexs).toMatchObject({
       type: "array",
       minItems: 1,
-      items: { type: "integer", minimum: 1 },
+      items: { type: "integer", minimum: 0 },
     });
+    expect(segmentEdit.fields.mask_indexs.description).toContain(
+      "counted from 0"
+    );
+    expect(segmentEdit.fields.mask_indexs.description).not.toMatch(
+      /one-based|positive integer/
+    );
     expect(segmentEdit.fields.mask_indexs.required).toBeUndefined();
   });
 });

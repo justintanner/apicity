@@ -634,7 +634,7 @@ provider documentation, retrieved on 2026-09-28 (`Q21-01` through `Q21-02`).
 
 The Grok Imagine Image 2.0 row uses the official model pages linked from the
 Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
-`GI2-03`) and 2026-08-28 (`GI2-04`).
+`GI2-03`) and 2026-11-19 (`GI2-04`, first read 2026-08-28).
 
 - `GI2-01 @ 2026-08-16`:
   https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image
@@ -642,11 +642,16 @@ Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
   https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map
 - `GI2-03 @ 2026-08-16`:
   https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
-- `GI2-04 @ 2026-08-28`:
+- `GI2-04 @ 2026-11-19`:
   https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit — the same page
   as `GI2-03`, which is titled "Grok Imagine Image 2.0 Segment Edit" and
   documents the `grok-imagine-image-2-0/segment-edit` model id. Kie serves no
-  `.../segment-edit` page (404), so the slug and the id disagree.
+  `.../segment-edit` page (404), so the slug and the id disagree. On
+  2026-08-28 it gave `mask_indexs` items `minimum: 1`. The 2026-11-19 read
+  (sha256 `72af54e3…0d0c`) gives `minimum: 0`: "Indexes of the segments to
+  edit, taken from resultObject.segments[].index of the segment-map task
+  (0-based)". A recorded segment-edit sent `[0]`, the segment-map's "white
+  cat", and KIE recolored the cat (ac-4asuok).
   By 2026-11-19 KIE had re-pointed `grok-imagine-image-2-0/image-edit` to
   https://docs.kie.ai/market/grok-imagine-image-2-0/image-to-image, where it
   takes `image_urls` and no numeric input, so its `GI2-03` `mask_indexs` row
@@ -694,7 +699,7 @@ Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
 | grok-imagine-video-1-5-preview            | input.duration                | optional; integer min=1 max=15 default=8                                                             | DOC-06 @ 2026-07-31                                                      | integer multipleOf=1 min=1 max=15 default=8 | absent              | none beyond current OpenAPI                                                         | number-only         | medium     | retain current behavior                          |
 | grok-imagine/extend                       | input.extend_at               | required; number min=0                                                                               | DOC-07 @ 2026-07-31                                                      | number min=2 default=2                      | number (2)          | matrix 0/1/2/2.5 -> 200; omit -> 500                                                | number-only         | high       | require general number min=0; no default         |
 | grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31                                                      | number                                      | string ("6")        | matrix "6"/"10" -> 200; 6/10 -> 500                                                 | numeric-string-only | high       | retain exact strings; reject numbers             |
-| grok-imagine-image-2-0/segment-edit       | input.mask_indexs[]           | optional; integer min=1                                                                              | GI2-04 @ 2026-08-28                                                      | integer min=1                               | number (1)          | doc example sends [1, 2]; the recorded accepted request sent [1]                    | number-only         | high       | align with the official one-based minimum        |
+| grok-imagine-image-2-0/segment-edit       | input.mask_indexs[]           | optional; integer min=0                                                                              | GI2-04 @ 2026-11-19                                                      | integer min=0                               | number (1)          | doc example sends [1, 2]; the recorded accepted request sent [0] (ac-4asuok)        | number-only         | high       | align with the official zero-based minimum       |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31                                                      | integer                                     | number (0)          | none beyond current OpenAPI                                                         | number-only         | high       | retain current behavior                          |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31                                                      | integer                                     | number (0)          | no fractional observation or clarification                                          | number-only         | high       | align with official integer contract             |
 | qwen2-1/text-to-image                     | input.seed                    | optional; integer                                                                                    | Q21-01 @ 2026-09-28                                                      | integer                                     | number (20260921)   | none beyond current OpenAPI                                                         | number-only         | high       | retain current behavior                          |

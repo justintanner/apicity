@@ -20,7 +20,10 @@ import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 //
 // segment-edit needs a source task, so this recording seeds its own the way the
 // vendor documents: a 2.0 text-to-image cat, then segment-map (free — the
-// sibling recording reports creditsConsumed 0.0) for a one-based segment index.
+// sibling recording reports creditsConsumed 0.0) for a segment index. The
+// segment-map result counts its segments from 0, and segment-edit takes those
+// values unchanged ("0-based" in the docs read on 2026-11-19), so this
+// recording edits segment 0 (ac-4asuok).
 
 interface CompletedTask {
   resultJson: string;
@@ -125,15 +128,15 @@ describe("kie Grok Imagine Image 2.0 segment-edit", () => {
       expect(segments).toBeInstanceOf(Array);
       expect(segments!.length).toBeGreaterThan(0);
 
-      // segment-edit documents `mask_indexs` items as `minimum: 1`, so the
-      // zero index segment-map also returns is never a valid selection here.
-      const editableSegment = segments!.find((segment) => segment.index >= 1);
+      // Index 0, the first segment segment-map numbers (the cat), which the
+      // local schema refused before ac-4asuok.
+      const editableSegment = segments!.find((segment) => segment.index === 0);
       expect(editableSegment).toBeTruthy();
 
       const segmentEditRequest = {
         model: "grok-imagine-image-2-0/segment-edit",
         input: {
-          prompt: "Give the cat a red bow tie.",
+          prompt: "Recolor the selected area bright blue.",
           task_id: sourceTaskId,
           mask_indexs: [editableSegment!.index],
         },

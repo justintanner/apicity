@@ -67,9 +67,9 @@ describe("apicity frontier", () => {
     const i2v = envelope.data.find((row) => row.type === "i2v");
     expect(i2v).toMatchObject({ models: "6/10", captured: "2026-11-19" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "7/10", captured: "2026-11-19" });
+    expect(t2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "7/10", captured: "2026-11-19" });
+    expect(i2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
@@ -189,9 +189,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("openai.gptImage2");
     expect(table).toContain("grok-imagine-image-2.0");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
-    expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.7, Kling Image 4.0, MAI-Image-2.6"
-    );
+    expect(table).toContain("not yet in apicity: MAI-Image-2.7, MAI-Image-2.6");
   });
 
   it("prints i2i fal rows and keeps the gaps", async () => {
@@ -210,7 +208,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("Krea 3 (Ultra)");
     expect(table).toContain("krea.v3.edit");
     expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.7, Kling Image 4.0, MAI-Image-2.7-Flash"
+      "not yet in apicity: MAI-Image-2.7, MAI-Image-2.7-Flash"
     );
   });
 

@@ -1569,6 +1569,74 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/kling-4-0/image
+  "kling-4-0/image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "Image prompt (1-20000 characters). Mention reference images as @image_1, @image_2, ... in image_urls order and elements as @name; put text to render in quotation marks",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 10,
+        default: [],
+        items: { type: "string" },
+        description:
+          "Reference images for image-to-image, up to 10 public jpg, jpeg or png URLs (20 MB each); omit for text-to-image. Each adds 0.5 credits",
+      },
+      elements: {
+        type: "array",
+        maxItems: 10,
+        default: [],
+        description:
+          "Subjects for this task only, mentioned as @name: each { name (1-20 chars; image_N and object_N reserved), image_urls (2-4), tag?, description? (max 100) }. image_urls and elements together cannot exceed 10. Each adds 0.5 credits",
+      },
+      mode: {
+        type: "string",
+        enum: ["default", "series"],
+        default: "default",
+        description:
+          "default: standard generation, count 1-9; series: a coherent set of images, count required, 2-10",
+      },
+      resolution: {
+        type: "string",
+        enum: ["2k", "4k", "8k"],
+        default: "2k",
+        description:
+          "Output resolution (default 2k); 2k and 4k usually return PNG, 8k returns JPEG",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "auto",
+          "9:16",
+          "2:3",
+          "3:4",
+          "1:1",
+          "4:3",
+          "3:2",
+          "16:9",
+          "21:9",
+        ],
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto: the model chooses from the prompt and references)",
+      },
+      count: {
+        type: "integer",
+        minimum: 1,
+        maximum: 10,
+        description:
+          "Images to generate, each billed: 1-9 in default mode (omitted: 1), required and 2-10 in series mode",
+      },
+    },
+  },
+
   "grok-imagine/text-to-image": {
     type: "image",
     fields: {

@@ -218,6 +218,40 @@ const referenceVideoInput = (
   return urls.length > 0;
 };
 
+// Kling 4.0 Image bills each output image: `count`, 1 when omitted in the
+// default mode. Series mode requires an explicit count, so a series request
+// without one, or any count outside 1-10, fails closed.
+const kling40ImageCount = (p: Record<string, unknown>): number | undefined => {
+  const input = asObject(p.input);
+  const count = input?.count;
+  if (count === undefined || count === null) {
+    return input?.mode === "series" ? undefined : 1;
+  }
+  return typeof count === "number" &&
+    Number.isInteger(count) &&
+    count >= 1 &&
+    count <= 10
+    ? count
+    : undefined;
+};
+
+// Kling 4.0 Image adds 0.5 credits ($0.0025) for each reference image and
+// each element. An absent list counts as none; a list that is not an array
+// fails closed.
+const kling40ImageReferenceExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const input = asObject(p.input);
+  let references = 0;
+  for (const field of ["image_urls", "elements"] as const) {
+    const value = input?.[field];
+    if (value === undefined || value === null) continue;
+    if (!Array.isArray(value)) return undefined;
+    references += value.length;
+  }
+  return references * 0.0025;
+};
+
 type SecondsResolver = PerUnitPricing["units"];
 
 // kie's "(input video duration + output video duration) x unit price" rule,
@@ -1593,6 +1627,30 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage(
       "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
       "2026-11-12"
+    ),
+  },
+
+  // kling-4-0/image (Kling 4.0 Image, ac-i4vebc): per output image by
+  // resolution, in default or series mode: 11.3 / 17 / 28.3 credits ($0.0565 /
+  // $0.085 / $0.1415) at 2k / 4k / 8k, plus 0.5 credits ($0.0025) for each
+  // reference image or element. The 2026-11-19 feed rows ("kling image 4.0,
+  // image, 2K" ... "reference image or element (each)") and the models API
+  // pricingDesc agree (evidence in
+  // tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json). The
+  // output count is `count`, default 1, which series mode requires; the
+  // reference charge is read as once per task, as the pricingDesc words it
+  // ("Each reference image or element adds 0.5 credits"), and no recorded run
+  // has references yet. A recorded 2k text-to-image billed 11.3 credits.
+  "kling-4-0/image": {
+    kind: "perUnit",
+    unit: "images",
+    units: kling40ImageCount,
+    select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "2k" }],
+    rates: { "2k": 0.0565, "4k": 0.085, "8k": 0.1415 },
+    extra: kling40ImageReferenceExtra,
+    source: pricePage(
+      "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+      "2026-11-19"
     ),
   },
 

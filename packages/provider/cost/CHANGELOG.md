@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Kling 4.0 Image (`kling-4-0/image`, slug `kling4i`) is priced per
+  output image: 0.0565 / 0.085 / 0.1415 USD (11.3 / 17 / 28.3 credits) at
+  2k / 4k / 8k, times `count` (default 1; series mode requires it), plus
+  0.0025 USD for each reference image or element. A recorded 2k image billed
+  11.3 credits (ac-i4vebc).
+
 - KIE Seedance 2.5 (`bytedance/seedance-2-5`) prices its 4K tier: 1.255 USD
   per second without video input and 0.775 USD with it (251 / 155 credits),
   on input + output seconds, from the 2026-11-19 price feed and models API.

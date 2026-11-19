@@ -2063,6 +2063,20 @@ const GROK_IMAGINE_IMAGE_2_REJECTED_MODELS = [
   "GROK-IMAGINE-IMAGE-2-0/TEXT-TO-IMAGE",
 ] as const;
 
+// Kling 4.0 Image is enum-only (ac-i4vebc): KIE spells its version dashed
+// (`kling-4-0/image`), which the dotted Kling alias does not read, and widening
+// that alias would also admit typos such as `kling-3-0/video`.
+const KLING_40_IMAGE_EXACT_ONLY_MODELS = ["kling-4-0/image"] as const;
+
+const KLING_40_IMAGE_REJECTED_MODELS = [
+  "kling-4-0",
+  "kling-4-0/",
+  "kling-4-0/Image",
+  "Kling-4-0/image",
+  "kling4-0/image",
+  "kling-3-0/video",
+] as const;
+
 // Unversioned Qwen v1 is enum-only: the Qwen family alias requires a digit
 // before `/` (`qwen2/*`), and operator ruling ac-ly4x9j forbids widening it.
 const QWEN_V1_EXACT_ONLY_MODELS = [
@@ -2255,6 +2269,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(HAILUO_REJECTED_MODELS)(
     "rejects the out-of-scope Hailuo model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(KLING_40_IMAGE_EXACT_ONLY_MODELS)(
+    "keeps Kling 4.0 Image model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(KLING_40_IMAGE_REJECTED_MODELS)(
+    "rejects the Kling 4.0 Image near-miss %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

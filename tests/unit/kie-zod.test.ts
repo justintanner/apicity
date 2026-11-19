@@ -2069,7 +2069,10 @@ const GROK_IMAGINE_IMAGE_2_REJECTED_MODELS = [
 // Kling 4.0 Image is enum-only (ac-i4vebc): KIE spells its version dashed
 // (`kling-4-0/image`), which the dotted Kling alias does not read, and widening
 // that alias would also admit typos such as `kling-3-0/video`.
-const KLING_40_IMAGE_EXACT_ONLY_MODELS = ["kling-4-0/image"] as const;
+const KLING_40_IMAGE_EXACT_ONLY_MODELS = [
+  "kling-4-0/image",
+  "kling-4-0/long-image",
+] as const;
 
 const KLING_40_IMAGE_REJECTED_MODELS = [
   "kling-4-0",

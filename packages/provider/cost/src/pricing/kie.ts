@@ -259,6 +259,28 @@ const omniExtendResolution = (hints?: CostHints): string | undefined => {
   return value === "360p" || value === "720p" ? value : undefined;
 };
 
+// Kling 4.0 Long Image adds 0.5 credits ($0.0025) for each input image: the
+// product images in image_urls and a webpage style_image or subject_image.
+// A non-array image_urls or a non-string single image fails closed.
+const kling40LongImageInputExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const input = asObject(p.input);
+  let images = 0;
+  const urls = input?.image_urls;
+  if (urls !== undefined && urls !== null) {
+    if (!Array.isArray(urls)) return undefined;
+    images += urls.length;
+  }
+  for (const field of ["style_image", "subject_image"] as const) {
+    const value = input?.[field];
+    if (value === undefined || value === null) continue;
+    if (typeof value !== "string") return undefined;
+    images += 1;
+  }
+  return images * 0.0025;
+};
+
 type SecondsResolver = PerUnitPricing["units"];
 
 // kie's "(input video duration + output video duration) x unit price" rule,
@@ -1657,6 +1679,62 @@ export const kie: Record<string, ModelPricing> = {
     extra: kling40ImageReferenceExtra,
     source: pricePage(
       "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+      "2026-11-19"
+    ),
+  },
+
+  // kling-4-0/long-image (Kling 4.0 Long Image, ac-zakqnf): one long image
+  // per task, priced by skill, length and resolution, plus 0.5 credits
+  // ($0.0025) for each input image (product, style or subject). The
+  // 2026-11-19 feed rows ("kling image 4.0, long-image, E-commerce Short 1K"
+  // ... "Webpage 2K", "input image (each)") and the models API pricingDesc
+  // agree: ecommerce Short 42.5 / 51, Medium 84.5 / 99, Long 141 / 155
+  // credits and webpage 99 / 107.5 credits at 1K / 2K. The docs' resolution
+  // text says the price depends only on resolution; the feed is followed.
+  // An ecommerce request without length is medium (the docs default). A
+  // recorded ecommerce Short 1K page from one product image billed 43
+  // credits (evidence in
+  // tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json).
+  "kling-4-0/long-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      {
+        name: "skill",
+        required: true,
+        pick: (p) => {
+          const skill = asString(asObject(p.input)?.skill)?.toLowerCase();
+          return skill === "ecommerce" || skill === "webpage"
+            ? skill
+            : undefined;
+        },
+      },
+      {
+        name: "length",
+        pick: (p) => {
+          const input = asObject(p.input);
+          if (asString(input?.skill)?.toLowerCase() !== "ecommerce") {
+            return undefined;
+          }
+          return asString(input?.length) ?? "medium";
+        },
+      },
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "2k" },
+    ],
+    rates: {
+      "ecommerce|short|1k": 0.2125,
+      "ecommerce|short|2k": 0.255,
+      "ecommerce|medium|1k": 0.4225,
+      "ecommerce|medium|2k": 0.495,
+      "ecommerce|long|1k": 0.705,
+      "ecommerce|long|2k": 0.775,
+      "webpage|1k": 0.495,
+      "webpage|2k": 0.5375,
+    },
+    extra: kling40LongImageInputExtra,
+    source: pricePage(
+      "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image",
       "2026-11-19"
     ),
   },

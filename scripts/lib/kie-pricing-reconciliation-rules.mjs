@@ -351,6 +351,25 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Gemini Omni Flash 1.2 Extend was added after the frozen September catalog; the dated feed capture supplies the rates (only the added seconds bill, at the source's resolution), and the billed recording confirms the 360p cell.",
   })),
 
+  ...[
+    "ecommerce|short|1k",
+    "ecommerce|short|2k",
+    "ecommerce|medium|1k",
+    "ecommerce|medium|2k",
+    "ecommerce|long|1k",
+    "ecommerce|long|2k",
+    "webpage|1k",
+    "webpage|2k",
+  ].map((variant) => ({
+    key: "kling-4-0/long-image",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+    rationale:
+      "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell.",
+  })),
+
   ...["2k", "4k", "8k"].map((variant) => ({
     key: "kling-4-0/image",
     variant,
@@ -1192,6 +1211,25 @@ const PAYLOAD_RULES = Object.freeze([
         input.upscale_factor = { "2k": "2", "4k": "4", "8k": "8" }[
           tier[1].toLowerCase()
         ];
+      }
+    },
+  },
+  {
+    // Kling 4.0 Long Image rows name the skill and, for ecommerce, the
+    // length. An ecommerce request needs one product image, which the
+    // "input image (each)" row prices as the extra for exactly one image.
+    family: "kling-4-0-long-image-skill",
+    matches: (key) => key === "kling-4-0/long-image",
+    apply: (input, text) => {
+      const ecommerce = text.match(/E-commerce (Short|Medium|Long)/i);
+      if (/Webpage/i.test(text)) {
+        input.skill = "webpage";
+        delete input.image_urls;
+        delete input.length;
+      } else {
+        input.skill = "ecommerce";
+        input.image_urls = ["https://example.com/a.png"];
+        if (ecommerce) input.length = ecommerce[1].toLowerCase();
       }
     },
   },

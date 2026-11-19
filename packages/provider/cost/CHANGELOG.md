@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Kling 4.0 Long Image (`kling-4-0/long-image`, slug `kling4li`) is priced
+  per long image by skill, length and resolution, as the feed rows do (the
+  docs' 'resolution only' sentence disagrees): ecommerce Short 0.2125 / 0.255,
+  Medium 0.4225 / 0.495, Long 0.705 / 0.775 and webpage 0.495 / 0.5375 USD at
+  1k / 2k, plus 0.0025 USD per input image. A recorded ecommerce Short 1k page
+  from one image billed 43 credits (ac-zakqnf).
+
 - KIE Gemini Omni Flash 1.2 Extend (`google/gemini-omni-flash-1-2-extend`,
   slug `geminiomni1p2fext`) is priced per added second at the source's
   resolution: 0.02 USD at 360p and 0.045 USD at 720p (4 / 9 credits). The

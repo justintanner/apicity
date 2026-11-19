@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 179,
-      "pricingKeys": 244,
-      "slugKeys": 246,
-      "displayKeys": 246,
+      "models": 180,
+      "pricingKeys": 245,
+      "slugKeys": 247,
+      "displayKeys": 247,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 79
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:7a4be8919f17fd69096fc2d64b96772c5606f324da593ea1deeb9b0ac2ab4ae0",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:716d9bd112971eddb7053e1ac50d43bccee488270c4ba8d25e81bbae876fe452",
-      "packages/provider/kie/src/kie.ts": "sha256:b6e9fb8b779425cf65ffb4750a989419868675a49000430c36ee2b105a81add2",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:7718147cf8e388e1cf85245ec593a8011199dea9a1c802620ccfa9a7a89c5ef5",
-      "packages/provider/cost/src/slugs.ts": "sha256:441f5869b75b510f698ff4710811a5b598bd2be44f706d5cd8d4ea7318700f18",
+      "packages/provider/kie/src/zod.ts": "sha256:cd02a48e34123e35b0d0009a2a6a9d264c5652a76e53f44cffa318ae89418731",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:eb2b97143e2adf599c6fd40886a2550858d54abefed8374cd1b156ba1f7cf252",
+      "packages/provider/kie/src/kie.ts": "sha256:f91b007eebbb156b5ab8693d5018b4f098718068fac4cb2063904523e72255f5",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:c19a95a7e6b8b960955ecb25b0a6f1a17b13c560775fad5c168d1eab01c250d0",
+      "packages/provider/cost/src/slugs.ts": "sha256:f370946fc20cfd91344426cd335777b16ef0d75388d79d13ad57179b9f0e9cb6",
       "scripts/endpoint-docs.tsv": "sha256:d83bfab658f21e94ac02a951e2e36521c81d45da8023688580aeeb5541bd6f09"
     }
   },
@@ -21561,6 +21561,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "kling-4-0/long-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4-0/long-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -24258,6 +24267,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "kling-4-0/long-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26186,6 +26201,10 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-4-0/long-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -27169,6 +27188,10 @@
       },
       {
         "key": "kling-4-0/image",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4-0/long-image",
         "disposition": "supported"
       },
       {
@@ -28714,16 +28737,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 179,
-        "descriptors": 179,
-        "guards": 179,
+        "count": 180,
+        "descriptors": 180,
+        "guards": 180,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 80
+          "upstream-unmappable": 81
         },
         "unclassified": 0
       },
@@ -28741,20 +28764,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 244,
+        "count": 245,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 94
+          "upstream-unmappable": 95
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 246,
+        "count": 247,
         "dispositionCounts": {
-          "supported": 246,
+          "supported": 247,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28763,9 +28786,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 246,
+        "count": 247,
         "dispositionCounts": {
-          "supported": 246,
+          "supported": 247,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29699,6 +29722,62 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/google-gemini-omni-flash-1-2-extend-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 4/9 credits = 0.02/0.045 USD per added second at 360p/720p",
         "rationale": "Gemini Omni Flash 1.2 Extend was added after the frozen September catalog; the dated feed capture supplies the rates (only the added seconds bill, at the source's resolution), and the billed recording confirms the 360p cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|short|1k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|short|2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|medium|1k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|medium|2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|long|1k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "ecommerce|long|2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "webpage|1k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
+      },
+      {
+        "key": "kling-4-0/long-image",
+        "variant": "webpage|2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-long-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: ecommerce Short 42.5/51, Medium 84.5/99, Long 141/155 and webpage 99/107.5 credits per long image at 1K/2K, plus 0.5 credits per input image",
+        "rationale": "Kling 4.0 Long Image was added after the frozen September catalog; the dated feed capture supplies the rates by skill, length and resolution (the docs' 'resolution only' sentence disagrees with the feed, which is followed), and the billed recording confirms the ecommerce Short 1K cell."
       },
       {
         "key": "kling-4-0/image",

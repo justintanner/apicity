@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `seedream/5-pro-text-to-image` and `seedream/5-pro-image-to-image` accept the aspect ratio `21:9`, as both docs pages list it on 2026-11-19; the default stays `1:1` (ac-51w0vl).
+
 - Added `kling-4-0/long-image` (Kling 4.0 Long Image) with typed inputs: a required `prompt` and `skill`. `ecommerce` takes 1-3 required `image_urls` and a `length` (`short`, `medium`, `long`). `webpage` takes an optional `style_image` and `subject_image`. A field of the other skill is refused, as KIE answers it with 422. `resolution` is `1k` or `2k`. The input is strict, a recorded page is included, and the id is enum-only. `Kling40LongImageSkillSchema`, `Kling40LongImageLengthSchema`, `Kling40LongImageResolutionSchema`, `Kling40LongImageInputSchema` and `Kling40LongImageRequestSchema` are exported (ac-zakqnf).
 
 - Added `google/gemini-omni-flash-1-2-extend` (Gemini Omni Flash 1.2 Extend) with typed inputs: a required `task_id` (a completed 1.2 or extend task, 360p or 720p, at most 15 s), a 1-20000 character `prompt`, a required integer `duration` of 3-10 added seconds, and up to 3 `image_urls`, plus a recorded extend. The id is enum-only like the other Omni ids. `GoogleGeminiOmniFlash12ExtendRequestSchema` is exported (ac-20k2yx).

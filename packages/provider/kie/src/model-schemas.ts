@@ -2254,6 +2254,104 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "bytedance/seedance-2-5-flash": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 20480,
+        description:
+          "Video generation prompt (max 20480 chars); required for text-to-video",
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First frame image URL or non-empty asset://{assetId} reference; requires adaptive aspect_ratio and is mutually exclusive with populated reference_*_urls",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last frame image URL or non-empty asset://{assetId} reference; requires first_frame_url and adaptive aspect_ratio and is mutually exclusive with populated reference_*_urls",
+      },
+      reference_image_urls: {
+        type: "array",
+        maxItems: 10,
+        description:
+          "Up to 10 image URLs or asset:// refs; JPEG/PNG/WebP, each under 30 MB with dimensions 300-6000 px and aspect ratio (0.4, 2.5)",
+        items: { type: "string" },
+      },
+      reference_video_urls: {
+        type: "array",
+        maxItems: 5,
+        description:
+          "Up to 5 video URLs or asset:// refs; MP4/MOV, 480p/720p, 2-30 seconds, 24-60 FPS, 300-6000 px dimensions, 409600-927408 pixels, under 200 MB each and 30 seconds total",
+        items: { type: "string" },
+      },
+      reference_audio_urls: {
+        type: "array",
+        maxItems: 5,
+        description:
+          "Up to 5 audio URLs or asset:// refs; WAV/MP3, 2-30 seconds and under 15 MB each, 30 seconds total; audio-only references need a prompt",
+        items: { type: "string" },
+      },
+      omni_reference_task_type: {
+        type: "string",
+        enum: ["auto", "reference", "edit", "extend"],
+        description:
+          "Reference task type, only with reference_*_urls (omitted: detected automatically); edit and extend need reference_video_urls and adaptive aspect_ratio, and edit needs duration -1",
+      },
+      return_last_frame: {
+        type: "boolean",
+        default: false,
+        description:
+          "Return the last generated frame as an image (default false)",
+      },
+      generate_audio: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate accompanying audio (default false; KIE applies true when the field is omitted)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"],
+        default: "adaptive",
+        description:
+          "Output aspect ratio (default adaptive); first_frame_url or last_frame_url requires adaptive",
+      },
+      duration: {
+        type: "integer",
+        enum: [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30,
+        ],
+        description:
+          "Duration in seconds: 4-30, or -1 for automatic length; omitted, the model chooses and KIE bills the generated length",
+      },
+      output_format: {
+        type: "string",
+        enum: ["mp4", "mov"],
+        default: "mp4",
+        description: "Output video format (default mp4)",
+      },
+      web_search: {
+        type: "boolean",
+        description: "Enable web search for generation",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
   "bytedance/seedance-2-mini": {
     type: "video",
     fields: {

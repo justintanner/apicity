@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE Seedance 2.5 Flash (`bytedance/seedance-2-5-flash`, slug `sd2p5flash`)
+  is priced per second: 0.0925 / 0.205 USD at 480p / 720p without video
+  input, and 0.0575 / 0.1275 USD with it, on input + output seconds (the
+  input side from `costHints.inputDurationSeconds`). An omitted or -1
+  `duration` needs `costHints.durationSeconds`. A recorded 4 s 480p clip
+  billed 74 credits, USD 0.37 (ac-zrziuf).
+
 - Nunchux Wan 3.0 costs $0.05, $0.10 or $0.20 per second at 480P, 720P or 1080P. Reference video seconds count toward the charge.
 
 - Nunchux Wan 2.7 video edit (`wan2.7-videoedit`, slug `wan2p7`) costs $0.10 or $0.15 per second at 720P or 1080P, for the output seconds plus up to 10 seconds of the source clip; the output defaults to the source length. Pass the source length in `costHints.inputDurationSeconds`, or the estimate fails closed. A two-second 720P edit of a 3-second clip lists at $0.40.

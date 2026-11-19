@@ -896,6 +896,40 @@ is charged separately. Cost estimates require `costHints.durationSeconds` and
 These hints stay off the wire. See the
 [upstream draft documentation](https://docs.kie.ai/market/bytedance/seedance-2-5-draft).
 
+## Seedance 2.5 Flash
+
+`bytedance/seedance-2-5-flash` takes the Seedance 2.5 fields at lower
+limits: a 20480-character prompt, up to 10 reference images, 5 videos and
+5 audio clips, `480p` or `720p` only, and no draft mode. A text-to-video
+request needs a `prompt`. `omni_reference_task_type` (`auto`, `reference`,
+`edit` or `extend`) applies only with reference materials: `edit` and
+`extend` need `reference_video_urls` and the `adaptive` aspect ratio, and
+`edit` also needs `duration: -1`.
+
+```typescript
+const flash = await kie.post.api.v1.jobs.createTask({
+  model: "bytedance/seedance-2-5-flash",
+  input: {
+    prompt: "A red kite drifts across a clear blue sky",
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  },
+});
+
+console.log(flash.data?.taskId);
+```
+
+It bills per second by resolution and video input: 18.5 credits
+($0.0925) at 480p and 41 ($0.205) at 720p without video input, and 11.5
+($0.0575) and 25.5 ($0.1275) with it, on the input and output seconds
+together. `duration` has no default: omitted, or `-1`, the model picks the
+length and KIE bills what it generates, so pass the expected length to
+`@apicity/cost` as `costHints.durationSeconds`. A recorded 4 s clip at
+480p billed 74 credits ($0.37). See KIE's
+[Seedance 2.5 Flash](https://docs.kie.ai/market/bytedance/seedance-2-5-flash.md)
+page.
+
 ## Seedance 2 Mini createTask flow
 
 Seedance 2 Mini also uses the shared KIE jobs endpoints. Submit

@@ -141,6 +141,21 @@ const seedance25Seconds = (
   return 5;
 };
 
+// Seedance 2.5 Flash documents no duration default: omitted, like the -1
+// sentinel, the model chooses the length and KIE bills what it generates. So
+// only a positive wire duration or a positive cost hint prices the output.
+const seedance25FlashSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  if (wire !== undefined && wire !== null) {
+    const value = coerceSeconds(wire);
+    if (value !== undefined && value > 0) return value;
+  }
+  return hintSeconds(hints);
+};
+
 // Vidu Q4 bills the wire duration, defaulting to five seconds.
 // Neither a cost-only hint nor the legacy top-level estimate field changes
 // that request. Explicit malformed values (including null) fail closed.
@@ -2656,6 +2671,45 @@ export const kie: Record<string, ModelPricing> = {
       "https://kie.ai/seedance-2-5?model=bytedance%2Fseedance-2-5-draft",
       "2026-10-22"
     ),
+  },
+
+  // bytedance/seedance-2-5-flash: per second by resolution x video input, on
+  // the (input video duration + output video duration) x rate rule that the
+  // Flash pricingDesc states as Seedance 2.5's does. The 2026-11-19 feed rows
+  // and the GET /api/v1/models pricingDesc agree: 480p 11.5 / 18.5 credits/s
+  // ($0.0575 / $0.0925), 720p 25.5 / 41 credits/s ($0.1275 / $0.205), with /
+  // without video input, and no 1080p tier
+  // (tests/fixtures/kie-pricing-evidence/seedance-2-5-flash-2026-11-19.json).
+  // Resolution defaults to 720p. Output seconds resolve through
+  // seedance25FlashSeconds: no default, so an omitted or -1 duration needs
+  // costHints.durationSeconds. The committed recording
+  // (bytedance-seedance-2-5-flash_4278848297: 480p, 4 s, no video input)
+  // billed 74 credits = 4 s x 18.5, at success.
+  "bytedance/seedance-2-5-flash": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: inputPlusOutputSeconds(seedance25FlashSeconds),
+    select: [
+      {
+        name: "resolution",
+        pick: (p) => inputResolution(p) ?? "720p",
+      },
+      {
+        name: "videoInput",
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
+      },
+    ],
+    rates: {
+      "480p|video": 0.0575,
+      "480p|no-video": 0.0925,
+      "720p|video": 0.1275,
+      "720p|no-video": 0.205,
+    },
+    warn: inputDurationWarning(
+      "bytedance/seedance-2-5-flash",
+      seedance25FlashSeconds
+    ),
+    source: pricePage("https://kie.ai/seedance-2-5-flash", "2026-11-19"),
   },
 
   // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.

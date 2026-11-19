@@ -1,0 +1,122 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/seedance-2-5-flash",
+  "models": ["bytedance/seedance-2-5-flash"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/seedance-2-5-flash (first in the 2026-11-19 pull) and the live GET /api/v1/models pricingDesc agree: 11.5 / 18.5 credits (0.0575 / 0.0925 USD) per second at 480p and 25.5 / 41 credits (0.1275 / 0.205 USD) at 720p, with / without video input, and no 1080p tier. With video input KIE bills rate x (total reference-video duration + generated duration); without it, rate x generated duration. With duration -1, or no duration, KIE bills the generated length. The docs callback examples are templates (task_example_video_webhook_001, 1.23 credits), not bills. The recording below billed 74 credits for 4 s at 480p without video input, at success (0.0 while waiting).",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T00:22:25.579Z",
+    "rows": [
+      {
+        "modelDescription": "bytedance/seedance-2-5-flash, 720p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "25.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1275",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5-flash, 720p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "41",
+        "creditUnit": "per second",
+        "usdPrice": "0.205",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5-flash, 480p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "11.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0575",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5-flash",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5-flash, 480p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "18.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0925",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5-flash",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T08:11:38Z",
+    "entry": {
+      "model": "bytedance/seedance-2-5-flash",
+      "slug": "bytedance/seedance-2-5-flash",
+      "title": "Seedance 2.5 Flash",
+      "provider": "ByteDance",
+      "taskType": ["Video to Video", "Image to Video", "Text to Video"],
+      "description": "",
+      "pricingDesc": "480P: 11.5 credits/s ($0.0575/s, with video) | 18.5 credits/s ($0.0925/s, no video)\n720P: 25.5 credits/s ($0.1275/s, with video) | 41 credits/s ($0.205/s, no video)\n\n🔸Note🔸: Video input has a lower per-second rate because both input and output durations are billed.\n\n- With video input: Rate × (Total uploaded video duration + Generated video duration)\n- Without video input (text/images only): Rate × Generated video duration\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%. Prices are currently in beta and may be adjusted in the future."
+    }
+  },
+  "docs": [
+    {
+      "model": "bytedance/seedance-2-5-flash",
+      "url": "https://docs.kie.ai/market/bytedance/seedance-2-5-flash.md",
+      "fetchedAt": "2026-11-19T08:11:00Z",
+      "sha256": "1ccfcce7c09d6e029f8e5f116137030d3db22e1b8b091882a8ee8ed4be210216",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 1.23,
+          "note": "template, not a bill: taskId task_example_video_webhook_001"
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 1,
+  "recordings": [
+    {
+      "model": "bytedance/seedance-2-5-flash",
+      "har": "tests/recordings/kie_2079838932/bytedance-seedance-2-5-flash_4278848297/recording.har",
+      "request": {
+        "prompt": "A red kite drifts across a clear blue sky",
+        "resolution": "480p",
+        "aspect_ratio": "1:1",
+        "duration": 4,
+        "output_format": "mp4",
+        "generate_audio": false,
+        "nsfw_checker": false
+      },
+      "taskId": "3473978388ecad83f0895995acbdbf98",
+      "creditsConsumed": 74,
+      "creditsConsumedInFlight": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "usd": 0.37,
+      "costTimeSeconds": 128,
+      "output": {
+        "format": "mp4",
+        "codec": "avc1",
+        "width": 640,
+        "height": 640,
+        "videoSeconds": 4.0417,
+        "audio": null,
+        "bytes": 2777967
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 10500.88,
+    "after": 10426.88
+  },
+  "observedTotalUsd": 0.37
+}

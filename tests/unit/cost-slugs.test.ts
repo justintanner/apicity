@@ -325,6 +325,11 @@ describe("modelSlug", () => {
       display: "Gemini Omni 1.2 Flash",
     },
     {
+      model: "bytedance/seedance-2-5-flash",
+      slug: "sd2p5flash",
+      display: "Seedance 2.5 Flash",
+    },
+    {
       model: "seedream/5-5-image-to-image",
       slug: "sd5p5",
       display: "Seedream 5.5 Edit",

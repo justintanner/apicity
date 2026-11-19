@@ -322,6 +322,7 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/seedance-2",
   "bytedance/seedance-2-5",
   "bytedance/seedance-2-5-draft",
+  "bytedance/seedance-2-5-flash",
   "bytedance/seedance-2-mini",
   // ByteDance non-Seedance createTask models — enum-only (Seedance alias is
   // product-anchored; seedream/v1-* ids do not match it).
@@ -3730,6 +3731,64 @@ const Seedance25RequestObjectSchema = z.object({
   input: Seedance25InputSchema,
 });
 
+const SEEDANCE_25_REFERENCE_FIELDS = [
+  "reference_image_urls",
+  "reference_video_urls",
+  "reference_audio_urls",
+] as const;
+
+interface Seedance25ScenarioInput {
+  first_frame_url?: string;
+  last_frame_url?: string;
+  reference_image_urls?: string[];
+  reference_video_urls?: string[];
+  reference_audio_urls?: string[];
+  aspect_ratio: string;
+}
+
+// Seedance 2.5 and 2.5 Flash document the same three mutually exclusive
+// scenarios: first frame, first and last frames, and multimodal reference.
+// A frame request also takes only the adaptive aspect ratio.
+function addSeedance25ScenarioIssues(
+  input: Seedance25ScenarioInput,
+  ctx: z.RefinementCtx,
+  label: string
+): void {
+  const hasFirstFrame = Boolean(input.first_frame_url);
+  const hasLastFrame = Boolean(input.last_frame_url);
+  const hasFrame = hasFirstFrame || hasLastFrame;
+
+  if (hasLastFrame && !hasFirstFrame) {
+    ctx.addIssue({
+      code: "custom",
+      message: "last_frame_url requires first_frame_url",
+      path: ["input", "last_frame_url"],
+    });
+  }
+
+  if (!hasFrame) {
+    return;
+  }
+
+  if (input.aspect_ratio !== "adaptive") {
+    ctx.addIssue({
+      code: "custom",
+      message: `${label} first-frame and first-last-frame tasks only support adaptive aspect ratio`,
+      path: ["input", "aspect_ratio"],
+    });
+  }
+
+  for (const field of SEEDANCE_25_REFERENCE_FIELDS) {
+    if ((input[field]?.length ?? 0) > 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${field} cannot be combined with first_frame_url or last_frame_url`,
+        path: ["input", field],
+      });
+    }
+  }
+}
+
 export const Seedance25RequestSchema =
   Seedance25RequestObjectSchema.superRefine((value, ctx) => {
     const { input } = value;
@@ -3740,44 +3799,7 @@ export const Seedance25RequestSchema =
         path: ["input", "resolution"],
       });
     }
-    const hasFirstFrame = Boolean(input.first_frame_url);
-    const hasLastFrame = Boolean(input.last_frame_url);
-    const hasFrame = hasFirstFrame || hasLastFrame;
-
-    if (hasLastFrame && !hasFirstFrame) {
-      ctx.addIssue({
-        code: "custom",
-        message: "last_frame_url requires first_frame_url",
-        path: ["input", "last_frame_url"],
-      });
-    }
-
-    if (!hasFrame) {
-      return;
-    }
-
-    if (input.aspect_ratio !== "adaptive") {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "Seedance 2.5 first-frame and first-last-frame tasks only support adaptive aspect ratio",
-        path: ["input", "aspect_ratio"],
-      });
-    }
-
-    for (const field of [
-      "reference_image_urls",
-      "reference_video_urls",
-      "reference_audio_urls",
-    ] as const) {
-      if ((input[field]?.length ?? 0) > 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: `${field} cannot be combined with first_frame_url or last_frame_url`,
-          path: ["input", field],
-        });
-      }
-    }
+    addSeedance25ScenarioIssues(input, ctx, "Seedance 2.5");
   });
 
 export const Seedance25DraftInputSchema = z.object({
@@ -3793,6 +3815,117 @@ export const Seedance25DraftRequestSchema = z.object({
   callBackUrl: z.string().url().optional(),
   input: Seedance25DraftInputSchema,
 });
+
+// Seedance 2.5 Flash, from https://docs.kie.ai/market/bytedance/seedance-2-5-flash
+// as read on 2026-11-19 (ac-zrziuf). It takes the Seedance 2.5 fields with
+// lower limits: a 20480-character prompt, up to 10 reference images, 5 videos
+// and 5 audio clips, 480p or 720p only, and no draft mode. duration has no
+// default: an omitted duration lets the model choose, and KIE bills the
+// length it generates. omni_reference_task_type is documented for Flash.
+export const Seedance25FlashOmniReferenceTaskTypeSchema = z.enum([
+  "auto",
+  "reference",
+  "edit",
+  "extend",
+]);
+
+export const Seedance25FlashInputSchema = z.object({
+  prompt: z.string().max(20480).optional(),
+  first_frame_url: Seedance25MediaReferenceSchema.optional(),
+  last_frame_url: Seedance25MediaReferenceSchema.optional(),
+  reference_image_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(10)
+    .optional(),
+  reference_video_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(5)
+    .optional(),
+  reference_audio_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(5)
+    .optional(),
+  omni_reference_task_type:
+    Seedance25FlashOmniReferenceTaskTypeSchema.optional(),
+  return_last_frame: z.boolean().default(false),
+  // KIE's default is true. This follows the Seedance 2.5 default of false
+  // (operator decision, 2026-10-25); createTask sends the request as
+  // written, so an omitted field still gets KIE's true.
+  generate_audio: z.boolean().default(false),
+  resolution: z.enum(["480p", "720p"]).default("720p"),
+  aspect_ratio: z
+    .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
+    .default("adaptive")
+    .describe(
+      "Output aspect ratio (default adaptive); first_frame_url or last_frame_url requires adaptive"
+    ),
+  duration: z
+    .union([z.literal(-1), z.number().int().min(4).max(30)])
+    .optional()
+    .describe(
+      "Duration in seconds: 4-30, or -1 for automatic length; omitted, the model chooses and KIE bills the generated length"
+    ),
+  output_format: z.enum(["mp4", "mov"]).default("mp4"),
+  web_search: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+const Seedance25FlashRequestObjectSchema = z.object({
+  model: z.literal("bytedance/seedance-2-5-flash"),
+  callBackUrl: z.string().url().optional(),
+  input: Seedance25FlashInputSchema,
+});
+
+export const Seedance25FlashRequestSchema =
+  Seedance25FlashRequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    addSeedance25ScenarioIssues(input, ctx, "Seedance 2.5 Flash");
+
+    const hasReference = SEEDANCE_25_REFERENCE_FIELDS.some(
+      (field) => (input[field]?.length ?? 0) > 0
+    );
+    if (!input.first_frame_url && !hasReference && !input.prompt) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Seedance 2.5 Flash text-to-video requires prompt",
+        path: ["input", "prompt"],
+      });
+    }
+
+    const taskType = input.omni_reference_task_type;
+    if (taskType === undefined) return;
+    if (!hasReference) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "omni_reference_task_type requires reference_image_urls, reference_video_urls or reference_audio_urls",
+        path: ["input", "omni_reference_task_type"],
+      });
+      return;
+    }
+    if (taskType !== "edit" && taskType !== "extend") return;
+    if ((input.reference_video_urls?.length ?? 0) === 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: `omni_reference_task_type ${taskType} requires reference_video_urls`,
+        path: ["input", "reference_video_urls"],
+      });
+    }
+    if (input.aspect_ratio !== "adaptive") {
+      ctx.addIssue({
+        code: "custom",
+        message: `omni_reference_task_type ${taskType} requires adaptive aspect_ratio`,
+        path: ["input", "aspect_ratio"],
+      });
+    }
+    if (taskType === "edit" && input.duration !== -1) {
+      ctx.addIssue({
+        code: "custom",
+        message: "omni_reference_task_type edit requires duration -1",
+        path: ["input", "duration"],
+      });
+    }
+  });
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
@@ -9696,6 +9829,7 @@ export const MediaGenerationRequestSchema = z.union([
   Seedance2RequestSchema,
   Seedance25RequestSchema,
   Seedance25DraftRequestSchema,
+  Seedance25FlashRequestSchema,
   Seedance2MiniRequestSchema,
   BytedanceSeedreamRequestSchema,
   BytedanceSeedreamV4EditRequestSchema,
@@ -11644,4 +11778,13 @@ export type Seedance25DraftRequest = z.input<
 export type Seedance25DraftRequestInput = Seedance25DraftRequest;
 export type Seedance25DraftParsedRequest = z.output<
   typeof Seedance25DraftRequestSchema
+>;
+
+export type Seedance25FlashInput = z.infer<typeof Seedance25FlashInputSchema>;
+export type Seedance25FlashRequest = z.input<
+  typeof Seedance25FlashRequestSchema
+>;
+export type Seedance25FlashRequestInput = Seedance25FlashRequest;
+export type Seedance25FlashParsedRequest = z.output<
+  typeof Seedance25FlashRequestSchema
 >;

@@ -459,6 +459,13 @@ describe("MachGen pricing", () => {
         model: "MiniMax-H3-Turbo",
         video_config: { height: 1080, duration_secs: 4 },
       },
+      // 540p is in the grids (machgen-h3-heights-2026-11-18.json) but has
+      // no pricebook row.
+      { video_config: { height: 540, duration_secs: 4 } },
+      {
+        model: "MiniMax-H3-Turbo",
+        video_config: { height: 540, duration_secs: 4 },
+      },
       {
         model: "Vidu-Q3-Turbo",
         video_config: { height: 540, duration_secs: 17 },
@@ -476,6 +483,11 @@ describe("MachGen pricing", () => {
       estimate({ model: "Vidu-Q4-Preview", task_type: "T2V" }).warnings
     ).toEqual([
       "@apicity/cost prices MachGen Vidu-Q4-Preview for I2V, R2V only.",
+    ]);
+    expect(
+      estimate({ video_config: { height: 540, duration_secs: 4 } }).warnings
+    ).toEqual([
+      "machgen 'MiniMax-H3': no rate for variant 't2v-i2v|540' (selectors: mode, adapter, height)",
     ]);
     expect(
       estimate({

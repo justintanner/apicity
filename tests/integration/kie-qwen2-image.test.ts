@@ -113,7 +113,7 @@ describe("kie qwen2/text-to-image integration", () => {
     const invalidLongPrompt = schema.safeParse({
       model: "qwen2/text-to-image",
       input: {
-        prompt: "x".repeat(801),
+        prompt: "x".repeat(5001),
       },
     });
     expect(invalidLongPrompt.success).toBe(false);
@@ -132,7 +132,7 @@ describe("kie qwen2/text-to-image integration", () => {
     expect(schema).toBe(modelInputSchemas["qwen2/text-to-image"]);
     expect(schema.type).toBe("image");
     expect(schema.fields.prompt.required).toBe(true);
-    expect(schema.fields.prompt.maxLength).toBe(800);
+    expect(schema.fields.prompt.maxLength).toBe(5000);
     expect(schema.fields.image_size.required).toBeUndefined();
     expect(schema.fields.image_size.default).toBe("16:9");
     expect(schema.fields.image_size.enum).toEqual([

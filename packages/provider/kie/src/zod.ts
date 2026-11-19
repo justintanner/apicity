@@ -2148,7 +2148,7 @@ export const Kling26TextToVideoRequestSchema = z.object({
   model: z.literal("kling-2.6/text-to-video"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(1).max(1000),
+    prompt: z.string().min(1).max(2500),
     sound: z.boolean(),
     aspect_ratio: KlingAspectRatioSchema,
     duration: KlingMarketDurationSchema,
@@ -2161,7 +2161,7 @@ export const Kling26ImageToVideoRequestSchema = z.object({
   model: z.literal("kling-2.6/image-to-video"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(1).max(1000),
+    prompt: z.string().min(1).max(2500),
     image_urls: z.array(z.string().min(1)).min(1).max(1),
     sound: z.boolean(),
     duration: KlingMarketDurationSchema,
@@ -2276,7 +2276,7 @@ export const KlingV25TurboImageToVideoProRequestSchema = z.object({
     image_url: z.string().min(1),
     tail_image_url: z.string().min(1).optional(),
     duration: KlingMarketDurationSchema.optional(),
-    negative_prompt: z.string().max(500).optional(),
+    negative_prompt: z.string().max(2496).optional(),
     cfg_scale: KlingCfgScaleSchema.optional(),
   }),
 });
@@ -3252,7 +3252,7 @@ export const Qwen2TextToImageRequestSchema = z.object({
   model: z.literal("qwen2/text-to-image"),
   callBackUrl: z.string().url().optional(),
   input: z.object({
-    prompt: z.string().min(1).max(800),
+    prompt: z.string().min(1).max(5000),
     image_size: Qwen2ImageSizeSchema.default("16:9"),
     seed: z.number().int().optional(),
     output_format: z.enum(["jpeg", "png"]).default("png"),
@@ -3494,7 +3494,7 @@ export const GrokImageToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().max(390000).optional(),
-    image_urls: z.tuple([z.string()]),
+    image_urls: z.array(z.string()).min(1).max(5),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -5368,7 +5368,7 @@ export const SeedreamProImageToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     image_urls: z.array(z.string()).min(1).max(10),
-    prompt: z.string().min(3).max(3000),
+    prompt: z.string().min(3).max(5000),
     aspect_ratio: SeedreamProAspectRatioSchema.default("1:1"),
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
@@ -5387,7 +5387,7 @@ export const SeedreamProTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-pro-text-to-image"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(3).max(3000),
+    prompt: z.string().min(3).max(5000),
     aspect_ratio: SeedreamProAspectRatioSchema.default("1:1"),
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
@@ -7623,7 +7623,7 @@ export const GoogleNanoBananaRequestSchema = z.object({
   model: z.literal("google/nano-banana"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(1).max(5000),
+    prompt: z.string().min(1).max(20000),
     output_format: GoogleNanoBananaOutputFormatSchema.optional(),
     aspect_ratio: GoogleNanoBananaAspectRatioSchema.optional(),
     // Deprecated upstream in favor of aspect_ratio; still accepted for wire
@@ -7638,7 +7638,7 @@ export const GoogleNanoBananaEditRequestSchema = z.object({
   model: z.literal("google/nano-banana-edit"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(1).max(5000),
+    prompt: z.string().min(1).max(20000),
     // 1–10 reference image URLs after upload (jpeg/png/webp, max 10 MB each).
     image_urls: z.array(z.string()).min(1).max(10),
     output_format: GoogleNanoBananaOutputFormatSchema.optional(),

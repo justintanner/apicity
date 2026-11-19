@@ -880,8 +880,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        maxLength: 1000,
-        description: "Video generation prompt",
+        maxLength: 2500,
+        description: "Video generation prompt (max 2500 characters)",
       },
       sound: {
         type: "boolean",
@@ -909,8 +909,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        maxLength: 1000,
-        description: "Video generation prompt",
+        maxLength: 2500,
+        description: "Video generation prompt (max 2500 characters)",
       },
       image_urls: {
         type: "array",
@@ -1172,8 +1172,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       negative_prompt: {
         type: "string",
-        maxLength: 500,
-        description: "Negative prompt",
+        maxLength: 2496,
+        description: "Negative prompt (max 2496 characters)",
       },
       cfg_scale: {
         type: "number",
@@ -1728,8 +1728,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "array",
         required: true,
         minItems: 1,
-        maxItems: 1,
-        description: "Input image URL (exactly 1)",
+        maxItems: 5,
+        description:
+          "1-5 input image URLs; reference each in the prompt as @image1 ... @image5",
         items: { type: "string" },
       },
       nsfw_checker: {
@@ -4027,7 +4028,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        description: "Modification prompt (3-3000 chars)",
+        description: "Modification prompt (3-5000 chars)",
       },
       aspect_ratio: {
         type: "string",
@@ -4059,7 +4060,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        description: "Text description of the image to generate (3-3000 chars)",
+        description: "Text description of the image to generate (3-5000 chars)",
       },
       aspect_ratio: {
         type: "string",
@@ -4466,8 +4467,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        maxLength: 800,
-        description: "Image generation prompt (max 800 chars)",
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
       },
       image_size: {
         type: "string",
@@ -7717,8 +7718,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         required: true,
         minLength: 1,
-        maxLength: 5000,
-        description: "Image generation prompt (max 5000 characters)",
+        maxLength: 20000,
+        description: "Image generation prompt (max 20000 characters)",
       },
       output_format: {
         type: "string",
@@ -7779,8 +7780,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         required: true,
         minLength: 1,
-        maxLength: 5000,
-        description: "Image editing prompt (max 5000 characters)",
+        maxLength: 20000,
+        description: "Image editing prompt (max 20000 characters)",
       },
       image_urls: {
         type: "array",

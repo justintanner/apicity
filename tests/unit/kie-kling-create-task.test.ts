@@ -292,12 +292,13 @@ describe("Kling createTask models (ac-uej9fm)", () => {
     ).toBe(false);
   });
 
-  it("rejects prompt longer than 1000 on kling-2.6 text-to-video", () => {
+  // The docs allow 2500 characters since 2026-11-19 (was 1000; ac-r04q6v).
+  it("rejects prompt longer than 2500 on kling-2.6 text-to-video", () => {
     expect(
       Kling26TextToVideoRequestSchema.safeParse({
         model: "kling-2.6/text-to-video",
         input: {
-          prompt: "x".repeat(1001),
+          prompt: "x".repeat(2501),
           sound: false,
           aspect_ratio: "1:1",
           duration: "5",

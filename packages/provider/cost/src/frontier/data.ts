@@ -249,7 +249,13 @@ export const FRONTIER = {
         model: "Kling Image 4.0",
         creator: "KlingAI",
         elo: 1180,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "kling-4-0/image",
+          },
+        ],
       },
       {
         rank: 8,
@@ -452,7 +458,13 @@ export const FRONTIER = {
         model: "Kling Image 4.0",
         creator: "KlingAI",
         elo: 1183,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "kling-4-0/image",
+          },
+        ],
       },
       {
         rank: 7,

@@ -125,7 +125,13 @@
       "pricingKey": "openai/gpt-image-2/text-to-image"
     }
   ],
-  "Kling Image 4.0": [],
+  "Kling Image 4.0": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "kling-4-0/image"
+    }
+  ],
   "Nano Banana 2.1": [
     {
       "provider": "fal",

@@ -1,0 +1,108 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+  "models": ["kling-4-0/image"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage and the live GET /api/v1/models pricingDesc agree: 11.3 / 17 / 28.3 credits (0.0565 / 0.085 / 0.1415 USD) per output image at 2K / 4K / 8K, in default or series mode, and 0.5 credits (0.0025 USD) for each reference image or element. The number of output images is the request's count (default 1 in default mode, required 2-10 in series mode). The pricingDesc words the reference charge per task ('Each reference image or element adds 0.5 credits'); no recording with references exists yet. The recording below billed 11.3 credits for one 2k image with no references.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T14:53:00.470Z",
+    "rows": [
+      {
+        "modelDescription": "kling image 4.0, image, reference image or element (each)",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "falPrice": "0.003",
+        "discountRate": 16.67,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, image, 8K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "28.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.1415",
+        "falPrice": "0.157",
+        "discountRate": 9.87,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, image, 4K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per image",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling image 4.0, image, 2K",
+        "interfaceType": "image",
+        "provider": "Kling",
+        "creditPrice": "11.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.0565",
+        "falPrice": "0.063",
+        "discountRate": 10.32,
+        "anchor": "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T14:51:58Z",
+    "entry": {
+      "model": "kling-4-0/image",
+      "slug": "kling-4-0/image",
+      "title": "Kling 4.0 Image",
+      "provider": "Kling",
+      "taskType": ["Text to Image", "Image to Image"],
+      "description": "",
+      "pricingDesc": "2K: 11.3 credits ($0.0565), 4K: 17 credits ($0.085), 8K: 28.3 credits ($0.1415) per output image, in default or series mode. Each reference image or element adds 0.5 credits ($0.0025). All tiers about 10% below Kling's official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "kling-4-0/image",
+      "url": "https://docs.kie.ai/market/kling-4-0/image.md",
+      "fetchedAt": "2026-11-19T14:51:42Z",
+      "sha256": "541873cfdd552994d5226d78f49cdf727e99a8dc605f84c8e4e08c8a71327033"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "kling-4-0/image",
+      "har": "tests/recordings/kie_2079838932/kling-4-0-image_572363786/recording.har",
+      "request": {
+        "prompt": "A red apple on a white table, studio lighting",
+        "resolution": "2k",
+        "aspect_ratio": "1:1",
+        "count": 1
+      },
+      "taskId": "bdfea0675f203b31f1855eebc8bde549",
+      "creditsConsumed": 11.3,
+      "creditsConsumedInFlight": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "usd": 0.0565,
+      "costTimeSeconds": 50,
+      "output": {
+        "format": "png",
+        "images": 1
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57822.88,
+    "after": 57811.58
+  },
+  "observedTotalUsd": 0.0565
+}

@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 177,
-      "pricingKeys": 242,
-      "slugKeys": 244,
-      "displayKeys": 244,
+      "models": 178,
+      "pricingKeys": 243,
+      "slugKeys": 245,
+      "displayKeys": 245,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 79
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:39b572c354493ca385afbb454cfab7a939c30e237a5512b5cc2d26c3140a5089",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:8f260dfa1893585eb1126dacf464eab1306c7c86aec60162f44273b1bdec01db",
-      "packages/provider/kie/src/kie.ts": "sha256:87d47672b87bfa861dc6d2ef5b2c291811ff3c6ce21e886efe341ea3d2081841",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:6f095c894d5a2ef08e667c454f0734c01b9a279ed6d7244b929451255461c0c3",
-      "packages/provider/cost/src/slugs.ts": "sha256:07dc438fcaa7009de66298181432c37701b7bcbdda9d17b08384e8910ffddce5",
+      "packages/provider/kie/src/zod.ts": "sha256:62509ef81314247e3da38ec7d5c19cbc023ab8651a53ead1b0dfd524c4432f7d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:a1a88e2ea7f35305efd7d85546d624b58c9282d3fc0dd51e959f5a1aaabfb37f",
+      "packages/provider/kie/src/kie.ts": "sha256:4d6e0da977659b426f96a362c8d556aba2f72f2d50894ade6d21329b16bc5bb5",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:7834583d271167297d189d6f28ee19a2b7a5d0ec29317e2b1f20138e4c775cf9",
+      "packages/provider/cost/src/slugs.ts": "sha256:a6b08f78c42b95cb998ad5f8b65f48bedd3a6ed2a3d9833c37b6c79f404d94f2",
       "scripts/endpoint-docs.tsv": "sha256:d83bfab658f21e94ac02a951e2e36521c81d45da8023688580aeeb5541bd6f09"
     }
   },
@@ -21552,6 +21552,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "kling-4-0/image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4-0/image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -24234,6 +24243,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "kling-4-0/image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -26152,6 +26167,10 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-4-0/image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -27127,6 +27146,10 @@
       },
       {
         "key": "kling-4.0/flash-reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4-0/image",
         "disposition": "supported"
       },
       {
@@ -28668,16 +28691,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 177,
-        "descriptors": 177,
-        "guards": 177,
+        "count": 178,
+        "descriptors": 178,
+        "guards": 178,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 78
+          "upstream-unmappable": 79
         },
         "unclassified": 0
       },
@@ -28695,20 +28718,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 242,
+        "count": 243,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 92
+          "upstream-unmappable": 93
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 244,
+        "count": 245,
         "dispositionCounts": {
-          "supported": 244,
+          "supported": 245,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28717,9 +28740,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 244,
+        "count": 245,
         "dispositionCounts": {
-          "supported": 244,
+          "supported": 245,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29639,6 +29662,27 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/seedance-2-5-flash-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.5/18.5/25.5/41 credits = 0.0575/0.0925/0.1275/0.205 USD per billed second at 480p/720p with/without video input",
         "rationale": "Seedance 2.5 Flash was added after the frozen September catalog; the dated feed capture supplies the rates (with video input, the input and output seconds are billed), and the billed recording confirms the 480p no-video cell."
+      },
+      {
+        "key": "kling-4-0/image",
+        "variant": "2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.3/17/28.3 credits = 0.0565/0.085/0.1415 USD per output image at 2K/4K/8K, plus 0.5 credits per reference image or element",
+        "rationale": "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell."
+      },
+      {
+        "key": "kling-4-0/image",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.3/17/28.3 credits = 0.0565/0.085/0.1415 USD per output image at 2K/4K/8K, plus 0.5 credits per reference image or element",
+        "rationale": "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell."
+      },
+      {
+        "key": "kling-4-0/image",
+        "variant": "8k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.3/17/28.3 credits = 0.0565/0.085/0.1415 USD per output image at 2K/4K/8K, plus 0.5 credits per reference image or element",
+        "rationale": "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell."
       },
       {
         "key": "bytedance/seedance-2-5",

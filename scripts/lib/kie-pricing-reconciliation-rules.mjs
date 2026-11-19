@@ -341,6 +341,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     })
   ),
 
+  ...["2k", "4k", "8k"].map((variant) => ({
+    key: "kling-4-0/image",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.3/17/28.3 credits = 0.0565/0.085/0.1415 USD per output image at 2K/4K/8K, plus 0.5 credits per reference image or element",
+    rationale:
+      "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell.",
+  })),
+
   ...["4k|video", "4k|no-video"].map((variant) => ({
     key: "bytedance/seedance-2-5",
     variant,
@@ -1172,6 +1182,18 @@ const PAYLOAD_RULES = Object.freeze([
         input.upscale_factor = { "2k": "2", "4k": "4", "8k": "8" }[
           tier[1].toLowerCase()
         ];
+      }
+    },
+  },
+  {
+    // Kling 4.0 Image adds 0.5 credits per reference image or element, so its
+    // "reference image or element (each)" row prices the extra for exactly
+    // one reference image.
+    family: "kling-4-0-image-references",
+    matches: (key) => key === "kling-4-0/image",
+    apply: (input, text) => {
+      if (/reference image or element/i.test(text)) {
+        input.image_urls = ["https://example.com/a.png"];
       }
     },
   },

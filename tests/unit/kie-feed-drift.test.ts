@@ -892,6 +892,97 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // Kling 4.0 Image bills each output image by resolution, plus 0.5 credits
+  // for each reference image or element. The reference row is the extra for
+  // one reference, not a resolution cell, and the long-image rows of the same
+  // page belong to another model (2026-11-19 feed, ac-i4vebc).
+  it("compares the kling-4-0/image tier rows and its per-reference extra", async () => {
+    const anchor = "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage";
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      rowAnchor = anchor
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "image",
+        provider: "Kling",
+        creditPrice,
+        creditUnit: "per image",
+        usdPrice,
+        anchor: rowAnchor,
+      },
+    });
+    const tiers = [
+      row("kling image 4.0, image, 2K", "11.3", "0.0565"),
+      row("kling image 4.0, image, 4K", "17", "0.085"),
+      row("kling image 4.0, image, 8K", "28.3", "0.1415"),
+    ];
+    const referenceRow = (creditPrice: string, usdPrice: string) =>
+      row(
+        "kling image 4.0, image, reference image or element (each)",
+        creditPrice,
+        usdPrice
+      );
+    const longImage = row(
+      "kling image 4.0, long-image, Webpage 1K",
+      "99",
+      "0.495",
+      "https://kie.ai/kling-image-4-0?model=kling-4-0%2Flong-image"
+    );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([
+        ...tiers,
+        referenceRow("0.5", "0.0025"),
+        longImage,
+      ]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(4);
+      expect(result.compared).toBe(4);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "kling image 4.0, long-image, Webpage 1K",
+      ]);
+
+      const moved = await write([
+        row("kling image 4.0, image, 2K", "12", "0.06"),
+        ...tiers.slice(1),
+        referenceRow("1", "0.005"),
+      ]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "kling-4-0/image",
+          variant: "2k",
+          tableUsd: 0.0565,
+        }),
+        expect.objectContaining({
+          key: "kling-4-0/image",
+          variant: "extra",
+          tableUsd: 0.0025,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   // Kie Image Upscale bills one tier by output pixels, which the request
   // cannot carry. Each row's representative case is the docs table's 1024 x
   // 1024 input at the factor that reaches its tier, so every row compares

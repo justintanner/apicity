@@ -88,7 +88,13 @@
       "modelId": "gpt-image-2.5-flare"
     }
   ],
-  "Kling Image 4.0": [],
+  "Kling Image 4.0": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "kling-4-0/image"
+    }
+  ],
   "MAI-Image-2.7-Flash": [],
   "Seedream 5.5": [
     {

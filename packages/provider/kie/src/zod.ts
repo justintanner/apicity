@@ -262,6 +262,11 @@ export const KIE_MEDIA_MODELS = [
   // Kling 4.0 Flash: 720p-only. The Kling alias already reads the id.
   "kling-4.0/flash-keyframe-to-video",
   "kling-4.0/flash-reference-to-video",
+  // Kling 4.0 Image (ac-i4vebc). KIE spells this id with a dashed version
+  // (`kling-4-0/image`), unlike the dotted `kling-4.0/...` video ids, so it is
+  // enum-only: widening the Kling alias to dashed versions would also admit
+  // typos such as `kling-3-0/video`.
+  "kling-4-0/image",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -3007,6 +3012,136 @@ export const Kling40FlashReferenceToVideoRequestSchema = z
       const path = ["elements", index, "name"];
       if (KLING_40_RESERVED_NAME.test(element.name)) {
         issue(`${element.name} is a reserved material name`, path);
+      } else if (seen.has(element.name.toLowerCase())) {
+        issue(
+          `${element.name} repeats a name in elements (case-insensitive)`,
+          path
+        );
+      }
+      seen.add(element.name.toLowerCase());
+    });
+  });
+
+// Kling 4.0 Image, from https://docs.kie.ai/market/kling-4-0/image as read on
+// 2026-11-19 (ac-i4vebc). One id covers text-to-image (no image_urls) and
+// image-to-image (reference images mentioned as @image_1, @image_2, ... and
+// elements as @name). `mode: "series"` makes a coherent set of images and
+// requires `count` 2-10; the default mode takes `count` 1-9 (default 1).
+// Reference images and elements together cannot exceed 10. Element names
+// share the Kling 4.0 grammar, but only image_N and object_N are reserved
+// here. The output is PNG at 2k and 4k and JPEG at 8k. KIE answers a mention
+// of a missing image or element with a parameter error and creates no task,
+// so mentions are not checked locally, as on the Kling 4.0 video models.
+export const Kling40ImageModeSchema = z.enum(["default", "series"]);
+export const Kling40ImageResolutionSchema = z.enum(["2k", "4k", "8k"]);
+export const Kling40ImageAspectRatioSchema = z.enum([
+  "auto",
+  "9:16",
+  "2:3",
+  "3:4",
+  "1:1",
+  "4:3",
+  "3:2",
+  "16:9",
+  "21:9",
+]);
+
+const KLING_40_IMAGE_RESERVED_NAME = /^(?:image|object)_\d+$/i;
+
+export const Kling40ImageElementSchema = z.object({
+  name: z
+    .string()
+    .regex(/^[\u4e00-\u9fa5A-Za-z0-9_]{1,20}$/)
+    .describe(
+      "Mentioned in the prompt as @name: 1-20 Chinese characters, letters, digits or underscores, unique across elements (case-insensitive). image_N and object_N are reserved"
+    ),
+  image_urls: z
+    .array(Kling40MediaUrlSchema)
+    .min(2)
+    .max(4)
+    .describe(
+      "2-4 public images of the same subject from different angles; the first is the primary view. jpg, jpeg or png, up to 20 MB each"
+    ),
+  tag: Kling40ElementTagSchema.optional().describe(
+    "Subject category; inferred when omitted"
+  ),
+  description: z.string().max(100).optional(),
+});
+
+export const Kling40ImageInputSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(20000)
+      .describe(
+        "Image prompt (1-20000 characters). Mention reference images as @image_1, @image_2, ... in image_urls order and elements as @name; put text to render in quotation marks"
+      ),
+    image_urls: z
+      .array(Kling40MediaUrlSchema)
+      .max(10)
+      .default([])
+      .describe(
+        "Reference images for image-to-image, up to 10 public jpg, jpeg or png URLs (20 MB each); omit for text-to-image. Each adds 0.5 credits"
+      ),
+    elements: z
+      .array(Kling40ImageElementSchema)
+      .max(10)
+      .default([])
+      .describe(
+        "Subjects for this task only, mentioned as @name; image_urls and elements together cannot exceed 10. Each adds 0.5 credits"
+      ),
+    mode: Kling40ImageModeSchema.default("default").describe(
+      "default: standard generation, count 1-9; series: a coherent set of images, count required, 2-10"
+    ),
+    resolution: Kling40ImageResolutionSchema.default("2k").describe(
+      "Output resolution (default 2k); 2k and 4k usually return PNG, 8k returns JPEG"
+    ),
+    aspect_ratio: Kling40ImageAspectRatioSchema.default("auto").describe(
+      "Output aspect ratio (default auto: the model chooses from the prompt and references)"
+    ),
+    count: z
+      .number()
+      .int()
+      .min(1)
+      .max(10)
+      .optional()
+      .describe(
+        "Images to generate, each billed: 1-9 in default mode (omitted: 1), required and 2-10 in series mode"
+      ),
+  })
+  .strict();
+
+export const Kling40ImageRequestSchema = z
+  .object({
+    model: z.literal("kling-4-0/image"),
+    callBackUrl: z.string().url().optional(),
+    input: Kling40ImageInputSchema,
+  })
+  .superRefine((value, ctx) => {
+    const { input } = value;
+    const issue = (message: string, path: Array<string | number>) =>
+      ctx.addIssue({ code: "custom", message, path: ["input", ...path] });
+
+    if (input.image_urls.length + input.elements.length > 10) {
+      issue("image_urls and elements together cannot exceed 10", ["elements"]);
+    }
+
+    if (input.mode === "series") {
+      if (input.count === undefined) {
+        issue("series mode requires count (2-10)", ["count"]);
+      } else if (input.count < 2) {
+        issue("series mode takes a count of 2-10", ["count"]);
+      }
+    } else if (input.count !== undefined && input.count > 9) {
+      issue("default mode takes a count of 1-9", ["count"]);
+    }
+
+    const seen = new Set<string>();
+    input.elements.forEach((element, index) => {
+      const path = ["elements", index, "name"];
+      if (KLING_40_IMAGE_RESERVED_NAME.test(element.name)) {
+        issue(`${element.name} is a reserved element name`, path);
       } else if (seen.has(element.name.toLowerCase())) {
         issue(
           `${element.name} repeats a name in elements (case-insensitive)`,
@@ -9933,6 +10068,7 @@ export const MediaGenerationRequestSchema = z.union([
   Kling40KeyframeToVideoRequestSchema,
   Kling40FlashKeyframeToVideoRequestSchema,
   Kling40FlashReferenceToVideoRequestSchema,
+  Kling40ImageRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -10525,6 +10661,19 @@ export type Kling40FlashReferenceToVideoRequestInput =
   Kling40FlashReferenceToVideoRequest;
 export type Kling40FlashReferenceToVideoParsedRequest = z.output<
   typeof Kling40FlashReferenceToVideoRequestSchema
+>;
+export type Kling40ImageMode = z.infer<typeof Kling40ImageModeSchema>;
+export type Kling40ImageResolution = z.infer<
+  typeof Kling40ImageResolutionSchema
+>;
+export type Kling40ImageAspectRatio = z.infer<
+  typeof Kling40ImageAspectRatioSchema
+>;
+export type Kling40ImageElement = z.input<typeof Kling40ImageElementSchema>;
+export type Kling40ImageRequest = z.input<typeof Kling40ImageRequestSchema>;
+export type Kling40ImageRequestInput = Kling40ImageRequest;
+export type Kling40ImageParsedRequest = z.output<
+  typeof Kling40ImageRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

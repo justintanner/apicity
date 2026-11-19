@@ -396,8 +396,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 177-entry pin when the guarded model set changes"
-    ).toHaveLength(177);
+      "Update this deliberate 178-entry pin when the guarded model set changes"
+    ).toHaveLength(178);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -423,6 +423,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "kling-4.0/keyframe-to-video",
         "kling-4.0/flash-keyframe-to-video",
         "kling-4.0/flash-reference-to-video",
+        "kling-4-0/image",
         "grok-imagine/text-to-image",
         "grok-imagine/image-to-image",
         "grok-imagine/text-to-video",

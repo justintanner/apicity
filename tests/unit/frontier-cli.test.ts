@@ -309,7 +309,7 @@ describe("apicity frontier", () => {
       ).toBe(true);
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 3, i2v: 3, v2v: 1, r2v: 4 });
+    expect(counts).toEqual({ t2i: 6, i2i: 5, t2v: 4, i2v: 3, v2v: 2, r2v: 5 });
   });
 
   it("rejects an unknown type and names the six codes", async () => {

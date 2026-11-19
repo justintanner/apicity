@@ -110,6 +110,11 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.google.geminiOmni1p2Flash.referenceToVideo",
       "pricingKey": "google/gemini-omni-1.2-flash/reference-to-video"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Gemini-Omni-1.2-Flash"
     }
   ],
   "HeyGen Video 1": [

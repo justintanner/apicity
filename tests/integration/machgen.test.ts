@@ -87,6 +87,14 @@ const heightsEvidence = JSON.parse(
   modelList: { heights: Record<string, Record<string, number[]>> };
 };
 
+// Gemini-Omni-1.2-Flash from this account's model list on 2026-11-19.
+const geminiOmniEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-gemini-omni-2026-11-19.json",
+    { encoding: "utf8" }
+  )
+) as Pick<typeof evidence, "grids" | "taskTypes" | "upscale">;
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -138,6 +146,7 @@ describe("MachGen", () => {
       "HappyHorse-1.0": ["T2V", "I2V", "R2V"],
       "Grok-Imagine-Video": ["T2V"],
       "Grok-Imagine-Video-1.5": ["I2V"],
+      "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V", "UPSCALE"],
       "Topaz-Video-Precision": ["UPSCALE"],
       "Topaz-Video-Precision-Animation": ["UPSCALE"],
       "Topaz-Video-Generative": ["UPSCALE"],
@@ -146,7 +155,7 @@ describe("MachGen", () => {
     const i2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("I2V"))
       .map(([model]) => model);
-    expect(i2v).toHaveLength(19);
+    expect(i2v).toHaveLength(20);
     // Every task-type list MachGen named in a 400 matches the matrix.
     for (const [model, tasks] of Object.entries({
       ...evidence.taskTypes,
@@ -165,6 +174,7 @@ describe("MachGen", () => {
       ...omniEvidence.grids,
       ...turboEvidence.grids,
       ...heightsEvidence.grids,
+      ...geminiOmniEvidence.grids,
     };
     // Each Turbo 400 names the grid the fixture pins.
     for (const probe of turboEvidence.probes)
@@ -208,6 +218,7 @@ describe("MachGen", () => {
       "Seedance-2.0-Mini",
       "Kling-v3",
       "Alibaba-Wan-3.0",
+      "Gemini-Omni-1.2-Flash",
     ]);
     const loneEndFrame = Object.entries(MACHGEN_VIDEO_GRIDS)
       .filter(([, grid]) => grid.I2V?.loneEndFrame)
@@ -216,12 +227,63 @@ describe("MachGen", () => {
     const r2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("R2V"))
       .map(([model]) => model);
-    expect(r2v).toHaveLength(17);
+    expect(r2v).toHaveLength(18);
     for (const model of r2v)
       expect(MACHGEN_VIDEO_GRIDS[model]?.R2V, model).toBeDefined();
     // Upscale tiers and engines from the quote's 400s.
-    expect(MACHGEN_VIDEO_UPSCALE).toEqual(evidence.upscale);
+    expect(MACHGEN_VIDEO_UPSCALE).toEqual({
+      ...evidence.upscale,
+      ...geminiOmniEvidence.upscale,
+    });
     expect(MACHGEN_VIDEO_SHARPEN).toEqual(sharpenEvidence.sharpen);
+  });
+  it("accepts Gemini Omni Flash 1.2's account contract", () => {
+    const video = {
+      height: 360,
+      duration_secs: 3,
+      aspect_ratio: "16:9" as const,
+    };
+    const parse = (overrides: Record<string, unknown>) =>
+      MachGenGenerateRequestSchema.safeParse({
+        model: "Gemini-Omni-1.2-Flash",
+        prompt: "A red paper boat drifts across a calm pond.",
+        video_config: video,
+        ...overrides,
+      });
+    expect(parse({ task_type: "T2V" }).success).toBe(true);
+    expect(
+      parse({
+        task_type: "R2V",
+        reference_video_operation: "edit",
+        src_video_urls: ["https://example.com/clip.mp4"],
+        src_image_urls: [
+          "https://example.com/a.jpg",
+          "https://example.com/b.jpg",
+        ],
+        video_config: { ...video, aspect_ratio: "adaptive" },
+      }).success
+    ).toBe(true);
+    expect(
+      parse({
+        task_type: "R2V",
+        src_audio_urls: ["https://example.com/a.mp3"],
+        src_image_urls: ["https://example.com/a.jpg"],
+      }).success
+    ).toBe(false);
+    expect(
+      parse({
+        task_type: "T2V",
+        video_config: { height: 480, duration_secs: 3, aspect_ratio: "16:9" },
+      }).success
+    ).toBe(false);
+    expect(
+      parse({
+        task_type: "UPSCALE",
+        src_video_urls: ["https://example.com/clip.mp4"],
+        video_config: { height: 720, duration_secs: 3 },
+      }).success
+    ).toBe(true);
+    expect(parse({ task_type: "F2F" }).success).toBe(false);
   });
   it("accepts every recorded payload", () => {
     for (const [i, task, variant] of MACHGEN_RECORDED)

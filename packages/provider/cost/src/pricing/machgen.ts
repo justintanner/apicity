@@ -52,6 +52,7 @@ const PRICED_TASKS: Record<string, readonly string[]> = {
   "Veo-3.1": ["T2V"],
   "Veo-3.1-Fast": ["T2V"],
   "Grok-Imagine-Video": ["T2V"],
+  "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V"],
   "Vidu-Q4-Preview": ["I2V", "R2V"],
   "Vidu-Q3-Pro-Fast": ["I2V"],
   "Pixverse-V6": ALL,
@@ -353,6 +354,22 @@ export const machgen: Record<string, ModelPricing> = {
   "Alibaba-Wan-3.0": flat({ "480": 0.049, "720": 0.096, "1080": 0.191 }),
   "HappyHorse-1.1": flat({ "720": 0.132, "1080": 0.17 }),
   "Grok-Imagine-Video-1.5": flat({ "480": 0.095, "720": 0.165, "1080": 0.295 }),
+  // Public pricebook, re-read 2026-11-19. The task_type-null rows are
+  // 23172 / 69504 / 104256 / 208512 micros per second.
+  // generation_credit_percent is 0, and there is no has_input_video axis,
+  // so a reference video adds its seconds at the same rate. UPSCALE has
+  // its own rows (34752 / 34752 / 139008) and stays unpriced: the shared
+  // upscale formula bills input plus output, which this feed does not state.
+  "Gemini-Omni-1.2-Flash": flat(
+    {
+      "360": 0.023172,
+      "720": 0.069504,
+      "1080": 0.104256,
+      "2160": 0.208512,
+    },
+    [height],
+    { ...pricebookSource, asOf: "2026-11-19" }
+  ),
   "Wan2.2-A14B": flat({ "480": 0.018, "720": 0.036 }),
   // The pricebook's 540p and 720p rows are not requestable: MachGen's API
   // takes LTX-2.3-Pro only at 1080p, 1440p and 2160p.

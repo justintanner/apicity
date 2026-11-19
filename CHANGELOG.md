@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `@apicity/machgen` `api.v0.generate` accepts `Gemini-Omni-1.2-Flash` for text-to-video, image-to-video, reference-to-video (reference, edit and extend) and upscale. The id is on this account's model list and absent from the public docs (re-read 2026-11-19). `@apicity/cost` prices the generation rows at 0.023172 / 0.069504 / 0.104256 / 0.208512 USD per second for 360 / 720 / 1080 / 2160. The public pricebook's Generation Credit on those rows is 0. A recorded 360p 3 s text-to-video billed 0.073664 USD against the 0.069516 quote (ac-ssmj0i).
+
 ### Fixed
 
 - KIE `grok-imagine-image-2-0/segment-edit` accepts mask index 0. `mask_indexs` takes the `index` values of the segment-map result, which count from 0, and index 0 is usually the main subject. Its docs, read on 2026-11-19, give `minimum: 0` ("0-based"), where the 2026-08-28 page gave 1. A recorded edit that sent `[0]` recolored segment 0, the "white cat". `GrokImagineImage2SegmentEditRequestSchema`, its descriptor and the README now count the indexes from 0, as does the Breaking migration note below (ac-4asuok).

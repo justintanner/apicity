@@ -235,6 +235,7 @@ const MACHGEN_IDS: Readonly<Record<string, string>> = {
   "MiniMax H3 (768p)": "MiniMax-H3",
   "Dreamina Seedance 2.5": "Seedance-2.5",
   "Dreamina Seedance 2.0": "Seedance-2.0",
+  "Gemini Omni Flash 1.2": "Gemini-Omni-1.2-Flash",
 };
 
 /** The MachGen image ids per frontier model, on the same generate call. */
@@ -1751,7 +1752,12 @@ describe("frontier video snapshots", () => {
   it("lists MachGen through its generate call for each supported video mode", () => {
     const expected = (models: string[]) => machgenGenerate(models, MACHGEN_IDS);
     expect(machgenRows(t2v.endpointMap)).toEqual(
-      expected(["Wan 3.0", "MiniMax H3 (768p)", "Dreamina Seedance 2.5"])
+      expected([
+        "Wan 3.0",
+        "MiniMax H3 (768p)",
+        "Dreamina Seedance 2.5",
+        "Gemini Omni Flash 1.2",
+      ])
     );
     expect(machgenRows(i2v.endpointMap)).toEqual(
       expected([
@@ -1764,7 +1770,7 @@ describe("frontier video snapshots", () => {
       expected(Object.keys(MACHGEN_IDS))
     );
     expect(machgenRows(v2v.endpointMap)).toEqual(
-      expected(["Dreamina Seedance 2.5"])
+      expected(["Gemini Omni Flash 1.2", "Dreamina Seedance 2.5"])
     );
   });
 
@@ -1787,6 +1793,10 @@ describe("frontier video snapshots", () => {
     expect(refused("i2v", "MiniMax-H3-Turbo")).toBe(false);
     expect(refused("t2v", "Vidu-Q4-Preview")).toBe(true);
     expect(refused("v2v", "Seedance-2.5")).toBe(false);
+    expect(refused("v2v", "Gemini-Omni-1.2-Flash")).toBe(false);
+    expect(refused("t2v", "Gemini-Omni-1.2-Flash")).toBe(false);
+    expect(refused("i2v", "Gemini-Omni-1.2-Flash")).toBe(false);
+    expect(refused("r2v", "Gemini-Omni-1.2-Flash")).toBe(false);
     expect(refused("v2v", "Seedance-2.0")).toBe(true);
     expect(refused("v2v", "Alibaba-Wan-3.0")).toBe(true);
     expect(refused("t2i", "MiniMax-H3")).toBe(true);

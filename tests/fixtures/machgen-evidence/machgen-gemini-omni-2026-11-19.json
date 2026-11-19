@@ -1,0 +1,29 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "This account's GET https://api.machgen.ai/api/v0/models (model Gemini-Omni-1.2-Flash) and the public pricebook GET https://api.machgen.ai/api/v0/billing/pricebook/public, both re-read 2026-11-19. The model page 404s and /docs/models omits it. F2F is on the list and is not a generate task type.",
+  "taskTypes": {
+    "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V", "UPSCALE"]
+  },
+  "grids": {
+    "Gemini-Omni-1.2-Flash": {
+      "T2V": {
+        "heights": [360, 720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16"]
+      },
+      "I2V": {
+        "heights": [360, 720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16"]
+      },
+      "R2V": {
+        "heights": [360, 720, 1080, 2160],
+        "durations": [-1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["adaptive", "16:9", "9:16"]
+      }
+    }
+  },
+  "upscale": {
+    "Gemini-Omni-1.2-Flash": { "heights": [720, 1080, 2160] }
+  }
+}

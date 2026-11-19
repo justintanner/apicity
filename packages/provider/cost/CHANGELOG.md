@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen `Gemini-Omni-1.2-Flash` text-to-video, image-to-video and
+  reference-to-video are priced from the public pricebook, re-read
+  2026-11-19: 0.023172 / 0.069504 / 0.104256 / 0.208512 USD per second at
+  360 / 720 / 1080 / 2160. Those rows have no input-video axis and a
+  Generation Credit of 0. A reference video still adds its seconds at
+  that rate. Upscale has separate rows and stays unpriced. A 360p 3 s
+  text-to-video quotes at 0.069516 USD. The recorded clip billed
+  0.073664 USD (ac-ssmj0i).
+
 - KIE `gpt-image-2-6/economy-image-to-image` (slug `gi2p6ec`, display "GPT Image 2.6 Economy Edit") is priced at a flat 5 credits ($0.025) per image, with no charge per input image, from the 1K feed row and the models API pricingDesc read 2026-11-19. The recorded edit billed 5 credits (ac-cqko9r).
 
 - KIE `gpt-image-2-6/economy-text-to-image` (slug `gi2p6ec`, display "GPT Image 2.6 Economy") is priced at a flat 5 credits ($0.025) per png image, the 1K feed row and the models API pricingDesc read 2026-11-19. Two recordings each billed 5 credits. KIE publishes no gif price, so a gif request quotes nothing and warns (ac-cqko9r).

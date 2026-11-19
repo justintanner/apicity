@@ -1,0 +1,301 @@
+{
+  "capturedAt": "2026-11-18",
+  "source": "Free requests to POST https://api.machgen.ai/api/v0/generate that MachGen refused before accepting a task. On 2026-11-18 at 15:01Z, seven requests with height 999 and duration_secs 999 (planning bead ac-0ujg20) read the allowed heights. On 2026-11-19, two requests with height 540 and duration_secs 999 (bead ac-n2zadn) tested whether this account may request 540p, and GET https://api.machgen.ai/api/v0/models?kind=video read this account's own surfaces. Nothing was billed: see wallet.",
+  "probes": [
+    {
+      "label": "S-MiniMax-H3-T2V-height-999",
+      "at": "2026-11-18T15:01:46Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support T2V height=999; allowed heights: [480, 540, 768, 1080, 1440]",
+        "task_id": "cf6bc09a-026d-4469-9922-c8834272a5e4"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-I2V-height-999",
+      "at": "2026-11-18T15:01:47Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "I2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support I2V height=999; allowed heights: [480, 540, 768, 1080, 1440]",
+        "task_id": "47f11945-bdd6-4810-8e3f-8d77eb99d8ed"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-R2V-height-999",
+      "at": "2026-11-18T15:01:49Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3 does not support R2V height=999; allowed heights: [480, 540, 768, 1080, 1440]",
+        "task_id": "ed2ddc32-a0d0-4ed0-ac70-f4aa9058b7ed"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-Turbo-T2V-height-999",
+      "at": "2026-11-18T15:01:52Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support T2V height=999; allowed heights: [480, 540, 768, 1080]",
+        "task_id": "36efbe63-2501-4b09-b1d2-68177f7a2f09"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-Turbo-I2V-height-999",
+      "at": "2026-11-18T15:01:54Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "I2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support I2V height=999; allowed heights: [480, 540, 768, 1080]",
+        "task_id": "8d578437-ef54-42ae-9f0c-f8fee2e5b6ef"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-Turbo-R2V-height-999",
+      "at": "2026-11-18T15:01:56Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "R2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax does not support R2V height=999; allowed heights: [480, 540, 768, 1080]",
+        "task_id": "f129931c-cec1-472f-b214-49ee16a8aa88"
+      }
+    },
+    {
+      "label": "S-MiniMax-H3-Omni-R2V-height-999",
+      "at": "2026-11-18T15:01:58Z",
+      "request": {
+        "model": "MiniMax-H3-Omni",
+        "task_type": "R2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 403,
+      "response": {
+        "detail": "Model 'MiniMax-H3-Omni' is not available for your account."
+      }
+    }
+  ],
+  "accessProbes": [
+    {
+      "label": "A-MiniMax-H3-T2V-540-d999",
+      "at": "2026-11-19T03:06:57Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 999,
+          "aspect_ratio": "16:9"
+        }
+      },
+      "status": 403,
+      "response": {
+        "detail": "MiniMax-H3 at 540p is not available for your account."
+      }
+    },
+    {
+      "label": "A-MiniMax-H3-Turbo-T2V-540-d999",
+      "at": "2026-11-19T03:06:59Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 999,
+          "aspect_ratio": "16:9"
+        }
+      },
+      "status": 403,
+      "response": {
+        "detail": "MiniMax-H3-MultiMax at 540p is not available for your account."
+      }
+    }
+  ],
+  "modelList": {
+    "source": "https://api.machgen.ai/api/v0/models?kind=video",
+    "readAt": "2026-11-19T03:07:08Z",
+    "heights": {
+      "MiniMax-H3": {
+        "I2V": [480, 768, 1440],
+        "R2V": [480, 768, 1440],
+        "T2V": [480, 768, 1440]
+      },
+      "MiniMax-H3-Turbo": {
+        "I2V": [480, 768],
+        "R2V": [480, 768],
+        "T2V": [480, 768]
+      }
+    }
+  },
+  "wallet": [
+    {
+      "at": "2026-11-18T14:52:10Z",
+      "balance_micros": 14207825,
+      "note": "the last read before the 2026-11-18 height probes (ac-0ujg20 planning log); the planner records the same balance after them"
+    },
+    {
+      "at": "2026-11-19T03:06:49Z",
+      "balance_micros": 14207825,
+      "note": "before the 540p access probes; 0 pending and 0 running tasks"
+    },
+    {
+      "at": "2026-11-19T03:07:00Z",
+      "balance_micros": 14207825,
+      "note": "after the 540p access probes; 0 pending and 0 running tasks"
+    }
+  ],
+  "grids": {
+    "MiniMax-H3": {
+      "I2V": {
+        "heights": [480, 540, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
+        "heights": [480, 540, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 540, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"]
+      }
+    },
+    "MiniMax-H3-Turbo": {
+      "I2V": {
+        "heights": [480, 540, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
+        "heights": [480, 540, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 540, 768, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"]
+      }
+    }
+  },
+  "notes": [
+    "MiniMax-H3's height 400 lists [480, 540, 768, 1080, 1440] and MiniMax-H3-Turbo's (resolved id MiniMax-H3-MultiMax) lists [480, 540, 768, 1080], on T2V, I2V and R2V alike. The 2026-10-25 400s did not list 540 (machgen-grids-2026-10-25.json).",
+    "540 is a private height, as 1080 is: this account's model list omits it, a 540p request from this account answers 403 'not available for your account' on both models, and the public pricebook has no 540p row for either. The grids keep both because MachGen's height 400 lists them, the precedent of machgen-turbo-durations-2026-11-11.json.",
+    "A 540p request with duration_secs 999 answered 403, not the duration 400, so the access check runs before the duration check, as it did for 1080p on 2026-10-25.",
+    "Durations and aspect ratios are unchanged: 1-30 s for MiniMax-H3 (2026-10-25) and 1-15 s for MiniMax-H3-Turbo (2026-11-11).",
+    "MiniMax-H3-Omni answered 403 'not available for your account' before any grid check, so the probes say nothing about its heights."
+  ]
+}

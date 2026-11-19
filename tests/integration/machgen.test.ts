@@ -64,6 +64,29 @@ const turboEvidence = JSON.parse(
   }>;
 };
 
+// MiniMax-H3's and MiniMax-H3-Turbo's heights with 540 from MachGen's 400s on
+// 2026-11-18; they replace the earlier entries' heights.
+const heightsEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-h3-heights-2026-11-18.json",
+    { encoding: "utf8" }
+  )
+) as Pick<typeof evidence, "grids"> & {
+  probes: Array<{
+    label: string;
+    request: { model: string; task_type: string };
+    status: number;
+    response: { detail: string };
+  }>;
+  accessProbes: Array<{
+    label: string;
+    request: MachGenGenerateRequest;
+    status: number;
+    response: { detail: string };
+  }>;
+  modelList: { heights: Record<string, Record<string, number[]>> };
+};
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -141,12 +164,23 @@ describe("MachGen", () => {
       ...evidence.grids,
       ...omniEvidence.grids,
       ...turboEvidence.grids,
+      ...heightsEvidence.grids,
     };
     // Each Turbo 400 names the grid the fixture pins.
     for (const probe of turboEvidence.probes)
       expect(probe.response.detail, probe.label).toContain(
         "allowed durations: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
       );
+    // Each height 400 names the heights the fixture pins.
+    const heightProbes = heightsEvidence.probes.filter((p) => p.status === 400);
+    expect(heightProbes).toHaveLength(6);
+    for (const probe of heightProbes) {
+      const { model, task_type } = probe.request;
+      expect(probe.response.detail, probe.label).toContain(
+        `does not support ${task_type} height=999; allowed heights: ` +
+          `[${heightsEvidence.grids[model]![task_type]!.heights.join(", ")}]`
+      );
+    }
     expect(Object.keys(MACHGEN_VIDEO_GRIDS).sort()).toEqual(
       Object.keys(grids).sort()
     );
@@ -273,6 +307,36 @@ describe("MachGen", () => {
     expect(issues({ src_image_urls: undefined })).toEqual([
       "src_image_urls: MiniMax-H3 I2V accepts one source image, or two to pin a start and end frame; got 0",
     ]);
+  });
+  it("accepts the private 540p height MachGen's 400s list", () => {
+    for (const model of ["MiniMax-H3", "MiniMax-H3-Turbo"])
+      for (const task of ["T2V", "I2V", "R2V"] as const)
+        expect(
+          MachGenGenerateRequestSchema.safeParse({
+            ...machgenPayload(0, task),
+            model,
+            video_config: { height: 540, duration_secs: 4 },
+          }).success,
+          `${model} ${task}`
+        ).toBe(true);
+    // This account's model list leaves 540 out, and a 540p request from it
+    // answered 403 on 2026-11-19: 540 is a private height, as 1080 is.
+    const listed = heightsEvidence.modelList.heights;
+    expect(Object.keys(listed).sort()).toEqual([
+      "MiniMax-H3",
+      "MiniMax-H3-Turbo",
+    ]);
+    for (const [model, tasks] of Object.entries(listed))
+      for (const [task, heights] of Object.entries(tasks))
+        expect(heights, `${model} ${task}`).not.toContain(540);
+    expect(heightsEvidence.accessProbes).toHaveLength(2);
+    for (const probe of heightsEvidence.accessProbes) {
+      expect(probe.request.video_config?.height, probe.label).toBe(540);
+      expect(probe.status, probe.label).toBe(403);
+      expect(probe.response.detail, probe.label).toMatch(
+        / at 540p is not available for your account\.$/
+      );
+    }
   });
   it("restates MachGen's R2V and UPSCALE rules", () => {
     const image = machgenPayload(0, "I2V").src_image_urls![0]!;

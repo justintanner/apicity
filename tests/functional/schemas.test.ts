@@ -1221,22 +1221,50 @@ describe("kie modelInputSchemas", () => {
     ]);
   });
 
+  // The image-to-image page gained 2:1, 1:2, 3:1, 1:3 and 9:21 by 2026-11-19
+  // (ac-ftdouc), matching text-to-image's sixteen ratios.
   it("gpt-image-2 image-to-image exposes documented aspect ratios", () => {
     const schema = modelInputSchemas["gpt-image-2-image-to-image"];
     expect(schema.type).toBe("image");
     expect(schema.fields.aspect_ratio.enum).toEqual([
       "auto",
       "1:1",
-      "5:4",
-      "9:16",
-      "21:9",
-      "16:9",
-      "4:3",
       "3:2",
-      "4:5",
-      "3:4",
       "2:3",
+      "4:3",
+      "3:4",
+      "5:4",
+      "4:5",
+      "16:9",
+      "9:16",
+      "2:1",
+      "1:2",
+      "3:1",
+      "1:3",
+      "21:9",
+      "9:21",
     ]);
+    expect([...(schema.fields.aspect_ratio.enum ?? [])].sort()).toEqual(
+      [
+        ...(modelInputSchemas["gpt-image-2-text-to-image"].fields.aspect_ratio
+          .enum ?? []),
+      ].sort()
+    );
+  });
+
+  it("gpt-image-2 exposes background, 1K only, on both tasks", () => {
+    for (const model of [
+      "gpt-image-2-text-to-image",
+      "gpt-image-2-image-to-image",
+    ] as const) {
+      const background = modelInputSchemas[model].fields.background;
+      expect(background).toMatchObject({
+        type: "string",
+        enum: ["transparent", "opaque", "auto"],
+      });
+      expect(background.required).toBeUndefined();
+      expect(background.description).toContain("only supported at 1K");
+    }
   });
 
   it("elevenlabs text-to-audio models expose audio metadata", () => {

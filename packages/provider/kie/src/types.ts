@@ -621,6 +621,7 @@ export type {
   NanoBananaResolution,
   NanoBananaOutputFormat,
   GptImageQuality,
+  GptImage2Background,
   GptImage2ImageToImageAspectRatio,
   GptImage2ImageToImageResolution,
   GptImage2TextToImageAspectRatio,

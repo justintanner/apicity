@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `gpt-image-2-text-to-image` and `gpt-image-2-image-to-image` take an optional `background` (`transparent`, `opaque`, `auto`), which the docs of 2026-11-19 support at 1K only; a 2K or 4K request with `background` is refused. `gpt-image-2-image-to-image` gains the aspect ratios `2:1`, `1:2`, `3:1`, `1:3` and `9:21`, the sixteen text-to-image has. `GptImage2BackgroundSchema` and the `GptImage2Background` type are exported (ac-ftdouc).
+
 - `grok-imagine-image-2-0/segment-map` takes a direct http(s) `image_url` in place of `task_id`, per KIE's docs of 2026-11-19 (`input` is oneOf the two): exactly one of them is required, and a recorded run on an uploaded photo billed 0 credits. `GrokImagineImage2SegmentMapInputSchema` is exported (ac-mtdgxe).
 
 - `bytedance/seedance-2-5` accepts `resolution: "4k"` (3840x2160 at 16:9, H.265 (HEVC) 10-bit, per KIE's docs of 2026-11-19) and `omni_reference_task_type` (`auto`, `reference`, `edit`, `extend`) with the rules Seedance 2.5 Flash has: reference materials only, `edit` and `extend` need `reference_video_urls` and the `adaptive` aspect ratio, and `edit` needs `duration: -1`. Both models share the exported `Seedance25OmniReferenceTaskTypeSchema` (ac-vggwxn).

@@ -1,0 +1,58 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "POST https://api.kie.ai/client/v1/model-pricing/page (public, no key), pulled 2026-11-19T00:22:25Z by pnpm run check:kie-feed-drift",
+  "basis": "The three Gemini 4 Argon rows of that pull, verbatim. Cached Input (8 credits, 0.04 USD per million tokens) is new since the 2026-11-06 pull; Input and Output are unchanged and match PRICING.kie. The table does not apply the cached-input rate (mayor ruling in ac-on0k4o, follow-up ac-pillso), and tests/unit/kie-feed-drift.test.ts holds the gemini-4-argon-cached-input disposition to these rows.",
+  "records": [
+    {
+      "occurrenceId": "sha256:6bf38274e8f27296947ec631314b61a1c3599f187cc3d0f90a512f7d9822044a#1",
+      "rowHash": "sha256:6bf38274e8f27296947ec631314b61a1c3599f187cc3d0f90a512f7d9822044a",
+      "semanticKey": "sha256:dd3703a2075951050c104c225a44fbfffed27f5f8d9097c3579e22868a7f91d4",
+      "raw": {
+        "modelDescription": "Gemini 4 Argon, Chat, Cached Input",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "8",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.04",
+        "falPrice": "0.1",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/gemini-4-argon",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:134192e2622a540448e9f4c07fc6c8c92f3c7b687a5d332aac7acb3f07e80e84#1",
+      "rowHash": "sha256:134192e2622a540448e9f4c07fc6c8c92f3c7b687a5d332aac7acb3f07e80e84",
+      "semanticKey": "sha256:a4b28c3175468c50700cdbe12324474a02baf42ad9ad92ca3297b04fc2ff6957",
+      "raw": {
+        "modelDescription": "Gemini 4 Argon, Chat, Output",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "800",
+        "creditUnit": "per million tokens",
+        "usdPrice": "4.00",
+        "falPrice": "10",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/gemini-4-argon",
+        "discountPrice": false
+      }
+    },
+    {
+      "occurrenceId": "sha256:5de4878fc4218f748da565e1f27142d5ab342c02269a17c8df5b10e502bff453#1",
+      "rowHash": "sha256:5de4878fc4218f748da565e1f27142d5ab342c02269a17c8df5b10e502bff453",
+      "semanticKey": "sha256:c6e56136b6f9e6237fc27bfd53b7423f172888b90000fc637cbc8fc6ac5511ad",
+      "raw": {
+        "modelDescription": "Gemini 4 Argon, Chat, Input",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "160",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.80",
+        "falPrice": "2",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/gemini-4-argon",
+        "discountPrice": false
+      }
+    }
+  ]
+}

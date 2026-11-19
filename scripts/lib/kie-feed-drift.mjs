@@ -12,7 +12,11 @@
  * words the mapping cannot read lands in `differ` too, which is the safe side:
  * add its rule to `SELECTOR_RULES` or `PAYLOAD_RULES`.
  */
-import { feedUnitsPerTableUnit } from "./kie-pricing-reconciliation-rules.mjs";
+import {
+  CACHED_INPUT_CLAUSE,
+  feedUnitsPerTableUnit,
+  unmatchedFalseMappingNotices,
+} from "./kie-pricing-reconciliation-rules.mjs";
 
 const TOLERANCE_USD = 1e-9;
 const USD_PER_CREDIT = 0.005;
@@ -69,10 +73,7 @@ function compareMedia(row, entry, key) {
 // trailing Input.
 const TOKEN_COMPONENTS = Object.freeze([
   ["cacheWrite", /cache[ -]?writes?/i],
-  [
-    "cacheRead",
-    /cached? (?:(?:text|image|audio) )?(?:input|read)|cache[ -]?hit/i,
-  ],
+  ["cacheRead", CACHED_INPUT_CLAUSE],
   ["output", /\boutput\b/i],
   ["input", /\binput\b/i],
 ]);
@@ -144,9 +145,12 @@ function compareCell(row, entry, key) {
  *   differ: object[],
  *   notCompared: object[],
  *   uncoveredKeys: string[],
+ *   notices: { family: string, notice: string }[],
  * }} `differ` is what to act on. `notCompared` names each billable row with no
  * comparable cell, with why. `uncoveredKeys` are table keys no row of this pull
- * reached, so nothing here witnesses their rates.
+ * reached, so nothing here witnesses their rates. `notices` name each watched
+ * disposition (a rule with an `unmatchedNotice`) that no row of this pull
+ * matched; they never count as a difference.
  */
 export function feedDrift({ manifest, pricing }) {
   const differ = [];
@@ -204,5 +208,6 @@ export function feedDrift({ manifest, pricing }) {
   const uncoveredKeys = Object.keys(pricing)
     .filter((key) => !reached.has(key))
     .sort();
-  return { compared, same, differ, notCompared, uncoveredKeys };
+  const notices = unmatchedFalseMappingNotices(manifest.rows);
+  return { compared, same, differ, notCompared, uncoveredKeys, notices };
 }

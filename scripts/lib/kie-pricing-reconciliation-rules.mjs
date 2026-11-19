@@ -1514,6 +1514,16 @@ export function endpointPayloadOverrides(key, selectors) {
   return {};
 }
 
+// The last clause of a token row that states the cached-input rate, as
+// check:kie-feed-drift reads it ("Cached Input", "Cached Image Input",
+// "Cache Read", "Cache Hit"). Shared so a rule names the same cell the
+// comparison would.
+export const CACHED_INPUT_CLAUSE =
+  /cached? (?:(?:text|image|audio) )?(?:input|read)|cache[ -]?hit/i;
+
+// An entry may also carry an `unmatchedNotice`: when no row of a pull matches
+// the rule, check:kie-feed-drift prints that notice. It never fails the check,
+// so a row KIE drops or renames cannot turn a release red on its own.
 const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   {
     family: "veo-extend-lite",
@@ -1611,6 +1621,19 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     message:
       "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
   },
+  // Not liveComparable: these rows must stay out of the live drift check too.
+  // classifyRawRow treats any description containing `bytedance/seedance-2-5`
+  // as a Seedance 2.5 row, and descriptionNamesKey lets a `-flash` suffix
+  // through, so without this rule the Flash rows read as moves on Seedance
+  // 2.5's own cells. Ordered before the 1080p rule so a Flash row always
+  // carries this message.
+  {
+    family: "seedance-2-5-flash-separate-model",
+    matches: (description) =>
+      /^bytedance\/seedance-2-5-flash\b/i.test(description),
+    message:
+      "Seedance 2.5 Flash (https://kie.ai/seedance-2-5-flash, first in the 2026-11-19 feed) is a separate KIE model with its own rates; ApiCity has no pricing key or callable model for it, so its rows are not cells of bytedance/seedance-2-5.",
+  },
   {
     family: "seedance-2-5-1080p-refreshed",
     liveComparable: true,
@@ -1664,6 +1687,23 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     message:
       "gpt-image-2-6 SVG output names a chat model as its text model. Those token rates are not that chat model's, and they bill on top of the image tokens; the gpt-image-2-6 ApiCity pricing keys carry only the image product's own text and image token rates, so the row stays unmapped.",
   },
+  {
+    // The 2026-11-19 feed added a Cached Input row for Gemini 4 Argon. The
+    // table does not apply it (mayor ruling, ac-on0k4o): KIE's response
+    // reports no cached-token count, and a cacheRead rate would make every
+    // caller declare one. Not liveComparable, so the live comparison skips
+    // this one cell too. It is matched by key and component rather than by
+    // today's words, so a reworded row ("Cache Read") cannot stop a release.
+    // Input and Output stay compared.
+    family: "gemini-4-argon-cached-input",
+    matches: (description, key) =>
+      key === "gemini-4-argon" &&
+      CACHED_INPUT_CLAUSE.test(description.split(",").at(-1) ?? ""),
+    message:
+      "KIE has published a cached-input rate for Gemini 4 Argon since 2026-11-19 (8 credits, 0.04 USD per million tokens). It is not applied, because KIE's response reports no cached-token count; every input token is quoted at the 0.80 USD input rate. Follow-up: ac-pillso.",
+    unmatchedNotice:
+      "gemini-4-argon-cached-input matched no row of this pull: KIE has dropped or renamed the Gemini 4 Argon Cached Input row. Review the rule with follow-up ac-pillso.",
+  },
 ]);
 
 // A feed row that prints a different billing unit from the table's cell, with
@@ -1700,4 +1740,15 @@ export function knownFalseMapping({
       candidate.matches(description, key, official)
   );
   return rule?.message;
+}
+
+// The notices of rules that carry an `unmatchedNotice` and matched no row of
+// this manifest. A matched row's rationale is its rule's message
+// (classifyRawRow), so that is what is looked for.
+export function unmatchedFalseMappingNotices(rows) {
+  return KNOWN_FALSE_MAPPING_RULES.filter(
+    (rule) =>
+      rule.unmatchedNotice &&
+      !rows.some((row) => row.rationale === rule.message)
+  ).map((rule) => ({ family: rule.family, notice: rule.unmatchedNotice }));
 }

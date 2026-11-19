@@ -288,6 +288,11 @@ export const FRONTIER = {
             dotPath: "v1.google.v1beta.interactions",
             modelId: "gemini-nano-banana-2.1",
           },
+          {
+            provider: "googleflow",
+            dotPath: "v1.images",
+            modelId: "nano-banana-2",
+          },
         ],
       },
       {
@@ -534,6 +539,11 @@ export const FRONTIER = {
             provider: "nunchux",
             dotPath: "v1.google.v1beta.interactions",
             modelId: "gemini-nano-banana-2.1",
+          },
+          {
+            provider: "googleflow",
+            dotPath: "v1.images",
+            modelId: "nano-banana-2",
           },
         ],
       },
@@ -1001,6 +1011,11 @@ export const FRONTIER = {
             pricingKey: "google/gemini-omni-flash/v1.2/edit",
           },
           {
+            provider: "wavespeed",
+            dotPath: "api.v3.google.geminiOmni1p2Flash.videoEdit",
+            pricingKey: "google/gemini-omni-1.2-flash/video-edit",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-2",
@@ -1039,6 +1054,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.5",
           },
         ],
       },

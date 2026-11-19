@@ -1611,6 +1611,19 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     message:
       "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
   },
+  // Not liveComparable: these rows must stay out of the live drift check too.
+  // classifyRawRow treats any description containing `bytedance/seedance-2-5`
+  // as a Seedance 2.5 row, and descriptionNamesKey lets a `-flash` suffix
+  // through, so without this rule the Flash rows read as moves on Seedance
+  // 2.5's own cells. Ordered before the 1080p rule so a Flash row always
+  // carries this message.
+  {
+    family: "seedance-2-5-flash-separate-model",
+    matches: (description) =>
+      /^bytedance\/seedance-2-5-flash\b/i.test(description),
+    message:
+      "Seedance 2.5 Flash (https://kie.ai/seedance-2-5-flash, first in the 2026-11-19 feed) is a separate KIE model with its own rates; ApiCity has no pricing key or callable model for it, so its rows are not cells of bytedance/seedance-2-5.",
+  },
   {
     family: "seedance-2-5-1080p-refreshed",
     liveComparable: true,

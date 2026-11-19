@@ -343,6 +343,112 @@ describe("KIE feed drift", () => {
     }
   });
 
+  // KIE added Seedance 2.5 Flash as its own rows in the 2026-11-19 feed. Every
+  // description containing `bytedance/seedance-2-5` read as a Seedance 2.5 cell,
+  // so the Flash rates read as moves on that key, and the drift gate stopped the
+  // v0.28.1 release over prices that never changed.
+  it("does not read a variant model's rows as moves on Seedance 2.5", async () => {
+    const videoRow = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "video",
+        provider: "ByteDance",
+        creditPrice,
+        creditUnit: "per second",
+        usdPrice,
+        falPrice: "",
+        discountRate: 0,
+        anchor,
+        discountPrice: false,
+      },
+    });
+    const s25 = "https://kie.ai/seedance-2-5";
+    const flash = "https://kie.ai/seedance-2-5-flash";
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const file = path.join(dir, "snapshot.json");
+      await writeFile(
+        file,
+        JSON.stringify({
+          ...JSON.parse(await readFile(FIXTURE, "utf8")),
+          records: [
+            videoRow(
+              "bytedance/seedance-2-5, 720p with video",
+              "38",
+              "0.190",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 720p no video",
+              "63",
+              "0.315",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 480p with video",
+              "17",
+              "0.085",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 480p no video",
+              "28",
+              "0.140",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 720p with video",
+              "25.5",
+              "0.1275",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 720p no video",
+              "41",
+              "0.205",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 480p with video",
+              "11.5",
+              "0.0575",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 480p no video",
+              "18.5",
+              "0.0925",
+              flash
+            ),
+          ],
+        })
+      );
+      const result = report(
+        await build({ snapshotPath: file, metadataPath: file, live: true })
+      );
+      expect(result.differ).toEqual([]);
+      // Seedance 2.5's own four cells are still compared, so the gate still watches them.
+      expect(result.same).toBe(4);
+      expect(result.compared).toBe(4);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "bytedance/seedance-2-5-flash, 720p with video",
+        "bytedance/seedance-2-5-flash, 720p no video",
+        "bytedance/seedance-2-5-flash, 480p with video",
+        "bytedance/seedance-2-5-flash, 480p no video",
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   // The 2026-11-07 feed added gpt-image-2-6 SVG rows whose text-model clause is
   // a chat pricing key. Those rates are not the chat rates (luna output stays
   // 0.336; the SVG output cell is 1.08). "SVG output" is the operation, so an

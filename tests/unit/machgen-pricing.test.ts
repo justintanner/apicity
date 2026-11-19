@@ -81,6 +81,7 @@ const pricebookAsOf: Record<string, string> = {
   "Seedance-2.0": "2026-10-29",
   "MiniMax-H3-Turbo": "2026-11-01",
   "MiniMax-H3-Omni": "2026-11-01",
+  "Gemini-Omni-1.2-Flash": "2026-11-19",
 };
 // Those re-read after their receipts were recorded; MiniMax-H3-Omni was
 // first priced and recorded on 2026-11-01.
@@ -146,6 +147,34 @@ function shapePayload(
 }
 
 describe("MachGen pricing", () => {
+  it("prices Gemini Omni Flash 1.2 from the 2026-11-19 pricebook", () => {
+    const result = computeEstimate({
+      provider: "machgen",
+      payload: {
+        model: "Gemini-Omni-1.2-Flash",
+        task_type: "T2V",
+        prompt: "A red paper boat drifts across a calm pond.",
+        video_config: { height: 360, duration_secs: 3, aspect_ratio: "16:9" },
+      },
+    });
+    // 3 s * 23172 micros. generation_credit_percent on that row is 0.
+    expect(result.usd).toBeCloseTo(0.069516, 8);
+    expect(result.warnings).toEqual([]);
+    expect(result.rateAsOf).toBe("2026-11-19");
+    const upscale = computeEstimate({
+      provider: "machgen",
+      payload: {
+        model: "Gemini-Omni-1.2-Flash",
+        task_type: "UPSCALE",
+        prompt: "",
+        src_task_ids: ["source"],
+        video_config: { height: 720, duration_secs: 3 },
+      },
+      costHints: { inputDurationSeconds: 3 },
+    });
+    expect(upscale.usd).toBe(0);
+    expect(upscale.warnings[0]).toContain("T2V, I2V, R2V");
+  });
   it("prices every recorded request at its billing receipt", () => {
     // Seedance 2.5 and 2.0 were re-read from the public pricebook on
     // 2026-10-29, and MiniMax-H3-Turbo on 2026-11-01, when its first
@@ -319,6 +348,8 @@ describe("MachGen pricing", () => {
       priced.add(model);
     // Priced from the 2026-11-01 pricebook (the next test).
     priced.add("MiniMax-H3-Omni");
+    // Priced from the 2026-11-19 pricebook (the Gemini Omni test).
+    priced.add("Gemini-Omni-1.2-Flash");
     expect(Object.keys(PRICING.machgen).sort()).toEqual([...priced].sort());
     for (const row of evidence.rows.filter((r) => r.unpriced))
       expect(row.unpriced!.length, row.apiModel).toBeGreaterThan(0);
@@ -768,6 +799,7 @@ describe("MachGen pricing", () => {
       "Veo-3.1": "veo3p1",
       "Veo-3.1-Fast": "veo3p1f",
       "Grok-Imagine-Video": "grokimgv",
+      "Gemini-Omni-1.2-Flash": "geminiomni1p2f",
     });
     // A model another provider also sells shares its slug; the rest are new.
     const elsewhere = new Set(

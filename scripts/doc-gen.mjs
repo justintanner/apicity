@@ -935,6 +935,13 @@ const PROVIDER_NOTES = new Map([
       "`Request Rejected` at zero charge. With the documented config, 2-second",
       "480p T2V, I2V and R2V requests completed. Which of the three fields",
       "MachGen requires has not been isolated.",
+      "`Gemini-Omni-1.2-Flash` is on this account's model list (read",
+      "2026-11-19) and absent from the public docs. T2V and I2V take 360,",
+      "720, 1080 or 2160, 16:9 or 9:16, and 3-15 s. R2V also takes adaptive",
+      "and a smart duration, up to 6 images and 3 videos, and reference,",
+      "edit or extend. The public pricebook bills 0.023172 USD/s at 360p",
+      "with no Generation Credit. A recorded 360p 3 s clip billed 0.073664",
+      "USD against that quote of 0.069516 USD.",
     ].join(" "),
   ],
 ]);

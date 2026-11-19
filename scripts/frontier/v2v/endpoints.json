@@ -31,6 +31,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "google/gemini-omni-flash-1-2"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Gemini-Omni-1.2-Flash"
     }
   ],
   "Hyperflow H3": [],

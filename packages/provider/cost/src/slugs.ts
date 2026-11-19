@@ -1067,6 +1067,8 @@ export const MODEL_SLUGS = {
     "Veo-3.1": "veo3p1",
     "Veo-3.1-Fast": "veo3p1f",
     "Grok-Imagine-Video": "grokimgv",
+    // Same model kie and WaveSpeed sell as geminiomni1p2f.
+    "Gemini-Omni-1.2-Flash": "geminiomni1p2f",
   },
   // Keyed by WaveSpeed model id. A model other providers sell keeps their slug.
   nunchux: {
@@ -2208,6 +2210,7 @@ export const MODEL_DISPLAY = {
     "Veo-3.1": "Veo 3.1",
     "Veo-3.1-Fast": "Veo 3.1 Fast",
     "Grok-Imagine-Video": "Grok Imagine Video",
+    "Gemini-Omni-1.2-Flash": "Gemini Omni 1.2 Flash",
   },
   nunchux: {
     "gemini-nano-banana-2.1": "Nano Banana 2.1",

@@ -43,6 +43,8 @@ const KLING_JUNE_CAPTURE =
   "Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate";
 const SEEDANCE_CAPTURE =
   "Old capture (10-22). The pricebook today is 0.1028/s, the table's rate";
+const GEMINI_OMNI_RECEIPT =
+  "One 360p 3s clip billed 73664 micros on 2026-11-19. The public and account pricebooks that day are 23172 micros/s, so 3s is 69516. The 3.029s file does not explain the gap, so the table keeps 23172";
 
 // Each reason quotes the model's row in the verdict table of
 // docs/cost-learning-pass-1.md, and "quotes each listed call's reason" below
@@ -125,6 +127,11 @@ const ALLOWED: readonly Allowed[] = [
     recording: "machgen_3663587242/seedance-2-5-t2v_3519105807",
     model: "Seedance-2.5",
     reason: SEEDANCE_CAPTURE,
+  },
+  {
+    recording: "machgen_3663587242/gemini-omni-1-2-flash-t2v_1978183583",
+    model: "Gemini-Omni-1.2-Flash",
+    reason: GEMINI_OMNI_RECEIPT,
   },
 ];
 

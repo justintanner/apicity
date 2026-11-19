@@ -296,6 +296,17 @@ so they carry that date. Calls captured before it now count in `capturedBeforeRa
 | kie      | `kling-3.0/video`                   | NO-ACTION | Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
 | kie      | `kling/v3-turbo-image-to-video`     | NO-ACTION | Old capture (06-28), billed before KIE repriced Kling on 2026-11-05. The feed today prints the table's rate |
 
+`ac-ssmj0i` recorded one MachGen `Gemini-Omni-1.2-Flash` 360p text-to-video
+on 2026-11-19. The public pricebook and the account pricebook that day both
+bill 23172 micros/s at 360p with Generation Credit 0, so 3 s is 69516
+micros. The receipt was 73664 micros. The file is 3.029 s, which is neither
+3 times 23172 nor a surcharge the pricebook states. The table keeps the
+published rate.
+
+| Provider | Model                   | Verdict   | Why                                                                                                                                                                                                   |
+| -------- | ----------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| machgen  | `Gemini-Omni-1.2-Flash` | NO-ACTION | One 360p 3s clip billed 73664 micros on 2026-11-19. The public and account pricebooks that day are 23172 micros/s, so 3s is 69516. The 3.029s file does not explain the gap, so the table keeps 23172 |
+
 ## What keeps this honest
 
 `tests/unit/cost-recording-accuracy.test.ts` holds every committed call with a stated

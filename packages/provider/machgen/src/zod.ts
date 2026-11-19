@@ -42,6 +42,11 @@ export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "HappyHorse-1.0": ["T2V", "I2V", "R2V"],
   "Grok-Imagine-Video": ["T2V"],
   "Grok-Imagine-Video-1.5": ["I2V"],
+  // Private on the docs site. This account's GET /api/v0/models listed it
+  // on 2026-11-19 (F2F, I2V, R2V, T2V, UPSCALE). F2F is not a generate task
+  // type, as with Wan 3.0. A last frame is capped at 10 s; the grid has no
+  // field for that cap.
+  "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V", "UPSCALE"],
   "Topaz-Video-Precision": ["UPSCALE"],
   "Topaz-Video-Precision-Animation": ["UPSCALE"],
   "Topaz-Video-Generative": ["UPSCALE"],
@@ -409,6 +414,29 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: [],
     },
   },
+  // GET /api/v0/models, 2026-11-19. R2V edit allows one video and two
+  // images, and extend allows one video at 3-10 s; the grid stores the
+  // surface maximums (6 images, 3 videos, no audio) and surface durations.
+  "Gemini-Omni-1.2-Flash": {
+    T2V: {
+      heights: [360, 720, 1080, 2160],
+      durations: secs(3, 15),
+      aspectRatios: ["16:9", "9:16"],
+    },
+    I2V: {
+      heights: [360, 720, 1080, 2160],
+      durations: secs(3, 15),
+      aspectRatios: ["16:9", "9:16"],
+      endFrame: true,
+    },
+    R2V: {
+      heights: [360, 720, 1080, 2160],
+      durations: [-1, ...secs(3, 15)],
+      aspectRatios: ["adaptive", "16:9", "9:16"],
+      references: { images: 6, videos: 3, audios: 0 },
+      operations: ["reference", "edit", "extend"],
+    },
+  },
 };
 
 // UPSCALE target heights, read from 400s of MachGen's upscale quote, and the
@@ -446,6 +474,8 @@ export const MACHGEN_VIDEO_UPSCALE: Readonly<
     heights: [1080, 1440, 2160],
     engines: ["starlight-fast-2"],
   },
+  // Target heights from GET /api/v0/models on 2026-11-19. No engine list.
+  "Gemini-Omni-1.2-Flash": { heights: [720, 1080, 2160] },
 };
 
 // SHARPEN heights, read from 400s of MachGen's upscale quote on 2026-10-31

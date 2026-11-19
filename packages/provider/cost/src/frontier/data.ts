@@ -737,6 +737,11 @@ export const FRONTIER = {
             dotPath: "api.v3.google.geminiOmni1p2Flash.textToVideo",
             pricingKey: "google/gemini-omni-1.2-flash/text-to-video",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Gemini-Omni-1.2-Flash",
+          },
         ],
       },
       {
@@ -1039,6 +1044,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-2",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Gemini-Omni-1.2-Flash",
           },
         ],
       },
@@ -1352,6 +1362,11 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.google.geminiOmni1p2Flash.referenceToVideo",
             pricingKey: "google/gemini-omni-1.2-flash/reference-to-video",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Gemini-Omni-1.2-Flash",
           },
         ],
       },

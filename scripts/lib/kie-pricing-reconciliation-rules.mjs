@@ -209,9 +209,18 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     variant: "",
     status: "pricing-only",
     provenance:
-      "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-text-to-image-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 5 credits = 0.025 USD per 1K image, png only",
+      "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-text-to-image-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 5 credits = 0.025 USD per 1K image, png only",
     rationale:
       "GPT Image 2.6 economy was added after the frozen September catalog; the dated feed capture supplies the flat rate (kie states no gif price, so only png is priced), and the billed recording confirms it.",
+  },
+  {
+    key: "gpt-image-2-6/economy-image-to-image",
+    variant: "",
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-image-to-image-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 5 credits = 0.025 USD per 1K image, png only",
+    rationale:
+      "GPT Image 2.6 economy image-to-image was added after the frozen September catalog; the dated feed capture supplies the flat rate (png is its only output format), and the billed recording confirms it.",
   },
 
   ...["1K", "1.5K", "2K"].map((variant) => ({

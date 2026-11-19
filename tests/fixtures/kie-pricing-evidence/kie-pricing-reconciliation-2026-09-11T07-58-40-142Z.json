@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 181,
-      "pricingKeys": 246,
-      "slugKeys": 248,
-      "displayKeys": 248,
+      "models": 182,
+      "pricingKeys": 247,
+      "slugKeys": 249,
+      "displayKeys": 249,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 79
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:1c75206ef41e7ea9e05a3f8c5987f7b8c53d8fbbec23b56f2490246df8b2659e",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:d092c5a9e52d02a6490587f453408119bb2973e170ecf0b991d674e892a706a1",
-      "packages/provider/kie/src/kie.ts": "sha256:cf97060e409453e1076c26da1d92f37fa053dfe88aface044676b7c54954797b",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:ebf06a21a6f4f65130eff40f5a5d71e7c3833c236a600740f596f639c1bf1046",
-      "packages/provider/cost/src/slugs.ts": "sha256:29a296cb44192b7b2b155a6364ee3a55b3cee1da58348c88573abe854d49ab8f",
+      "packages/provider/kie/src/zod.ts": "sha256:972363987ae003101d6ec4040ab8518685040d2e2525bc0d34934cfc9e06023e",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:048e162208fe4b8fe82a305c05766a4667766b9a62fb50bf5e37b70e28119a86",
+      "packages/provider/kie/src/kie.ts": "sha256:7a65aa35a817752a952f8e698af1118f62ade21639b01fe5b4977db70722b801",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:da130a92f6259d929ccc0a63e88c22d89f6a1c707232cc21409c45904f1b4e00",
+      "packages/provider/cost/src/slugs.ts": "sha256:480b11882e1335f6b3ea52be4cbe6492733b7015fa025ea2f3f1eed56bab6bb8",
       "scripts/endpoint-docs.tsv": "sha256:cec66ae8a234cfaacf915dc0f3af9958879c5554d5d4861dcdd3d3c907877a04"
     }
   },
@@ -21821,6 +21821,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "gpt-image-2-6/economy-image-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-6/economy-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "seedream/5-lite-image-to-image",
         "descriptor": true,
         "guard": true,
@@ -25097,6 +25106,12 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "gpt-image-2-6/economy-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "wan/2-7-image",
         "linkedRows": [
           "sha256:8ad52c3321102b56e4592ce13c896f578e59855ff8c05c43ad63229ad2b85a24#1"
@@ -26808,6 +26823,10 @@
         "disposition": "supported"
       },
       {
+        "key": "gpt-image-2-6/economy-image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-7-image",
         "disposition": "supported"
       },
@@ -27802,6 +27821,10 @@
         "disposition": "supported"
       },
       {
+        "key": "gpt-image-2-6/economy-image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-7-image",
         "disposition": "supported"
       },
@@ -28760,16 +28783,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 181,
-        "descriptors": 181,
-        "guards": 181,
+        "count": 182,
+        "descriptors": 182,
+        "guards": 182,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 99,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 82
+          "upstream-unmappable": 83
         },
         "unclassified": 0
       },
@@ -28787,20 +28810,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 246,
+        "count": 247,
         "dispositionCounts": {
           "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 96
+          "upstream-unmappable": 97
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 248,
+        "count": 249,
         "dispositionCounts": {
-          "supported": 248,
+          "supported": 249,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28809,9 +28832,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 248,
+        "count": 249,
         "dispositionCounts": {
-          "supported": 248,
+          "supported": 249,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29358,8 +29381,15 @@
         "key": "gpt-image-2-6/economy-text-to-image",
         "variant": "",
         "status": "pricing-only",
-        "provenance": "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-text-to-image-2026-11-12.json: feed row and models pricingDesc read 2026-11-12: 5 credits = 0.025 USD per 1K image, png only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-text-to-image-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 5 credits = 0.025 USD per 1K image, png only",
         "rationale": "GPT Image 2.6 economy was added after the frozen September catalog; the dated feed capture supplies the flat rate (kie states no gif price, so only png is priced), and the billed recording confirms it."
+      },
+      {
+        "key": "gpt-image-2-6/economy-image-to-image",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/gpt-image-2-6-economy-image-to-image-2026-11-19.json: feed row and models pricingDesc read 2026-11-19: 5 credits = 0.025 USD per 1K image, png only",
+        "rationale": "GPT Image 2.6 economy image-to-image was added after the frozen September catalog; the dated feed capture supplies the flat rate (png is its only output format), and the billed recording confirms it."
       },
       {
         "key": "seedream/5-5-image-to-image",

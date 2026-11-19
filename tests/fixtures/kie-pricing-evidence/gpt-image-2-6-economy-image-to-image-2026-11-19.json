@@ -1,0 +1,92 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-image-to-image",
+  "models": ["gpt-image-2-6/economy-image-to-image"],
+  "basis": "The live pricing-feed row anchored on https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-image-to-image and the live GET /api/v1/models pricingDesc agree: a flat 5 credits (0.025 USD) per 1K image, the channel's only size, with no charge per input image. png is the only output format. Both reads match the 2026-11-12 survey. The docs callback example's creditsConsumed of 3 is a template: its task id repeats on the gpt-image-2 and 2.5 Sunburst and Flare image-to-image pages and its createTime predates this model. The recording below billed 5 at submission. It sends the smallest body text-to-image proved (prompt plus aspect_ratio) with one input image, because a text-to-image task without aspect_ratio fails upstream with failCode 500.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-19T20:59:21Z",
+    "rows": [
+      {
+        "modelDescription": "gpt-image-2-6-economy, image-to-image, 1K",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "5",
+        "creditUnit": "per image",
+        "usdPrice": "0.025",
+        "falPrice": "0.0527",
+        "discountRate": 52.56,
+        "anchor": "https://kie.ai/gpt-image-2-6?model=gpt-image-2-6%2Feconomy-image-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T20:59:29Z",
+    "entry": {
+      "model": "gpt-image-2-6/economy-image-to-image",
+      "slug": "gpt-image-2-6/economy-image-to-image",
+      "title": "GPT Image 2.6 (Economy) Image to Image",
+      "provider": "OpenAI",
+      "taskType": ["Image to Image", "Image Editing"],
+      "description": "",
+      "pricingDesc": "GPT Image 2.6 (Economy) — just 5 credits ($0.025) per 1K image. Same GPT Image 2.6 model, served through our economy channel at a flat per-image price, 1K only. High-tier top-ups (+10% bonus) bring effective pricing down to ~10% off the above rates."
+    }
+  },
+  "docs": [
+    {
+      "model": "gpt-image-2-6/economy-image-to-image",
+      "url": "https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-image-to-image.md",
+      "fetchedAt": "2026-11-19T20:59:04Z",
+      "sha256": "554a0f4e460b22e2994fb4e5655493ea8cbed6e16633dcc5a31dc67bed258af3",
+      "callbackExamples": [
+        {
+          "taskId": "3fd37da5c726d0c8b1278f391906ac82",
+          "state": "success",
+          "creditsConsumed": 3,
+          "request": {
+            "aspect_ratio": "auto",
+            "input_urls": ["https://example.com/a.png"]
+          },
+          "costTime": 78,
+          "note": "no billing figure for this model: the task id and createTime (2026-08-11) repeat on the gpt-image-2 and 2.5 Sunburst and Flare image-to-image docs pages, so it is a template"
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 0.25,
+  "recordings": [
+    {
+      "model": "gpt-image-2-6/economy-image-to-image",
+      "har": "tests/recordings/kie_2079838932/gpt-image-2-6-economy-image-to-image_1503817507/recording.har",
+      "request": {
+        "prompt": "Add a small red scarf to the cat.",
+        "input_urls": ["tests/fixtures/cat1.jpg via kie file-stream-upload"],
+        "aspect_ratio": "auto"
+      },
+      "taskId": "f6470a40de157b1c8ba9774e1f8a8b1a",
+      "creditsConsumed": 5.0,
+      "creditsConsumedWhileWaiting": [
+        5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0
+      ],
+      "usd": 0.025,
+      "input": {
+        "format": "jpeg",
+        "width": 768,
+        "height": 1024
+      },
+      "output": {
+        "format": "png",
+        "width": 1085,
+        "height": 1450,
+        "bytes": 3491171
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57726.58,
+    "after": 57721.58
+  },
+  "observedTotalUsd": 0.025
+}

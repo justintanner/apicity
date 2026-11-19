@@ -291,6 +291,7 @@ export const KIE_MEDIA_MODELS = [
   "gpt-image-2-6/flare-text-to-image",
   "gpt-image-2-6/flare-image-to-image",
   "gpt-image-2-6/economy-text-to-image",
+  "gpt-image-2-6/economy-image-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
@@ -5268,6 +5269,26 @@ export const GptImage26EconomyTextToImageRequestSchema = z
     }),
   })
   .superRefine(refineGptImage26Economy);
+
+// Image-to-image on the economy channel takes png output only, with no GIF
+// fields. The docs make `input_urls` optional (up to 16 JPEG, PNG or WebP
+// URLs). `aspect_ratio` is required here for the reason text-to-image gives:
+// kie documents an `auto` default but fails a task sent without the field.
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-image-to-image
+export const GptImage26EconomyImageToImageOutputFormatSchema = z.enum(["png"]);
+
+export const GptImage26EconomyImageToImageRequestSchema = z.object({
+  model: z.literal("gpt-image-2-6/economy-image-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(20000),
+    input_urls: z.array(z.string()).max(16).optional(),
+    aspect_ratio: GptImage26EconomyAspectRatioSchema,
+    background: GptImage26BackgroundSchema.default("auto"),
+    output_format:
+      GptImage26EconomyImageToImageOutputFormatSchema.default("png"),
+  }),
+});
 
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
@@ -10344,6 +10365,7 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage26FlareTextToImageRequestSchema,
   GptImage26FlareImageToImageRequestSchema,
   GptImage26EconomyTextToImageRequestSchema,
+  GptImage26EconomyImageToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -11394,6 +11416,17 @@ export type GptImage26EconomyTextToImageRequestInput =
   GptImage26EconomyTextToImageRequest;
 export type GptImage26EconomyTextToImageParsedRequest = z.output<
   typeof GptImage26EconomyTextToImageRequestSchema
+>;
+export type GptImage26EconomyImageToImageOutputFormat = z.infer<
+  typeof GptImage26EconomyImageToImageOutputFormatSchema
+>;
+export type GptImage26EconomyImageToImageRequest = z.input<
+  typeof GptImage26EconomyImageToImageRequestSchema
+>;
+export type GptImage26EconomyImageToImageRequestInput =
+  GptImage26EconomyImageToImageRequest;
+export type GptImage26EconomyImageToImageParsedRequest = z.output<
+  typeof GptImage26EconomyImageToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema

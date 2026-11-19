@@ -3894,6 +3894,49 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/gpt/gpt-image-2-6-economy-image-to-image
+  "gpt-image-2-6/economy-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description:
+          "Instruction for how to edit or combine the input images (1-20,000 characters): say what should stay the same and what should change. Put any text that should appear in the image in quotes.",
+      },
+      input_urls: {
+        type: "array",
+        maxItems: 16,
+        description:
+          "Up to 16 public URLs of the images to edit or use as references (JPEG, PNG or WebP, up to 30 MB each); refer to several by their order in the prompt",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["auto", "1:1", "16:9", "9:16", "3:2", "2:3", "21:9", "4:3"],
+        description:
+          "Output aspect ratio (auto: the model picks the frame that fits the prompt and input images). Economy supports these eight only. Required here: kie documents an auto default, but a task sent without aspect_ratio fails upstream (refunded).",
+      },
+      background: {
+        type: "string",
+        enum: ["transparent", "opaque", "auto"],
+        default: "auto",
+        description:
+          "transparent (cut-outs, icons, stickers), opaque (always a solid background) or auto (default: the model decides)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png"],
+        default: "png",
+        description:
+          "Output image format; economy image-to-image supports png only",
+      },
+    },
+  },
+
   "seedream/5-lite-image-to-image": {
     type: "image",
     fields: {

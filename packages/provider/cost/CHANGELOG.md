@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nunchux Wan 2.7 video edit (`wan2.7-videoedit`, slug `wan2p7`) costs $0.10 or $0.15 per second at 720P or 1080P, for the output seconds plus up to 10 seconds of the source clip; the output defaults to the source length. Pass the source length in `costHints.inputDurationSeconds`, or the estimate fails closed. A two-second 720P edit of a 3-second clip lists at $0.40.
 
+- Nunchux HappyHorse 1.0 video edit (`happyhorse-1.0-video-edit`, slug `hh`) costs $0.14 or $0.24 per second at 720P or 1080P (the default), for the output seconds plus up to 15 seconds of the source clip. Pass the source length in `costHints.inputDurationSeconds`, or the estimate fails closed. A three-second 720P edit of a 3-second clip lists at $0.84.
+
 - Nunchux Seedance 2.5 estimates use the output frame count and resolution. A million video tokens list at $10.70, or $6.40 with reference video.
 
 - Nunchux Wan 3.0 reference-to-video prices at the same per-second rates; reference images add nothing. The recorded 480P two-second clip from one reference image costs $0.10.
@@ -774,6 +776,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   estimate (ac-kvmsvg).
 
 ### Changed
+
+- KIE Gemini 4 Argon (`gemini-4-argon`, `gemini-4-argon-openai`) estimates are unchanged: KIE has published a cached-input rate of $0.04 per million tokens since 2026-11-19, but its response reports no cached-token count, so every input token is still quoted at $0.80 per million, an upper bound while cached input is discounted. A declared cached count still gets no quote (ac-b0lrbg; follow-up ac-pillso).
 
 - fal MiniMax H3 Max text-to-video, image-to-video and camera-controls are the card's standard 0.05, 0.08 and 0.16 USD/s at 480P, 768P and 1080P, and H3 Max Turbo text-to-video and image-to-video are 0.025, 0.04 and 0.08 USD/s. The November promotion ended 2026-11-15; the cards were re-read on 2026-11-16. `fal-ai/vidu/q4` keeps list rates through its promotion ending 2026-11-30 (ac-cukhhs).
 

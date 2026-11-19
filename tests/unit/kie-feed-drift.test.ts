@@ -43,6 +43,7 @@ interface Report {
   differ: Cell[];
   notCompared: Array<{ description: string; reason: string }>;
   uncoveredKeys: string[];
+  notices: Array<{ family: string; notice: string }>;
 }
 
 const build = async (options: {
@@ -341,6 +342,193 @@ describe("KIE feed drift", () => {
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
+  });
+
+  // KIE added Seedance 2.5 Flash as its own rows in the 2026-11-19 feed. Every
+  // description containing `bytedance/seedance-2-5` read as a Seedance 2.5 cell,
+  // so the Flash rates read as moves on that key, and the drift gate stopped the
+  // v0.28.1 release over prices that never changed.
+  it("does not read a variant model's rows as moves on Seedance 2.5", async () => {
+    const videoRow = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "video",
+        provider: "ByteDance",
+        creditPrice,
+        creditUnit: "per second",
+        usdPrice,
+        falPrice: "",
+        discountRate: 0,
+        anchor,
+        discountPrice: false,
+      },
+    });
+    const s25 = "https://kie.ai/seedance-2-5";
+    const flash = "https://kie.ai/seedance-2-5-flash";
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const file = path.join(dir, "snapshot.json");
+      await writeFile(
+        file,
+        JSON.stringify({
+          ...JSON.parse(await readFile(FIXTURE, "utf8")),
+          records: [
+            videoRow(
+              "bytedance/seedance-2-5, 720p with video",
+              "38",
+              "0.190",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 720p no video",
+              "63",
+              "0.315",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 480p with video",
+              "17",
+              "0.085",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 480p no video",
+              "28",
+              "0.140",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 720p with video",
+              "25.5",
+              "0.1275",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 720p no video",
+              "41",
+              "0.205",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 480p with video",
+              "11.5",
+              "0.0575",
+              flash
+            ),
+            videoRow(
+              "bytedance/seedance-2-5-flash, 480p no video",
+              "18.5",
+              "0.0925",
+              flash
+            ),
+          ],
+        })
+      );
+      const result = report(
+        await build({ snapshotPath: file, metadataPath: file, live: true })
+      );
+      expect(result.differ).toEqual([]);
+      // Seedance 2.5's own four cells are still compared, so the gate still watches them.
+      expect(result.same).toBe(4);
+      expect(result.compared).toBe(4);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "bytedance/seedance-2-5-flash, 720p with video",
+        "bytedance/seedance-2-5-flash, 720p no video",
+        "bytedance/seedance-2-5-flash, 480p with video",
+        "bytedance/seedance-2-5-flash, 480p no video",
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  // The 2026-11-19 feed added a Cached Input row for Gemini 4 Argon. The table
+  // does not apply it (mayor ruling, ac-on0k4o): KIE's response reports no
+  // cached-token count. That one cell stays out of the comparison with its
+  // reason, and the Argon Input and Output cells are still held to the table.
+  describe("Gemini 4 Argon's unapplied cached-input rate", () => {
+    const ARGON =
+      "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-19.json";
+    const CACHED = "Gemini 4 Argon, Chat, Cached Input";
+
+    const argonReport = async (
+      edit: (records: Array<{ raw: Row["official"] }>) => unknown[]
+    ) => {
+      const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+      try {
+        const snapshot = JSON.parse(await readFile(ARGON, "utf8")) as {
+          records: Array<{ raw: Row["official"] }>;
+        };
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({ ...snapshot, records: edit(snapshot.records) })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      } finally {
+        await rm(dir, { recursive: true, force: true });
+      }
+    };
+
+    it("is not compared, and Input and Output still agree", async () => {
+      const result = report(
+        await build({ snapshotPath: ARGON, metadataPath: ARGON, live: true })
+      );
+      expect(result.differ).toEqual([]);
+      expect(result.compared).toBe(2);
+      expect(result.same).toBe(2);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        CACHED,
+      ]);
+      expect(result.notCompared[0].reason).toContain("ac-pillso");
+      expect(result.notices).toEqual([]);
+    });
+
+    it("stays out of the comparison when KIE rewords the row", async () => {
+      const result = await argonReport((records) =>
+        records.map((record) =>
+          record.raw.modelDescription === CACHED
+            ? {
+                ...record,
+                raw: {
+                  ...record.raw,
+                  modelDescription: "Gemini 4 Argon, Chat, Cache Read",
+                },
+              }
+            : record
+        )
+      );
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(2);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "Gemini 4 Argon, Chat, Cache Read",
+      ]);
+      expect(result.notices).toEqual([]);
+    });
+
+    it("reports a notice, not a difference, when the row is gone", async () => {
+      const result = await argonReport((records) =>
+        records.filter(({ raw }) => raw.modelDescription !== CACHED)
+      );
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(2);
+      expect(result.notices).toEqual([
+        {
+          family: "gemini-4-argon-cached-input",
+          notice: expect.stringContaining("ac-pillso"),
+        },
+      ]);
+    });
   });
 
   // The 2026-11-07 feed added gpt-image-2-6 SVG rows whose text-model clause is
@@ -784,6 +972,36 @@ describe("KIE feed drift", () => {
           "DIFFER Vidu Q4, image-to-video, 540p | vidu-q4/image-to-video 540p | table 0.036 | feed 0.05"
         );
         expect(code).toBe(1);
+      } finally {
+        await rm(dir, { recursive: true, force: true });
+      }
+    }, 30_000);
+
+    it("prints a notice and exits 0 when a watched row is gone", async () => {
+      const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+      try {
+        const argon =
+          "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-19.json";
+        const snapshot = JSON.parse(await readFile(argon, "utf8")) as {
+          records: Array<{ raw: Row["official"] }>;
+        };
+        snapshot.records = snapshot.records.filter(
+          ({ raw }) =>
+            raw.modelDescription !== "Gemini 4 Argon, Chat, Cached Input"
+        );
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(file, JSON.stringify(snapshot));
+        const { code, stdout } = await run([
+          "--snapshot",
+          file,
+          "--metadata",
+          file,
+        ]);
+        expect(stdout).toContain("2 agree, 0 differ");
+        expect(stdout).toContain(
+          "NOTICE gemini-4-argon-cached-input matched no row of this pull"
+        );
+        expect(code).toBe(0);
       } finally {
         await rm(dir, { recursive: true, force: true });
       }

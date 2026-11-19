@@ -246,22 +246,18 @@ describe("audit exceptions applied to findings", () => {
 });
 
 describe("checked-in audit exceptions", () => {
-  // Static pin, never compared with the clock: widening or renewing the
-  // exception has to change this test as well as the file.
-  it("holds exactly the one operator-approved entry", () => {
+  // Static pin, never compared with the clock: adding, widening or renewing
+  // an exception has to change this test as well as the file. The one entry
+  // there was, GHSA-fc5q-39xc-vjpf on picomatch (operator decision
+  // ac-p48wtr), went when GitHub withdrew that advisory on 2026-11-18
+  // (ac-5s46f5).
+  it("holds no entries", () => {
     const entries = parseAuditExceptions(
       readFileSync(
         new URL("../../scripts/audit-exceptions.json", import.meta.url),
         "utf8"
       )
     );
-    expect(entries).toEqual([
-      {
-        advisory: "GHSA-fc5q-39xc-vjpf",
-        package: "picomatch",
-        reason: expect.stringContaining("ac-p48wtr"),
-        expires: "2026-12-02",
-      },
-    ]);
+    expect(entries).toEqual([]);
   });
 });

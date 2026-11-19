@@ -347,8 +347,11 @@ describe("KIE feed drift", () => {
   // KIE added Seedance 2.5 Flash as its own rows in the 2026-11-19 feed. Every
   // description containing `bytedance/seedance-2-5` read as a Seedance 2.5 cell,
   // so the Flash rates read as moves on that key, and the drift gate stopped the
-  // v0.28.1 release over prices that never changed.
-  it("does not read a variant model's rows as moves on Seedance 2.5", async () => {
+  // v0.28.1 release over prices that never changed. Flash now has its own key
+  // (ac-zrziuf), so its rows are compared with that key's cells instead. The
+  // 4K tier KIE added to Seedance 2.5 later that day is not offered yet
+  // (ac-vggwxn), so its two rows stay out with their reason.
+  it("compares a variant model's rows with its own key, not Seedance 2.5", async () => {
     const videoRow = (
       modelDescription: string,
       creditPrice: string,
@@ -429,21 +432,51 @@ describe("KIE feed drift", () => {
               "0.0925",
               flash
             ),
+            videoRow(
+              "bytedance/seedance-2-5, 4K with video",
+              "155",
+              "0.775",
+              s25
+            ),
+            videoRow(
+              "bytedance/seedance-2-5, 4K no video",
+              "251",
+              "1.255",
+              s25
+            ),
           ],
         })
       );
-      const result = report(
-        await build({ snapshotPath: file, metadataPath: file, live: true })
-      );
+      const manifest = await build({
+        snapshotPath: file,
+        metadataPath: file,
+        live: true,
+      });
+      const result = report(manifest);
+      // Seedance 2.5's four cells and Flash's four are all compared and agree.
       expect(result.differ).toEqual([]);
-      // Seedance 2.5's own four cells are still compared, so the gate still watches them.
-      expect(result.same).toBe(4);
-      expect(result.compared).toBe(4);
-      expect(result.notCompared.map(({ description }) => description)).toEqual([
-        "bytedance/seedance-2-5-flash, 720p with video",
-        "bytedance/seedance-2-5-flash, 720p no video",
-        "bytedance/seedance-2-5-flash, 480p with video",
-        "bytedance/seedance-2-5-flash, 480p no video",
+      expect(result.same).toBe(8);
+      expect(result.compared).toBe(8);
+      expect(result.notCompared).toEqual([
+        expect.objectContaining({
+          description: "bytedance/seedance-2-5, 4K with video",
+          reason: expect.stringContaining("ac-vggwxn"),
+        }),
+        expect.objectContaining({
+          description: "bytedance/seedance-2-5, 4K no video",
+          reason: expect.stringContaining("ac-vggwxn"),
+        }),
+      ]);
+      // A move on a Flash row is a move on Flash's own cell.
+      const flash480 = "bytedance/seedance-2-5-flash, 480p no video";
+      expect(
+        cellsOf(report(withPrice(manifest, flash480, "0.1", "20")), flash480)
+      ).toEqual([
+        expect.objectContaining({
+          key: "bytedance/seedance-2-5-flash",
+          variant: "480p|no-video",
+          tableUsd: 0.0925,
+        }),
       ]);
     } finally {
       await rm(dir, { recursive: true, force: true });

@@ -990,7 +990,9 @@ function classifyRawRow(raw, inventories, live = false) {
   const mappedKeys = queryConflict
     ? []
     : currentKeyCandidates(official, inventories);
-  const seedance = /bytedance\/seedance-2-5/i.test(
+  // A suffixed variant (bytedance/seedance-2-5-flash) is its own model with
+  // its own pricing key, so it takes the generic matcher instead.
+  const seedance = /bytedance\/seedance-2-5(?![-\w])/i.test(
     String(official.modelDescription ?? "")
   );
   const mappedKey = mappedKeys[0];

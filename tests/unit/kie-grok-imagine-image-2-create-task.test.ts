@@ -58,8 +58,8 @@ const GROK_IMAGINE_IMAGE_2_CONTRACTS = [
       model: "grok-imagine-image-2-0/image-edit",
       input: {
         prompt: "Give the cat a red bow tie",
-        task_id: "task-cat-source",
-        mask_indexs: [0],
+        aspect_ratio: "1:1",
+        image_urls: ["https://example.com/cat.jpg"],
       },
     } satisfies GrokImagineImage2ImageEditRequest,
   },
@@ -105,16 +105,28 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
     }
   });
 
-  it("preserves returned zero-based segment indices", () => {
-    const parsed = GrokImagineImage2ImageEditRequestSchema.parse({
+  // KIE moved the task_id + mask_indexs form to segment-edit by 2026-11-19
+  // and re-pointed image-edit to image_urls (ac-sb6m5h).
+  it("refuses image-edit's retired task_id form, which segment-edit keeps", () => {
+    const retired = {
+      prompt: "Remove the selected person",
+      task_id: "task-source",
+      mask_indexs: [1, 2],
+    };
+    const result = GrokImagineImage2ImageEditRequestSchema.safeParse({
       model: "grok-imagine-image-2-0/image-edit",
-      input: {
-        prompt: "Remove the selected person",
-        task_id: "task-source",
-        mask_indexs: [0, 2],
-      },
+      input: retired,
     });
-    expect(parsed.input.mask_indexs).toEqual([0, 2]);
+    expect(result.success).toBe(false);
+    expect(issueAt(result, ["input", "image_urls"])).toBe(true);
+    expect(issueAt(result, ["input", "aspect_ratio"])).toBe(true);
+
+    expect(
+      GrokImagineImage2SegmentEditRequestSchema.parse({
+        model: "grok-imagine-image-2-0/segment-edit",
+        input: retired,
+      }).input.mask_indexs
+    ).toEqual([1, 2]);
   });
 
   it("rejects invalid text-to-image prompts and aspect ratios", () => {
@@ -207,36 +219,45 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
     });
   });
 
-  it("rejects invalid image-edit prompts, task ids, and mask indices", () => {
+  it("rejects invalid image-edit prompts, aspect ratios, and image URLs", () => {
     const base = GROK_IMAGINE_IMAGE_2_CONTRACTS[2].request;
+    const url = (n: number) => `https://example.com/cat-${n}.jpg`;
     const cases = [
       {
-        input: { task_id: base.input.task_id },
+        input: { aspect_ratio: "1:1", image_urls: [url(1)] },
         path: ["input", "prompt"],
       },
       {
-        input: { prompt: "", task_id: base.input.task_id },
+        input: { ...base.input, prompt: "" },
         path: ["input", "prompt"],
       },
       {
-        input: { prompt: base.input.prompt },
-        path: ["input", "task_id"],
+        input: { ...base.input, prompt: "x".repeat(8001) },
+        path: ["input", "prompt"],
       },
       {
-        input: { prompt: base.input.prompt, task_id: "" },
-        path: ["input", "task_id"],
+        input: { prompt: base.input.prompt, image_urls: [url(1)] },
+        path: ["input", "aspect_ratio"],
       },
       {
-        input: { ...base.input, mask_indexs: [] },
-        path: ["input", "mask_indexs"],
+        input: { ...base.input, aspect_ratio: "4:3" },
+        path: ["input", "aspect_ratio"],
       },
       {
-        input: { ...base.input, mask_indexs: [-1] },
-        path: ["input", "mask_indexs", "0"],
+        input: { prompt: base.input.prompt, aspect_ratio: "1:1" },
+        path: ["input", "image_urls"],
       },
       {
-        input: { ...base.input, mask_indexs: [1.5] },
-        path: ["input", "mask_indexs", "0"],
+        input: { ...base.input, image_urls: [] },
+        path: ["input", "image_urls"],
+      },
+      {
+        input: { ...base.input, image_urls: [1, 2, 3, 4, 5, 6].map(url) },
+        path: ["input", "image_urls"],
+      },
+      {
+        input: { ...base.input, image_urls: ["cat.jpg"] },
+        path: ["input", "image_urls", "0"],
       },
     ] as const;
 
@@ -365,26 +386,35 @@ describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
     const imageEdit = modelInputSchemas["grok-imagine-image-2-0/image-edit"];
     expect(imageEdit.type).toBe("image");
     expect(Object.keys(imageEdit.fields).sort()).toEqual([
-      "mask_indexs",
+      "aspect_ratio",
+      "image_urls",
       "prompt",
-      "task_id",
     ]);
+    expect(Object.keys(imageEdit.fields).sort()).toEqual(
+      Object.keys(
+        GrokImagineImage2ImageEditRequestSchema.shape.input.shape
+      ).sort()
+    );
     expect(imageEdit.fields.prompt).toMatchObject({
       type: "string",
       required: true,
       minLength: 1,
+      maxLength: 8000,
     });
-    expect(imageEdit.fields.task_id).toMatchObject({
+    expect(imageEdit.fields.aspect_ratio).toMatchObject({
       type: "string",
       required: true,
-      minLength: 1,
+      enum: ["1:1", "2:3", "3:2", "16:9", "9:16", "auto"],
     });
-    expect(imageEdit.fields.mask_indexs).toMatchObject({
+    expect(imageEdit.fields.aspect_ratio.default).toBeUndefined();
+    expect(imageEdit.fields.image_urls).toMatchObject({
       type: "array",
+      required: true,
       minItems: 1,
-      items: { type: "integer", minimum: 0 },
+      maxItems: 5,
+      items: { type: "string" },
     });
-    expect(imageEdit.fields.mask_indexs.required).toBeUndefined();
+    expect(imageEdit.fields.image_urls.description).toContain("segment-edit");
 
     const segmentEdit =
       modelInputSchemas["grok-imagine-image-2-0/segment-edit"];

@@ -1820,10 +1820,10 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:34f02aa8f4fb2a9a978526c95b2519e793c019f8d8eec877a14ca098c00789a9",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:511338907b5f7809f31611d3031f1ff49de41129fb2baafbdf318cb5b9f6f0c6",
+      "packages/provider/kie/src/zod.ts": "sha256:39b572c354493ca385afbb454cfab7a939c30e237a5512b5cc2d26c3140a5089",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:8f260dfa1893585eb1126dacf464eab1306c7c86aec60162f44273b1bdec01db",
       "packages/provider/kie/src/kie.ts": "sha256:87d47672b87bfa861dc6d2ef5b2c291811ff3c6ce21e886efe341ea3d2081841",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:89aca0efcf1d1f193bc8ef0dbcf281a12bd3f74180969bad307d8f700dd43956",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:6f095c894d5a2ef08e667c454f0734c01b9a279ed6d7244b929451255461c0c3",
       "packages/provider/cost/src/slugs.ts": "sha256:07dc438fcaa7009de66298181432c37701b7bcbdda9d17b08384e8910ffddce5",
       "scripts/endpoint-docs.tsv": "sha256:d83bfab658f21e94ac02a951e2e36521c81d45da8023688580aeeb5541bd6f09"
     }
@@ -4943,7 +4943,8 @@
         "model": "grok-imagine-image-2-0/image-edit",
         "input": {
           "prompt": "audit",
-          "task_id": "https://example.com/a.png"
+          "aspect_ratio": "1:1",
+          "image_urls": ["https://example.com/a.png"]
         }
       }
     },

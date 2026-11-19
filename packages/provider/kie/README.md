@@ -1345,12 +1345,14 @@ Grok Imagine Image 2.0 has four exact Kie model ids:
 `grok-imagine-image-2-0/segment-edit`. See the official model pages for
 [`grok-imagine-image-2-0/text-to-image`](https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image),
 [`grok-imagine-image-2-0/segment-map`](https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map),
+[`grok-imagine-image-2-0/image-edit`](https://docs.kie.ai/market/grok-imagine-image-2-0/image-to-image)
 and
-[`grok-imagine-image-2-0/image-edit`](https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit).
-That last page is titled "Grok Imagine Image 2.0 Segment Edit" and is also
-the only documentation for `grok-imagine-image-2-0/segment-edit`; Kie serves
-no `.../segment-edit` page. The id was confirmed by live `createTask` rather
-than by its doc slug.
+[`grok-imagine-image-2-0/segment-edit`](https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit).
+The slugs and ids cross over: the `.../image-to-image` page documents
+`image-edit`, and the `.../image-edit` page, titled "Grok Imagine Image 2.0
+Segment Edit", documents `segment-edit`; Kie serves no `.../segment-edit`
+page. The ids were confirmed by live `createTask` rather than by their doc
+slugs.
 
 Text-to-image requires both a prompt and an `aspect_ratio`:
 
@@ -1380,7 +1382,8 @@ await waitForSuccess(sourceTaskId);
 
 Segment-map consumes that source task. After polling the segment task to
 `success`, select an index of 1 or greater from its `segments` output and
-pass it to image-edit using Kie's upstream `mask_indexs` spelling:
+pass it to segment-edit, with Kie's upstream `mask_indexs` spelling. Its
+entries are one-based:
 
 ```typescript
 const segmentTask = await kie.post.api.v1.jobs.createTask({
@@ -1399,21 +1402,6 @@ const maskIndex = segmentResult.resultObject?.segments?.find(
 )?.index;
 if (maskIndex === undefined) throw new Error("No editable segment");
 
-const editTask = await kie.post.api.v1.jobs.createTask({
-  model: "grok-imagine-image-2-0/image-edit",
-  input: {
-    prompt: "Give the cat a red bow tie",
-    task_id: sourceTaskId,
-    mask_indexs: [maskIndex],
-  },
-});
-console.log(editTask.data?.taskId);
-```
-
-`grok-imagine-image-2-0/segment-edit` takes the same source task and, unlike
-image-edit, documents its `mask_indexs` entries as one-based:
-
-```typescript
 const segmentEditTask = await kie.post.api.v1.jobs.createTask({
   model: "grok-imagine-image-2-0/segment-edit",
   input: {
@@ -1423,6 +1411,24 @@ const segmentEditTask = await kie.post.api.v1.jobs.createTask({
   },
 });
 console.log(segmentEditTask.data?.taskId);
+```
+
+`grok-imagine-image-2-0/image-edit` edits 1-5 images by URL. It needs a
+prompt of up to 8,000 characters and an `aspect_ratio` (`1:1`, `2:3`, `3:2`,
+`16:9`, `9:16` or `auto`). KIE moved its old `task_id` + `mask_indexs` form
+to segment-edit, so use segment-edit for that form. A recorded 1:1 edit of
+an uploaded photo billed 4 credits ($0.02):
+
+```typescript
+const imageEditTask = await kie.post.api.v1.jobs.createTask({
+  model: "grok-imagine-image-2-0/image-edit",
+  input: {
+    prompt: "Give the cat a red bow tie",
+    aspect_ratio: "1:1",
+    image_urls: ["https://example.com/cat.jpg"],
+  },
+});
+console.log(imageEditTask.data?.taskId);
 ```
 
 Segment-map also takes a direct http(s) `image_url` in place of a source

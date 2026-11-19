@@ -159,6 +159,7 @@ export type {
   GrokImagineImage2SegmentMapRequest,
   GrokImagineImage2SegmentMapRequestInput,
   GrokImagineImage2SegmentMapParsedRequest,
+  GrokImagineImage2ImageEditAspectRatio,
   GrokImagineImage2ImageEditRequest,
   GrokImagineImage2ImageEditRequestInput,
   GrokImagineImage2ImageEditParsedRequest,

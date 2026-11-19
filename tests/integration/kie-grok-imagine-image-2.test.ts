@@ -13,10 +13,16 @@ import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 // transformed by the 1.x `grok-imagine/image-to-image` model. Passing that
 // completed task ID to 2.0 `segment-map` failed with "source task image
 // metadata not found", so the shipped recording uses the documented fallback:
-// its 2.0 text-to-image cat task seeds both segment-map and image-edit.
+// its 2.0 text-to-image cat task seeds segment-map.
 // Recording observations: text-to-image returned one result URL; segment-map
-// returned nine segments and reported `creditsConsumed: 0.0`; image-edit
-// returned one result URL.
+// returned nine segments and reported `creditsConsumed: 0.0`.
+//
+// The chain used to end in `image-edit` with the source task_id and a mask
+// index. KIE moved that form to `segment-edit` by 2026-11-19 and re-pointed
+// image-edit to `image_urls` (ac-sb6m5h), so the step and its exchanges were
+// dropped from this recording: segment-edit chains from a segment-map in
+// kie-grok-imagine-image-2-segment-edit.test.ts, and image-edit has its own
+// recording in kie-grok-imagine-image-2-image-edit.test.ts.
 
 interface CompletedTask {
   resultJson: string;
@@ -87,7 +93,7 @@ describe("kie Grok Imagine Image 2.0 lifecycle", () => {
   });
 
   it(
-    "chains a cat seed through text-to-image, segment-map, and image-edit",
+    "chains a cat seed through text-to-image and segment-map",
     { timeout: 1_200_000 },
     async () => {
       ctx = setupPolly("kie/grok-imagine-image-2-lifecycle");
@@ -137,21 +143,6 @@ describe("kie Grok Imagine Image 2.0 lifecycle", () => {
       if (segmentMapResult.creditsConsumed !== undefined) {
         expect(segmentMapResult.creditsConsumed).toBeGreaterThanOrEqual(0);
       }
-
-      const editableSegment = segments!.find((segment) => segment.index >= 1);
-      expect(editableSegment).toBeTruthy();
-
-      const imageEditRequest = {
-        model: "grok-imagine-image-2-0/image-edit",
-        input: {
-          prompt: "Give the cat a red bow tie.",
-          task_id: textToImageTaskId,
-          mask_indexs: [editableSegment!.index],
-        },
-      } satisfies MediaGenerationRequest;
-      const imageEditTaskId = await createTask(provider, imageEditRequest);
-      const imageEditResult = await waitForTask(provider, imageEditTaskId);
-      parseResultUrls(imageEditResult.resultJson);
     }
   );
 });

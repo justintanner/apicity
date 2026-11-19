@@ -2170,6 +2170,10 @@ export const kie: Record<string, ModelPricing> = {
       "2026-08-22"
     ),
   },
+  // image-edit takes 1-5 image_urls since KIE re-pointed it (ac-sb6m5h); the
+  // 2026-11-19 feed row ("grok-imagine-image-2-0, Image Edit") and the models
+  // API pricingDesc still print 4 credits ($0.02) per image, and the
+  // recording grok-imagine-image-2-image-edit_* of that form billed 4.
   "grok-imagine-image-2-0/image-edit": {
     kind: "perUnit",
     unit: "generations",
@@ -2177,8 +2181,8 @@ export const kie: Record<string, ModelPricing> = {
     select: [],
     rates: { "": 0.02 },
     source: pricePage(
-      "https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit",
-      "2026-08-22"
+      "https://kie.ai/grok-imagine-image-2?model=grok-imagine-image-2-0%2Fimage-edit",
+      "2026-11-19"
     ),
   },
   // segment-edit's only documentation is the image-edit slug — Kie serves no

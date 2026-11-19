@@ -349,8 +349,8 @@ describe("KIE feed drift", () => {
   // so the Flash rates read as moves on that key, and the drift gate stopped the
   // v0.28.1 release over prices that never changed. Flash now has its own key
   // (ac-zrziuf), so its rows are compared with that key's cells instead. The
-  // 4K tier KIE added to Seedance 2.5 later that day is not offered yet
-  // (ac-vggwxn), so its two rows stay out with their reason.
+  // 4K tier KIE added to Seedance 2.5 later that day has its own cells too
+  // (ac-vggwxn): before them, the Seedance 2.5 branch read "4K" as 720p.
   it("compares a variant model's rows with its own key, not Seedance 2.5", async () => {
     const videoRow = (
       modelDescription: string,
@@ -453,20 +453,30 @@ describe("KIE feed drift", () => {
         live: true,
       });
       const result = report(manifest);
-      // Seedance 2.5's four cells and Flash's four are all compared and agree.
+      // Seedance 2.5's six cells, 4K included, and Flash's four are all
+      // compared and agree.
       expect(result.differ).toEqual([]);
-      expect(result.same).toBe(8);
-      expect(result.compared).toBe(8);
-      expect(result.notCompared).toEqual([
-        expect.objectContaining({
-          description: "bytedance/seedance-2-5, 4K with video",
-          reason: expect.stringContaining("ac-vggwxn"),
-        }),
-        expect.objectContaining({
-          description: "bytedance/seedance-2-5, 4K no video",
-          reason: expect.stringContaining("ac-vggwxn"),
-        }),
-      ]);
+      expect(result.same).toBe(10);
+      expect(result.compared).toBe(10);
+      expect(result.notCompared).toEqual([]);
+      // A move on a 4K row is a move on the 4k cell, not on 720p.
+      for (const [description, variant, tableUsd] of [
+        ["bytedance/seedance-2-5, 4K with video", "4k|video", 0.775],
+        ["bytedance/seedance-2-5, 4K no video", "4k|no-video", 1.255],
+      ] as const) {
+        expect(
+          cellsOf(
+            report(withPrice(manifest, description, "1.5", "300")),
+            description
+          )
+        ).toEqual([
+          expect.objectContaining({
+            key: "bytedance/seedance-2-5",
+            variant,
+            tableUsd,
+          }),
+        ]);
+      }
       // A move on a Flash row is a move on Flash's own cell.
       const flash480 = "bytedance/seedance-2-5-flash, 480p no video";
       expect(

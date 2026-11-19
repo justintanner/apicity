@@ -341,6 +341,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     })
   ),
 
+  ...["4k|video", "4k|no-video"].map((variant) => ({
+    key: "bytedance/seedance-2-5",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/seedance-2-5-4k-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 155/251 credits = 0.775/1.255 USD per billed second at 4K with/without video input",
+    rationale:
+      "Seedance 2.5's 4K tier was added on 2026-11-19, after the frozen September catalog; the dated feed capture supplies the rates (with video input, the input and output seconds are billed). The draft render model stays 1080p only.",
+  })),
+
   ...["bytedance/seedance-2-5", "bytedance/seedance-2-5-draft"].flatMap((key) =>
     ["1080p|video", "1080p|no-video"].map((variant) => ({
       key,
@@ -1632,19 +1642,6 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       /^pixverse-v6,\s*Reference To Video,/i.test(description),
     message:
       "The frozen September Reference To Video rates are superseded by the 2026-11-04 feed (4-18.4 credits/s), which the committed recording's 4 credits per second confirms; current rates are documented pricing-only exceptions.",
-  },
-  // Not liveComparable: the live drift check must report these rows as not
-  // compared too. KIE added a 4K tier to Seedance 2.5 on 2026-11-19 (155 / 251
-  // credits per second with / without video input), which the schema and the
-  // table do not offer yet (ac-vggwxn). The Seedance 2.5 branch of
-  // classifyRawRow reads an unknown resolution as 720p, so without this rule
-  // the rows print as moves on the 720p cells.
-  {
-    family: "seedance-2-5-4k-unpriced",
-    matches: (description) =>
-      /^bytedance\/seedance-2-5,\s*4k\b/i.test(description),
-    message:
-      "Seedance 2.5's 4K tier (https://kie.ai/seedance-2-5, first in the 2026-11-19 feed at 08:26Z) is not in the ApiCity schema or pricing table yet; ac-vggwxn adds it, so these rows are not compared with the 720p cells.",
   },
   {
     family: "seedance-2-5-1080p-refreshed",

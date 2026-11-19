@@ -2604,8 +2604,13 @@ export const kie: Record<string, ModelPricing> = {
   // audio surcharge the docs mention is unpublished and unmodelled:
   // generate_audio selects no rate. Resolution defaults to 720p; output
   // seconds resolve through seedance25Seconds (documented 5 s default, the
-  // -1 sentinel via costHints.durationSeconds). All six published cells are
-  // retained verbatim under the video-input keys.
+  // -1 sentinel via costHints.durationSeconds). All eight published cells are
+  // retained verbatim under the video-input keys. The 4K tier (resolution
+  // "4k") arrived on 2026-11-19: the price feed (anchor
+  // https://kie.ai/seedance-2-5) and the GET /api/v1/models pricingDesc agree
+  // on 155 / 251 credits/s ($0.775 / $1.255) with / without video input, and
+  // re-print the six older cells unchanged
+  // (tests/fixtures/kie-pricing-evidence/seedance-2-5-4k-2026-11-19.json).
   "bytedance/seedance-2-5": {
     kind: "perUnit",
     unit: "seconds",
@@ -2627,9 +2632,11 @@ export const kie: Record<string, ModelPricing> = {
       "720p|no-video": 0.315,
       "1080p|video": 0.475,
       "1080p|no-video": 0.79,
+      "4k|video": 0.775,
+      "4k|no-video": 1.255,
     },
     warn: inputDurationWarning("bytedance/seedance-2-5", seedance25Seconds),
-    source: pricePage("https://kie.ai/seedance-2-5", "2026-10-22"),
+    source: pricePage("https://kie.ai/seedance-2-5", "2026-11-19"),
   },
 
   // The render inherits source-draft inputs and duration, neither of which

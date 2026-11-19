@@ -1,0 +1,140 @@
+{
+  "capturedAt": "2026-11-19",
+  "source": "https://kie.ai/seedance-2-5",
+  "models": ["bytedance/seedance-2-5"],
+  "basis": "KIE added a 4K tier to Seedance 2.5 on 2026-11-19: the pricing-feed rows anchored on https://kie.ai/seedance-2-5 (first seen in the 08:26Z pull, absent from the 00:22Z pull) and the live GET /api/v1/models pricingDesc agree on 155 credits (0.775 USD) per second with video input and 251 credits (1.255 USD) without it, and re-print the six 480p / 720p / 1080p cells unchanged. With video input KIE bills rate x (total reference-video duration + generated duration); without it, rate x generated duration. The docs list resolution 480p | 720p | 1080p | 4k and describe 4k output as 3840x2160 at 16:9, H.265 (HEVC) 10-bit; the draft render model (bytedance/seedance-2-5-draft) still takes 1080p only. No 4K call was made: a 4 s clip without video input would bill about 1004 credits (5.02 USD).",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "firstSeenAt": "2026-11-19T08:26:06.570Z",
+    "fetchedAt": "2026-11-19T09:39:44.828Z",
+    "rows": [
+      {
+        "modelDescription": "bytedance/seedance-2-5, 4K with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "155",
+        "creditUnit": "per second",
+        "usdPrice": "0.775",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 4K no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "251",
+        "creditUnit": "per second",
+        "usdPrice": "1.255",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 1080p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "95",
+        "creditUnit": "per second",
+        "usdPrice": "0.475",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 1080p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "158",
+        "creditUnit": "per second",
+        "usdPrice": "0.79",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 720p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "38",
+        "creditUnit": "per second",
+        "usdPrice": "0.190",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 720p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "63",
+        "creditUnit": "per second",
+        "usdPrice": "0.315",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 480p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 480p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "28",
+        "creditUnit": "per second",
+        "usdPrice": "0.140",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-19T09:39:31Z",
+    "entry": {
+      "model": "bytedance/seedance-2-5",
+      "slug": "bytedance/seedance-2-5",
+      "title": "Seedance 2.5",
+      "provider": "ByteDance",
+      "taskType": ["Video to Video", "Image to Video", "Text to Video"],
+      "description": "",
+      "pricingDesc": "480P: 17 credits/s ($0.085/s, with video) | 28 credits/s ($0.140/s, no video)\n720P: 38 credits/s ($0.190/s, with video) | 63 credits/s ($0.315/s, no video)\n1080P: 95 credits/s ($0.475/s, with video) | 158 credits/s ($0.790/s, no video)\n4K: 155 credits/s ($0.775/s, with video) | 251 credits/s ($1.255/s, no video)\n\n🔸Note🔸: Video input has a lower per-second rate because both input and output durations are billed.\n\n- With video input: Rate × (Total uploaded video duration + Generated video duration)\n- Without video input (text/images only): Rate × Generated video duration\n\nHigh-tier top-ups include a +10% bonus, making effective pricing approximately 10% lower than listed. Prices are currently in beta and may be adjusted in the future."
+    }
+  },
+  "docs": [
+    {
+      "model": "bytedance/seedance-2-5",
+      "url": "https://docs.kie.ai/market/bytedance/seedance-2-5.md",
+      "fetchedAt": "2026-11-19T09:39:08Z",
+      "sha256": "ea4e58ec40e96c57c8e0e7811f7e6e8df3aa1132b905d44fdc5cf0e354dc5122",
+      "resolution": ["480p", "720p", "1080p", "4k"],
+      "omni_reference_task_type": ["auto", "reference", "edit", "extend"]
+    },
+    {
+      "model": "bytedance/seedance-2-5-draft",
+      "url": "https://docs.kie.ai/market/bytedance/seedance-2-5-draft.md",
+      "fetchedAt": "2026-11-19T09:39:08Z",
+      "sha256": "79fe644b3010d523a5241871b9e3a2fbb8cf55fe9159fe78040abf29290c08a1",
+      "resolution": ["1080p"]
+    }
+  ],
+  "recordings": []
+}

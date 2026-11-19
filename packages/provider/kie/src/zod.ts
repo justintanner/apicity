@@ -3686,6 +3686,16 @@ const Seedance25MediaReferenceSchema = z.string().refine((value) => {
   }
 }, "Expected a valid media URL or non-empty asset:// reference");
 
+// omni_reference_task_type, documented for Seedance 2.5 and 2.5 Flash
+// (docs.kie.ai, read 2026-11-19): it names the task type of a multimodal
+// reference request instead of leaving it to automatic detection.
+export const Seedance25OmniReferenceTaskTypeSchema = z.enum([
+  "auto",
+  "reference",
+  "edit",
+  "extend",
+]);
+
 // The input is intentionally kept as a plain object so schema consumers can
 // inspect `.shape`; request-level scenario rules live on the outer schema.
 export const Seedance25InputSchema = z.object({
@@ -3704,12 +3714,20 @@ export const Seedance25InputSchema = z.object({
     .array(Seedance25MediaReferenceSchema)
     .max(10)
     .optional(),
+  omni_reference_task_type: Seedance25OmniReferenceTaskTypeSchema.optional(),
   return_last_frame: z.boolean().default(false),
   // KIE's default is true, but every recorded run sent false, so the schema
   // defaults to false (operator decision, 2026-10-25). createTask sends the
   // request as written, so an omitted field still gets KIE's true.
   generate_audio: z.boolean().default(false),
-  resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
+  // 4k since 2026-11-19 (docs.kie.ai and the price feed, ac-vggwxn): 3840x2160
+  // at 16:9, encoded as H.265 (HEVC) 10-bit.
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe(
+      "Output resolution (default 720p); 4k is 3840x2160 at 16:9, H.265 (HEVC) 10-bit"
+    ),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
     .default("adaptive")
@@ -3743,7 +3761,17 @@ interface Seedance25ScenarioInput {
   reference_image_urls?: string[];
   reference_video_urls?: string[];
   reference_audio_urls?: string[];
+  omni_reference_task_type?: z.infer<
+    typeof Seedance25OmniReferenceTaskTypeSchema
+  >;
   aspect_ratio: string;
+  duration?: number;
+}
+
+function hasSeedance25Reference(input: Seedance25ScenarioInput): boolean {
+  return SEEDANCE_25_REFERENCE_FIELDS.some(
+    (field) => (input[field]?.length ?? 0) > 0
+  );
 }
 
 // Seedance 2.5 and 2.5 Flash document the same three mutually exclusive
@@ -3789,6 +3817,49 @@ function addSeedance25ScenarioIssues(
   }
 }
 
+// Seedance 2.5 and 2.5 Flash document the same omni_reference_task_type
+// rules: it takes effect only with reference materials (KIE rejects it on
+// text-to-video and frame requests), edit and extend need a reference video
+// and the adaptive aspect ratio, and edit also needs duration -1.
+function addSeedance25OmniReferenceIssues(
+  input: Seedance25ScenarioInput,
+  ctx: z.RefinementCtx
+): void {
+  const taskType = input.omni_reference_task_type;
+  if (taskType === undefined) return;
+  if (!hasSeedance25Reference(input)) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "omni_reference_task_type requires reference_image_urls, reference_video_urls or reference_audio_urls",
+      path: ["input", "omni_reference_task_type"],
+    });
+    return;
+  }
+  if (taskType !== "edit" && taskType !== "extend") return;
+  if ((input.reference_video_urls?.length ?? 0) === 0) {
+    ctx.addIssue({
+      code: "custom",
+      message: `omni_reference_task_type ${taskType} requires reference_video_urls`,
+      path: ["input", "reference_video_urls"],
+    });
+  }
+  if (input.aspect_ratio !== "adaptive") {
+    ctx.addIssue({
+      code: "custom",
+      message: `omni_reference_task_type ${taskType} requires adaptive aspect_ratio`,
+      path: ["input", "aspect_ratio"],
+    });
+  }
+  if (taskType === "edit" && input.duration !== -1) {
+    ctx.addIssue({
+      code: "custom",
+      message: "omni_reference_task_type edit requires duration -1",
+      path: ["input", "duration"],
+    });
+  }
+}
+
 export const Seedance25RequestSchema =
   Seedance25RequestObjectSchema.superRefine((value, ctx) => {
     const { input } = value;
@@ -3800,6 +3871,7 @@ export const Seedance25RequestSchema =
       });
     }
     addSeedance25ScenarioIssues(input, ctx, "Seedance 2.5");
+    addSeedance25OmniReferenceIssues(input, ctx);
   });
 
 export const Seedance25DraftInputSchema = z.object({
@@ -3821,14 +3893,7 @@ export const Seedance25DraftRequestSchema = z.object({
 // lower limits: a 20480-character prompt, up to 10 reference images, 5 videos
 // and 5 audio clips, 480p or 720p only, and no draft mode. duration has no
 // default: an omitted duration lets the model choose, and KIE bills the
-// length it generates. omni_reference_task_type is documented for Flash.
-export const Seedance25FlashOmniReferenceTaskTypeSchema = z.enum([
-  "auto",
-  "reference",
-  "edit",
-  "extend",
-]);
-
+// length it generates.
 export const Seedance25FlashInputSchema = z.object({
   prompt: z.string().max(20480).optional(),
   first_frame_url: Seedance25MediaReferenceSchema.optional(),
@@ -3845,8 +3910,7 @@ export const Seedance25FlashInputSchema = z.object({
     .array(Seedance25MediaReferenceSchema)
     .max(5)
     .optional(),
-  omni_reference_task_type:
-    Seedance25FlashOmniReferenceTaskTypeSchema.optional(),
+  omni_reference_task_type: Seedance25OmniReferenceTaskTypeSchema.optional(),
   return_last_frame: z.boolean().default(false),
   // KIE's default is true. This follows the Seedance 2.5 default of false
   // (operator decision, 2026-10-25); createTask sends the request as
@@ -3881,10 +3945,11 @@ export const Seedance25FlashRequestSchema =
     const { input } = value;
     addSeedance25ScenarioIssues(input, ctx, "Seedance 2.5 Flash");
 
-    const hasReference = SEEDANCE_25_REFERENCE_FIELDS.some(
-      (field) => (input[field]?.length ?? 0) > 0
-    );
-    if (!input.first_frame_url && !hasReference && !input.prompt) {
+    if (
+      !input.first_frame_url &&
+      !hasSeedance25Reference(input) &&
+      !input.prompt
+    ) {
       ctx.addIssue({
         code: "custom",
         message: "Seedance 2.5 Flash text-to-video requires prompt",
@@ -3892,39 +3957,7 @@ export const Seedance25FlashRequestSchema =
       });
     }
 
-    const taskType = input.omni_reference_task_type;
-    if (taskType === undefined) return;
-    if (!hasReference) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "omni_reference_task_type requires reference_image_urls, reference_video_urls or reference_audio_urls",
-        path: ["input", "omni_reference_task_type"],
-      });
-      return;
-    }
-    if (taskType !== "edit" && taskType !== "extend") return;
-    if ((input.reference_video_urls?.length ?? 0) === 0) {
-      ctx.addIssue({
-        code: "custom",
-        message: `omni_reference_task_type ${taskType} requires reference_video_urls`,
-        path: ["input", "reference_video_urls"],
-      });
-    }
-    if (input.aspect_ratio !== "adaptive") {
-      ctx.addIssue({
-        code: "custom",
-        message: `omni_reference_task_type ${taskType} requires adaptive aspect_ratio`,
-        path: ["input", "aspect_ratio"],
-      });
-    }
-    if (taskType === "edit" && input.duration !== -1) {
-      ctx.addIssue({
-        code: "custom",
-        message: "omni_reference_task_type edit requires duration -1",
-        path: ["input", "duration"],
-      });
-    }
+    addSeedance25OmniReferenceIssues(input, ctx);
   });
 
 export const Seedance2MiniInputSchema = z.object({

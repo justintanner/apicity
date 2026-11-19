@@ -726,11 +726,15 @@ function selectorValues(raw, key, inventories) {
 
 function seedanceValues(raw) {
   const text = String(raw.modelDescription ?? "");
-  const resolution = /1080p/i.test(text)
-    ? "1080p"
-    : /480p/i.test(text)
-      ? "480p"
-      : "720p";
+  // The feed prints the 4K tier as "4K"; the schema value and rate key are
+  // "4k".
+  const resolution = /\b4k\b/i.test(text)
+    ? "4k"
+    : /1080p/i.test(text)
+      ? "1080p"
+      : /480p/i.test(text)
+        ? "480p"
+        : "720p";
   const videoInput = /with video/i.test(text) ? "video" : "no-video";
   return { resolution, videoInput };
 }

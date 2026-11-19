@@ -2161,6 +2161,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "Up to 10 audio URLs or asset:// refs; WAV/MP3, 2-30 seconds and under 15 MB each",
         items: { type: "string" },
       },
+      omni_reference_task_type: {
+        type: "string",
+        enum: ["auto", "reference", "edit", "extend"],
+        description:
+          "Reference task type, only with reference_*_urls (omitted: detected automatically); edit and extend need reference_video_urls and adaptive aspect_ratio, and edit needs duration -1",
+      },
       return_last_frame: {
         type: "boolean",
         default: false,
@@ -2175,9 +2181,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p", "1080p"],
+        enum: ["480p", "720p", "1080p", "4k"],
         default: "720p",
-        description: "Output resolution (default 720p)",
+        description:
+          "Output resolution (default 720p); 4k is 3840x2160 at 16:9, H.265 (HEVC) 10-bit",
       },
       aspect_ratio: {
         type: "string",

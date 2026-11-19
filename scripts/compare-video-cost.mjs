@@ -706,6 +706,35 @@ export const lineup = [
     },
     audio: "opt",
   },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 4k prompt-only (no-video)",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "4k",
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 4k reference-video (video)",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "4k",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+      },
+    },
+    audio: "opt",
+  },
   // Kling 3.0 Omni — per second. Text-to-video and image-to-video select
   // resolution × audio; reference-to-video adds a distinct video-input tier;
   // transformation always has a video input and selects only by resolution.

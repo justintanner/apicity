@@ -1900,3 +1900,42 @@ export const WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema = z.object({
       "Quality/performance mode. `fast` currently requires `sound` false. WaveSpeed default: `std`."
     ),
 });
+
+// skywork-ai/skyreels-v4/image-to-video, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-20). The first-frame image sets the
+// framing, so there is no aspect_ratio; last_image and images add frames.
+export const WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("The prompt describing the video motion or camera behavior."),
+  image: z.string().describe("First frame image URL."),
+  last_image: z.string().optional().describe("Optional end frame image URL."),
+  images: z
+    .array(z.string())
+    .max(6)
+    .optional()
+    .describe("Optional middle frame image URLs. Upload up to 6 images."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(15)
+    .optional()
+    .describe("Length of the video in seconds, 3-15. WaveSpeed default: 5."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .optional()
+    .describe("Output video resolution. WaveSpeed default: `1080p`."),
+  sound: z
+    .boolean()
+    .optional()
+    .describe(
+      "Whether to generate sound effects with the video. WaveSpeed default: false."
+    ),
+  mode: z
+    .enum(["std", "fast"])
+    .optional()
+    .describe(
+      "Quality/performance mode. `fast` currently requires `sound` false. WaveSpeed default: `std`."
+    ),
+});

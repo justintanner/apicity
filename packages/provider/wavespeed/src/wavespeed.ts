@@ -49,6 +49,7 @@ import type {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequest,
   WaveSpeedRunwaymlAleph2Request,
   WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequest,
+  WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequest,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequest,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequest,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequest,
@@ -100,6 +101,7 @@ import {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -1150,6 +1152,24 @@ export function createWaveSpeed(
               },
               {
                 schema: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
+              }
+            ),
+            // POST https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/image-to-video
+            // Docs: https://wavespeed.ai/models/skywork-ai/skyreels-v4/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/skywork-ai/skyreels-v4/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
               }
             ),
           },

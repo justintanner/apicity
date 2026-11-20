@@ -515,6 +515,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.skyworkAi.skyreelsV4.imageToVideo": {
+    "source": "wavespeed/skywork-ai-skyreels-v4-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns its head toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "duration": 3,
+      "resolution": "480p",
+      "sound": false,
+      "mode": "fast"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.skyworkAi.skyreelsV4.textToVideo": {
     "source": "wavespeed/skywork-ai-skyreels-v4-text-to-video",
     "payload": {

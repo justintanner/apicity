@@ -66,7 +66,7 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
+    expect(i2v).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
     expect(t2i).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
@@ -167,7 +167,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
     expect(table).not.toContain("machgen");
-    expect(table).toContain("not yet in apicity: Utopai X, SkyReels V4");
+    expect(table).toContain("not yet in apicity: Utopai X");
+    expect(table).not.toContain("SkyReels V4");
     expect(table).not.toContain("present");
   });
 

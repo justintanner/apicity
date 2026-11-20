@@ -46,6 +46,7 @@ import type {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -868,8 +869,21 @@ export interface WaveSpeedSkyworkAiSkyreelsV4TextToVideoMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema;
 }
+export type WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequest = z.input<
+  typeof WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedSkyworkAiSkyreelsV4ImageToVideoMethod {
+  (
+    request: WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema;
+}
 export interface WaveSpeedSkyworkAiSkyreelsV4Namespace {
   textToVideo: WaveSpeedSkyworkAiSkyreelsV4TextToVideoMethod;
+  imageToVideo: WaveSpeedSkyworkAiSkyreelsV4ImageToVideoMethod;
 }
 export interface WaveSpeedSkyworkAiNamespace {
   skyreelsV4: WaveSpeedSkyworkAiSkyreelsV4Namespace;

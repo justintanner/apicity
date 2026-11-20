@@ -1140,6 +1140,7 @@ export const MODEL_SLUGS = {
     "x-ai/grok-imagine-image-v2.0/text-to-image": "grokimgi2p0",
     "bytedance/seedream-v5.5/edit": "sd5p5",
     "skywork-ai/skyreels-v4/text-to-video": "skyreelsv4",
+    "skywork-ai/skyreels-v4/image-to-video": "skyreelsv4",
   },
 } as const;
 
@@ -2290,6 +2291,7 @@ export const MODEL_DISPLAY = {
     "x-ai/grok-imagine-image-v2.0/text-to-image": "Grok Imagine Image 2.0",
     "bytedance/seedream-v5.5/edit": "Seedream 5.5 Edit",
     "skywork-ai/skyreels-v4/text-to-video": "SkyReels V4",
+    "skywork-ai/skyreels-v4/image-to-video": "SkyReels V4",
   },
 } as const;
 

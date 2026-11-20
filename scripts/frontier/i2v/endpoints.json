@@ -91,7 +91,13 @@
       "modelId": "MiniMax-H3"
     }
   ],
-  "SkyReels V4": [],
+  "SkyReels V4": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.skyworkAi.skyreelsV4.imageToVideo",
+      "pricingKey": "skywork-ai/skyreels-v4/image-to-video"
+    }
+  ],
   "HeyGen Video 1": [
     {
       "provider": "fal",

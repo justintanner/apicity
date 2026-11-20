@@ -2491,3 +2491,87 @@ describe("wavespeed Gemini Omni 1.2 verification dates", () => {
     expect(estimate(t2v, { prompt: PROMPT }).usd).toBeCloseTo(0.56, 9);
   });
 });
+
+describe("wavespeed skywork-ai/skyreels-v4/image-to-video", () => {
+  const model = "skywork-ai/skyreels-v4/image-to-video";
+  const IMAGE = "https://example.com/cat1.jpg";
+
+  it("prices the recorded payload at the 0.24 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image: IMAGE,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.24, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-20, list price.
+  it("bills the quoted rate per second by mode and resolution", () => {
+    for (const [mode, resolution, duration, usd] of [
+      ["std", "480p", 3, 0.33],
+      ["std", "480p", 15, 1.65],
+      ["std", "720p", 5, 0.7],
+      ["std", "1080p", 3, 1.05],
+      ["fast", "720p", 4, 0.44],
+      ["fast", "1080p", 6, 1.65],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          image: IMAGE,
+          mode,
+          resolution,
+          duration,
+        }).usd,
+        `${mode} ${resolution} ${duration} s`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("defaults to 5 s at 1080p in std mode; sound and extra frames add nothing", () => {
+    expect(estimate(model, { prompt: PROMPT, image: IMAGE }).usd).toBeCloseTo(
+      1.75,
+      9
+    );
+    const fast = {
+      prompt: PROMPT,
+      image: IMAGE,
+      duration: 3,
+      resolution: "480p",
+      mode: "fast",
+    };
+    for (const extra of [
+      { last_image: IMAGE },
+      { images: [IMAGE, IMAGE] },
+      { sound: false },
+    ]) {
+      expect(estimate(model, { ...fast, ...extra }).usd).toBeCloseTo(0.24, 9);
+    }
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        image: IMAGE,
+        duration: 3,
+        resolution: "480p",
+        mode: "std",
+        sound: true,
+      }).usd
+    ).toBeCloseTo(0.33, 9);
+  });
+
+  it("fails closed on a mode WaveSpeed does not price", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image: IMAGE,
+      mode: "turbo",
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});

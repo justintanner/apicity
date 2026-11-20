@@ -47,6 +47,7 @@ import {
   WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema,
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -2843,6 +2844,7 @@ describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
     expect(Object.keys(wavespeed.api.v3.skyworkAi)).toEqual(["skyreelsV4"]);
     expect(Object.keys(wavespeed.api.v3.skyworkAi.skyreelsV4)).toEqual([
       "textToVideo",
+      "imageToVideo",
     ]);
     expect(wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo.schema).toBe(
       WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema
@@ -2913,6 +2915,114 @@ describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
           [field]: value,
         }).success,
         `${field} ${value}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed skywork-ai/skyreels-v4/image-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-skywork-ai-skyreels-v4-image-to-video.test.ts
+  // recorded (the cat photo at its pinned raw URL).
+  const IMAGE =
+    "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image: IMAGE,
+    duration: 3,
+    resolution: "480p",
+    sound: false,
+    mode: "fast",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.skyworkAi.skyreelsV4.imageToVideo.schema).toBe(
+      WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema
+    );
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "skywork-ai/skyreels-v4/image-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.skyworkAi.skyreelsV4.imageToVideo({
+      prompt: RECORDED.prompt,
+      image: IMAGE,
+      duration: 3,
+      resolution: "480p",
+      sound: false,
+      mode: "fast",
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/image-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option, in the catalog's order", () => {
+    expect(
+      Object.keys(WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema.shape)
+    ).toEqual([
+      "prompt",
+      "image",
+      "last_image",
+      "images",
+      "duration",
+      "resolution",
+      "sound",
+      "mode",
+    ]);
+    expect(
+      WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema.safeParse({
+        prompt: "A koi pond",
+        image: IMAGE,
+        last_image: IMAGE,
+        images: [IMAGE, IMAGE, IMAGE, IMAGE, IMAGE, IMAGE],
+        duration: 15,
+        resolution: "1080p",
+        sound: true,
+        mode: "std",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["duration", 2],
+      ["duration", 16],
+      ["duration", 3.5],
+      ["resolution", "4k"],
+      ["mode", "turbo"],
+      ["sound", "yes"],
+      ["images", [IMAGE, IMAGE, IMAGE, IMAGE, IMAGE, IMAGE, IMAGE]],
+      ["image", undefined],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
       ).toBe(false);
     }
   });

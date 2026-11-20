@@ -958,7 +958,13 @@ export const FRONTIER = {
         model: "SkyReels V4",
         creator: "Skywork AI",
         elo: 1125,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.skyworkAi.skyreelsV4.imageToVideo",
+            pricingKey: "skywork-ai/skyreels-v4/image-to-video",
+          },
+        ],
       },
       {
         rank: 6,

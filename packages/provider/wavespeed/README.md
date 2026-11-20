@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-50 endpoints across 14 groups. Each method mirrors an upstream URL path.
+51 endpoints across 14 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -821,6 +821,23 @@ Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
 </details>
 
 ### skyworkAi
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.skyworkAi.skyreelsV4.imageToVideo</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/skywork-ai/skyreels-v4/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/skywork-ai/skyreels-v4/image-to-video)
+
+```typescript
+const res = await wavespeed.api.v3.skyworkAi.skyreelsV4.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo</code></b></summary>

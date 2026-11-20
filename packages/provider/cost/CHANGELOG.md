@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed SkyReels V4 image-to-video
+  (`skywork-ai/skyreels-v4/image-to-video`) is priced per second of video by
+  mode and resolution from free quotes read 2026-11-20 (list price; the page
+  carries no formula): 0.11 / 0.14 / 0.35 USD/s in std mode and 0.08 / 0.11 /
+  0.275 USD/s in fast mode at 480p / 720p / 1080p, the same table as the
+  text-to-video twin, written out on its own source. Duration defaults to 5 s,
+  resolution to 1080p and mode to std; sound, `last_image` and the middle
+  `images` add nothing. Slug `skyreelsv4`, display "SkyReels V4". It is the
+  WaveSpeed entry for SkyReels V4 on the image-to-video frontier board. A
+  recorded 3 s, 480p, fast clip billed 0.24 USD (ac-3kldvi).
+
 - fal MAI-Image-2.7 Flash edit (`microsoft/mai-image-2.7/flash/edit`) is
   priced dynamically from fal's Flash token card (read 2026-11-20): $1.75 per
   1M text input tokens, $2.50 per 1M image input tokens and $10 per 1M image

@@ -5429,6 +5429,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.skyworkAi.skyreelsV4.textToVideo"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/image-to-video",
+        asOf: "2026-11-20",
+      },
+    },
+    ["POST api.v3.skyworkAi.skyreelsV4.imageToVideo"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

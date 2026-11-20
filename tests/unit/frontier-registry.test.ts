@@ -175,7 +175,7 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
-const I2V_UNMAPPED = ["Utopai X", "SkyReels V4"];
+const I2V_UNMAPPED = ["Utopai X"];
 const V2V_UNMAPPED: string[] = [];
 
 /**
@@ -955,7 +955,7 @@ describe("frontier snapshots", () => {
     ).toEqual(I2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(snapshot)).toEqual([]);
     expect(unmappedNames(endpointMap)).toEqual(I2V_UNMAPPED);
-    expect(mappedCount(endpointMap)).toBe(8);
+    expect(mappedCount(endpointMap)).toBe(9);
     expect(Object.keys(endpointMap)).toHaveLength(10);
   });
 

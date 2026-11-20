@@ -38,6 +38,7 @@ import type {
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
+  WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
@@ -859,8 +860,21 @@ export interface WaveSpeedOpenaiGptImage2p5FlareTextToImageMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema;
 }
+export type WaveSpeedOpenaiGptImage2p5FlareEditRequest = z.input<
+  typeof WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedOpenaiGptImage2p5FlareEditMethod {
+  (
+    request: WaveSpeedOpenaiGptImage2p5FlareEditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema;
+}
 export interface WaveSpeedOpenaiGptImage2p5FlareNamespace {
   textToImage: WaveSpeedOpenaiGptImage2p5FlareTextToImageMethod;
+  edit: WaveSpeedOpenaiGptImage2p5FlareEditMethod;
 }
 export type WaveSpeedOpenaiGptImage2TextToImageRequest = z.input<
   typeof WaveSpeedOpenaiGptImage2TextToImageRequestSchema

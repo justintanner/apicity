@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed GPT Image 2.5 Flare edit (`openai/gpt-image-2.5-flare/edit`)
+  bills exactly like the Sunburst edit: the GPT Image 2.5 text-to-image rate
+  for the quality and resolution, plus 0.015 USD per input image, plus
+  0.015 USD once when a `mask_image` is sent. Free quotes read 2026-11-20
+  match the Sunburst edit at every cell (list price; discount_rate 100).
+  Display "GPT Image 2.5 Flare Edit", slug `gi2p5fl` (shared with the
+  text-to-image key and with KIE). A recorded low 1k edit of one input
+  billed 0.025 USD, the quote. It is the WaveSpeed entry beside fal, KIE,
+  MachGen and OpenAI on the GPT Image 2.5 Flare (max) image-editing
+  frontier row (ac-0dfgz3).
+
 - WaveSpeed GPT Image 2.5 Sunburst edit
   (`openai/gpt-image-2.5-sunburst/edit`) bills the GPT Image 2.5
   text-to-image rate for the quality and resolution (0.01 USD at low 1k to

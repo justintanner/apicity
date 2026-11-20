@@ -1064,6 +1064,22 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-20",
     },
   },
+  // base_price 39000 micros, discount_rate 100 on 2026-11-20. No formula on the
+  // model page. Free quotes read 2026-11-20 match the Sunburst edit at every
+  // quality and resolution, for 1, 2, 4 and 16 input images, with a mask,
+  // and with jpeg, webp and a 21:9 aspect ratio.
+  "openai/gpt-image-2.5-flare/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P5_RATES,
+    extra: editSurcharge,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.5-flare/edit",
+      asOf: "2026-11-20",
+    },
+  },
   // base_price 35000 micros, discount_rate 100 on 2026-11-18. The model page
   // carries no formula, only its price inputs (duration, mode, resolution),
   // so the rates are the list prices of free quotes (POST /api/v3/model/price)

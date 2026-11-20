@@ -2063,6 +2063,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST microsoft.maiImage2p7.textToImage": {
+    "source": "fal/microsoft-mai-image-2-7-text-to-image",
+    "payload": {
+      "prompt": "A ceramic teapot beside a sunlit window."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.flf2v.trainer": {
     "source": "fal/minimax-h3-flf2v-trainer",
     "payload": {

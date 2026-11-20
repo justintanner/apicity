@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal MAI-Image-2.7 text-to-image (`microsoft/mai-image-2.7/text-to-image`) is
+  priced dynamically from fal's token card (read 2026-11-20): $5 per 1M text
+  input tokens and $34 per 1M image output tokens, rounded up to $0.0001; a
+  1024x1024 output uses 1,024 image tokens ($0.034816). It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for MAI-Image-2.7 on
+  the text-to-image frontier board. A recorded default-size call billed 0.035
+  USD (ac-lcuwhi).
+
 - fal MAI-Image-2.7 edit (`microsoft/mai-image-2.7/edit`) is priced
   dynamically from fal's token card (read 2026-11-20): $5 per 1M text input
   tokens, $8 per 1M image input tokens and $34 per 1M image output tokens,

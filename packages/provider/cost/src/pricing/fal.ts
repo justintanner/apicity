@@ -1558,6 +1558,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",
   "microsoft/mai-image-2.7/edit",
+  "microsoft/mai-image-2.7/text-to-image",
   "minimax/h3-max-turbo/reference-to-video",
   "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
@@ -1625,6 +1626,12 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "microsoft/mai-image-2.7/edit": {
     unit: "per 1M tokens: text $5 input; image $8 input / $34 output, rounded up to $0.0001",
     why: "the output size can be left to the model and the input images and prompt set the input tokens, so the request does not fix the token count",
+  },
+  // Public card read 2026-11-20 (llms.txt; pricing API 1 USD per unit): a
+  // 1024x1024 output uses 1,024 image tokens ($0.034816) before input tokens.
+  "microsoft/mai-image-2.7/text-to-image": {
+    unit: "per 1M tokens: text $5 input; image $34 output, rounded up to $0.0001",
+    why: "the prompt sets the input tokens and fal's output size can differ from the requested one, so the request does not fix the token count",
   },
   // Public card read 2026-11-11: the token card of the 2.6 text-to-image.
   "openai/gpt-image-2.6/sunburst/edit": {

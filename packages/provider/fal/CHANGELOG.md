@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.microsoft.maiImage2p7.textToImage`
+  (`POST https://fal.run/microsoft/mai-image-2.7/text-to-image`) adds
+  MAI-Image-2.7 text-to-image, #4 on the 2026-11-19 text-to-image board, as a
+  leaf on the `microsoft.maiImage2p7` object. The schema follows fal's queue
+  OpenAPI (read 2026-11-20): `prompt` (required), `image_size` (a preset or a
+  custom width and height, default `square_hd`), `resolution` 1K or 2K,
+  `background` opaque or transparent, and `output_format` png, jpeg or webp.
+  Both 2.7 leaves now share one custom ImageSize schema. As on the edit leaf,
+  the size limits and the transparent background's format rule stay in the
+  descriptions. A recorded prompt-only call returned one 1024x1024 PNG and
+  billed `x-fal-billable-units` 0.035 (ac-lcuwhi).
+
 - `run.microsoft.maiImage2p7.edit`
   (`POST https://fal.run/microsoft/mai-image-2.7/edit`) adds MAI-Image-2.7
   editing, #1 on the 2026-11-19 image-editing board. It declares the

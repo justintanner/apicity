@@ -54,8 +54,9 @@ const CHECKED = [
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
   "kling/v4/video-to-video/edit",
-  // Card read 2026-11-20; see the recording's x-fal-billable-units.
+  // Cards read 2026-11-20; see each recording's x-fal-billable-units.
   "microsoft/mai-image-2.7/edit",
+  "microsoft/mai-image-2.7/text-to-image",
   "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",
   "openai/gpt-image-2",

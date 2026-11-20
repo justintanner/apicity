@@ -109,16 +109,18 @@ describe("MachGen image tasks", () => {
         "utf8"
       )
     ) as { contract: Record<string, { i2i: { maxInputImages: number } }> };
-    expect(MACHGEN_I2I_MAX_IMAGES).toEqual(
-      Object.fromEntries(
+    expect(MACHGEN_I2I_MAX_IMAGES).toEqual({
+      ...Object.fromEntries(
         Object.entries({
           ...evidence.contract,
           ...Object.fromEntries(
             tokenModels.map((id) => [id, tokenEvidence.contract.models[id]!])
           ),
         }).map(([model, entry]) => [model, entry.i2i.maxInputImages])
-      )
-    );
+      ),
+      // Registered 2026-11-20 from the Seedream 5.5 docs page.
+      "Seedream-5.5": 10,
+    });
     expect(Object.keys(MACHGEN_I2I_MAX_IMAGES)).toEqual([
       ...MACHGEN_IMAGE_MODELS,
     ]);
@@ -131,6 +133,7 @@ describe("MachGen image tasks", () => {
     ["GPT-Image-2.6-Flare", 16],
     ["Nano-Banana-2", 14],
     ["Nano-Banana-2.1", 14],
+    ["Seedream-5.5", 10],
   ])("caps %s I2I at %i source images", (model, cap) => {
     expect(
       issues({ model, task_type: "I2I", src_image_urls: sources(cap) })
@@ -151,6 +154,54 @@ describe("MachGen image tasks", () => {
       })
     ).toEqual([]);
   });
+  it("prices Seedream 5.5 from the 2026-11-20 docs page", () => {
+    const quote = (overrides: Record<string, unknown>) =>
+      estimate({
+        model: "Seedream-5.5",
+        optimization_level: undefined,
+        image_config: { height: 1024 },
+        ...overrides,
+      });
+    const one = quote({
+      task_type: "I2I",
+      src_image_urls: ["https://example.com/cat.jpg"],
+    });
+    expect(one.warnings).toEqual([]);
+    expect(one.usd).toBeCloseTo(0.028, 6);
+    expect(one.rateAsOf).toBe("2026-11-20");
+    expect(
+      quote({ image_config: { width: 1024, height: 1024 } }).usd
+    ).toBeCloseTo(0.02, 6);
+    expect(quote({ image_config: { height: 1536 } }).usd).toBeCloseTo(0.02, 6);
+    expect(quote({ image_config: { height: 2048 } }).usd).toBeCloseTo(0.035, 6);
+    expect(
+      quote({
+        image_config: { width: 2541, height: 1024 },
+        image_output: { layers: { max_images: 2 } },
+      }).usd
+    ).toBeCloseTo(0.07, 6);
+    expect(
+      quote({
+        task_type: "I2I",
+        src_image_urls: [
+          "https://example.com/a.jpg",
+          "https://example.com/b.jpg",
+        ],
+      }).usd
+    ).toBeCloseTo(0.036, 6);
+    for (const [overrides, phrase] of [
+      [{ image_config: { size_mode: "auto" } }, "automatic image size"],
+      [{ image_config: { width: 100, height: 100 } }, "pixel range"],
+      [{ image_config: { height: 720 } }, "square preset"],
+      [{ task_type: "I2I", src_image_urls: [] }, "I2I requires a source"],
+      [{ src_task_ids: ["previous"] }, "src_task_ids"],
+      [{ image_output: { layers: { count: 2 } } }, "layers.max_images"],
+    ] as const) {
+      const result = quote(overrides);
+      expect(result.usd, phrase).toBe(0);
+      expect(result.warnings.join(" "), phrase).toContain(phrase);
+    }
+  });
   it("matches every captured image pricebook row for both task types", () => {
     const evidence = JSON.parse(
       readFileSync(
@@ -169,7 +220,12 @@ describe("MachGen image tasks", () => {
     expect(new Set(evidence.prices.map((row) => row.model))).toEqual(
       new Set(
         Object.entries(PRICING.machgen)
-          .filter(([, row]) => row.kind === "perUnit" && row.unit === "images")
+          .filter(
+            ([id, row]) =>
+              id !== "Seedream-5.5" &&
+              row.kind === "perUnit" &&
+              row.unit === "images"
+          )
           .map(([id]) => id)
       )
     );

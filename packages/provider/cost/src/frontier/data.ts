@@ -514,6 +514,11 @@ export const FRONTIER = {
             dotPath: "api.v3.bytedance.seedreamV5p5.edit",
             pricingKey: "bytedance/seedream-v5.5/edit",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedream-5.5",
+          },
         ],
       },
       {

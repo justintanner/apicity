@@ -1404,9 +1404,10 @@ describe("frontier image snapshots", () => {
           "GPT Image 2.6 Flare (max)",
           "GPT Image 2.5 Sunburst (max)",
           "GPT Image 2.5 Flare (max)",
+          "Seedream 5.5",
           "Nano Banana 2.1",
         ],
-        MACHGEN_IMAGE_IDS
+        { ...MACHGEN_IMAGE_IDS, "Seedream 5.5": "Seedream-5.5" }
       )
     );
   });

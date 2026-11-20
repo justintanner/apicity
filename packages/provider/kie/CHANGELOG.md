@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `ltx/2-5-fast-image-to-video` (LTX 2.5 Fast image-to-video) on createTask, from the docs as re-read on 2026-11-20: a required `image_url` (the first frame; it sets the aspect ratio, so there is no `aspect_ratio` field), a required `prompt` (1-5000 characters), and `resolution`, `fps`, `duration` and `seed` as on `ltx/2-5-fast-text-to-video`, including the 6, 8 or 10 second limit at 1440p or at 48 or 50 fps. `Ltx25FastImageToVideoInputSchema` and `Ltx25FastImageToVideoRequestSchema` are exported (ac-ey3b9p).
+
 - `ltx/2-5-fast-text-to-video` (LTX 2.5 Fast text-to-video) on createTask, from the docs as re-read on 2026-11-20: `prompt` (1-5000 characters, required), `resolution` (`720p`, `1080p` by default, `1440p`), `fps` (24 by default, 25, 48, 50), `duration` (6-20 seconds in steps of 2, 10 by default), `aspect_ratio` (`16:9` by default, `9:16`, `1:1`, `3:2`, `2:3`) and an optional `seed` (0-2147483647). A `duration` past 10 seconds at 1440p or at 48 or 50 fps is refused, as the docs allow only 6, 8 or 10 there. The LTX 2.5 family schemas `Ltx25FpsSchema`, `Ltx25AspectRatioSchema` and `Ltx25SeedSchema` are exported, with `Ltx25FastResolutionSchema`, `Ltx25FastDurationSchema`, `Ltx25FastTextToVideoInputSchema` and `Ltx25FastTextToVideoRequestSchema` (ac-ujmlmh).
 
 - `grok-imagine/upscale` takes `resolution`, the upscale target: `720p` (default) or `1080p`, as the docs list it on 2026-11-19. The source is the resolution of the referenced `grok-imagine/text-to-video` or `image-to-video` task, which the request does not carry. `GrokVideoUpscaleResolutionSchema` is exported, and the descriptor lists the field (ac-xnzcl4).

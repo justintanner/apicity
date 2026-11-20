@@ -1459,6 +1459,16 @@ export const kie: Record<string, ModelPricing> = {
     "1080p": 0.078,
     "1440p": 0.114,
   }),
+  // ltx/2-5-fast-image-to-video: the same Fast rates per second of video at
+  // 720p / 1080p / 1440p (feed rows "LTX 2.5 Fast, image to video, <res>" and
+  // pricingDesc, re-read 2026-11-20; evidence in
+  // tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-image-to-video-2026-11-20.json).
+  // The first-frame image adds no charge. Duration defaults to 10 s.
+  "ltx/2-5-fast-image-to-video": ltx25Page("ltx/2-5-fast-image-to-video", {
+    "720p": 0.054,
+    "1080p": 0.078,
+    "1440p": 0.114,
+  }),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85. The frozen pull's
   // text-to-video row said 380 credits against image-to-video's 370, and the
   // 2026-11-04 feed says 370 on both.

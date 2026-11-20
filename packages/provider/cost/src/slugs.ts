@@ -246,6 +246,7 @@ export const MODEL_SLUGS = {
     "vidu-q4/reference-to-video": "viduq4",
     // Video — LTX 2.5
     "ltx/2-5-fast-text-to-video": "ltx2p5fast",
+    "ltx/2-5-fast-image-to-video": "ltx2p5fast",
     "nano-banana-pro": "nbp",
 
     // Image — GPT Image 2
@@ -1354,6 +1355,7 @@ export const MODEL_DISPLAY = {
     "vidu-q4/image-to-video": "Vidu Q4",
     "vidu-q4/reference-to-video": "Vidu Q4",
     "ltx/2-5-fast-text-to-video": "LTX 2.5 Fast",
+    "ltx/2-5-fast-image-to-video": "LTX 2.5 Fast",
     "nano-banana-pro": "Nano Banana Pro",
 
     "gpt-image-2-text-to-image": "GPT Image 2.0",

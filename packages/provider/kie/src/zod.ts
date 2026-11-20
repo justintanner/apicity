@@ -457,6 +457,7 @@ export const KIE_MEDIA_MODELS = [
   // LTX 2.5 (Lightricks) — enum-only vendor (no alias hatch). Docs under
   // https://docs.kie.ai/market/ltx/.
   "ltx/2-5-fast-text-to-video",
+  "ltx/2-5-fast-image-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -4694,6 +4695,47 @@ export const Ltx25FastTextToVideoRequestSchema = z
     model: z.literal("ltx/2-5-fast-text-to-video"),
     callBackUrl: z.string().url().optional(),
     input: Ltx25FastTextToVideoInputSchema,
+  })
+  .superRefine((value, ctx) => addLtx25FastDurationIssues(value.input, ctx));
+
+// Docs: https://docs.kie.ai/market/ltx/2-5-fast-image-to-video
+// The image is the first frame and sets the output's aspect ratio (the short
+// side equals the resolution; ratios beyond 3:1 are capped at 3:1), so there
+// is no aspect_ratio field. The docs print an example URL as image_url's
+// "default"; the field is required and has none here (ac-ey3b9p).
+export const Ltx25FastImageToVideoInputSchema = z.object({
+  image_url: z
+    .string()
+    .url()
+    .describe(
+      "Public URL of the first-frame image (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, capped at 3:1"
+    ),
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots'
+    ),
+  resolution: Ltx25FastResolutionSchema.default("1080p").describe(
+    "Output resolution, the short side (default 1080p); billing depends on resolution"
+  ),
+  fps: Ltx25FpsSchema.default(24).describe(
+    "Frame rate (default 24); does not change the price"
+  ),
+  duration: Ltx25FastDurationSchema.default(10).describe(
+    "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps"
+  ),
+  seed: Ltx25SeedSchema.optional().describe(
+    "Random seed 0-2147483647; random when omitted"
+  ),
+});
+
+export const Ltx25FastImageToVideoRequestSchema = z
+  .object({
+    model: z.literal("ltx/2-5-fast-image-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: Ltx25FastImageToVideoInputSchema,
   })
   .superRefine((value, ctx) => addLtx25FastDurationIssues(value.input, ctx));
 
@@ -10471,6 +10513,7 @@ export const MediaGenerationRequestSchema = z.union([
   ViduQ4ImageToVideoRequestSchema,
   ViduQ4ReferenceToVideoRequestSchema,
   Ltx25FastTextToVideoRequestSchema,
+  Ltx25FastImageToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -12506,6 +12549,16 @@ export type Ltx25FastTextToVideoRequest = z.input<
 export type Ltx25FastTextToVideoRequestInput = Ltx25FastTextToVideoRequest;
 export type Ltx25FastTextToVideoParsedRequest = z.output<
   typeof Ltx25FastTextToVideoRequestSchema
+>;
+export type Ltx25FastImageToVideoInput = z.infer<
+  typeof Ltx25FastImageToVideoInputSchema
+>;
+export type Ltx25FastImageToVideoRequest = z.input<
+  typeof Ltx25FastImageToVideoRequestSchema
+>;
+export type Ltx25FastImageToVideoRequestInput = Ltx25FastImageToVideoRequest;
+export type Ltx25FastImageToVideoParsedRequest = z.output<
+  typeof Ltx25FastImageToVideoRequestSchema
 >;
 
 export type ViduQ4ReferenceAspectRatio = z.infer<

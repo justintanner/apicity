@@ -187,6 +187,7 @@ import {
   ViduQ4ImageToVideoRequestSchema,
   ViduQ4ReferenceToVideoRequestSchema,
   Ltx25FastTextToVideoRequestSchema,
+  Ltx25FastImageToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -515,6 +516,7 @@ export const CREATE_TASK_GUARDS = {
   "vidu-q4/image-to-video": ViduQ4ImageToVideoRequestSchema,
   "vidu-q4/reference-to-video": ViduQ4ReferenceToVideoRequestSchema,
   "ltx/2-5-fast-text-to-video": Ltx25FastTextToVideoRequestSchema,
+  "ltx/2-5-fast-image-to-video": Ltx25FastImageToVideoRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

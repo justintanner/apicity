@@ -900,8 +900,8 @@ describe("KIE feed drift", () => {
   // outside the generic resolution vocabulary, so the ltx-2-5-resolution
   // selector rule reads it. The anchor's model query maps each row to its key;
   // a model with no key yet (LTX 2.5 Pro here) stays not compared
-  // (2026-11-20 feed, ac-ujmlmh).
-  it("compares the ltx/2-5-fast-text-to-video rows, 1440p included", async () => {
+  // (2026-11-20 feed, ac-ujmlmh; image-to-video ac-ey3b9p).
+  it("compares the LTX 2.5 Fast text- and image-to-video rows, 1440p included", async () => {
     const anchor = (model: string) =>
       `https://kie.ai/ltx-2-5?model=${encodeURIComponent(model)}`;
     const row = (
@@ -923,10 +923,14 @@ describe("KIE feed drift", () => {
         anchor: anchor(model),
       },
     });
+    const i2v = "ltx/2-5-fast-image-to-video";
     const tiers = [
       row("LTX 2.5 Fast, text to video, 720p", "10.8", "0.054"),
       row("LTX 2.5 Fast, text to video, 1080p", "15.6", "0.078"),
       row("LTX 2.5 Fast, text to video, 1440p", "22.8", "0.114"),
+      row("LTX 2.5 Fast, image to video, 720p", "10.8", "0.054", i2v),
+      row("LTX 2.5 Fast, image to video, 1080p", "15.6", "0.078", i2v),
+      row("LTX 2.5 Fast, image to video, 1440p", "22.8", "0.114", i2v),
     ];
     const pro = row(
       "LTX 2.5 Pro, text to video, 720p",
@@ -951,8 +955,8 @@ describe("KIE feed drift", () => {
       };
       const result = await write([...tiers, pro]);
       expect(result.differ).toEqual([]);
-      expect(result.same).toBe(3);
-      expect(result.compared).toBe(3);
+      expect(result.same).toBe(6);
+      expect(result.compared).toBe(6);
       expect(result.notCompared.map(({ description }) => description)).toEqual([
         "LTX 2.5 Pro, text to video, 720p",
       ]);
@@ -960,10 +964,17 @@ describe("KIE feed drift", () => {
       const moved = await write([
         ...tiers.slice(0, 2),
         row("LTX 2.5 Fast, text to video, 1440p", "24", "0.12"),
+        ...tiers.slice(3, 5),
+        row("LTX 2.5 Fast, image to video, 1440p", "24", "0.12", i2v),
       ]);
       expect(moved.differ).toEqual([
         expect.objectContaining({
           key: "ltx/2-5-fast-text-to-video",
+          variant: "1440p",
+          tableUsd: 0.114,
+        }),
+        expect.objectContaining({
+          key: i2v,
           variant: "1440p",
           tableUsd: 0.114,
         }),

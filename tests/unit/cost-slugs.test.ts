@@ -335,6 +335,11 @@ describe("modelSlug", () => {
       display: "LTX 2.5 Fast",
     },
     {
+      model: "ltx/2-5-fast-image-to-video",
+      slug: "ltx2p5fast",
+      display: "LTX 2.5 Fast",
+    },
+    {
       model: "seedream/5-5-image-to-image",
       slug: "sd5p5",
       display: "Seedream 5.5 Edit",

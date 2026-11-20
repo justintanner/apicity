@@ -1277,6 +1277,36 @@ A recorded 6 s clip at 720p billed 86.4 credits ($0.432). See KIE's
 [LTX 2.5 Pro Text-to-Video](https://docs.kie.ai/market/ltx/2-5-pro-text-to-video.md)
 page.
 
+## LTX 2.5 Pro image-to-video
+
+`ltx/2-5-pro-image-to-video` animates `image_url` (a public JPG, PNG or
+WEBP URL up to 10 MB) as the first frame at the Pro tier. The image sets
+the aspect ratio, so there is no `aspect_ratio` field. `resolution` is
+`720p` or `1080p` (default), `duration` is 6, 8 or 10 seconds (default 10)
+at any frame rate, and `prompt`, `fps` and `seed` work as on the other LTX
+2.5 models.
+
+```typescript
+const proAnimated = await kie.post.api.v1.jobs.createTask({
+  model: "ltx/2-5-pro-image-to-video",
+  input: {
+    image_url: "https://example.com/cat.jpg",
+    prompt: "The cat slowly turns its head toward the camera",
+    resolution: "720p",
+    duration: 6,
+  },
+});
+
+console.log(proAnimated.data?.taskId);
+```
+
+It bills the Pro rates per second of video: 14.4 credits ($0.072) at 720p
+and 20.4 ($0.102) at 1080p; the image adds nothing. A recorded 6 s clip at
+720p from a 768x1024 photo came back 720x960 and billed 86.4 credits
+($0.432). See KIE's
+[LTX 2.5 Pro Image-to-Video](https://docs.kie.ai/market/ltx/2-5-pro-image-to-video.md)
+page.
+
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 
 KIE's Kling 3.0 Turbo Quick Start exposes two createTask slugs:

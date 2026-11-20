@@ -1,0 +1,96 @@
+{
+  "capturedAt": "2026-11-20",
+  "source": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-pro-image-to-video",
+  "models": ["ltx/2-5-pro-image-to-video"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/ltx-2-5?model=ltx%2F2-5-pro-image-to-video and the live GET /api/v1/models pricingDesc agree: 14.4 / 20.4 credits (0.072 / 0.102 USD) per second of video at 720p / 1080p, the LTX 2.5 Pro rates; frame rate does not change the price, and the first-frame image adds no row. Both match the survey's 2026-11-19 reads (ac-51w0vl). The billed seconds are the request's duration (6, 8 or 10; default 10). The recording below billed 86.4 credits for 6 s at 720p from an uploaded cat1.jpg, charged at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-20T04:36:02.161Z",
+    "rows": [
+      {
+        "modelDescription": "LTX 2.5 Pro, image to video, 720p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "falPrice": "0.12",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-pro-image-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "LTX 2.5 Pro, image to video, 1080p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "20.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.102",
+        "falPrice": "0.17",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-pro-image-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-20T04:32:46Z",
+    "entry": {
+      "model": "ltx/2-5-pro-image-to-video",
+      "slug": "ltx/2-5-pro-image-to-video",
+      "title": "LTX 2.5 Pro Image to Video",
+      "provider": "Lightricks",
+      "taskType": ["Image to Video"],
+      "description": "",
+      "pricingDesc": "LTX 2.5 Pro: 14.4 / 20.4 credits ($0.072 / $0.102) per second of video at 720p / 1080p \u2014 40% below official LTX-2.5 Pro pricing. Frame rate does not change the price.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "ltx/2-5-pro-image-to-video",
+      "url": "https://docs.kie.ai/market/ltx/2-5-pro-image-to-video.md",
+      "fetchedAt": "2026-11-20T04:32:43Z",
+      "sha256": "b67d060ceee343fbfa423b7bf44a7513b59fff4a6ea24f97ecf01ad3d316cc38"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "ltx/2-5-pro-image-to-video",
+      "har": "tests/recordings/kie_2079838932/ltx-2-5-pro-image-to-video_3019969960/recording.har",
+      "request": {
+        "image_url": "<cat1.jpg uploaded through api.fileStreamUpload>",
+        "prompt": "The cat slowly turns its head toward the camera",
+        "resolution": "720p",
+        "duration": 6
+      },
+      "input": {
+        "fixture": "tests/fixtures/cat1.jpg",
+        "width": 768,
+        "height": 1024
+      },
+      "taskId": "72fc8c940c962a3f1fff42ccefcb6fc1",
+      "creditsConsumed": 86.4,
+      "creditsConsumedInFlight": [
+        86.4, 86.4, 86.4, 86.4, 86.4, 86.4, 86.4, 86.4, 86.4
+      ],
+      "usd": 0.432,
+      "costTimeSeconds": 91,
+      "output": {
+        "format": "mp4",
+        "width": 720,
+        "height": 960,
+        "durationSeconds": 6.0,
+        "frames": 144,
+        "fps": 24,
+        "audioTrack": true
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 54100.53,
+    "after": 54014.13
+  },
+  "observedTotalUsd": 0.432
+}

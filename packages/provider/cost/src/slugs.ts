@@ -249,6 +249,7 @@ export const MODEL_SLUGS = {
     "ltx/2-5-fast-image-to-video": "ltx2p5fast",
     "ltx/2-5-fast-audio-to-video": "ltx2p5fast",
     "ltx/2-5-pro-text-to-video": "ltx2p5pro",
+    "ltx/2-5-pro-image-to-video": "ltx2p5pro",
     "nano-banana-pro": "nbp",
 
     // Image — GPT Image 2
@@ -1360,6 +1361,7 @@ export const MODEL_DISPLAY = {
     "ltx/2-5-fast-image-to-video": "LTX 2.5 Fast",
     "ltx/2-5-fast-audio-to-video": "LTX 2.5 Fast",
     "ltx/2-5-pro-text-to-video": "LTX 2.5 Pro",
+    "ltx/2-5-pro-image-to-video": "LTX 2.5 Pro",
     "nano-banana-pro": "Nano Banana Pro",
 
     "gpt-image-2-text-to-image": "GPT Image 2.0",

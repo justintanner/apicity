@@ -350,6 +350,11 @@ describe("modelSlug", () => {
       display: "LTX 2.5 Pro",
     },
     {
+      model: "ltx/2-5-pro-image-to-video",
+      slug: "ltx2p5pro",
+      display: "LTX 2.5 Pro",
+    },
+    {
       model: "seedream/5-5-image-to-image",
       slug: "sd5p5",
       display: "Seedream 5.5 Edit",

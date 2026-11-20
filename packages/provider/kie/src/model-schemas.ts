@@ -829,6 +829,23 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       seed: ltx25SeedField,
     },
   },
+  // https://docs.kie.ai/market/ltx/2-5-pro-image-to-video
+  "ltx/2-5-pro-image-to-video": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Public URL of the first-frame image (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, capped at 3:1",
+      },
+      prompt: ltx25PromptField,
+      resolution: ltx25ProResolutionField,
+      fps: ltx25FpsField,
+      duration: ltx25ProDurationField,
+      seed: ltx25SeedField,
+    },
+  },
   "kling-3.0/video": {
     type: "video",
     fields: {

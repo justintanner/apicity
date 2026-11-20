@@ -954,6 +954,13 @@ const FAMILY_MAPPING_RULES = Object.freeze([
   [/topaz video upscaler/i, "topaz/video-upscale"],
   [/recraft crisp upscale/i, "recraft/crisp-upscale"],
   [/recraft remove background/i, "recraft/remove-background"],
+  // Qwen-Image-2.1 text-to-image rows anchor on https://kie.ai/qwen-image-2.1
+  // with no model query (the image-to-image rows carry one), and "seedream 3.0"
+  // anchors on https://kie.ai/seedream, so neither row names its key
+  // (ac-616jau). These two rules map them. The hyphenated "Qwen-Image" and
+  // "text to image" keep the first rule clear of the Qwen Image rule below.
+  [/^qwen-image-2\.1,\s*text to image\b/i, "qwen2-1/text-to-image"],
+  [/^seedream 3\.0$/i, "bytedance/seedream"],
   [/qwen image.*text-to-image/i, "qwen/text-to-image"],
   [/qwen image.*image-to-image/i, "qwen/image-to-image"],
   [/qwen image-edit/i, "qwen/image-edit"],

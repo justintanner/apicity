@@ -1557,6 +1557,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "meshy/v7/image-to-3d",
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",
+  "microsoft/mai-image-2.7/edit",
   "minimax/h3-max-turbo/reference-to-video",
   "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
@@ -1617,6 +1618,13 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "openai/gpt-image-2.6/sunburst/text-to-image": {
     unit: "per 1M tokens: text $5 input / $1.25 cached / $10 output; image $8 input / $2 cached / $30 output, rounded up to $0.0001",
     why: "quality, reasoning_effort and dimensions do not fix actual token usage; prompt and reasoning tokens vary per call",
+  },
+  // Public card read 2026-11-20 (llms.txt; pricing API 1 USD per unit). The
+  // card's own example: 1,024 input and 1,024 output image tokens = $0.043008
+  // plus text tokens.
+  "microsoft/mai-image-2.7/edit": {
+    unit: "per 1M tokens: text $5 input; image $8 input / $34 output, rounded up to $0.0001",
+    why: "the output size can be left to the model and the input images and prompt set the input tokens, so the request does not fix the token count",
   },
   // Public card read 2026-11-11: the token card of the 2.6 text-to-image.
   "openai/gpt-image-2.6/sunburst/edit": {

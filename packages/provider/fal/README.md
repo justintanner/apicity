@@ -114,7 +114,7 @@ console.log(result.video.file_size);
 
 ## API Reference
 
-296 endpoints across 55 groups. Each method mirrors an upstream URL path.
+297 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -3135,6 +3135,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.microsoft.maiImage2p5Pro.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.microsoft.maiImage2p7.edit</code></b></summary>
+
+<code>POST https://fal.run/microsoft/mai-image-2.7/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/microsoft/mai-image-2.7/edit/api)
+
+```typescript
+const res = await fal.run.microsoft.maiImage2p7.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

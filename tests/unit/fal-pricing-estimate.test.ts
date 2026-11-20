@@ -1712,6 +1712,7 @@ describe("fal edit/image pricing estimates", () => {
       "meshy/v7/image-to-3d",
       "microsoft/mai-image-2.5-pro",
       "microsoft/mai-image-2.5-pro/edit",
+      "microsoft/mai-image-2.7/edit",
       "minimax/h3-max-turbo/reference-to-video",
       "minimax/h3-max/3d-to-video",
       "minimax/h3-max/extend-video",

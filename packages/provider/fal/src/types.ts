@@ -269,6 +269,9 @@ export type {
   FalMicrosoftMaiImage2p5ProParsedRequest,
   FalMicrosoftMaiImage2p5ProRequestInput,
   FalMicrosoftMaiImage2p5ProRequest,
+  FalMicrosoftMaiImage2p7EditParsedRequest,
+  FalMicrosoftMaiImage2p7EditRequestInput,
+  FalMicrosoftMaiImage2p7EditRequest,
   FalOpenaiGptImage2p5FlareTextToImageParsedRequest,
   FalOpenaiGptImage2p5FlareTextToImageRequestInput,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
@@ -1006,6 +1009,7 @@ import type {
   FalNvidiaCosmos3SuperImageToVideoRequest,
   FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProRequest,
+  FalMicrosoftMaiImage2p7EditRequest,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
@@ -6076,6 +6080,32 @@ type FalMicrosoftMaiImage2p5ProEditFn = ((
 
 export interface FalRunMicrosoftMaiImage2p5ProNamespace {
   edit: FalMicrosoftMaiImage2p5ProEditFn;
+}
+
+export interface FalMicrosoftMaiImage2p7EditResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+type FalMicrosoftMaiImage2p7EditFn = ((
+  params: FalMicrosoftMaiImage2p7EditRequest,
+  signal?: AbortSignal
+) => Promise<FalMicrosoftMaiImage2p7EditResponse>) & {
+  schema: ApicitySchema<FalMicrosoftMaiImage2p7EditRequest>;
+};
+
+export interface FalRunMicrosoftMaiImage2p7Namespace {
+  edit: FalMicrosoftMaiImage2p7EditFn;
+}
+
+export interface FalRunMicrosoftNamespace {
+  maiImage2p7: FalRunMicrosoftMaiImage2p7Namespace;
 }
 
 export interface FalNvidiaCosmos3SuperImageToVideoResponse {

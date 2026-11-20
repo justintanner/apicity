@@ -2052,6 +2052,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST microsoft.maiImage2p7.edit": {
+    "source": "fal/microsoft-mai-image-2-7-edit",
+    "payload": {
+      "prompt": "Add a small red bow tie to the cat.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.flf2v.trainer": {
     "source": "fal/minimax-h3-flf2v-trainer",
     "payload": {

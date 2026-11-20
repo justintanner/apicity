@@ -354,7 +354,13 @@ export const FRONTIER = {
         model: "MAI-Image-2.7",
         creator: "Microsoft AI",
         elo: 1215,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "microsoft.maiImage2p7.edit",
+            pricingKey: "microsoft/mai-image-2.7/edit",
+          },
+        ],
       },
       {
         rank: 2,

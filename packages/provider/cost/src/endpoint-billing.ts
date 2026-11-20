@@ -2088,6 +2088,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST kandinsky6Vsr.lite",
       "POST lightricks.ltx2p5.imageToVideo.fast",
       "POST lightricks.ltx2p5.imageToVideo.pro",
+      "POST microsoft.maiImage2p7.edit",
       "POST minimax.h3Max.reframeVideo",
       "POST minimax.h3Max.threeDToVideo",
       "POST mureka.api.generate.instrumental",

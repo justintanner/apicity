@@ -56,6 +56,7 @@ const CHECKED = [
   "kling/v4/video-to-video/edit",
   // Cards read 2026-11-20; see each recording's x-fal-billable-units.
   "microsoft/mai-image-2.7/edit",
+  "microsoft/mai-image-2.7/flash/edit",
   "microsoft/mai-image-2.7/text-to-image",
   "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",

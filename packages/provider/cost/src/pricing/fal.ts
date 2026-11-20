@@ -1558,6 +1558,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",
   "microsoft/mai-image-2.7/edit",
+  "microsoft/mai-image-2.7/flash/edit",
   "microsoft/mai-image-2.7/text-to-image",
   "minimax/h3-max-turbo/reference-to-video",
   "minimax/h3-max/3d-to-video",
@@ -1625,6 +1626,13 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   // plus text tokens.
   "microsoft/mai-image-2.7/edit": {
     unit: "per 1M tokens: text $5 input; image $8 input / $34 output, rounded up to $0.0001",
+    why: "the output size can be left to the model and the input images and prompt set the input tokens, so the request does not fix the token count",
+  },
+  // Public card read 2026-11-20 (llms.txt; pricing API 1 USD per unit). The
+  // card's own example: 1,024 input and 1,024 output image tokens = $0.0128
+  // plus text tokens.
+  "microsoft/mai-image-2.7/flash/edit": {
+    unit: "per 1M tokens: text $1.75 input; image $2.50 input / $10 output, rounded up to $0.0001",
     why: "the output size can be left to the model and the input images and prompt set the input tokens, so the request does not fix the token count",
   },
   // Public card read 2026-11-20 (llms.txt; pricing API 1 USD per unit): a

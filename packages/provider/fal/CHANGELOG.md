@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.microsoft.maiImage2p7.flash.edit`
+  (`POST https://fal.run/microsoft/mai-image-2.7/flash/edit`) adds
+  MAI-Image-2.7 Flash editing, #7 on the 2026-11-19 image-editing board, as a
+  `flash` object under `microsoft.maiImage2p7` (fal serves no bare `flash`
+  route). fal's queue OpenAPI (read 2026-11-20) publishes the same Input as the
+  2.7 edit, field for field, so the schema reuses that shape as its own
+  object. A recorded edit of the owned cat photo with no optional input
+  returned one 880x1184 PNG and billed `x-fal-billable-units` 0.0122
+  (ac-c3yi63).
+
 - `run.microsoft.maiImage2p7.textToImage`
   (`POST https://fal.run/microsoft/mai-image-2.7/text-to-image`) adds
   MAI-Image-2.7 text-to-image, #4 on the 2026-11-19 text-to-image board, as a

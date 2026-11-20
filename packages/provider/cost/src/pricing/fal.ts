@@ -1550,6 +1550,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-2.1/edit",
   "google/nano-banana-lite/edit",
   "kling/v4/image-to-image",
+  "kling/v4/text-to-image",
   "kling/v4/video-to-video/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
@@ -1774,6 +1775,14 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "kling/v4/image-to-image": {
     unit: "units at $0.063",
     why: "the output size follows the input image and no request field fixes the billed units",
+  },
+  // Card, llms.txt and pricing API re-read 2026-11-20: $0.063 per unit
+  // named "units". The one default 2K call, aspect auto and no other input,
+  // returned a 2048x2048 PNG and billed 1 unit ($0.063). The card still does
+  // not say what a 4K or 8K image costs, so this one call is not a formula.
+  "kling/v4/text-to-image": {
+    unit: "units at $0.063",
+    why: "the card does not define the unit, and one resolution does not fix how 2K, 4K and 8K are billed",
   },
   // Card and pricing API checked 2026-10-23: $0.01 per second of input video,
   // with a 60-second minimum, and no charge when no cut is made. Our 2.96 s

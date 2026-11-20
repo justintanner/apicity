@@ -1631,6 +1631,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kling.v4.textToImage": {
+    "source": "fal/kling-v4-text-to-image",
+    "payload": {
+      "prompt": "A red bow tie on a plain white background."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kling.v4.textToVideo": {
     "source": "fal/kling-v4-text-to-video",
     "payload": {

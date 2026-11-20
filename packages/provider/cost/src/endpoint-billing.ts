@@ -2087,6 +2087,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST kandinsky6Vsr",
       "POST kandinsky6Vsr.lite",
       "POST kling.v4.imageToImage",
+      "POST kling.v4.textToImage",
       "POST lightricks.ltx2p5.imageToVideo.fast",
       "POST lightricks.ltx2p5.imageToVideo.pro",
       "POST microsoft.maiImage2p7.edit",

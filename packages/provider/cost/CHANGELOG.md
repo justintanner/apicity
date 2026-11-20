@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Kling Image 4.0 text-to-image (`kling/v4/text-to-image`) is priced
+  dynamically. The pricing API (read 2026-11-20) lists 0.063 USD per unit
+  named "units" and does not define the unit. A recorded default 2K image
+  billed 1 unit (0.063 USD) and came back 2048x2048; that one resolution does
+  not fix a 4K or 8K rate. Display "Kling 4.0 Image". It is the fal entry
+  beside KIE on the Kling Image 4.0 text-to-image frontier row (ac-5xayh8).
+
 - fal Kling Image 4.0 image-to-image (`kling/v4/image-to-image`) is priced
   dynamically. The pricing API (read 2026-11-20) lists 0.063 USD per unit
   named "units" and does not define the unit. A recorded default 2K edit

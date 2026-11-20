@@ -239,6 +239,7 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST kling.v4.imageToImage": "kling/v4/image-to-image",
   "fal POST kling.v4.imageToVideo": "kling/v4/image-to-video",
   "fal POST kling.v4.referenceToVideo": "kling/v4/reference-to-video",
+  "fal POST kling.v4.textToImage": "kling/v4/text-to-image",
   "fal POST kling.v4.textToVideo": "kling/v4/text-to-video",
   "fal POST kling.v4.videoToVideo.edit": "kling/v4/video-to-video/edit",
   "fal POST klingVideo.o3.pro.imageToVideo":

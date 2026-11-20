@@ -898,11 +898,10 @@ describe("KIE feed drift", () => {
   // page belong to another model (2026-11-19 feed, ac-i4vebc).
   // LTX 2.5 rows read "LTX 2.5 Fast, text to video, 1440p", and 1440p is
   // outside the generic resolution vocabulary, so the ltx-2-5-resolution
-  // selector rule reads it. The anchor's model query maps each row to its key;
-  // a model with no key yet (LTX 2.5 Pro here) stays not compared
-  // (2026-11-20 feed, ac-ujmlmh; image-to-video ac-ey3b9p; audio-to-video
-  // ac-ium3f4; Pro text-to-video ac-dwmekr).
-  it("compares the LTX 2.5 Fast and Pro text-to-video rows and the Fast image- and audio-to-video rows, 1440p included", async () => {
+  // selector rule reads it. The anchor's model query maps each row to its key:
+  // all thirteen rows of the five models compare (2026-11-20 feed, ac-ujmlmh,
+  // ac-ey3b9p, ac-ium3f4, ac-dwmekr, ac-kevvtj).
+  it("compares every LTX 2.5 row, 1440p included", async () => {
     const anchor = (model: string) =>
       `https://kie.ai/ltx-2-5?model=${encodeURIComponent(model)}`;
     const row = (
@@ -942,12 +941,11 @@ describe("KIE feed drift", () => {
       row("LTX 2.5 Pro, text to video, 720p", "14.4", "0.072", proT2v),
       row("LTX 2.5 Pro, text to video, 1080p", "20.4", "0.102", proT2v),
     ];
-    const pro = row(
-      "LTX 2.5 Pro, image to video, 720p",
-      "14.4",
-      "0.072",
-      "ltx/2-5-pro-image-to-video"
-    );
+    const proI2v = "ltx/2-5-pro-image-to-video";
+    const proI2vRows = [
+      row("LTX 2.5 Pro, image to video, 720p", "14.4", "0.072", proI2v),
+      row("LTX 2.5 Pro, image to video, 1080p", "20.4", "0.102", proI2v),
+    ];
     const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
     try {
       const write = async (rows: ReturnType<typeof row>[]) => {
@@ -963,13 +961,11 @@ describe("KIE feed drift", () => {
           await build({ snapshotPath: file, metadataPath: file, live: true })
         );
       };
-      const result = await write([...tiers, ...proT2vRows, pro]);
+      const result = await write([...tiers, ...proT2vRows, ...proI2vRows]);
       expect(result.differ).toEqual([]);
-      expect(result.same).toBe(11);
-      expect(result.compared).toBe(11);
-      expect(result.notCompared.map(({ description }) => description)).toEqual([
-        "LTX 2.5 Pro, image to video, 720p",
-      ]);
+      expect(result.same).toBe(13);
+      expect(result.compared).toBe(13);
+      expect(result.notCompared).toEqual([]);
 
       const moved = await write([
         ...tiers.slice(0, 2),
@@ -979,6 +975,7 @@ describe("KIE feed drift", () => {
         ...tiers.slice(6, 8),
         row("LTX 2.5 Fast, audio to video, 1440p", "24", "0.12", a2v),
         row("LTX 2.5 Pro, text to video, 720p", "15", "0.075", proT2v),
+        row("LTX 2.5 Pro, image to video, 1080p", "21", "0.105", proI2v),
       ]);
       expect(moved.differ).toEqual([
         expect.objectContaining({
@@ -1000,6 +997,11 @@ describe("KIE feed drift", () => {
           key: proT2v,
           variant: "720p",
           tableUsd: 0.072,
+        }),
+        expect.objectContaining({
+          key: proI2v,
+          variant: "1080p",
+          tableUsd: 0.102,
         }),
       ]);
     } finally {

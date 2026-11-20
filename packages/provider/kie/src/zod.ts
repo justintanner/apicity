@@ -460,6 +460,7 @@ export const KIE_MEDIA_MODELS = [
   "ltx/2-5-fast-image-to-video",
   "ltx/2-5-fast-audio-to-video",
   "ltx/2-5-pro-text-to-video",
+  "ltx/2-5-pro-image-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -4845,6 +4846,44 @@ export const Ltx25ProTextToVideoRequestSchema = z.object({
   model: z.literal("ltx/2-5-pro-text-to-video"),
   callBackUrl: z.string().url().optional(),
   input: Ltx25ProTextToVideoInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/ltx/2-5-pro-image-to-video
+// The image is the first frame and sets the output's aspect ratio (the short
+// side equals the resolution; ratios beyond 3:1 are capped at 3:1), so there
+// is no aspect_ratio field (ac-kevvtj).
+export const Ltx25ProImageToVideoInputSchema = z.object({
+  image_url: z
+    .string()
+    .url()
+    .describe(
+      "Public URL of the first-frame image (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, capped at 3:1"
+    ),
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots'
+    ),
+  resolution: Ltx25ProResolutionSchema.default("1080p").describe(
+    "Output resolution, the short side (default 1080p); billing depends on resolution"
+  ),
+  fps: Ltx25FpsSchema.default(24).describe(
+    "Frame rate (default 24); does not change the price"
+  ),
+  duration: Ltx25ProDurationSchema.default(10).describe(
+    "Seconds: 6, 8 or 10 (default 10), at any frame rate"
+  ),
+  seed: Ltx25SeedSchema.optional().describe(
+    "Random seed 0-2147483647; random when omitted"
+  ),
+});
+
+export const Ltx25ProImageToVideoRequestSchema = z.object({
+  model: z.literal("ltx/2-5-pro-image-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: Ltx25ProImageToVideoInputSchema,
 });
 
 // Docs: https://docs.kie.ai/market/google/nanobanana-2-1
@@ -10624,6 +10663,7 @@ export const MediaGenerationRequestSchema = z.union([
   Ltx25FastImageToVideoRequestSchema,
   Ltx25FastAudioToVideoRequestSchema,
   Ltx25ProTextToVideoRequestSchema,
+  Ltx25ProImageToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -12691,6 +12731,16 @@ export type Ltx25ProTextToVideoRequest = z.input<
 export type Ltx25ProTextToVideoRequestInput = Ltx25ProTextToVideoRequest;
 export type Ltx25ProTextToVideoParsedRequest = z.output<
   typeof Ltx25ProTextToVideoRequestSchema
+>;
+export type Ltx25ProImageToVideoInput = z.infer<
+  typeof Ltx25ProImageToVideoInputSchema
+>;
+export type Ltx25ProImageToVideoRequest = z.input<
+  typeof Ltx25ProImageToVideoRequestSchema
+>;
+export type Ltx25ProImageToVideoRequestInput = Ltx25ProImageToVideoRequest;
+export type Ltx25ProImageToVideoParsedRequest = z.output<
+  typeof Ltx25ProImageToVideoRequestSchema
 >;
 
 export type ViduQ4ReferenceAspectRatio = z.infer<

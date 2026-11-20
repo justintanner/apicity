@@ -280,12 +280,12 @@ describe("Kie pricing reconciliation", () => {
       root
     )) as unknown as TestInventory;
 
-    expect(inventory.models).toHaveLength(186);
-    expect(inventory.descriptors).toHaveLength(186);
-    expect(inventory.guards).toHaveLength(186);
-    expect(inventory.pricingKeys).toHaveLength(251);
-    expect(inventory.slugKeys).toHaveLength(253);
-    expect(inventory.displayKeys).toHaveLength(253);
+    expect(inventory.models).toHaveLength(187);
+    expect(inventory.descriptors).toHaveLength(187);
+    expect(inventory.guards).toHaveLength(187);
+    expect(inventory.pricingKeys).toHaveLength(252);
+    expect(inventory.slugKeys).toHaveLength(254);
+    expect(inventory.displayKeys).toHaveLength(254);
     expect(inventory.endpoints).toHaveLength(79);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
@@ -333,7 +333,7 @@ describe("Kie pricing reconciliation", () => {
       }
     }
     expect(mismatches).toEqual([]);
-    expect(Object.keys(inventory.descriptorFields)).toHaveLength(186);
+    expect(Object.keys(inventory.descriptorFields)).toHaveLength(187);
 
     const fields = inventory.descriptorFields;
     expect(fields["minimax-h3/text-to-video"].resolution).toEqual({
@@ -408,11 +408,11 @@ describe("Kie pricing reconciliation", () => {
     expect(result).toMatchObject({
       status: "ok",
       rows: 483,
-      models: 186,
+      models: 187,
       endpoints: 79,
-      pricingKeys: 251,
-      slugs: 253,
-      displays: 253,
+      pricingKeys: 252,
+      slugs: 254,
+      displays: 254,
       zeroUnclassifiedRows: true,
       zeroUnclassifiedApiCityKeys: true,
     });
@@ -438,10 +438,10 @@ describe("Kie pricing reconciliation", () => {
       endpoints: 71,
     });
     expect(manifest.inventory.final).toEqual({
-      models: 186,
-      pricingKeys: 251,
-      slugKeys: 253,
-      displayKeys: 253,
+      models: 187,
+      pricingKeys: 252,
+      slugKeys: 254,
+      displayKeys: 254,
       schemaWithoutPricing: 4,
       pricingOnly: 69,
       endpoints: 79,
@@ -1315,13 +1315,13 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Seedance 2.5");
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
-    expect(markdown).toContain("| Schema model IDs | 127 | 186 |");
+    expect(markdown).toContain("| Schema model IDs | 127 | 187 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 79 |");
-    expect(markdown).toContain("| Runtime pricing keys | 135 | 251 |");
+    expect(markdown).toContain("| Runtime pricing keys | 135 | 252 |");
     expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 4 |");
     expect(markdown).toContain("| Pricing-only inventory | 31 | 69 |");
-    expect(markdown).toContain("| Slug keys | 137 | 253 |");
-    expect(markdown).toContain("| Display keys | 137 | 253 |");
+    expect(markdown).toContain("| Slug keys | 137 | 254 |");
+    expect(markdown).toContain("| Display keys | 137 | 254 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
   });

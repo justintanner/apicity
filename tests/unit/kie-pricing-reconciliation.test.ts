@@ -1,4 +1,5 @@
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { Project } from "ts-morph";
 import type { SourceFile } from "ts-morph";
@@ -25,6 +26,7 @@ import {
   renderReconciliationMarkdown,
 } from "../../scripts/lib/kie-pricing-reconciliation.mjs";
 import { MODEL_FAMILY_REGISTRATIONS } from "../../scripts/lib/kie-pricing-reconciliation-rules.mjs";
+import { feedDrift } from "../../scripts/lib/kie-feed-drift.mjs";
 
 const root = process.cwd();
 const snapshotPath = path.resolve(root, KIE_PRICING_SNAPSHOT_PATH);
@@ -1198,6 +1200,140 @@ describe("Kie pricing reconciliation", () => {
         kind: "query-description-operation-conflict",
       },
     });
+  });
+
+  // The Qwen-Image-2.1 text-to-image rows anchor on https://kie.ai/qwen-image-2.1
+  // with no model query, and "seedream 3.0" on https://kie.ai/seedream, so
+  // neither names its key; two family rules map them (ac-616jau). The rows
+  // are built here because no committed pull carries them: they appeared in
+  // the live feed (first seen 2026-11-19, still there 2026-11-20).
+  it("maps the Qwen-Image-2.1 text-to-image and seedream 3.0 feed rows to their cells", async () => {
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      anchor: string,
+      provider = "Alibaba"
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "image",
+        provider,
+        creditPrice,
+        creditUnit: "per image",
+        usdPrice,
+        anchor,
+      },
+    });
+    const qwenAnchor = "https://kie.ai/qwen-image-2.1";
+    const rows = [
+      row("Qwen-Image-2.1, text to image, 1K", "4", "0.02", qwenAnchor),
+      row("Qwen-Image-2.1, text to image, 2K", "8", "0.04", qwenAnchor),
+      row(
+        "Qwen-Image-2.1, image to image, 1K",
+        "4",
+        "0.02",
+        `${qwenAnchor}?model=qwen2-1%2Fimage-to-image`
+      ),
+      row(
+        "seedream 3.0",
+        "3.5",
+        "0.0175",
+        "https://kie.ai/seedream",
+        "ByteDance"
+      ),
+    ];
+    const fixture = path.resolve(
+      root,
+      "tests/fixtures/kie-pricing-evidence/feed-drift-2026-11-05.json"
+    );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-family-rows-"));
+    try {
+      const build = async (records: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(fixture, "utf8")),
+            records,
+          })
+        );
+        return (await buildReconciliationManifest({
+          root,
+          snapshotPath: file,
+          metadataPath: file,
+          generatedAt: "2026-11-20T00:00:00.000Z",
+          live: true,
+        })) as unknown as TestManifest;
+      };
+      const manifest = await build(rows);
+      const keyOf = (description: string) =>
+        manifest.rows.find(
+          (candidate) => candidate.official.modelDescription === description
+        )?.mappedApiCityKeys;
+      expect(keyOf("Qwen-Image-2.1, text to image, 1K")).toEqual([
+        "qwen2-1/text-to-image",
+      ]);
+      expect(keyOf("Qwen-Image-2.1, text to image, 2K")).toEqual([
+        "qwen2-1/text-to-image",
+      ]);
+      expect(keyOf("Qwen-Image-2.1, image to image, 1K")).toEqual([
+        "qwen2-1/image-to-image",
+      ]);
+      expect(keyOf("seedream 3.0")).toEqual(["bytedance/seedream"]);
+
+      const report = feedDrift({ manifest, pricing: PRICING.kie }) as {
+        compared: number;
+        same: number;
+        differ: Array<{ key: string; variant: string; tableUsd: number }>;
+        notCompared: unknown[];
+      };
+      expect(report.notCompared).toEqual([]);
+      expect(report.compared).toBe(4);
+      expect(report.same).toBe(4);
+
+      const moved = await build([
+        row("Qwen-Image-2.1, text to image, 2K", "9", "0.045", qwenAnchor),
+        row(
+          "seedream 3.0",
+          "4",
+          "0.02",
+          "https://kie.ai/seedream",
+          "ByteDance"
+        ),
+      ]);
+      expect(
+        feedDrift({ manifest: moved, pricing: PRICING.kie }).differ
+      ).toEqual([
+        expect.objectContaining({
+          key: "qwen2-1/text-to-image",
+          variant: "2K",
+          tableUsd: 0.04,
+        }),
+        expect.objectContaining({
+          key: "bytedance/seedream",
+          tableUsd: 0.0175,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+
+    // The older Qwen Image rows keep their own key: the new rule needs the
+    // hyphenated "Qwen-Image-2.1" and "text to image".
+    const olderQwen = generatedManifest.rows.filter((candidate) =>
+      /^Qwen Image\s*,\s*text-to-image/i.test(
+        String(candidate.official.modelDescription)
+      )
+    );
+    expect(olderQwen.length).toBeGreaterThan(0);
+    for (const candidate of olderQwen)
+      expect(candidate.mappedApiCityKeys).not.toContain(
+        "qwen2-1/text-to-image"
+      );
   });
 
   it("rejects mutated operation mappings and unsupported memberships without hand-waving", async () => {

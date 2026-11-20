@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 182,
-      "pricingKeys": 247,
-      "slugKeys": 249,
-      "displayKeys": 249,
+      "models": 183,
+      "pricingKeys": 248,
+      "slugKeys": 250,
+      "displayKeys": 250,
       "schemaWithoutPricing": 4,
       "pricingOnly": 69,
       "endpoints": 79
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:82ca8e4e138b87281261028cad63fbfb8cf61ac322bf586c8f5682ab019c74d8",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:0a13591f2cf26c88cd0e6daa8fb93d6513b08f2ffc7885f1d75560b10cb37629",
-      "packages/provider/kie/src/kie.ts": "sha256:7a65aa35a817752a952f8e698af1118f62ade21639b01fe5b4977db70722b801",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:e31ad7d84bb8a5f28eec4e305ecf91ecfe53c1a02fd21361321274af5dda02d8",
-      "packages/provider/cost/src/slugs.ts": "sha256:f7fe572b5ca6097f683c9da46104276b70f5f5de39973fb6827c8fd5da25ffd3",
+      "packages/provider/kie/src/zod.ts": "sha256:0abc0df04db99b0c97c5c2b9483b86a6c224ca8173eda62150f67565cfb30d4d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:001c9c4a3fff6a5d095cde3f10c8ab15c9045c87a074d1156850c71c5b4fe47b",
+      "packages/provider/kie/src/kie.ts": "sha256:69ac5099aea080d99d80673aa4d74fbbe47d46d32d9d00aa018d66f424180d73",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:d450f94dee1bf7d16ea7ecbc89fe62f167b4a5fdf565d9234198b11309c365e6",
+      "packages/provider/cost/src/slugs.ts": "sha256:fc942deed4973a37f63d55533903b4b9c6c13a381c520df97daed7cbc0403965",
       "scripts/endpoint-docs.tsv": "sha256:cec66ae8a234cfaacf915dc0f3af9958879c5554d5d4861dcdd3d3c907877a04"
     }
   },
@@ -23395,6 +23395,15 @@
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "ltx/2-5-fast-text-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "ltx/2-5-fast-text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       }
     ],
     "endpoints": [
@@ -24198,6 +24207,12 @@
       },
       {
         "key": "vidu-q4/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "ltx/2-5-fast-text-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
@@ -26832,6 +26847,10 @@
         "disposition": "supported"
       },
       {
+        "key": "ltx/2-5-fast-text-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-pro",
         "disposition": "supported"
       },
@@ -27827,6 +27846,10 @@
       },
       {
         "key": "vidu-q4/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "ltx/2-5-fast-text-to-video",
         "disposition": "supported"
       },
       {
@@ -28840,16 +28863,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 182,
-        "descriptors": 182,
-        "guards": 182,
+        "count": 183,
+        "descriptors": 183,
+        "guards": 183,
         "withoutPricing": 4,
         "dispositionCounts": {
           "supported": 100,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 82
+          "upstream-unmappable": 83
         },
         "unclassified": 0
       },
@@ -28867,20 +28890,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 247,
+        "count": 248,
         "dispositionCounts": {
           "supported": 151,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 96
+          "upstream-unmappable": 97
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 249,
+        "count": 250,
         "dispositionCounts": {
-          "supported": 249,
+          "supported": 250,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28889,9 +28912,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 249,
+        "count": 250,
         "dispositionCounts": {
-          "supported": 249,
+          "supported": 250,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29916,6 +29939,27 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-image-2026-11-19.json: feed rows and models pricingDesc read 2026-11-19: 11.3/17/28.3 credits = 0.0565/0.085/0.1415 USD per output image at 2K/4K/8K, plus 0.5 credits per reference image or element",
         "rationale": "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell."
+      },
+      {
+        "key": "ltx/2-5-fast-text-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-text-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 10.8/15.6/22.8 credits = 0.054/0.078/0.114 USD per second of video at 720p/1080p/1440p; fps does not change the price",
+        "rationale": "LTX 2.5 Fast text-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution), and the billed recording confirms the 720p cell."
+      },
+      {
+        "key": "ltx/2-5-fast-text-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-text-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 10.8/15.6/22.8 credits = 0.054/0.078/0.114 USD per second of video at 720p/1080p/1440p; fps does not change the price",
+        "rationale": "LTX 2.5 Fast text-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution), and the billed recording confirms the 720p cell."
+      },
+      {
+        "key": "ltx/2-5-fast-text-to-video",
+        "variant": "1440p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-text-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 10.8/15.6/22.8 credits = 0.054/0.078/0.114 USD per second of video at 720p/1080p/1440p; fps does not change the price",
+        "rationale": "LTX 2.5 Fast text-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution), and the billed recording confirms the 720p cell."
       },
       {
         "key": "bytedance/seedance-2-5",

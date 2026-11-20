@@ -1,0 +1,100 @@
+{
+  "capturedAt": "2026-11-20",
+  "source": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-text-to-video",
+  "models": ["ltx/2-5-fast-text-to-video"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-text-to-video and the live GET /api/v1/models pricingDesc agree: 10.8 / 15.6 / 22.8 credits (0.054 / 0.078 / 0.114 USD) per second of video at 720p / 1080p / 1440p, 40% below LTX's own list; frame rate does not change the price. Both match the survey's 2026-11-19 reads (ac-51w0vl). The billed seconds are the request's duration (default 10). The recording below billed 64.8 credits for 6 s at 720p, charged at submission.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-20T01:11:42.418Z",
+    "rows": [
+      {
+        "modelDescription": "LTX 2.5 Fast, text to video, 720p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "10.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.054",
+        "falPrice": "0.09",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-text-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "LTX 2.5 Fast, text to video, 1080p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "15.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.078",
+        "falPrice": "0.13",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-text-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "LTX 2.5 Fast, text to video, 1440p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "22.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.114",
+        "falPrice": "0.19",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-text-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-20T01:05:23Z",
+    "entry": {
+      "model": "ltx/2-5-fast-text-to-video",
+      "slug": "ltx/2-5-fast-text-to-video",
+      "title": "LTX 2.5 Fast Text to Video",
+      "provider": "Lightricks",
+      "taskType": ["Text to Video"],
+      "description": "LTX 2.5 Fast Text to Video API on Kie.ai: generate 720p, 1080p and 1440p MP4 video up to 20s with synchronized dialogue, Foley and ambient stereo sound.",
+      "pricingDesc": "LTX 2.5 Fast: 10.8 / 15.6 / 22.8 credits ($0.054 / $0.078 / $0.114) per second of video at 720p / 1080p / 1440p \u2014 40% below official LTX-2.5 Fast pricing. Frame rate does not change the price.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "ltx/2-5-fast-text-to-video",
+      "url": "https://docs.kie.ai/market/ltx/2-5-fast-text-to-video.md",
+      "fetchedAt": "2026-11-20T01:04:54Z",
+      "sha256": "246cc3de5946685f445158612147d8c820c2b0beb7d24e19a8d291b410aea9f1"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "ltx/2-5-fast-text-to-video",
+      "har": "tests/recordings/kie_2079838932/ltx-2-5-fast-text-to-video_2133922215/recording.har",
+      "request": {
+        "prompt": "A paper lantern drifts over a calm lake at dusk",
+        "resolution": "720p",
+        "duration": 6
+      },
+      "taskId": "e61a8bf7bffc6c898aa6f1925c77b2ba",
+      "creditsConsumed": 64.8,
+      "creditsConsumedInFlight": [64.8, 64.8, 64.8],
+      "usd": 0.324,
+      "costTimeSeconds": 23,
+      "output": {
+        "format": "mp4",
+        "width": 1280,
+        "height": 720,
+        "durationSeconds": 6.0,
+        "frames": 144,
+        "fps": 24,
+        "audioTrack": true
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57721.58,
+    "after": 57656.78
+  },
+  "observedTotalUsd": 0.324
+}

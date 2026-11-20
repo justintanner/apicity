@@ -1,6 +1,8 @@
 import type { KieMediaModel, ModelInputSchema } from "./types";
 import {
   ElevenLabsTextToDialogueStabilityContract,
+  Ltx25AspectRatioSchema,
+  Ltx25FastResolutionSchema,
   ElevenLabsTextToSpeechNumericContract,
   GoogleGeminiTtsAccentSchema,
   GoogleGemini38TtsVoiceNameSchema,
@@ -632,6 +634,38 @@ const googleGeminiTtsFields = {
   },
 } as const;
 
+// LTX 2.5 fields shared by the five ltx/2-5-* pages (ac-ujmlmh): prompt, fps
+// and seed on every page, aspect_ratio on the two text-to-video pages.
+const ltx25PromptField = {
+  type: "string",
+  required: true,
+  minLength: 1,
+  maxLength: 5000,
+  description:
+    'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots',
+} as const;
+
+const ltx25FpsField = {
+  type: "integer",
+  enum: [24, 25, 48, 50],
+  default: 24,
+  description: "Frame rate (default 24); does not change the price",
+} as const;
+
+const ltx25AspectRatioField = {
+  type: "string",
+  enum: Ltx25AspectRatioSchema.options,
+  default: "16:9",
+  description: "Aspect ratio (default 16:9)",
+} as const;
+
+const ltx25SeedField = {
+  type: "integer",
+  minimum: 0,
+  maximum: 2147483647,
+  description: "Random seed 0-2147483647; random when omitted",
+} as const;
+
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   // https://docs.kie.ai/market/vidu-q4/image-to-video
   "vidu-q4/image-to-video": {
@@ -688,6 +722,30 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       duration: viduQ4DurationField,
       resolution: viduQ4ResolutionField,
       audio: viduQ4AudioField,
+    },
+  },
+  // https://docs.kie.ai/market/ltx/2-5-fast-text-to-video
+  "ltx/2-5-fast-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: ltx25PromptField,
+      resolution: {
+        type: "string",
+        enum: Ltx25FastResolutionSchema.options,
+        default: "1080p",
+        description:
+          "Output resolution, the short side (default 1080p); billing depends on resolution",
+      },
+      fps: ltx25FpsField,
+      duration: {
+        type: "integer",
+        enum: [6, 8, 10, 12, 14, 16, 18, 20],
+        default: 10,
+        description:
+          "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps",
+      },
+      aspect_ratio: ltx25AspectRatioField,
+      seed: ltx25SeedField,
     },
   },
   "kling-3.0/video": {

@@ -180,6 +180,14 @@ const viduQ4Seconds = (p: Record<string, unknown>): number | undefined => {
   return wire === undefined ? 5 : coerceSeconds(wire);
 };
 
+// LTX 2.5 text- and image-to-video bill the wire duration, an enum of whole
+// seconds, defaulting to the documented 10 s. Explicit malformed values
+// (including null) fail closed.
+const ltx25Seconds = (p: Record<string, unknown>): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  return wire === undefined ? 10 : coerceSeconds(wire);
+};
+
 // Seedance 1.0 Lite/Pro use the same wire-only duration semantics.
 const seedanceV1Seconds = (p: Record<string, unknown>): number | undefined => {
   const wire = asObject(p.input)?.duration;
@@ -1114,6 +1122,22 @@ const tieredVideoPage = (
   source: pricePage(url, asOf),
 });
 
+// LTX 2.5 (Lightricks, ac-ujmlmh): seconds of output video by resolution,
+// default 1080p; fps does not change the price. Every model's feed rows read
+// "LTX 2.5 <Fast|Pro>, <task>, <resolution>" under the anchor
+// https://kie.ai/ltx-2-5?model=<id>, which the models API pricingDesc
+// repeats.
+const LTX_25_AS_OF = "2026-11-20";
+const ltx25Page = (model: string, rates: Record<string, number>) =>
+  tieredVideoPage(
+    "resolution",
+    rates,
+    `https://kie.ai/ltx-2-5?model=${encodeURIComponent(model)}`,
+    "1080p",
+    LTX_25_AS_OF,
+    ltx25Seconds
+  );
+
 // Flat per-second video rate for the families whose evidence is a kie pricing
 // page URL rather than a /market/ slug.
 const flatVideoPage = (
@@ -1425,6 +1449,16 @@ export const kie: Record<string, ModelPricing> = {
     "2026-10-14",
     viduQ4Seconds
   ),
+  // ltx/2-5-fast-text-to-video: 10.8 / 15.6 / 22.8 credits ($0.054 / $0.078
+  // / $0.114) per second at 720p / 1080p / 1440p, from the 2026-11-19 feed
+  // rows and pricingDesc, re-read 2026-11-20 (evidence in
+  // tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-text-to-video-2026-11-20.json).
+  // Duration defaults to 10 s.
+  "ltx/2-5-fast-text-to-video": ltx25Page("ltx/2-5-fast-text-to-video", {
+    "720p": 0.054,
+    "1080p": 0.078,
+    "1440p": 0.114,
+  }),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85. The frozen pull's
   // text-to-video row said 380 credits against image-to-video's 370, and the
   // 2026-11-04 feed says 370 on both.

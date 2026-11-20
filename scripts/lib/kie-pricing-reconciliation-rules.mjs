@@ -398,6 +398,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell.",
   })),
 
+  ...["720p", "1080p", "1440p"].map((variant) => ({
+    key: "ltx/2-5-fast-text-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-text-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 10.8/15.6/22.8 credits = 0.054/0.078/0.114 USD per second of video at 720p/1080p/1440p; fps does not change the price",
+    rationale:
+      "LTX 2.5 Fast text-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution), and the billed recording confirms the 720p cell.",
+  })),
+
   ...["4k|video", "4k|no-video"].map((variant) => ({
     key: "bytedance/seedance-2-5",
     variant,
@@ -1002,6 +1012,18 @@ const SELECTOR_RULES = Object.freeze([
       } else if (/no (?:audio|aiduo)/i.test(text)) {
         candidates.generate_audio_switch = false;
       }
+    },
+  },
+  {
+    family: "ltx-2-5-resolution",
+    matches: (key) => key.startsWith("ltx/2-5-"),
+    apply: (_key, text, candidates) => {
+      // LTX 2.5 rows read "LTX 2.5 Fast, text to video, 1440p", and 1440p is
+      // outside the generic resolution vocabulary. Read this family's exact
+      // schema enum, as pixverse does, rather than widening every family's
+      // parser (ac-ujmlmh).
+      const resolution = text.match(/\b(720p|1080p|1440p)\b/i);
+      if (resolution) candidates.resolution = resolution[1].toLowerCase();
     },
   },
   {

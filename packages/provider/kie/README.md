@@ -1154,6 +1154,36 @@ multimodal reference mutually exclusive, so a frame with any non-empty
 `reference_*_urls` is refused. A frame is an image, so it bills in the
 no-video column.
 
+## LTX 2.5 Fast text-to-video
+
+`ltx/2-5-fast-text-to-video` (Lightricks) makes video with native audio
+from a 1-5000 character `prompt`: text in quotes is spoken as dialogue, and
+`Shot 1 / Shot 2` writes several shots. `resolution` is `720p`, `1080p`
+(default) or `1440p`; `fps` is 24 (default), 25, 48 or 50; `duration` is
+6-20 seconds in steps of 2 (default 10), and only 6, 8 or 10 at `1440p` or
+at 48 or 50 fps, which the schema refuses otherwise. `aspect_ratio` is
+`16:9` (default), `9:16`, `1:1`, `3:2` or `2:3`, and `seed` is optional.
+
+```typescript
+const ltx = await kie.post.api.v1.jobs.createTask({
+  model: "ltx/2-5-fast-text-to-video",
+  input: {
+    prompt: "A paper lantern drifts over a calm lake at dusk",
+    resolution: "720p",
+    duration: 6,
+  },
+});
+
+console.log(ltx.data?.taskId);
+```
+
+It bills each second of video by resolution: 10.8 credits ($0.054) at
+720p, 15.6 ($0.078) at 1080p and 22.8 ($0.114) at 1440p. The frame rate
+does not change the price. A recorded 6 s clip at 720p billed 64.8 credits
+($0.324). See KIE's
+[LTX 2.5 Fast Text-to-Video](https://docs.kie.ai/market/ltx/2-5-fast-text-to-video.md)
+page.
+
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 
 KIE's Kling 3.0 Turbo Quick Start exposes two createTask slugs:

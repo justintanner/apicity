@@ -2271,6 +2271,74 @@ describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
   });
 });
 
+describe("wavespeed openai/gpt-image-2.5-flare/edit", () => {
+  const model = "openai/gpt-image-2.5-flare/edit";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.025 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.025, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-20, list price: the
+  // same grid as the Sunburst edit.
+  it("matches the Sunburst edit quotes", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.025, 0.035, 0.045],
+      medium: [0.039, 0.055, 0.085],
+      high: [0.105, 0.165, 0.285],
+      xhigh: [0.175, 0.285, 0.495],
+      max: [0.375, 0.615, 1.015],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, {
+            prompt: PROMPT,
+            images: [image],
+            quality,
+            resolution,
+          }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+    expect(
+      estimate(model, { prompt: PROMPT, images: [image] }).usd
+    ).toBeCloseTo(0.039, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: Array(16).fill(image),
+        quality: "low",
+      }).usd
+    ).toBeCloseTo(0.25, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image, image],
+        quality: "max",
+        resolution: "4k",
+        mask_image: image,
+      }).usd
+    ).toBeCloseTo(1.045, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
+
 describe("wavespeed pruna-ai/p-video-2-pro/image-to-video", () => {
   const model = "pruna-ai/p-video-2-pro/image-to-video";
   const IMAGE = "https://example.com/cat.jpg";

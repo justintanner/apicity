@@ -5377,6 +5377,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "images",
       source: {
+        url: "https://wavespeed.ai/models/openai/gpt-image-2.5-flare/edit",
+        asOf: "2026-11-20",
+      },
+    },
+    ["POST api.v3.openai.gptImage2p5Flare.edit"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
         url: "https://wavespeed.ai/models/openai/gpt-image-2.5-flare/text-to-image",
         asOf: "2026-11-16",
       },

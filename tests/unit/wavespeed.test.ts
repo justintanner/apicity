@@ -38,6 +38,7 @@ import {
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
+  WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema,
@@ -2641,6 +2642,7 @@ describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
 
     expect(Object.keys(wavespeed.api.v3.openai.gptImage2p5Flare)).toEqual([
       "textToImage",
+      "edit",
     ]);
     expect(wavespeed.api.v3.openai.gptImage2p5Flare.textToImage.schema).toBe(
       WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema
@@ -2653,6 +2655,63 @@ describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
         RECORDED
       ).success
     ).toBe(true);
+  });
+});
+
+describe("wavespeed openai/gpt-image-2.5-flare/edit", () => {
+  // The payload
+  // tests/integration/wavespeed-openai-gpt-image-2-5-flare-edit.test.ts
+  // records: the cheapest edit, low quality at 1k with one input image.
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    quality: "low",
+    resolution: "1k",
+  };
+
+  it("attaches the Sunburst edit schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(wavespeed.api.v3.openai.gptImage2p5Flare.edit.schema).toBe(
+      WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema
+    );
+    expect(WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema).toBe(
+      WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema
+    );
+    expect(
+      WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "openai/gpt-image-2.5-flare/edit",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.openai.gptImage2p5Flare.edit({
+      ...RECORDED,
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-flare/edit"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
   });
 });
 

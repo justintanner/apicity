@@ -1818,6 +1818,11 @@ export const WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema = z.object({
     .describe("Format of the output image. WaveSpeed default: `png`."),
 });
 
+// openai/gpt-image-2.5-flare/edit: WaveSpeed's catalog (read 2026-11-20)
+// gives it the same request schema as the Sunburst model.
+export const WaveSpeedOpenaiGptImage2p5FlareEditRequestSchema =
+  WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema;
+
 // pruna-ai/p-video-2-pro/image-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-18).
 export const WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema = z.object({

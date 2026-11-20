@@ -4253,7 +4253,11 @@ export const Seedance25FlashRequestSchema =
 // schema. Unlike Seedance 2.5, the Mini page states no adaptive aspect_ratio
 // requirement for a frame and does not say last_frame_url needs
 // first_frame_url, so neither is enforced. The input stays a plain object so
-// consumers can read `.shape`.
+// consumers can read `.shape`. The same page, re-read on 2026-11-20
+// (ac-6n1pli), defines duration as "Video duration in 4-15 seconds or -1."
+// with default 5 and says "With duration = -1, billing follows the duration
+// actually generated", so -1 is accepted as its own literal next to 4-15, as
+// on Seedance 2.5.
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
   first_frame_url: Seedance25MediaReferenceSchema.optional().describe(
@@ -4268,7 +4272,12 @@ export const Seedance2MiniInputSchema = z.object({
   generate_audio: z.boolean().default(true),
   resolution: Seedance2MiniResolutionSchema.default("720p"),
   aspect_ratio: Seedance2MiniAspectRatioSchema.default("16:9"),
-  duration: z.number().int().min(4).max(15).default(5),
+  duration: z
+    .union([z.literal(-1), z.number().int().min(4).max(15)])
+    .default(5)
+    .describe(
+      "Duration in seconds: 4-15, or -1 for automatic length (default 5); with -1, KIE bills the generated length"
+    ),
   web_search: z.boolean().default(false),
   nsfw_checker: z.boolean().default(true),
 });

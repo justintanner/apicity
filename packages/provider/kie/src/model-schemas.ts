@@ -2553,10 +2553,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: {
         type: "integer",
-        minimum: 4,
-        maximum: 15,
+        enum: [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         default: 5,
-        description: "Duration in seconds, 4-15 (default 5)",
+        description:
+          "Duration in seconds: 4-15, or -1 for automatic length (default 5); with -1, KIE bills the generated length",
       },
       web_search: {
         type: "boolean",

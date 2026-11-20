@@ -66,6 +66,43 @@ describe("KIE Seedance 2 Mini", () => {
     expect(JSON.parse(init.body as string)).toEqual(request);
   });
 
+  it("sends duration -1 (automatic length) as written", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          code: 200,
+          msg: "success",
+          data: { taskId: "seedance-mini-task-auto" },
+        }),
+        { status: 200 }
+      )
+    );
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const request = {
+      model: "bytedance/seedance-2-mini",
+      input: {
+        prompt: "A clip whose length the model chooses.",
+        duration: -1,
+      },
+    } satisfies Seedance2MiniRequest;
+
+    expect(Seedance2MiniRequestSchema.parse(request).input.duration).toBe(-1);
+
+    await provider.post.api.v1.jobs.createTask(
+      request,
+      mintKieCreateTaskOtp(request)
+    );
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const [, init] = mockFetch.mock.calls[0];
+    expect(JSON.parse(init.body as string)).toEqual(request);
+  });
+
   it("validates omitted duration without adding it to the request body", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(
@@ -250,7 +287,9 @@ describe("KIE Seedance 2 Mini", () => {
       expect(parsed.data.input.nsfw_checker).toBe(true);
     }
 
-    for (const duration of [4, 15]) {
+    // The docs, re-read on 2026-11-20 (ac-6n1pli): "Video duration in 4-15
+    // seconds or -1." -1 is automatic length, billed by the generated length.
+    for (const duration of [-1, 4, 15]) {
       const explicit = Seedance2MiniRequestSchema.parse({
         model: "bytedance/seedance-2-mini",
         input: { duration },
@@ -258,13 +297,17 @@ describe("KIE Seedance 2 Mini", () => {
       expect(explicit.input.duration).toBe(duration);
     }
 
-    for (const duration of [3, 16, 15.5]) {
-      expect(
-        Seedance2MiniRequestSchema.safeParse({
-          model: "bytedance/seedance-2-mini",
-          input: { duration },
-        }).success
-      ).toBe(false);
+    for (const duration of [3, 16, 15.5, 0, -2, "5"]) {
+      const result = Seedance2MiniRequestSchema.safeParse({
+        model: "bytedance/seedance-2-mini",
+        input: { duration },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ path: ["input", "duration"] }),
+        ])
+      );
     }
 
     expect(

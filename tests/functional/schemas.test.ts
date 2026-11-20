@@ -1128,9 +1128,13 @@ describe("kie modelInputSchemas", () => {
       "adaptive",
     ]);
     expect(schema.fields.aspect_ratio.default).toBe("16:9");
+    // -1 selects automatic length (docs re-read 2026-11-20, ac-6n1pli).
     expect(schema.fields.duration.type).toBe("integer");
-    expect(schema.fields.duration.minimum).toBe(4);
-    expect(schema.fields.duration.maximum).toBe(15);
+    expect(schema.fields.duration.enum).toEqual([
+      -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    ]);
+    expect(schema.fields.duration.minimum).toBeUndefined();
+    expect(schema.fields.duration.maximum).toBeUndefined();
     expect(schema.fields.duration.default).toBe(5);
     expect(schema.fields.web_search.default).toBe(false);
     expect(schema.fields.nsfw_checker.default).toBe(true);

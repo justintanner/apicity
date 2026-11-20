@@ -685,6 +685,7 @@ fal	meta.museImage.textToImage	POST	metered	images		https://api.fal.ai/v1/models
 fal	microsoft.maiImage2p5Pro	POST	metered	credits	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	microsoft.maiImage2p5Pro.edit	POST	metered	credits	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	microsoft.maiImage2p7.edit	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	microsoft.maiImage2p7.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	minimax.h3.flf2v.trainer	POST	metered	steps		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	minimax.h3.i2v.trainer	POST	metered	steps		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	minimax.h3.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04

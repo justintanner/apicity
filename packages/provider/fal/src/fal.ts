@@ -161,6 +161,8 @@ import {
   FalMicrosoftMaiImage2p5ProRequest,
   FalMicrosoftMaiImage2p7EditResponse,
   FalMicrosoftMaiImage2p7EditRequest,
+  FalMicrosoftMaiImage2p7TextToImageResponse,
+  FalMicrosoftMaiImage2p7TextToImageRequest,
   FalOpenaiGptImage2p5FlareTextToImageResponse,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditResponse,
@@ -647,6 +649,7 @@ import {
   FalMicrosoftMaiImage2p5ProEditRequestSchema,
   FalMicrosoftMaiImage2p5ProRequestSchema,
   FalMicrosoftMaiImage2p7EditRequestSchema,
+  FalMicrosoftMaiImage2p7TextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
@@ -3828,6 +3831,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/microsoft/mai-image-2.7/text-to-image
+  // Docs: https://fal.ai/models/microsoft/mai-image-2.7/text-to-image/api
+  const microsoftMaiImage2p7TextToImage = jsonBody<
+    FalMicrosoftMaiImage2p7TextToImageRequest,
+    FalMicrosoftMaiImage2p7TextToImageResponse
+  >(
+    "POST",
+    "/microsoft/mai-image-2.7/text-to-image",
+    FalMicrosoftMaiImage2p7TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
   // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
   const nvidiaCosmos3SuperImageToVideo = jsonBody<
@@ -5025,6 +5041,10 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/microsoft/mai-image-2.7/edit
         // Docs: https://fal.ai/models/microsoft/mai-image-2.7/edit/api
         edit: microsoftMaiImage2p7Edit,
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/microsoft/mai-image-2.7/text-to-image
+        // Docs: https://fal.ai/models/microsoft/mai-image-2.7/text-to-image/api
+        textToImage: microsoftMaiImage2p7TextToImage,
       },
     },
     openai: {

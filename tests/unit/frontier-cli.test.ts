@@ -68,7 +68,7 @@ describe("apicity frontier", () => {
     const i2v = envelope.data.find((row) => row.type === "i2v");
     expect(i2v).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
+    expect(t2i).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
     expect(i2i).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
@@ -189,7 +189,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("openai.gptImage2");
     expect(table).toContain("grok-imagine-image-2.0");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
-    expect(table).toContain("not yet in apicity: MAI-Image-2.7, MAI-Image-2.6");
+    expect(table).toContain("microsoft.maiImage2p7.textToImage");
+    expect(table).toContain("not yet in apicity: MAI-Image-2.6");
   });
 
   it("prints i2i fal rows and keeps the gaps", async () => {

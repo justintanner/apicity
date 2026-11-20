@@ -80,7 +80,13 @@
       "modelId": "gpt-image-2.6-flare"
     }
   ],
-  "MAI-Image-2.7": [],
+  "MAI-Image-2.7": [
+    {
+      "provider": "fal",
+      "dotPath": "microsoft.maiImage2p7.textToImage",
+      "pricingKey": "microsoft/mai-image-2.7/text-to-image"
+    }
+  ],
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",

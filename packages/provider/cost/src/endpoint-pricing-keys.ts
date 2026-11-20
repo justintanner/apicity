@@ -306,6 +306,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST microsoft.maiImage2p5Pro": "microsoft/mai-image-2.5-pro",
   "fal POST microsoft.maiImage2p5Pro.edit": "microsoft/mai-image-2.5-pro/edit",
   "fal POST microsoft.maiImage2p7.edit": "microsoft/mai-image-2.7/edit",
+  "fal POST microsoft.maiImage2p7.textToImage":
+    "microsoft/mai-image-2.7/text-to-image",
   "fal POST minimax.h3.flf2v.trainer": "minimax/h3/flf2v/trainer",
   "fal POST minimax.h3.i2v.trainer": "minimax/h3/i2v/trainer",
   "fal POST minimax.h3.imageToVideo": "minimax/h3/image-to-video",

@@ -11020,7 +11020,8 @@ export type FalMicrosoftMaiImage2p5ProEditParsedRequest = z.output<
   typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
 >;
 
-const FalMicrosoftMaiImage2p7EditImageSizeSchema = z.object({
+// The custom ImageSize component both MAI-Image-2.7 leaves publish.
+const FalMicrosoftMaiImage2p7ImageSizeSchema = z.object({
   width: z
     .number()
     .int()
@@ -11057,7 +11058,7 @@ export const FalMicrosoftMaiImage2p7EditRequestSchema = z.object({
     .describe("The URLs of the images to edit or reference (up to 5)."),
   image_size: z
     .union([
-      FalMicrosoftMaiImage2p7EditImageSizeSchema,
+      FalMicrosoftMaiImage2p7ImageSizeSchema,
       z.enum([
         "square_hd",
         "portrait_4_3",
@@ -11103,6 +11104,67 @@ export type FalMicrosoftMaiImage2p7EditRequestInput =
   FalMicrosoftMaiImage2p7EditRequest;
 export type FalMicrosoftMaiImage2p7EditParsedRequest = z.output<
   typeof FalMicrosoftMaiImage2p7EditRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-11-20
+// (sha256 bc8c6966d7827b0eef018d29dacb5a883aeffc736f9ae0fd5ca5881201b29b6a). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/microsoft/mai-image-2.7/text-to-image/api
+// As on the edit leaf, the image_size side and pixel limits and the
+// transparent-background format rule are documented, not probe-confirmed:
+// free 422 pairing probes on 2026-11-20 drew no field error for them.
+export const FalMicrosoftMaiImage2p7TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The text prompt to generate an image from."),
+  image_size: z
+    .union([
+      FalMicrosoftMaiImage2p7ImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "portrait_4_3",
+        "landscape_4_3",
+        "portrait_3_2",
+        "landscape_3_2",
+        "portrait_16_9",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("square_hd")
+    .describe(
+      "The size of the generated image. Each side must be at least 768 pixels and the total pixel count at most 4,194,304 (2048x2048). Custom sizes are rounded down to a multiple of 16."
+    ),
+  resolution: z
+    .enum(["1K", "2K"])
+    .default("1K")
+    .describe(
+      'Resolution of preset image sizes: "1K" (about 1 megapixel) or "2K" (each side doubled). Ignored for custom sizes.'
+    ),
+  background: z
+    .enum(["opaque", "transparent"])
+    .default("opaque")
+    .describe(
+      'Use "transparent" for a transparent background (requires png or webp output).'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalMicrosoftMaiImage2p7TextToImageRequest = z.input<
+  typeof FalMicrosoftMaiImage2p7TextToImageRequestSchema
+>;
+export type FalMicrosoftMaiImage2p7TextToImageRequestInput =
+  FalMicrosoftMaiImage2p7TextToImageRequest;
+export type FalMicrosoftMaiImage2p7TextToImageParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p7TextToImageRequestSchema
 >;
 
 const FalNvidiaCosmos3SuperImageToVideoImageSizeSchema = z.object({
@@ -19034,6 +19096,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalMicrosoftMaiImage2p5ProEditRequestSchema,
   "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,
   "microsoft/mai-image-2.7/edit": FalMicrosoftMaiImage2p7EditRequestSchema,
+  "microsoft/mai-image-2.7/text-to-image":
+    FalMicrosoftMaiImage2p7TextToImageRequestSchema,
   "openai/gpt-image-2.5/flare/text-to-image":
     FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   "openai/gpt-image-2.5/flare/edit": FalOpenaiGptImage2p5FlareEditRequestSchema,

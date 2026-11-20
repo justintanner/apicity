@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed GPT Image 2.5 Sunburst edit
+  (`openai/gpt-image-2.5-sunburst/edit`) bills the GPT Image 2.5
+  text-to-image rate for the quality and resolution (0.01 USD at low 1k to
+  1 USD at max 4k; default medium 1k), plus 0.015 USD per input image, plus
+  0.015 USD once when a `mask_image` is sent, from free quotes read
+  2026-11-20 (list price; discount_rate 100). Aspect ratio and output format
+  add nothing. Display "GPT Image 2.5 Sunburst Edit", slug `gi2p5sb`
+  (shared with the text-to-image key and with KIE). A recorded low 1k edit
+  of one input billed 0.025 USD, the quote. It is the WaveSpeed entry beside
+  fal, KIE, MachGen and OpenAI on the GPT Image 2.5 Sunburst (max)
+  image-editing frontier row (ac-nhmyvr).
+
 - WaveSpeed Kling Image 4.0 text-to-image
   (`kwaivgi/kling-image-v4.0/text-to-image`) bills 0.063 / 0.094 / 0.157 USD
   per image at 2k / 4k / 8k, from the model page and free quotes read

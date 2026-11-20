@@ -171,8 +171,9 @@ const svgSurcharge = (p: Record<string, unknown>): number | undefined => {
   return format === "svg" ? 0.02 : 0;
 };
 
-// A GPT Image 2.6 edit adds 0.015 USD per input image, and 0.015 USD once
-// when a mask_image or a markup_image is sent.
+// A GPT Image 2.6 or 2.5 edit adds 0.015 USD per input image, and 0.015 USD
+// once when a mask_image or a markup_image is sent (the 2.5 edit takes no
+// markup_image).
 const editSurcharge = (p: Record<string, unknown>): number | undefined => {
   if (!Array.isArray(p.images)) return undefined;
   const guided = p.mask_image !== undefined || p.markup_image !== undefined;
@@ -1041,6 +1042,26 @@ export const wavespeed: Record<string, ModelPricing> = {
     source: {
       url: "https://wavespeed.ai/models/openai/gpt-image-2.5-flare/text-to-image",
       asOf: "2026-11-16",
+    },
+  },
+  // base_price 39000 micros, discount_rate 100 on 2026-11-20. No formula on the
+  // model page (price inputs: images, mask_image, quality, resolution). Free
+  // quotes (POST /api/v3/model/price) read 2026-11-20, list price: the
+  // text-to-image rate for the quality and resolution (all 15 cells quoted
+  // with one input), plus 0.015 USD per input image (1, 2, 4 and 16 quoted),
+  // plus 0.015 USD once when a mask_image is sent. The defaults are medium
+  // and 1k (0.039 with one input). Output format and aspect_ratio add
+  // nothing. One request returns one image.
+  "openai/gpt-image-2.5-sunburst/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: gptImage2p6Select,
+    rates: GPT_IMAGE_2P5_RATES,
+    extra: editSurcharge,
+    source: {
+      url: "https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/edit",
+      asOf: "2026-11-20",
     },
   },
   // base_price 35000 micros, discount_rate 100 on 2026-11-18. The model page

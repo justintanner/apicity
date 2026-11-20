@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `apicity frontier <type>` prints an adapter beside the model id when
+  the row has one, and prints that row's note under the table.
+  `--json` keeps `adapter` and `note` on the row.
 - `apicity frontier <type>` adds a price column from the bundled cost tables
   (`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`). `--json` includes
   the price object.

@@ -38,7 +38,15 @@
       "modelId": "Gemini-Omni-1.2-Flash"
     }
   ],
-  "Hyperflow H3": [],
+  "Hyperflow H3": [
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "MiniMax-H3-Turbo",
+      "adapter": "hyperflow",
+      "note": "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference."
+    }
+  ],
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
@@ -156,5 +164,13 @@
       "modelId": "wan2.7-videoedit"
     }
   ],
-  "Pika H3 Flex": []
+  "Pika H3 Flex": [
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "MiniMax-H3-Turbo",
+      "adapter": "pika_h3_flex",
+      "note": "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference."
+    }
+  ]
 }

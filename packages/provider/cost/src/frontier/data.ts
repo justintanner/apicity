@@ -701,7 +701,15 @@ export const FRONTIER = {
         model: "Hyperflow H3",
         creator: "Video Rebirth",
         elo: 1154,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "hyperflow",
+            note: "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
       },
       {
         rank: 6,
@@ -952,7 +960,15 @@ export const FRONTIER = {
         model: "Hyperflow H3",
         creator: "Video Rebirth",
         elo: 1119,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "hyperflow",
+            note: "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
       },
       {
         rank: 8,
@@ -990,7 +1006,15 @@ export const FRONTIER = {
         model: "Pika H3 Flex",
         creator: "Pika Art",
         elo: 1114,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "pika_h3_flex",
+            note: "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
       },
     ],
   },
@@ -1057,7 +1081,15 @@ export const FRONTIER = {
         model: "Hyperflow H3",
         creator: "Video Rebirth",
         elo: 1156,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "hyperflow",
+            note: "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
       },
       {
         rank: 4,
@@ -1217,7 +1249,15 @@ export const FRONTIER = {
         model: "Pika H3 Flex",
         creator: "Pika Art",
         elo: 1045,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "pika_h3_flex",
+            note: "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
       },
     ],
   },

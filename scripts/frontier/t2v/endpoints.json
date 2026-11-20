@@ -96,7 +96,15 @@
       "modelId": "dreamina-seedance-2-5-260628"
     }
   ],
-  "Hyperflow H3": [],
+  "Hyperflow H3": [
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "MiniMax-H3-Turbo",
+      "adapter": "hyperflow",
+      "note": "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference."
+    }
+  ],
   "FLUX 3 Max": [
     {
       "provider": "fal",

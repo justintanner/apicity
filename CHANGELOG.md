@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The frontier registry maps Hyperflow H3 (text-to-video, image-to-video, and video-to-video) and Pika H3 Flex (image-to-video and video-to-video) through the existing MachGen `api.v0.generate` call, as `MiniMax-H3-Turbo` adapters `hyperflow` and `pika_h3_flex`. Video-to-video is reference-to-video with a video reference. MachGen runs those open weights at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. The public pricebook, re-read 2026-11-19, still prices `MiniMax-H3-Turbo` at 0.015 USD/s through 2027-01-01T07:59Z, with no adapter surcharge. A recorded 480p 1 s Hyperflow text-to-video billed 0.015 USD (task ad7a09cf) (ac-deyq9x).
+
 - `@apicity/machgen` `api.v0.generate` accepts `Gemini-Omni-1.2-Flash` for text-to-video, image-to-video, reference-to-video (reference, edit and extend) and upscale. The id is on this account's model list and absent from the public docs (re-read 2026-11-19). `@apicity/cost` prices the generation rows at 0.023172 / 0.069504 / 0.104256 / 0.208512 USD per second for 360 / 720 / 1080 / 2160. The public pricebook's Generation Credit on those rows is 0. A recorded 360p 3 s text-to-video billed 0.073664 USD against the 0.069516 quote (ac-ssmj0i).
 
 ### Fixed

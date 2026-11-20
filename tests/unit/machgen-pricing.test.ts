@@ -40,6 +40,8 @@ interface PricebookRow {
   unit_price_micros: number;
   discounted_unit_price_micros: number | null;
   discount_ends_at: string | null;
+  generation_credit_percent?: number;
+  uses_adapter?: boolean | null;
 }
 const pricebook = JSON.parse(
   readFileSync(
@@ -79,7 +81,7 @@ const pricebookAsOf: Record<string, string> = {
   "GPT-Image-2.6-Flare": "2026-11-18",
   "Seedance-2.5": "2026-10-29",
   "Seedance-2.0": "2026-10-29",
-  "MiniMax-H3-Turbo": "2026-11-01",
+  "MiniMax-H3-Turbo": "2026-11-19",
   "MiniMax-H3-Omni": "2026-11-01",
   "Gemini-Omni-1.2-Flash": "2026-11-19",
 };
@@ -266,6 +268,30 @@ describe("MachGen pricing", () => {
       );
     }
   });
+
+  it("keeps the 2026-11-19 MiniMax-H3-Turbo re-read on the same promotion", () => {
+    const again = JSON.parse(
+      readFileSync(
+        "tests/fixtures/machgen-evidence/machgen-turbo-pricebook-2026-11-19.json",
+        "utf8"
+      )
+    ) as { asOf: string; prices: PricebookRow[] };
+    expect(again.asOf).toBe("2026-11-19");
+    for (const height of [480, 768]) {
+      for (const video of [false, true]) {
+        const row = turboRow(again.prices, height, video);
+        const prior = turboRow(turboPricebook.prices, height, video);
+        expect(row.unit_price_micros).toBe(20000);
+        expect(row.discounted_unit_price_micros).toBe(
+          prior.discounted_unit_price_micros
+        );
+        expect(row.discount_ends_at).toBe("2027-01-01T07:59:00+00:00");
+        expect(row.generation_credit_percent).toBe(0);
+        expect(row.uses_adapter).toBeNull();
+      }
+    }
+  });
+
   it("matches every priced pricebook row's own example", () => {
     // The 2026-10-25 fixture's Seedance 2.5 and 2.0 examples are the
     // historical page totals. Those two models were re-priced on

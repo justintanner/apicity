@@ -388,7 +388,9 @@ export const machgen: Record<string, ModelPricing> = {
   }),
   "Vidu-Q3-Pro": flat({ "540": 0.053, "720": 0.118, "1080": 0.142 }),
   // Promotional rate until 2027-01-01T07:59Z (the pricebook's
-  // discount_ends_at, re-read 2026-11-01); the list price is 0.02 USD/s.
+  // discount_ends_at). Re-read 2026-11-19: the public rows are
+  // MiniMax-H3-MultiMax, list 0.02 USD/s, 25% off (0.015), credit 0,
+  // uses_adapter null, 480 and 768 only, with and without input video.
   // MachGen billed 0.01 USD/s until 2026-11-01T06:59Z.
   "MiniMax-H3-Turbo": flat(
     {
@@ -398,7 +400,7 @@ export const machgen: Record<string, ModelPricing> = {
       "video|768": 0.015,
     },
     [videoInput, height],
-    { ...pricebookSource, asOf: "2026-11-01" }
+    { ...pricebookSource, asOf: "2026-11-19" }
   ),
   // First priced from the 2026-11-01 pricebook
   // (machgen-omni-2026-11-01.json); R2V at 768p only.

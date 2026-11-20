@@ -1,0 +1,107 @@
+{
+  "capturedAt": "2026-11-20",
+  "source": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-audio-to-video",
+  "models": ["ltx/2-5-fast-audio-to-video"],
+  "basis": "The pricing-feed rows anchored on https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-audio-to-video and the live GET /api/v1/models pricingDesc agree: 10.8 / 15.6 / 22.8 credits (0.054 / 0.078 / 0.114 USD) per second at 720p / 1080p / 1440p, 'billed on the actual video length (follows your audio, to 0.01 s)'. Both match the survey's 2026-11-19 reads (ac-51w0vl). The billed seconds are the request's duration when set (2-20, cut from the start of the audio), else the audio's length cut to the limit (20 s, or 10 s at 1440p or at 48 or 50 fps). The recording below set duration 2 on a 6.008 s audio: the output was 2.000 s and billed 21.6 credits = 2.00 x 10.8, charged at success. The docs page re-read on 2026-11-20 differs from the survey's copy (sha256 ec1382e4...) only in removed x-apidog field-order metadata.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-20T03:10:33.242Z",
+    "rows": [
+      {
+        "modelDescription": "LTX 2.5 Fast, audio to video, 720p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "10.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.054",
+        "falPrice": "0.09",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-audio-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "LTX 2.5 Fast, audio to video, 1080p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "15.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.078",
+        "falPrice": "0.13",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-audio-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "LTX 2.5 Fast, audio to video, 1440p",
+        "interfaceType": "video",
+        "provider": "Lightricks",
+        "creditPrice": "22.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.114",
+        "falPrice": "0.19",
+        "discountRate": 40,
+        "anchor": "https://kie.ai/ltx-2-5?model=ltx%2F2-5-fast-audio-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "models_api": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models",
+    "fetchedAt": "2026-11-20T03:07:11Z",
+    "entry": {
+      "model": "ltx/2-5-fast-audio-to-video",
+      "slug": "ltx/2-5-fast-audio-to-video",
+      "title": "LTX 2.5 Fast Audio to Video",
+      "provider": "Lightricks",
+      "taskType": ["Speech to Video", "Lip Sync"],
+      "description": "LTX 2.5 Fast Audio to Video API on Kie.ai: generate lip-synced speech, singing and beat-matched 720p to 1440p MP4 video driven by your uploaded audio.",
+      "pricingDesc": "LTX 2.5 Fast Audio to Video: 10.8 / 15.6 / 22.8 credits ($0.054 / $0.078 / $0.114) per second at 720p / 1080p / 1440p, billed on the actual video length (follows your audio, to 0.01 s) \u2014 40% below official LTX-2.5 Fast pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+    }
+  },
+  "docs": [
+    {
+      "model": "ltx/2-5-fast-audio-to-video",
+      "url": "https://docs.kie.ai/market/ltx/2-5-fast-audio-to-video.md",
+      "fetchedAt": "2026-11-20T03:07:08Z",
+      "sha256": "79852decab76dccfad18e815274948346442a799987d034de49e7c96d53b453e"
+    }
+  ],
+  "recordingBudgetUsd": 2,
+  "recordings": [
+    {
+      "model": "ltx/2-5-fast-audio-to-video",
+      "har": "tests/recordings/kie_2079838932/ltx-2-5-fast-audio-to-video_589390876/recording.har",
+      "request": {
+        "audio_url": "<dialog.mp3 uploaded through api.fileStreamUpload>",
+        "prompt": "A radio host speaks into a studio microphone",
+        "resolution": "720p",
+        "duration": 2
+      },
+      "input": {
+        "fixture": "tests/fixtures/dialog.mp3",
+        "durationSeconds": 6.008163
+      },
+      "taskId": "97bf355fdb832f533e5cf82d69648132",
+      "creditsConsumed": 21.6,
+      "creditsConsumedInFlight": [0, 0],
+      "usd": 0.108,
+      "costTimeSeconds": 14,
+      "output": {
+        "format": "mp4",
+        "width": 1280,
+        "height": 720,
+        "durationSeconds": 2.0,
+        "frames": 48,
+        "fps": 24,
+        "audioTrack": true,
+        "audioTrackSeconds": 2.021333
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 57591.98,
+    "after": 57060.38,
+    "note": "The wallet fell 531.6 credits over the recording window; this task's creditsConsumed is 21.6, and the other 510 credits were spent by another consumer of the same KIE key."
+  },
+  "observedTotalUsd": 0.108
+}

@@ -1215,6 +1215,41 @@ nothing. A recorded 6 s clip at 720p from a 768x1024 photo came back
 [LTX 2.5 Fast Image-to-Video](https://docs.kie.ai/market/ltx/2-5-fast-image-to-video.md)
 page.
 
+## LTX 2.5 Fast audio-to-video
+
+`ltx/2-5-fast-audio-to-video` makes a talking, singing or music video that
+follows `audio_url` (MP3, WAV, M4A, AAC, OGG or FLAC, at least 2 seconds,
+up to 50 MB), which becomes the soundtrack. `image_url` is an optional
+first frame: with it the output keeps the image's aspect ratio, without it
+the output is 16:9. `duration` is optional: 2-20 seconds (decimals allowed)
+cut from the start of the audio, at most 10 at `1440p` or at 48 or 50 fps;
+omitted, the video matches the audio, cut to that limit. The audio must not
+be shorter than `duration`. `prompt`, `resolution`, `fps` and `seed` work
+as on the text-to-video model.
+
+```typescript
+const talking = await kie.post.api.v1.jobs.createTask({
+  model: "ltx/2-5-fast-audio-to-video",
+  input: {
+    audio_url: "https://example.com/voice.mp3",
+    prompt: "A radio host speaks into a studio microphone",
+    resolution: "720p",
+    duration: 2,
+  },
+});
+
+console.log(talking.data?.taskId);
+```
+
+It bills the Fast rates on the actual video length, to 0.01 s: 10.8
+credits ($0.054) per second at 720p, 15.6 ($0.078) at 1080p and 22.8
+($0.114) at 1440p. Without `duration` the request does not carry the
+length, so pass the audio's length to `@apicity/cost` as
+`costHints.durationSeconds`. A recorded 2 s clip at 720p billed 21.6
+credits ($0.108), charged at success. See KIE's
+[LTX 2.5 Fast Audio-to-Video](https://docs.kie.ai/market/ltx/2-5-fast-audio-to-video.md)
+page.
+
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 
 KIE's Kling 3.0 Turbo Quick Start exposes two createTask slugs:

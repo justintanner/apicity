@@ -458,6 +458,7 @@ export const KIE_MEDIA_MODELS = [
   // https://docs.kie.ai/market/ltx/.
   "ltx/2-5-fast-text-to-video",
   "ltx/2-5-fast-image-to-video",
+  "ltx/2-5-fast-audio-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -4646,12 +4647,19 @@ const LTX_25_FAST_SHORT_MAX_SECONDS = 10;
 
 // Refuses an LTX 2.5 Fast duration past 10 seconds at 1440p or at 48 or 50
 // fps. It reads the parsed input, whose defaults (1080p, 24 fps, 10 s) are
-// KIE's own, so an omitted field never conflicts.
+// KIE's own, so an omitted field never conflicts. Audio-to-video's duration
+// is optional (omitted, the audio's length, cut to the limit) and takes any
+// number from 2, so its message names the limit rather than the enum.
 function addLtx25FastDurationIssues(
-  input: { resolution: string; fps: number; duration: number },
-  ctx: z.RefinementCtx
+  input: { resolution: string; fps: number; duration?: number },
+  ctx: z.RefinementCtx,
+  allowed = "only 6, 8 or 10 seconds"
 ): void {
-  if (input.duration <= LTX_25_FAST_SHORT_MAX_SECONDS) return;
+  if (
+    input.duration === undefined ||
+    input.duration <= LTX_25_FAST_SHORT_MAX_SECONDS
+  )
+    return;
   const limitedBy =
     input.resolution === "1440p"
       ? "1440p"
@@ -4661,7 +4669,7 @@ function addLtx25FastDurationIssues(
   if (!limitedBy) return;
   ctx.addIssue({
     code: "custom",
-    message: `LTX 2.5 Fast allows only 6, 8 or 10 seconds at ${limitedBy}`,
+    message: `LTX 2.5 Fast allows ${allowed} at ${limitedBy}`,
     path: ["input", "duration"],
   });
 }
@@ -4738,6 +4746,65 @@ export const Ltx25FastImageToVideoRequestSchema = z
     input: Ltx25FastImageToVideoInputSchema,
   })
   .superRefine((value, ctx) => addLtx25FastDurationIssues(value.input, ctx));
+
+// Docs: https://docs.kie.ai/market/ltx/2-5-fast-audio-to-video
+// A video that follows an input audio clip (speech, singing or music); the
+// audio is kept as the soundtrack. image_url is an optional first frame
+// (with it the output keeps the image's aspect ratio, without it 16:9).
+// duration is an optional number, 2-20 with decimals, at most 10 at 1440p or
+// at 48 or 50 fps, cut from the start of the audio; omitted, the video
+// matches the audio, cut to the limit. "The audio must not be shorter than
+// this value", which only KIE can check. The page's summary still says
+// "6-20 s"; the field's own definition (minimum 2) is followed (ac-ium3f4).
+export const Ltx25FastAudioToVideoInputSchema = z.object({
+  audio_url: z
+    .string()
+    .url()
+    .describe(
+      "Public URL of the input audio (MP3, WAV, M4A, AAC, OGG or FLAC; at least 2 seconds, up to 50 MB); it becomes the soundtrack"
+    ),
+  image_url: z
+    .string()
+    .url()
+    .optional()
+    .describe(
+      "Optional first-frame image URL (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, otherwise 16:9"
+    ),
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots'
+    ),
+  resolution: Ltx25FastResolutionSchema.default("1080p").describe(
+    "Output resolution, the short side (default 1080p); billing depends on resolution"
+  ),
+  fps: Ltx25FpsSchema.default(24).describe(
+    "Frame rate (default 24); does not change the price"
+  ),
+  duration: z
+    .number()
+    .min(2)
+    .max(20)
+    .optional()
+    .describe(
+      "Seconds cut from the start of the audio, 2-20 (decimals allowed), at most 10 at 1440p or at 48 or 50 fps; omitted, the audio's length up to that limit"
+    ),
+  seed: Ltx25SeedSchema.optional().describe(
+    "Random seed 0-2147483647; random when omitted"
+  ),
+});
+
+export const Ltx25FastAudioToVideoRequestSchema = z
+  .object({
+    model: z.literal("ltx/2-5-fast-audio-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: Ltx25FastAudioToVideoInputSchema,
+  })
+  .superRefine((value, ctx) =>
+    addLtx25FastDurationIssues(value.input, ctx, "at most 10 seconds")
+  );
 
 // Docs: https://docs.kie.ai/market/google/nanobanana-2-1
 // Same knobs as Nano Banana 2, except image_input accepts at most 10 URLs.
@@ -10514,6 +10581,7 @@ export const MediaGenerationRequestSchema = z.union([
   ViduQ4ReferenceToVideoRequestSchema,
   Ltx25FastTextToVideoRequestSchema,
   Ltx25FastImageToVideoRequestSchema,
+  Ltx25FastAudioToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -12559,6 +12627,16 @@ export type Ltx25FastImageToVideoRequest = z.input<
 export type Ltx25FastImageToVideoRequestInput = Ltx25FastImageToVideoRequest;
 export type Ltx25FastImageToVideoParsedRequest = z.output<
   typeof Ltx25FastImageToVideoRequestSchema
+>;
+export type Ltx25FastAudioToVideoInput = z.infer<
+  typeof Ltx25FastAudioToVideoInputSchema
+>;
+export type Ltx25FastAudioToVideoRequest = z.input<
+  typeof Ltx25FastAudioToVideoRequestSchema
+>;
+export type Ltx25FastAudioToVideoRequestInput = Ltx25FastAudioToVideoRequest;
+export type Ltx25FastAudioToVideoParsedRequest = z.output<
+  typeof Ltx25FastAudioToVideoRequestSchema
 >;
 
 export type ViduQ4ReferenceAspectRatio = z.infer<

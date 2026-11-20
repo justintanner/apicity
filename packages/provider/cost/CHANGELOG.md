@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE LTX 2.5 Fast audio-to-video (`ltx/2-5-fast-audio-to-video`) is priced
+  at the Fast rates, 0.054 / 0.078 / 0.114 USD (10.8 / 15.6 / 22.8 credits)
+  per second at 720p / 1080p / 1440p, on the output length, which KIE bills
+  to 0.01 s (feed rows and models API pricingDesc read 2026-11-20). The
+  length is `duration` when the request sets it. Otherwise it is
+  `costHints.durationSeconds`, the audio's length, cut to 20 s (10 s at 1440p
+  or at 48 or 50 fps), and the estimate fails closed without it. A recorded
+  2 s clip at 720p billed 21.6 credits (ac-ium3f4).
+
 - KIE LTX 2.5 Fast image-to-video (`ltx/2-5-fast-image-to-video`) is priced
   at the Fast rates per second of video: 0.054 / 0.078 / 0.114 USD (10.8 /
   15.6 / 22.8 credits) at 720p / 1080p / 1440p, from the feed rows and the

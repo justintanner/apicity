@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Kling Image 4.0 edit (`kwaivgi/kling-image-v4.0/edit`) bills
+  0.063 / 0.094 / 0.157 USD per output image at 2k / 4k / 8k, plus 0.003 USD
+  per input image, from free quotes read 2026-11-20 (list price;
+  discount_rate 100). An omitted resolution is 2k and an omitted
+  `num_images` is 1. Aspect ratio and output format add nothing. Display
+  "Kling Image 4.0 Edit", slug `kling4i`. A recorded 2k edit of one image
+  billed 0.066 USD, the quote. It is the WaveSpeed entry beside fal and KIE
+  on the Kling Image 4.0 image-editing frontier row (ac-bfkzn9).
+
 - fal Seedream 5.5 edit (`bytedance/seedream/v5.5/edit`) is priced from the
   card read 2026-11-20: $0.03 per output at 1K or 1.5K and $0.0405 at 2K,
   plus $0.012 per input image per output (at most 10 inputs). `auto_1K` and

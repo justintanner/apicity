@@ -358,6 +358,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.kwaivgi.klingImageV4p0.edit": {
+    "source": "wavespeed/kwaivgi-kling-image-v4-0-edit",
+    "payload": {
+      "prompt": "Give the cat a small red knitted scarf.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit": {
     "source": "wavespeed/kwaivgi-kling-video-o3-pro-video-edit",
     "payload": {

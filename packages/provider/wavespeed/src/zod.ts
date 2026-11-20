@@ -1306,6 +1306,49 @@ export const WaveSpeedXAiGrokImagineVideoV1p5ReferenceToVideoRequestSchema =
       .describe("Resolution of the video. WaveSpeed default: `720p`."),
   });
 
+// kwaivgi/kling-image-v4.0/edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-20). The model page's parameter table
+// matches. Resolution defaults to 2k, the cheapest tier.
+export const WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Text prompt describing the image to create from the input images. Refer to the input images as <<<image_1>>>, <<<image_2>>>, etc. in array order."
+    ),
+  images: z
+    .array(z.string())
+    .min(1)
+    .max(10)
+    .describe(
+      "Input image URLs, 1-10: subjects, products, styles or scenes to combine or transform. Each one adds to the price."
+    ),
+  aspect_ratio: z
+    .enum(["1:1", "3:2", "2:3", "3:4", "4:3", "9:16", "16:9", "21:9"])
+    .optional()
+    .describe(
+      "Aspect ratio of the generated image. When omitted, WaveSpeed chooses it from the input images."
+    ),
+  resolution: z
+    .enum(["2k", "4k", "8k"])
+    .optional()
+    .describe(
+      "Output resolution. 2k is the cheapest, then 4k, then 8k. WaveSpeed default: `2k`."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(9)
+    .optional()
+    .describe(
+      "Number of independent output images, 1-9. Each one is billed at the resolution rate. WaveSpeed default: 1."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp"])
+    .optional()
+    .describe("Output image format. WaveSpeed default: `png`."),
+});
+
 // kwaivgi/kling-video-o3-pro/video-edit, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
 export const WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema = z.object({

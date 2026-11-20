@@ -631,6 +631,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "heygen/video-1.0/reference-to-video",
   "wavespeed POST api.v3.heygen.video1p0.textToVideo":
     "heygen/video-1.0/text-to-video",
+  "wavespeed POST api.v3.kwaivgi.klingImageV4p0.edit":
+    "kwaivgi/kling-image-v4.0/edit",
   "wavespeed POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit":
     "kwaivgi/kling-video-o3-pro/video-edit",
   "wavespeed POST api.v3.minimax.h3.imageToVideo": "minimax/h3/image-to-video",

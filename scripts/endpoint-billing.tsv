@@ -1855,6 +1855,7 @@ wavespeed	api.v3.google.nanoBanana2p1.textToImage	POST	metered	images		https://w
 wavespeed	api.v3.heygen.video1p0.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/heygen/video-1.0/image-to-video	2026-11-18
 wavespeed	api.v3.heygen.video1p0.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/heygen/video-1.0/reference-to-video	2026-11-04
 wavespeed	api.v3.heygen.video1p0.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/heygen/video-1.0/text-to-video	2026-11-04
+wavespeed	api.v3.kwaivgi.klingImageV4p0.edit	POST	metered	images		https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/edit	2026-11-20
 wavespeed	api.v3.kwaivgi.klingVideoO3Pro.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit	2026-11-06
 wavespeed	api.v3.minimax.h3.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/image-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/reference-to-video	2026-11-04

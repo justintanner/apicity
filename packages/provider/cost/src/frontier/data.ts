@@ -511,6 +511,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "kling-4-0/image",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.kwaivgi.klingImageV4p0.edit",
+            pricingKey: "kwaivgi/kling-image-v4.0/edit",
+          },
         ],
       },
       {

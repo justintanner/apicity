@@ -2392,6 +2392,72 @@ describe("wavespeed bytedance/seedream-v5.5/edit", () => {
   });
 });
 
+describe("wavespeed kwaivgi/kling-image-v4.0/edit", () => {
+  const model = "kwaivgi/kling-image-v4.0/edit";
+  const image = "https://example.com/cat.jpg";
+  const images = (n: number) => Array.from({ length: n }, () => image);
+
+  it("prices the recorded payload at the 0.066 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.066, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-20, list price.
+  it("bills the resolution rate per output plus 0.003 USD per input", () => {
+    for (const [resolution, outputs, inputs, usd] of [
+      [undefined, undefined, 1, 0.066],
+      ["2k", 1, 1, 0.066],
+      ["4k", 1, 1, 0.097],
+      ["8k", 1, 1, 0.16],
+      ["2k", 2, 1, 0.129],
+      ["2k", 9, 1, 0.57],
+      ["2k", 1, 2, 0.069],
+      ["4k", 2, 3, 0.197],
+      ["8k", 1, 10, 0.187],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          images: images(inputs),
+          resolution,
+          num_images: outputs,
+        }).usd,
+        `${String(resolution)} x${String(outputs)} in ${inputs}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio or the output format", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        aspect_ratio: "21:9",
+        output_format: "webp",
+      }).usd
+    ).toBeCloseTo(0.066, 9);
+  });
+
+  it("fails closed without an images list or on a count off the grid", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBe(0);
+    expect(estimate(model, { prompt: PROMPT }).warnings).not.toEqual([]);
+    for (const num_images of [0, 10, 1.5]) {
+      const result = estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        num_images,
+      });
+      expect(result.usd, String(num_images)).toBe(0);
+      expect(result.warnings, String(num_images)).not.toEqual([]);
+    }
+  });
+});
+
 describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
   const model = "skywork-ai/skyreels-v4/text-to-video";
 

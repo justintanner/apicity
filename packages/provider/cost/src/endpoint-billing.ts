@@ -5444,6 +5444,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.skyworkAi.skyreelsV4.imageToVideo"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/edit",
+        asOf: "2026-11-20",
+      },
+    },
+    ["POST api.v3.kwaivgi.klingImageV4p0.edit"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

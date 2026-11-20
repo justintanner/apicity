@@ -385,6 +385,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.kwaivgi.klingImageV4p0.textToImage": {
+    "source": "wavespeed/kwaivgi-kling-image-v4-0-text-to-image",
+    "payload": {
+      "prompt": "A red paper boat drifts across a calm pond at sunrise."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit": {
     "source": "wavespeed/kwaivgi-kling-video-o3-pro-video-edit",
     "payload": {

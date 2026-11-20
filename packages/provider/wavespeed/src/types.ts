@@ -32,6 +32,7 @@ import type {
   WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
+  WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
@@ -743,6 +744,19 @@ export interface WaveSpeedKwaivgiKlingImageV4p0EditMethod {
 }
 export interface WaveSpeedKwaivgiKlingImageV4p0Namespace {
   edit: WaveSpeedKwaivgiKlingImageV4p0EditMethod;
+  textToImage: WaveSpeedKwaivgiKlingImageV4p0TextToImageMethod;
+}
+export type WaveSpeedKwaivgiKlingImageV4p0TextToImageRequest = z.input<
+  typeof WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedKwaivgiKlingImageV4p0TextToImageMethod {
+  (
+    request: WaveSpeedKwaivgiKlingImageV4p0TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema;
 }
 export interface WaveSpeedKwaivgiNamespace {
   klingVideoO3Pro: WaveSpeedKwaivgiKlingVideoO3ProNamespace;

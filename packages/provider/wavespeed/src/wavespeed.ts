@@ -32,6 +32,7 @@ import type {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequest,
   WaveSpeedHeygenVideo1p0ImageToVideoRequest,
   WaveSpeedHeygenVideo1p0TextToVideoRequest,
+  WaveSpeedKwaivgiKlingImageV4p0EditRequest,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
@@ -87,6 +88,7 @@ import {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0ImageToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
@@ -969,6 +971,25 @@ export function createWaveSpeed(
                 );
               },
               { schema: WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema }
+            ),
+          },
+          klingImageV4p0: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/kwaivgi/kling-image-v4.0/edit
+            // Docs: https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedKwaivgiKlingImageV4p0EditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/kwaivgi/kling-image-v4.0/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema }
             ),
           },
         },

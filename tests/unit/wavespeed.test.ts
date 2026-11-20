@@ -32,6 +32,7 @@ import {
   WaveSpeedGoogleNanoBanana2p1TextToImageRequestSchema,
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
+  WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
@@ -2014,7 +2015,10 @@ describe("wavespeed kwaivgi/kling-video-o3-pro/video-edit", () => {
   it("attaches the schema, which takes the recorded payload", () => {
     const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
 
-    expect(Object.keys(wavespeed.api.v3.kwaivgi)).toEqual(["klingVideoO3Pro"]);
+    expect(Object.keys(wavespeed.api.v3.kwaivgi)).toEqual([
+      "klingVideoO3Pro",
+      "klingImageV4p0",
+    ]);
     expect(Object.keys(wavespeed.api.v3.kwaivgi.klingVideoO3Pro)).toEqual([
       "videoEdit",
     ]);
@@ -2821,6 +2825,97 @@ describe("wavespeed bytedance/seedream-v5.5/edit", () => {
           [field]: value,
         }).success,
         field
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed kwaivgi/kling-image-v4.0/edit", () => {
+  // The payload
+  // tests/integration/wavespeed-kwaivgi-kling-image-v4-0-edit.test.ts
+  // recorded (the cat photo at its pinned raw URL). Defaults are the
+  // cheapest request: 2k and one output image.
+  const CAT_IMAGE =
+    "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
+  const RECORDED = {
+    prompt: "Give the cat a small red knitted scarf.",
+    images: [CAT_IMAGE],
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.kwaivgi.klingImageV4p0)).toEqual([
+      "edit",
+    ]);
+    expect(wavespeed.api.v3.kwaivgi.klingImageV4p0.edit.schema).toBe(
+      WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema
+    );
+    expect(
+      WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "kwaivgi/kling-image-v4.0/edit",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.kwaivgi.klingImageV4p0.edit({
+      prompt: RECORDED.prompt,
+      images: [CAT_IMAGE],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/kwaivgi/kling-image-v4.0/edit"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option and ten images", () => {
+    expect(
+      WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema.safeParse({
+        prompt: "Place the cat on the cushion.",
+        images: Array.from({ length: 10 }, () => CAT_IMAGE),
+        aspect_ratio: "21:9",
+        resolution: "8k",
+        num_images: 9,
+        output_format: "webp",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["images", []],
+      ["images", Array.from({ length: 11 }, () => CAT_IMAGE)],
+      ["images", undefined],
+      ["resolution", "1k"],
+      ["aspect_ratio", "1:2"],
+      ["output_format", "gif"],
+      ["num_images", 0],
+      ["num_images", 10],
+      ["num_images", 1.5],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
       ).toBe(false);
     }
   });

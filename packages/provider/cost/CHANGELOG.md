@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Kling Image 4.0 image-to-image (`kling/v4/image-to-image`) is priced
+  dynamically. The pricing API (read 2026-11-20) lists 0.063 USD per unit
+  named "units" and does not define the unit. A recorded default 2K edit
+  billed 1.0476 units (0.0659988 USD); the output size follows the input
+  image, so no request field fixes the quantity. Display "Kling 4.0 Image".
+  It is the fal entry beside KIE on the Kling Image 4.0 image-editing
+  frontier row (ac-xjxelx).
+
 - WaveSpeed SkyReels V4 image-to-video
   (`skywork-ai/skyreels-v4/image-to-video`) is priced per second of video by
   mode and resolution from free quotes read 2026-11-20 (list price; the page

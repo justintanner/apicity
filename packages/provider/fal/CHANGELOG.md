@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.kling.v4.imageToImage`
+  (`POST https://fal.run/kling/v4/image-to-image`) adds Kling Image 4.0
+  image-to-image, #6 on the 2026-11-19 image-editing board, as a leaf on the
+  existing `kling.v4` object. The schema follows fal's queue OpenAPI (read
+  2026-11-20, unchanged since the survey): `prompt` (required, 1-50000
+  characters), `image_urls` (1-10), up to 7 image `elements`, `result_type`
+  `single` or `series`, `num_images` 1-9, `series_amount` 2-10 or `auto`,
+  `resolution` 2K, 4K or 8K, nine aspect ratios, and `sync_mode`. A recorded
+  edit of the owned cat photo with no optional input returned one 1760x2336
+  PNG and billed `x-fal-billable-units` 1.0476 (ac-xjxelx).
+
 - `run.microsoft.maiImage2p7.flash.edit`
   (`POST https://fal.run/microsoft/mai-image-2.7/flash/edit`) adds
   MAI-Image-2.7 Flash editing, #7 on the 2026-11-19 image-editing board, as a

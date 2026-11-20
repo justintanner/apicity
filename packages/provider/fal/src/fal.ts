@@ -9,6 +9,8 @@ import {
   FalKlingV4ReferenceToVideoResponse,
   FalKlingV4ImageToVideoRequest,
   FalKlingV4ImageToVideoResponse,
+  FalKlingV4ImageToImageRequest,
+  FalKlingV4ImageToImageResponse,
   FalKlingV4TextToVideoRequest,
   FalKlingV4TextToVideoResponse,
   FalHeygenV3FillerWordRemovalRequest,
@@ -575,6 +577,7 @@ import {
   FalKlingV4VideoToVideoEditRequestSchema,
   FalKlingV4ReferenceToVideoRequestSchema,
   FalKlingV4ImageToVideoRequestSchema,
+  FalKlingV4ImageToImageRequestSchema,
   FalKlingV4TextToVideoRequestSchema,
   FalHeygenV3FillerWordRemovalRequestSchema,
   FalHeygenV2TranslatePrecisionRequestSchema,
@@ -4746,6 +4749,15 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/kling/v4/image-to-image
+  // Docs: https://fal.ai/models/kling/v4/image-to-image/api
+  const klingV4ImageToImage = jsonBody<
+    FalKlingV4ImageToImageRequest,
+    FalKlingV4ImageToImageResponse
+  >("POST", "/kling/v4/image-to-image", FalKlingV4ImageToImageRequestSchema, {
+    base: runBaseURL,
+  });
+
   // POST https://fal.run/kling/v4/reference-to-video
   // Docs: https://fal.ai/models/kling/v4/reference-to-video/api
   const klingV4ReferenceToVideo = jsonBody<
@@ -4811,6 +4823,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/kling/v4/image-to-video
         // Docs: https://fal.ai/models/kling/v4/image-to-video/api
         imageToVideo: klingV4ImageToVideo,
+        // POST https://fal.run/kling/v4/image-to-image
+        // Docs: https://fal.ai/models/kling/v4/image-to-image/api
+        imageToImage: klingV4ImageToImage,
       },
     },
     heygen: {

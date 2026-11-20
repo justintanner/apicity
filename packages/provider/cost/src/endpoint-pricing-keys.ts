@@ -236,6 +236,7 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
   "fal POST kandinsky6Pro.textToVideo": "fal-ai/kandinsky6-pro/text-to-video",
   "fal POST kandinsky6Vsr": "fal-ai/kandinsky6-vsr",
   "fal POST kandinsky6Vsr.lite": "fal-ai/kandinsky6-vsr/lite",
+  "fal POST kling.v4.imageToImage": "kling/v4/image-to-image",
   "fal POST kling.v4.imageToVideo": "kling/v4/image-to-video",
   "fal POST kling.v4.referenceToVideo": "kling/v4/reference-to-video",
   "fal POST kling.v4.textToVideo": "kling/v4/text-to-video",

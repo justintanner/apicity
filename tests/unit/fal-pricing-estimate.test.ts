@@ -1704,6 +1704,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/nano-banana-2.1",
       "google/nano-banana-2.1/edit",
       "google/nano-banana-lite/edit",
+      "kling/v4/image-to-image",
       "kling/v4/video-to-video/edit",
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",

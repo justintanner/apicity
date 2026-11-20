@@ -771,6 +771,34 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       seed: ltx25SeedField,
     },
   },
+  // https://docs.kie.ai/market/ltx/2-5-fast-audio-to-video
+  "ltx/2-5-fast-audio-to-video": {
+    type: "video",
+    fields: {
+      audio_url: {
+        type: "string",
+        required: true,
+        description:
+          "Public URL of the input audio (MP3, WAV, M4A, AAC, OGG or FLAC; at least 2 seconds, up to 50 MB); it becomes the soundtrack",
+      },
+      image_url: {
+        type: "string",
+        description:
+          "Optional first-frame image URL (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, otherwise 16:9",
+      },
+      prompt: ltx25PromptField,
+      resolution: ltx25FastResolutionField,
+      fps: ltx25FpsField,
+      duration: {
+        type: "number",
+        minimum: 2,
+        maximum: 20,
+        description:
+          "Seconds cut from the start of the audio, 2-20 (decimals allowed), at most 10 at 1440p or at 48 or 50 fps; omitted, the audio's length up to that limit",
+      },
+      seed: ltx25SeedField,
+    },
+  },
   "kling-3.0/video": {
     type: "video",
     fields: {

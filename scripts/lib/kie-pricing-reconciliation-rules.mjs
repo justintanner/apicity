@@ -399,6 +399,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   })),
 
   ...["720p", "1080p", "1440p"].map((variant) => ({
+    key: "ltx/2-5-fast-audio-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-audio-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 10.8/15.6/22.8 credits = 0.054/0.078/0.114 USD per second at 720p/1080p/1440p, billed on the actual video length (follows the audio, to 0.01 s)",
+    rationale:
+      "LTX 2.5 Fast audio-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution, the output following the input audio), and the billed recording confirms the 720p cell.",
+  })),
+
+  ...["720p", "1080p", "1440p"].map((variant) => ({
     key: "ltx/2-5-fast-image-to-video",
     variant,
     status: "pricing-only",

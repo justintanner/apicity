@@ -188,6 +188,33 @@ const ltx25Seconds = (p: Record<string, unknown>): number | undefined => {
   return wire === undefined ? 10 : coerceSeconds(wire);
 };
 
+// LTX 2.5 Fast audio-to-video bills "the actual output length (which follows
+// your audio, to 0.01 s)". A wire duration (2-20, decimals allowed) is that
+// length: KIE cuts it from the start of the audio. Omitted, the video matches
+// the audio, cut to the limit (20 s, or 10 s at 1440p or at 48 or 50 fps),
+// and the request does not carry the audio's length, so it comes from
+// costHints.durationSeconds and fails closed without it. An explicit malformed
+// or non-positive duration also fails closed.
+const ltx25AudioSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const input = asObject(p.input);
+  const wire = input?.duration;
+  if (wire !== undefined) {
+    const value = coerceSeconds(wire);
+    return value !== undefined && value > 0 ? value : undefined;
+  }
+  const audio = hintSeconds(hints);
+  if (audio === undefined) return undefined;
+  const fps = asNumber(input?.fps);
+  const limit =
+    asString(input?.resolution) === "1440p" || fps === 48 || fps === 50
+      ? 10
+      : 20;
+  return Math.min(audio, limit);
+};
+
 // Seedance 1.0 Lite/Pro use the same wire-only duration semantics.
 const seedanceV1Seconds = (p: Record<string, unknown>): number | undefined => {
   const wire = asObject(p.input)?.duration;
@@ -1128,14 +1155,21 @@ const tieredVideoPage = (
 // https://kie.ai/ltx-2-5?model=<id>, which the models API pricingDesc
 // repeats.
 const LTX_25_AS_OF = "2026-11-20";
-const ltx25Page = (model: string, rates: Record<string, number>) =>
+const ltx25Page = (
+  model: string,
+  rates: Record<string, number>,
+  units: (
+    payload: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined = ltx25Seconds
+) =>
   tieredVideoPage(
     "resolution",
     rates,
     `https://kie.ai/ltx-2-5?model=${encodeURIComponent(model)}`,
     "1080p",
     LTX_25_AS_OF,
-    ltx25Seconds
+    units
   );
 
 // Flat per-second video rate for the families whose evidence is a kie pricing
@@ -1469,6 +1503,18 @@ export const kie: Record<string, ModelPricing> = {
     "1080p": 0.078,
     "1440p": 0.114,
   }),
+  // ltx/2-5-fast-audio-to-video: the same Fast rates per second, "billed on
+  // the actual output length (which follows your audio, to 0.01 s)" (feed
+  // rows "LTX 2.5 Fast, audio to video, <res>" and pricingDesc, re-read
+  // 2026-11-20; evidence in
+  // tests/fixtures/kie-pricing-evidence/ltx-2-5-fast-audio-to-video-2026-11-20.json).
+  // Seconds resolve through ltx25AudioSeconds: the wire duration, else the
+  // declared audio length cut to the limit.
+  "ltx/2-5-fast-audio-to-video": ltx25Page(
+    "ltx/2-5-fast-audio-to-video",
+    { "720p": 0.054, "1080p": 0.078, "1440p": 0.114 },
+    ltx25AudioSeconds
+  ),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85. The frozen pull's
   // text-to-video row said 380 credits against image-to-video's 370, and the
   // 2026-11-04 feed says 370 on both.

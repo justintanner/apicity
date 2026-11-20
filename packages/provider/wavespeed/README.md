@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-52 endpoints across 14 groups. Each method mirrors an upstream URL path.
+53 endpoints across 14 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -583,6 +583,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await wavespeed.api.v3.kwaivgi.klingImageV4p0.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.kwaivgi.klingImageV4p0.textToImage</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/kwaivgi/kling-image-v4.0/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/text-to-image)
+
+```typescript
+const res = await wavespeed.api.v3.kwaivgi.klingImageV4p0.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

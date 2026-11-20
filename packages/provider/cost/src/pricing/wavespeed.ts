@@ -1179,6 +1179,36 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-20",
     },
   },
+  // Catalog base_price 0.063 USD on 2026-11-20. No formula. Free quotes
+  // (POST /api/v3/model/price) read 2026-11-20, list price, discount_rate
+  // 100: 0.063 / 0.094 / 0.157 USD per image at 2k / 4k / 8k. Two images at
+  // 2k quote 0.126. An omitted resolution is 2k and an omitted num_images
+  // is 1. aspect_ratio and output_format add nothing.
+  "kwaivgi/kling-image-v4.0/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: (p) => {
+      if (p.num_images === undefined) return 1;
+      const count = asNumber(p.num_images);
+      if (
+        count === undefined ||
+        !Number.isInteger(count) ||
+        count < 1 ||
+        count > 9
+      ) {
+        return undefined;
+      }
+      return count;
+    },
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "2k" },
+    ],
+    rates: { "2k": 0.063, "4k": 0.094, "8k": 0.157 },
+    source: {
+      url: "https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/text-to-image",
+      asOf: "2026-11-20",
+    },
+  },
   // base_price 350000 micros, discount_rate 100 on 2026-11-18. The model page
   // carries no formula, only its price inputs (duration, mode, resolution),
   // so the rates are the list prices of free quotes (POST /api/v3/model/price)

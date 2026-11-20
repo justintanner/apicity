@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- WaveSpeed Kling Image 4.0 text-to-image
+  (`kwaivgi/kling-image-v4.0/text-to-image`) bills 0.063 / 0.094 / 0.157 USD
+  per image at 2k / 4k / 8k, from the model page and free quotes read
+  2026-11-20 (list price; discount_rate 100). An omitted resolution is 2k
+  and an omitted `num_images` is 1. Aspect ratio and output format add
+  nothing. Display "Kling Image 4.0", slug `kling4i` (shared with the edit
+  key and with KIE). A recorded prompt-only 2k image billed 0.063 USD, the
+  quote. It is the WaveSpeed entry beside fal and KIE on the Kling Image
+  4.0 text-to-image frontier row (ac-v4amf8).
+
 - WaveSpeed Kling Image 4.0 edit (`kwaivgi/kling-image-v4.0/edit`) bills
   0.063 / 0.094 / 0.157 USD per output image at 2k / 4k / 8k, plus 0.003 USD
   per input image, from free quotes read 2026-11-20 (list price;

@@ -2458,6 +2458,58 @@ describe("wavespeed kwaivgi/kling-image-v4.0/edit", () => {
   });
 });
 
+describe("wavespeed kwaivgi/kling-image-v4.0/text-to-image", () => {
+  const model = "kwaivgi/kling-image-v4.0/text-to-image";
+
+  it("prices a prompt-only request at the 0.063 USD 2k quote", () => {
+    const result = estimate(model, { prompt: PROMPT });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.063, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-20, list price.
+  it("bills the resolution rate per output image", () => {
+    for (const [resolution, outputs, usd] of [
+      [undefined, undefined, 0.063],
+      ["2k", 1, 0.063],
+      ["4k", 1, 0.094],
+      ["8k", 1, 0.157],
+      ["2k", 2, 0.126],
+      ["2k", 9, 0.567],
+      ["4k", 4, 0.376],
+      ["8k", 9, 1.413],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          resolution,
+          num_images: outputs,
+        }).usd,
+        `${String(resolution)} x${String(outputs)}`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds nothing for the aspect ratio or the output format", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        aspect_ratio: "21:9",
+        output_format: "webp",
+      }).usd
+    ).toBeCloseTo(0.063, 9);
+  });
+
+  it("fails closed on a count off the grid", () => {
+    for (const num_images of [0, 10, 1.5]) {
+      const result = estimate(model, { prompt: PROMPT, num_images });
+      expect(result.usd, String(num_images)).toBe(0);
+      expect(result.warnings, String(num_images)).not.toEqual([]);
+    }
+  });
+});
+
 describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
   const model = "skywork-ai/skyreels-v4/text-to-video";
 

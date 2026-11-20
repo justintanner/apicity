@@ -1349,6 +1349,41 @@ export const WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema = z.object({
     .describe("Output image format. WaveSpeed default: `png`."),
 });
 
+// kwaivgi/kling-image-v4.0/text-to-image, from WaveSpeed's model catalog
+// (GET /api/v3/models) and the model page, both read 2026-11-20 and
+// unchanged since the survey. Resolution defaults to 2k, the cheapest
+// tier. Aspect ratio defaults to 1:1. There is no images field.
+export const WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Text prompt for image generation. Text you quote in the prompt (titles, labels, signs) is rendered in the image."
+    ),
+  aspect_ratio: z
+    .enum(["1:1", "3:2", "2:3", "3:4", "4:3", "9:16", "16:9", "21:9"])
+    .optional()
+    .describe("Aspect ratio of the generated image. WaveSpeed default: `1:1`."),
+  resolution: z
+    .enum(["2k", "4k", "8k"])
+    .optional()
+    .describe(
+      "Output resolution. 2k is the cheapest, then 4k, then 8k. WaveSpeed default: `2k`."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(9)
+    .optional()
+    .describe(
+      "Number of independent output images, 1-9. Each one is billed at the resolution rate. WaveSpeed default: 1."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp"])
+    .optional()
+    .describe("Output image format. WaveSpeed default: `png`."),
+});
+
 // kwaivgi/kling-video-o3-pro/video-edit, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02 and 2026-11-06).
 export const WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema = z.object({

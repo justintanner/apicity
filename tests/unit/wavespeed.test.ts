@@ -33,6 +33,7 @@ import {
   WaveSpeedHeygenVideo1p0ReferenceToVideoRequestSchema,
   WaveSpeedHeygenVideo1p0TextToVideoRequestSchema,
   WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
+  WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
@@ -2847,6 +2848,7 @@ describe("wavespeed kwaivgi/kling-image-v4.0/edit", () => {
 
     expect(Object.keys(wavespeed.api.v3.kwaivgi.klingImageV4p0)).toEqual([
       "edit",
+      "textToImage",
     ]);
     expect(wavespeed.api.v3.kwaivgi.klingImageV4p0.edit.schema).toBe(
       WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema
@@ -2917,6 +2919,98 @@ describe("wavespeed kwaivgi/kling-image-v4.0/edit", () => {
         }).success,
         `${field} ${String(value)}`
       ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed kwaivgi/kling-image-v4.0/text-to-image", () => {
+  // The payload
+  // tests/integration/wavespeed-kwaivgi-kling-image-v4-0-text-to-image.test.ts
+  // records. Defaults are the cheapest request: 2k, 1:1, one png.
+  const RECORDED = {
+    prompt: "A red paper boat drifts across a calm pond at sunrise.",
+  };
+
+  it("attaches the schema, which takes the recorded payload", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.kwaivgi.klingImageV4p0)).toEqual([
+      "edit",
+      "textToImage",
+    ]);
+    expect(wavespeed.api.v3.kwaivgi.klingImageV4p0.textToImage.schema).toBe(
+      WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema
+    );
+    expect(
+      WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema.safeParse(RECORDED)
+        .success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "kwaivgi/kling-image-v4.0/text-to-image",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.kwaivgi.klingImageV4p0.textToImage({
+      prompt: RECORDED.prompt,
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/kwaivgi/kling-image-v4.0/text-to-image"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("takes every documented option", () => {
+    expect(
+      WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema.safeParse({
+        prompt: "A paper boat",
+        aspect_ratio: "21:9",
+        resolution: "8k",
+        num_images: 9,
+        output_format: "webp",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's grid and an images field is absent", () => {
+    for (const [field, value] of [
+      ["resolution", "1k"],
+      ["aspect_ratio", "1:2"],
+      ["output_format", "gif"],
+      ["num_images", 0],
+      ["num_images", 10],
+      ["num_images", 1.5],
+      ["prompt", undefined],
+    ] as const) {
+      expect(
+        WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+    const parsed =
+      WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema.safeParse({
+        ...RECORDED,
+        images: ["https://example.com/cat.jpg"],
+      });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data).not.toHaveProperty("images");
     }
   });
 });

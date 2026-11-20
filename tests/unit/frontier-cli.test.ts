@@ -191,6 +191,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("grok-imagine-image-2.0");
     expect(table).toContain("GPT-Image-2.5-Sunburst");
     expect(table).toContain("microsoft.maiImage2p7.textToImage");
+    expect(table).toContain("kling.v4.textToImage");
     expect(table).toContain("not yet in apicity: MAI-Image-2.6");
   });
 

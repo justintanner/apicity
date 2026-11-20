@@ -644,6 +644,7 @@ fal	kandinsky6Vsr.lite	POST	metered	units	fal dynamic list: priced after the cal
 fal	kling.v4.imageToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.referenceToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	kling.v4.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.textToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.videoToVideo.edit	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	klingVideo.o3.pro.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.kling.v4.textToImage`
+  (`POST https://fal.run/kling/v4/text-to-image`) adds Kling Image 4.0
+  text-to-image, #7 on the 2026-11-19 text-to-image board, as a leaf on the
+  existing `kling.v4` object. The schema follows fal's queue OpenAPI (read
+  2026-11-20, unchanged since the survey): `prompt` (required, 1-50000
+  characters), `result_type` `single` or `series`, `num_images` 1-9,
+  `series_amount` 2-10 or `auto`, `resolution` 2K, 4K or 8K, nine aspect
+  ratios, and `sync_mode`. A recorded prompt with no optional input returned
+  one 2048x2048 PNG and billed 1 unit (0.063 USD) (ac-5xayh8).
+
 - `run.kling.v4.imageToImage`
   (`POST https://fal.run/kling/v4/image-to-image`) adds Kling Image 4.0
   image-to-image, #6 on the 2026-11-19 image-editing board, as a leaf on the

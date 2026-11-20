@@ -55,6 +55,8 @@ const CHECKED = [
   "google/nano-banana-2.1/edit",
   // Card read 2026-11-20; the recorded 2K edit billed 1.0476 units.
   "kling/v4/image-to-image",
+  // Card re-read 2026-11-20; the recorded default 2K call billed 1 unit.
+  "kling/v4/text-to-image",
   "kling/v4/video-to-video/edit",
   // Cards read 2026-11-20; see each recording's x-fal-billable-units.
   "microsoft/mai-image-2.7/edit",

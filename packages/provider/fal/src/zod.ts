@@ -18957,6 +18957,62 @@ export type FalKlingV4ImageToImageParsedRequest = z.output<
   typeof FalKlingV4ImageToImageRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-20
+// (sha256 a6a499f3f677057d97bc6a9cc076c8b801a2323ce8250f85e3a9cf4fa9ad0c74).
+// Field order follows x-fal-order-properties. The input is open. llms.txt
+// still says $0.063 per units, matching the 2026-11-19 survey. This route
+// was not probed with a rejected body, because a rejection can still be billed.
+// Docs: https://fal.ai/models/kling/v4/text-to-image/api
+export const FalKlingV4TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for image generation."),
+  result_type: z
+    .enum(["single", "series"])
+    .default("single")
+    .describe(
+      "'single' returns independent images; 'series' returns a coherent set of related images."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(9)
+    .default(1)
+    .describe(
+      "Number of independent images to generate (1-9). Only used when result_type is 'single'."
+    ),
+  series_amount: z
+    .union([z.number().int().min(2).max(10), z.literal("auto")])
+    .default(4)
+    .describe(
+      "Number of images in the series (2-10), or 'auto' to let the model choose. Only used when result_type is 'series'."
+    ),
+  resolution: z
+    .enum(["2K", "4K", "8K"])
+    .default("2K")
+    .describe("Output resolution."),
+  aspect_ratio: z
+    .enum(["auto", "16:9", "9:16", "1:1", "4:3", "3:4", "3:2", "2:3", "21:9"])
+    .default("auto")
+    .describe(
+      "Aspect ratio of generated images. 'auto' picks one from the input content."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("If `True`, the media will be returned as a data URI."),
+});
+export type FalKlingV4TextToImageRequest = z.input<
+  typeof FalKlingV4TextToImageRequestSchema
+>;
+export type FalKlingV4TextToImageRequestInput = FalKlingV4TextToImageRequest;
+export type FalKlingV4TextToImageParsedRequest = z.output<
+  typeof FalKlingV4TextToImageRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-23
 // (sha256 896571542e77dada6cfd0bcabc34f17f1db6e4b7afdfa75784e8b3a72461bb05).
 // Field order follows x-fal-order-properties. The input is open; free 422
@@ -19074,6 +19130,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,
   "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,
   "kling/v4/image-to-image": FalKlingV4ImageToImageRequestSchema,
+  "kling/v4/text-to-image": FalKlingV4TextToImageRequestSchema,
   "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,
   "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,
   "fal-ai/heygen/v3/filler-word-removal":

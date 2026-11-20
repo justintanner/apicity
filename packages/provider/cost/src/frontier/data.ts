@@ -267,6 +267,11 @@ export const FRONTIER = {
         elo: 1180,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "kling.v4.textToImage",
+            pricingKey: "kling/v4/text-to-image",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "kling-4-0/image",

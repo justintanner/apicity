@@ -1120,6 +1120,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- KIE Seedance 2.0 Mini (`bytedance/seedance-2-mini`) prices `duration: -1`
+  (automatic length, which KIE bills by the generated length) from
+  `costHints.durationSeconds`, as Seedance 2.5 does, and fails closed without
+  it. It read -1 as one negative second, so a 720p estimate quoted -0.041 USD
+  with no warning. With reference videos, the output side comes from that
+  hint and the clips' length from `costHints.inputDurationSeconds`, at the
+  video-input rate. Other durations price as before (ac-6n1pli).
+
 - WaveSpeed Gemini Omni 1.2 Flash text-to-video and video-edit report the
   date their rates were verified by free quotes, 2026-11-18, instead of the
   2026-11-02 date of the shared WaveSpeed source helper. Prices are unchanged

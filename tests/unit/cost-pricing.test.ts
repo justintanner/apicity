@@ -3875,6 +3875,46 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(hinted.breakdown.perUnitUsd).toBe(0.315);
   });
 
+  // Seedance 2.0 Mini takes the same sentinel (docs re-read 2026-11-20,
+  // ac-6n1pli). Before it, the generic resolver priced -1 as -1 second: a
+  // negative quote with no warning.
+  it("does not price Seedance 2.0 Mini's -1 duration sentinel without a hint", () => {
+    const request = {
+      model: "bytedance/seedance-2-mini",
+      input: { prompt: "x", resolution: "720p", duration: -1 },
+    };
+
+    const failed = kieEstimate(request);
+    expect(failed.usd).toBe(0);
+    expect(failed.warnings).toHaveLength(1);
+    expect(failed.warnings[0]).toContain("could not derive units");
+
+    // No video input, so the 720p "no video" cell: 6 s x $0.041.
+    const hinted = kieEstimate(request, { costHints: { durationSeconds: 6 } });
+    expect(hinted.usd).toBeCloseTo(0.246, 10);
+    expect(hinted.breakdown).toEqual({
+      units: 6,
+      unit: "seconds",
+      perUnitUsd: 0.041,
+    });
+    expect(hinted.warnings).toEqual([]);
+
+    // A positive wire duration still wins over the hint, and an omitted one
+    // keeps reading the hint, then failing closed, as before.
+    expect(
+      kieEstimate(
+        { ...request, input: { ...request.input, duration: 4 } },
+        { costHints: { durationSeconds: 6 } }
+      ).breakdown.units
+    ).toBe(4);
+    const omitted = kieEstimate({
+      model: "bytedance/seedance-2-mini",
+      input: { prompt: "x", resolution: "720p" },
+    });
+    expect(omitted.usd).toBe(0);
+    expect(omitted.warnings[0]).toContain("could not derive units");
+  });
+
   it.each([
     { size: "1K", rate: 0.035 },
     { size: "1.5K", rate: 0.035 },
@@ -5159,6 +5199,45 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
         units: 10,
         unit: "seconds",
         perUnitUsd: 0.19,
+      });
+      expect(both.warnings).toEqual([]);
+    });
+
+    // Seedance 2.0 Mini's -1 with clips: the page bills (total
+    // reference-video duration + output duration) at the lower video rate,
+    // and with -1 only the output side comes from costHints.durationSeconds.
+    it("prices Seedance 2.0 Mini's -1 sentinel with clips only from both hints", () => {
+      const request = {
+        model: "bytedance/seedance-2-mini",
+        input: {
+          prompt: "x",
+          resolution: "480p",
+          duration: -1,
+          reference_video_urls: clip,
+        },
+      };
+
+      const noOutput = kieEstimate(request, {
+        costHints: { inputDurationSeconds: 4 },
+      });
+      expect(noOutput.usd).toBe(0);
+      expect(noOutput.warnings).toHaveLength(1);
+      expect(noOutput.warnings[0]).toContain("could not derive units");
+      expect(noOutput.warnings[0]).not.toContain("inputDurationSeconds");
+
+      expectInputRuleFailure(
+        kieEstimate(request, { costHints: { durationSeconds: 6 } }),
+        "bytedance/seedance-2-mini"
+      );
+
+      const both = kieEstimate(request, {
+        costHints: { durationSeconds: 6, inputDurationSeconds: 4 },
+      });
+      expect(both.usd).toBeCloseTo(10 * 0.012, 10);
+      expect(both.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.012,
       });
       expect(both.warnings).toEqual([]);
     });

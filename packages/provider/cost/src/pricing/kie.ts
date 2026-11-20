@@ -156,6 +156,22 @@ const seedance25FlashSeconds = (
   return hintSeconds(hints);
 };
 
+// Seedance 2.0 Mini takes the same -1 sentinel as Seedance 2.5 (docs re-read
+// 2026-11-20, ac-6n1pli: "With duration = -1, billing follows the duration
+// actually generated"). As in seedance25Seconds, a non-positive wire duration
+// is not a billable length: only a positive cost hint replaces it, and
+// without one the estimate fails closed. Every other request resolves exactly
+// as `seconds` does, so an omitted duration still reads the hint and then
+// fails closed, as before.
+const seedance2MiniSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const resolved = seconds(p, hints);
+  if (resolved === undefined) return undefined;
+  return resolved > 0 ? resolved : hintSeconds(hints);
+};
+
 // Vidu Q4 bills the wire duration, defaulting to five seconds.
 // Neither a cost-only hint nor the legacy top-level estimate field changes
 // that request. Explicit malformed values (including null) fail closed.
@@ -2948,11 +2964,14 @@ export const kie: Record<string, ModelPricing> = {
   // 8.2 credits/s ($0.041). Its tab prints the seedance-2 Note, so the video
   // column bills (input video duration + output video duration) x rate on
   // the same reference_video_urls (three clips, 15 s in total) through
-  // costHints.inputDurationSeconds, failing closed without it.
+  // costHints.inputDurationSeconds, failing closed without it. Output seconds
+  // resolve through seedance2MiniSeconds: the -1 sentinel (automatic length,
+  // billed by the generated length) needs costHints.durationSeconds, and with
+  // reference clips only the output side comes from that hint.
   "bytedance/seedance-2-mini": {
     kind: "perUnit",
     unit: "seconds",
-    units: inputPlusOutputSeconds(seconds),
+    units: inputPlusOutputSeconds(seedance2MiniSeconds),
     select: [
       { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
       {
@@ -2966,7 +2985,10 @@ export const kie: Record<string, ModelPricing> = {
       "720p|video": 0.025,
       "720p|no-video": 0.041,
     },
-    warn: inputDurationWarning("bytedance/seedance-2-mini", seconds),
+    warn: inputDurationWarning(
+      "bytedance/seedance-2-mini",
+      seedance2MiniSeconds
+    ),
     source: pricePage("https://kie.ai/seedance-2-0-mini", "2026-08-11"),
   },
 

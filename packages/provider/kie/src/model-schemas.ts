@@ -3,6 +3,7 @@ import {
   ElevenLabsTextToDialogueStabilityContract,
   Ltx25AspectRatioSchema,
   Ltx25FastResolutionSchema,
+  Ltx25ProResolutionSchema,
   ElevenLabsTextToSpeechNumericContract,
   GoogleGeminiTtsAccentSchema,
   GoogleGemini38TtsVoiceNameSchema,
@@ -677,6 +678,23 @@ const ltx25FastDurationField = {
     "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps",
 } as const;
 
+// The LTX 2.5 Pro tier's resolution and duration, shared by its text- and
+// image-to-video models.
+const ltx25ProResolutionField = {
+  type: "string",
+  enum: Ltx25ProResolutionSchema.options,
+  default: "1080p",
+  description:
+    "Output resolution, the short side (default 1080p); billing depends on resolution",
+} as const;
+
+const ltx25ProDurationField = {
+  type: "integer",
+  enum: [6, 8, 10],
+  default: 10,
+  description: "Seconds: 6, 8 or 10 (default 10), at any frame rate",
+} as const;
+
 const ltx25SeedField = {
   type: "integer",
   minimum: 0,
@@ -796,6 +814,18 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "Seconds cut from the start of the audio, 2-20 (decimals allowed), at most 10 at 1440p or at 48 or 50 fps; omitted, the audio's length up to that limit",
       },
+      seed: ltx25SeedField,
+    },
+  },
+  // https://docs.kie.ai/market/ltx/2-5-pro-text-to-video
+  "ltx/2-5-pro-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: ltx25PromptField,
+      resolution: ltx25ProResolutionField,
+      fps: ltx25FpsField,
+      duration: ltx25ProDurationField,
+      aspect_ratio: ltx25AspectRatioField,
       seed: ltx25SeedField,
     },
   },

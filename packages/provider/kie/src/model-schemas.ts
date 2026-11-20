@@ -659,6 +659,24 @@ const ltx25AspectRatioField = {
   description: "Aspect ratio (default 16:9)",
 } as const;
 
+// The LTX 2.5 Fast tier's resolution and duration, shared by its text- and
+// image-to-video models.
+const ltx25FastResolutionField = {
+  type: "string",
+  enum: Ltx25FastResolutionSchema.options,
+  default: "1080p",
+  description:
+    "Output resolution, the short side (default 1080p); billing depends on resolution",
+} as const;
+
+const ltx25FastDurationField = {
+  type: "integer",
+  enum: [6, 8, 10, 12, 14, 16, 18, 20],
+  default: 10,
+  description:
+    "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps",
+} as const;
+
 const ltx25SeedField = {
   type: "integer",
   minimum: 0,
@@ -729,22 +747,27 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     type: "video",
     fields: {
       prompt: ltx25PromptField,
-      resolution: {
-        type: "string",
-        enum: Ltx25FastResolutionSchema.options,
-        default: "1080p",
-        description:
-          "Output resolution, the short side (default 1080p); billing depends on resolution",
-      },
+      resolution: ltx25FastResolutionField,
       fps: ltx25FpsField,
-      duration: {
-        type: "integer",
-        enum: [6, 8, 10, 12, 14, 16, 18, 20],
-        default: 10,
-        description:
-          "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps",
-      },
+      duration: ltx25FastDurationField,
       aspect_ratio: ltx25AspectRatioField,
+      seed: ltx25SeedField,
+    },
+  },
+  // https://docs.kie.ai/market/ltx/2-5-fast-image-to-video
+  "ltx/2-5-fast-image-to-video": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Public URL of the first-frame image (JPG, PNG or WEBP, up to 10 MB); the output keeps its aspect ratio, capped at 3:1",
+      },
+      prompt: ltx25PromptField,
+      resolution: ltx25FastResolutionField,
+      fps: ltx25FpsField,
+      duration: ltx25FastDurationField,
       seed: ltx25SeedField,
     },
   },

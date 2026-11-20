@@ -38,6 +38,9 @@ export type {
   FalKlingV4ImageToVideoRequest,
   FalKlingV4ImageToVideoRequestInput,
   FalKlingV4ImageToVideoParsedRequest,
+  FalKlingV4ImageToImageRequest,
+  FalKlingV4ImageToImageRequestInput,
+  FalKlingV4ImageToImageParsedRequest,
   FalKlingV4TextToVideoRequest,
   FalKlingV4TextToVideoRequestInput,
   FalKlingV4TextToVideoParsedRequest,
@@ -938,6 +941,7 @@ import type {
   FalKlingV4VideoToVideoEditRequest,
   FalKlingV4ReferenceToVideoRequest,
   FalKlingV4ImageToVideoRequest,
+  FalKlingV4ImageToImageRequest,
   FalKlingV4TextToVideoRequest,
   FalHeygenV3FillerWordRemovalRequest,
   FalHeygenV2TranslatePrecisionRequest,
@@ -8118,6 +8122,26 @@ export interface FalRunKlingV4Namespace {
     signal?: AbortSignal
   ) => Promise<FalKlingV4ImageToVideoResponse>) & {
     schema: ApicitySchema<FalKlingV4ImageToVideoRequest>;
+  };
+}
+
+export interface FalKlingV4ImageToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+export interface FalRunKlingV4Namespace {
+  imageToImage: ((
+    params: FalKlingV4ImageToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalKlingV4ImageToImageResponse>) & {
+    schema: ApicitySchema<FalKlingV4ImageToImageRequest>;
   };
 }
 

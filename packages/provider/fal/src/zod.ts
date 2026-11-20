@@ -18882,6 +18882,81 @@ export type FalKlingV4VideoToVideoEditParsedRequest = z.output<
   typeof FalKlingV4VideoToVideoEditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-11-20
+// (sha256 15c4978af1d2649f0bd7a10ea685c2bab1223116df919226194a23eb29708990).
+// Field order follows x-fal-order-properties. The input is open. The media
+// URL rule is the one free 422 probes confirmed on the four kling/v4 video
+// endpoints; this image route was not probed, because a rejected body can
+// still be billed. Images and elements combined must stay at or under 10;
+// that limit is documented and not checked here.
+// Docs: https://fal.ai/models/kling/v4/image-to-image/api
+export const FalKlingV4ImageToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe(
+      "Text prompt. Reference images as @Image1, @Image2, ... and elements as @Element1, @Element2, ..."
+    ),
+  image_urls: z
+    .array(KlingV4MediaUrlSchema)
+    .min(1)
+    .max(10)
+    .describe(
+      "Reference images (1-10).\n\nMax file size: 30.0MB, Min width: 300px, Min height: 300px, Min aspect ratio: 0.40, Max aspect ratio: 2.50, Timeout: 20.0s"
+    ),
+  elements: z
+    .array(KlingV4ImageElementSchema)
+    .max(7)
+    .nullable()
+    .optional()
+    .describe(
+      "Elements, referenced as @Element1, @Element2, ... (max 7). Images and elements combined must not exceed 10."
+    ),
+  result_type: z
+    .enum(["single", "series"])
+    .default("single")
+    .describe(
+      "'single' returns independent images; 'series' returns a coherent set of related images."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(9)
+    .default(1)
+    .describe(
+      "Number of independent images to generate (1-9). Only used when result_type is 'single'."
+    ),
+  series_amount: z
+    .union([z.number().int().min(2).max(10), z.literal("auto")])
+    .default(4)
+    .describe(
+      "Number of images in the series (2-10), or 'auto' to let the model choose. Only used when result_type is 'series'."
+    ),
+  resolution: z
+    .enum(["2K", "4K", "8K"])
+    .default("2K")
+    .describe("Output resolution."),
+  aspect_ratio: z
+    .enum(["auto", "16:9", "9:16", "1:1", "4:3", "3:4", "3:2", "2:3", "21:9"])
+    .default("auto")
+    .describe(
+      "Aspect ratio of generated images. 'auto' picks one from the input content."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("If `True`, the media will be returned as a data URI."),
+});
+export type FalKlingV4ImageToImageRequest = z.input<
+  typeof FalKlingV4ImageToImageRequestSchema
+>;
+export type FalKlingV4ImageToImageRequestInput = FalKlingV4ImageToImageRequest;
+export type FalKlingV4ImageToImageParsedRequest = z.output<
+  typeof FalKlingV4ImageToImageRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-23
 // (sha256 896571542e77dada6cfd0bcabc34f17f1db6e4b7afdfa75784e8b3a72461bb05).
 // Field order follows x-fal-order-properties. The input is open; free 422
@@ -18998,6 +19073,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/heygen/v2/video-agent": FalHeygenV2VideoAgentRequestSchema,
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,
   "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,
+  "kling/v4/image-to-image": FalKlingV4ImageToImageRequestSchema,
   "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,
   "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,
   "fal-ai/heygen/v3/filler-word-removal":

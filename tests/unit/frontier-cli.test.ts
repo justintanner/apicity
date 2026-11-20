@@ -211,6 +211,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("krea.v3.edit");
     expect(table).toContain("microsoft.maiImage2p7.edit");
     expect(table).toContain("microsoft.maiImage2p7.flash.edit");
+    expect(table).toContain("kling.v4.imageToImage");
     expect(table).not.toContain("not yet in apicity");
   });
 

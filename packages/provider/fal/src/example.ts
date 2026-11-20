@@ -1596,6 +1596,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kling.v4.imageToImage": {
+    "source": "fal/kling-v4-image-to-image",
+    "payload": {
+      "prompt": "Add a small red bow tie to the cat in @Image1.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kling.v4.imageToVideo": {
     "source": "fal/kling-v4-image-to-video",
     "payload": {

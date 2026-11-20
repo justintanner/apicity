@@ -1549,6 +1549,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
   "google/nano-banana-lite/edit",
+  "kling/v4/image-to-image",
   "kling/v4/video-to-video/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
@@ -1765,6 +1766,14 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "kling/v4/video-to-video/edit": {
     unit: "units at $0.157, with the card quoting $0.094 (720p) or $0.141 (1080p) per second of input plus output video, at least twice the output",
     why: "the source video's length is billed and no request field states it",
+  },
+  // Card and pricing API read 2026-11-20: $0.063 per unit named "units".
+  // The one 2K call, aspect auto, one cat1.jpg and no elements, returned a
+  // 1760x2336 PNG and billed 1.0476 units ($0.0659988). No request field
+  // produces that quantity, and the card does not define the unit.
+  "kling/v4/image-to-image": {
+    unit: "units at $0.063",
+    why: "the output size follows the input image and no request field fixes the billed units",
   },
   // Card and pricing API checked 2026-10-23: $0.01 per second of input video,
   // with a 60-second minimum, and no charge when no cut is made. Our 2.96 s

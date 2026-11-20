@@ -114,7 +114,7 @@ console.log(result.video.file_size);
 
 ## API Reference
 
-299 endpoints across 55 groups. Each method mirrors an upstream URL path.
+300 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2393,6 +2393,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### kling
+
+<details>
+<summary><code>POST</code> <b><code>fal.kling.v4.imageToImage</code></b></summary>
+
+<code>POST https://fal.run/kling/v4/image-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/kling/v4/image-to-image/api)
+
+```typescript
+const res = await fal.run.kling.v4.imageToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.kling.v4.imageToVideo</code></b></summary>

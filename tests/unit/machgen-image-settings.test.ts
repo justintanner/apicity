@@ -98,8 +98,27 @@ describe("MachGen image settings", () => {
     expect(Object.keys(MACHGEN_IMAGE_SURFACES)).toEqual([
       ...MACHGEN_IMAGE_MODELS,
     ]);
-    expect(MACHGEN_IMAGE_SURFACES).toEqual(evidence.surfaces);
+    // Seedream 5.5 was registered from the 2026-11-20 docs page. The
+    // 2026-11-18 fixture stays the record of the models captured that day.
+    const { "Seedream-5.5": seedream, ...registered } = MACHGEN_IMAGE_SURFACES;
+    expect(registered).toEqual(evidence.surfaces);
+    expect(seedream.T2I).toEqual(seedream.I2I);
+    expect(seedream.T2I).toEqual({
+      qualities: [],
+      complexities: [],
+      backgrounds: ["auto", "opaque", "transparent"],
+      outputFormats: ["png", "jpeg"],
+      defaultOutputFormat: "png",
+      autoSize: true,
+      mask: false,
+      markup: false,
+      continuation: false,
+      safetyIdentifier: true,
+      safetyIdentifierMax: 64,
+      resolutionTiers: ["1K", "1.5K", "2K"],
+    });
     for (const model of MACHGEN_IMAGE_MODELS) {
+      if (model === "Seedream-5.5") continue;
       for (const task of ["T2I", "I2I"] as const) {
         const row = evidence.modelList.models[model][task];
         expect(MACHGEN_IMAGE_SURFACES[model][task]).toEqual({
@@ -165,10 +184,10 @@ describe("MachGen image settings", () => {
     }
   );
 
-  it("checks field bounds on unregistered aliases and preserves Seedream controls", () => {
+  it("checks field bounds on unregistered aliases and preserves extra controls", () => {
     const request = {
       ...base,
-      model: "Seedream-5.5",
+      model: "Future-Image-Model",
       task_type: "I2I",
       image_config: { size_mode: "auto" },
       continuation_task_id: "previous",
@@ -193,6 +212,72 @@ describe("MachGen image settings", () => {
         video_config: { height: 480, duration_secs: 4 },
       }).success
     ).toBe(false);
+  });
+
+  it("accepts Seedream 5.5 settings and refuses the ones the page excludes", () => {
+    const sources = (count: number) =>
+      Array.from({ length: count }, (_, i) => `https://example.com/${i}.jpg`);
+    const request = {
+      ...base,
+      model: "Seedream-5.5",
+      task_type: "I2I" as const,
+      src_image_urls: sources(10),
+      image_config: { height: 1024 },
+      image_output: {
+        output_format: "png" as const,
+        partial_images: 3,
+        layers: { max_images: 2 },
+        watermark: true,
+      },
+      safety_identifier: "user-1",
+    };
+    expect(MachGenGenerateRequestSchema.parse(request)).toEqual(request);
+    expect(
+      MachGenGenerateRequestSchema.parse({
+        ...request,
+        src_image_urls: sources(1),
+        image_config: { size_mode: "auto", resolution: "1.5K" },
+        image_output: { output_format: "jpeg", watermark: true },
+        safety_identifier: "a".repeat(64),
+      }).image_config
+    ).toEqual({ size_mode: "auto", resolution: "1.5K" });
+
+    const reject = (overrides: Record<string, unknown>, phrase: string) => {
+      const result = MachGenGenerateRequestSchema.safeParse({
+        ...request,
+        src_image_urls: sources(1),
+        image_output: { output_format: "png" },
+        ...overrides,
+      });
+      expect(result.success, phrase).toBe(false);
+      if (!result.success)
+        expect(
+          result.error.issues.map((issue) => issue.message).join("\n")
+        ).toContain(phrase);
+    };
+    reject({ image_output: { output_format: "gif" } }, "output_format='gif'");
+    reject(
+      { continuation_task_id: "previous" },
+      "do not support image continuation"
+    );
+    reject(
+      { image_output: { output_format: "jpeg", background: "transparent" } },
+      "Transparent backgrounds require"
+    );
+    reject(
+      { image_output: { background: "opaque", layers: { max_images: 2 } } },
+      "Omit background"
+    );
+    reject({ src_image_urls: sources(11) }, "at most 10");
+    reject({ safety_identifier: "a".repeat(65) }, "at most 64 ASCII");
+    reject({ safety_identifier: "caf\u00e9" }, "at most 64 ASCII");
+    reject(
+      {
+        model: "GPT-Image-2.6-Sunburst",
+        image_config: { size_mode: "auto", resolution: "1K" },
+      },
+      "does not support resolution='1K'"
+    );
   });
 
   it.each([

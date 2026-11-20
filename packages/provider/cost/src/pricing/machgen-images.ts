@@ -122,6 +122,93 @@ const gptImage2p6: PerUnitPricing = {
   source: { ...source, asOf: "2026-11-18" },
 };
 
+// Docs re-read 2026-11-20: $0.008 per input image, and $0.020 per output
+// through 2,601,123 pixels or $0.035 through 4,624,220. The public pricebook
+// the same day has one PER_IMAGE row at 20000 micros and no input surcharge.
+// https://www.machgen.ai/docs/rest_api/models/seedream-5-5
+const SEEDREAM_MIN_PIXELS = 921_600;
+const SEEDREAM_TIER_PIXELS = 2_601_123;
+const SEEDREAM_MAX_PIXELS = 4_624_220;
+const SEEDREAM_SQUARES = new Set([1024, 1536, 2048]);
+
+function seedreamPixels(
+  config: Record<string, unknown> | undefined
+): number | string {
+  const height = asNumber(config?.height);
+  if (!height || height <= 0) return "image_config.height is required";
+  const width = asNumber(config?.width);
+  const resolved =
+    width && width > 0 ? width : SEEDREAM_SQUARES.has(height) ? height : 0;
+  if (!resolved)
+    return "image_config needs width, or a square preset height of 1024, 1536 or 2048";
+  const pixels = resolved * height;
+  if (pixels < SEEDREAM_MIN_PIXELS || pixels > SEEDREAM_MAX_PIXELS)
+    return "image size is outside Seedream 5.5's published pixel range";
+  return pixels;
+}
+
+function seedreamProblem(payload: Record<string, unknown>): string | undefined {
+  if (payload.task_type !== "T2I" && payload.task_type !== "I2I")
+    return "task_type must be T2I or I2I";
+  const config = asObject(payload.image_config);
+  if (!config || config.size_mode === "auto")
+    return "automatic image size has no upfront cost estimate";
+  const tasks = payload.src_task_ids;
+  if (Array.isArray(tasks) && tasks.length > 0)
+    return "src_task_ids carry an unknown input-image charge";
+  const sources = payload.src_image_urls ?? [];
+  if (!Array.isArray(sources)) return "src_image_urls must be an array";
+  if (payload.task_type === "I2I" && sources.length === 0)
+    return "I2I requires a source in src_image_urls";
+  const output = asObject(payload.image_output);
+  if (output?.layers !== undefined) {
+    const layers = asObject(output.layers);
+    const maxImages = layers ? asNumber(layers.max_images) : undefined;
+    if (maxImages === undefined || maxImages < 1)
+      return "layers pricing needs image_output.layers.max_images";
+  }
+  const pixels = seedreamPixels(config);
+  return typeof pixels === "string" ? pixels : undefined;
+}
+
+function seedreamOutputs(payload: Record<string, unknown>): number {
+  const layers = asObject(asObject(payload.image_output)?.layers);
+  return layers ? (asNumber(layers.max_images) ?? 1) : 1;
+}
+
+const seedreamImage: PerUnitPricing = {
+  kind: "perUnit",
+  unit: "images",
+  units: (payload) =>
+    seedreamProblem(payload) ? undefined : seedreamOutputs(payload),
+  select: [
+    {
+      name: "tier",
+      required: true,
+      pick: (payload) => {
+        if (seedreamProblem(payload)) return undefined;
+        const pixels = seedreamPixels(asObject(payload.image_config));
+        if (typeof pixels !== "number") return undefined;
+        return pixels <= SEEDREAM_TIER_PIXELS ? "low" : "high";
+      },
+    },
+  ],
+  rates: { low: 0.02, high: 0.035 },
+  extra: (payload) => {
+    if (seedreamProblem(payload)) return undefined;
+    const sources = payload.src_image_urls;
+    return (Array.isArray(sources) ? sources.length : 0) * 0.008;
+  },
+  warn: (payload) => {
+    const problem = seedreamProblem(payload);
+    return problem ? [problem] : [];
+  },
+  source: {
+    url: "https://www.machgen.ai/docs/rest_api/models/seedream-5-5",
+    asOf: "2026-11-20",
+  },
+};
+
 export const machgenImages: Record<string, ModelPricing> = {
   "GPT-Image-2": imagePricing(
     {
@@ -249,4 +336,5 @@ export const machgenImages: Record<string, ModelPricing> = {
     true,
     false
   ),
+  "Seedream-5.5": seedreamImage,
 };

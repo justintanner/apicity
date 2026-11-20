@@ -370,6 +370,8 @@ describe("MachGen pricing", () => {
       "GPT-Image-2.6-Flare",
       "Nano-Banana-2",
       "Nano-Banana-2.1",
+      // Docs page re-read 2026-11-20, not the 2026-10-30 image pricebook.
+      "Seedream-5.5",
     ])
       priced.add(model);
     // Priced from the 2026-11-01 pricebook (the next test).
@@ -776,20 +778,25 @@ describe("MachGen pricing", () => {
   it("pins provenance, shared slugs and displays", () => {
     for (const [model, row] of Object.entries(PRICING.machgen)) {
       expect(row.source, model).toEqual(
-        row.kind === "perUnit" && row.unit === "images"
+        model === "Seedream-5.5"
           ? {
-              url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
-              asOf: "2026-10-30",
+              url: "https://www.machgen.ai/docs/rest_api/models/seedream-5-5",
+              asOf: "2026-11-20",
             }
-          : pricebookAsOf[model]
+          : row.kind === "perUnit" && row.unit === "images"
             ? {
                 url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
-                asOf: pricebookAsOf[model],
+                asOf: "2026-10-30",
               }
-            : {
-                url: "https://www.machgen.ai/pricing",
-                asOf: "2026-10-25",
-              }
+            : pricebookAsOf[model]
+              ? {
+                  url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
+                  asOf: pricebookAsOf[model],
+                }
+              : {
+                  url: "https://www.machgen.ai/pricing",
+                  asOf: "2026-10-25",
+                }
       );
     }
     expect(MODEL_SLUGS.machgen).toEqual({
@@ -800,6 +807,7 @@ describe("MachGen pricing", () => {
       "GPT-Image-2.6-Flare": "gi2p6fl",
       "Nano-Banana-2": "nb2",
       "Nano-Banana-2.1": "nb21",
+      "Seedream-5.5": "sd5p5",
       "MiniMax-H3": "mmh3",
       "Seedance-2.5": "sd2p5",
       "Seedance-2.0": "sd2",

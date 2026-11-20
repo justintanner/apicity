@@ -1040,6 +1040,8 @@ export const MODEL_SLUGS = {
     "GPT-Image-2.6-Flare": "gi2p6fl",
     "Nano-Banana-2": "nb2",
     "Nano-Banana-2.1": "nb21",
+    // Same model kie sells as seedream/5-5-*.
+    "Seedream-5.5": "sd5p5",
 
     "MiniMax-H3": "mmh3",
     "Seedance-2.5": "sd2p5",
@@ -2184,6 +2186,7 @@ export const MODEL_DISPLAY = {
     "GPT-Image-2.6-Flare": "GPT Image 2.6 Flare",
     "Nano-Banana-2": "Nano Banana 2",
     "Nano-Banana-2.1": "Nano Banana 2.1",
+    "Seedream-5.5": "Seedream 5.5",
 
     "MiniMax-H3": "MiniMax H3",
     "Seedance-2.5": "Seedance 2.5",

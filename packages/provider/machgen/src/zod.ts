@@ -532,6 +532,7 @@ export const MACHGEN_IMAGE_MODELS = [
   "GPT-Image-2.6-Flare",
   "Nano-Banana-2",
   "Nano-Banana-2.1",
+  "Seedream-5.5",
 ] as const;
 
 // The most I2I source images each image model takes: its i2i maxInputImages
@@ -546,6 +547,7 @@ export const MACHGEN_I2I_MAX_IMAGES: Readonly<Record<string, number>> = {
   "GPT-Image-2.6-Flare": 16,
   "Nano-Banana-2": 14,
   "Nano-Banana-2.1": 14,
+  "Seedream-5.5": 10,
 };
 
 // MachGen's REST docs cap reference images at 9
@@ -576,9 +578,10 @@ export const MachGenImageAutoSizeConfigSchema = MachGenImageConfigSchema.extend(
     height: autoDimension,
     width: autoDimension,
     aspect_ratio: autoDimension,
+    resolution: z.enum(["1K", "1.5K", "2K"]).optional(),
   }
 ).describe(
-  "Let a GPT Image model choose the size. Omit height, width and aspect_ratio. @apicity/cost cannot estimate an automatically sized image."
+  "Let the model choose the size. Omit height, width and aspect_ratio. Seedream 5.5 may set resolution to 1K, 1.5K or 2K. @apicity/cost cannot estimate an automatically sized image."
 );
 
 export const MachGenGenerateImageConfigSchema = z.discriminatedUnion(
@@ -668,7 +671,7 @@ export const MachGenImageOutputSchema = z
       .optional()
       .describe("Author model and reasoning settings for SVG output."),
   })
-  // Aliases can carry additional controls, including Seedream layers and watermark.
+  // Layers and watermark are not first-class fields. Seedream 5.5 uses both.
   .passthrough();
 
 export interface MachGenImageSurface {
@@ -682,6 +685,10 @@ export interface MachGenImageSurface {
   markup: boolean;
   continuation: boolean;
   safetyIdentifier: boolean;
+  /** When set, safety_identifier must be ASCII and no longer than this. */
+  safetyIdentifierMax?: number;
+  /** Automatic-size resolution tiers. Absent means the field is refused. */
+  resolutionTiers?: readonly string[];
 }
 
 // GET /api/v0/models?kind=image, 2026-11-18. The web capability contract
@@ -726,6 +733,23 @@ const nanoBanana: MachGenImageSurface = {
   safetyIdentifier: false,
 };
 const nanoBananaTasks = { T2I: nanoBanana, I2I: nanoBanana };
+// Docs and this account's model list, re-read 2026-11-20.
+// https://www.machgen.ai/docs/rest_api/models/seedream-5-5
+const seedream: MachGenImageSurface = {
+  qualities: [],
+  complexities: [],
+  backgrounds,
+  outputFormats: ["png", "jpeg"],
+  defaultOutputFormat: "png",
+  autoSize: true,
+  mask: false,
+  markup: false,
+  continuation: false,
+  safetyIdentifier: true,
+  safetyIdentifierMax: 64,
+  resolutionTiers: ["1K", "1.5K", "2K"],
+};
+const seedreamTasks = { T2I: seedream, I2I: seedream };
 type ImageModel = (typeof MACHGEN_IMAGE_MODELS)[number];
 export const MACHGEN_IMAGE_SURFACES: Readonly<
   Record<ImageModel, Readonly<Record<"T2I" | "I2I", MachGenImageSurface>>>
@@ -737,6 +761,7 @@ export const MACHGEN_IMAGE_SURFACES: Readonly<
   "GPT-Image-2.6-Flare": gptImage26Tasks,
   "Nano-Banana-2": nanoBananaTasks,
   "Nano-Banana-2.1": nanoBananaTasks,
+  "Seedream-5.5": seedreamTasks,
 };
 
 const isImageModel = (model: string): model is ImageModel =>
@@ -765,7 +790,9 @@ const imageSettingsFields = z.object({
     .string()
     .max(128)
     .optional()
-    .describe("End-user identifier for GPT Image 2, 2.5 and 2.6."),
+    .describe(
+      "End-user identifier. GPT Image 2, 2.5 and 2.6 accept 128 characters. Seedream 5.5 accepts 64 ASCII characters."
+    ),
 });
 
 type ImageSettings = z.infer<typeof imageSettingsFields>;
@@ -815,6 +842,34 @@ function checkImageSettings(
     issue(["continuation_task_id"], UNSUPPORTED_CONTINUATION);
   if (req.safety_identifier !== undefined && !surface.safetyIdentifier)
     issue(["safety_identifier"], UNSUPPORTED_SAFETY_IDENTIFIER);
+  if (
+    req.safety_identifier !== undefined &&
+    surface.safetyIdentifierMax !== undefined &&
+    (req.safety_identifier.length > surface.safetyIdentifierMax ||
+      [...req.safety_identifier].some((char) => char.charCodeAt(0) > 0x7f))
+  )
+    issue(
+      ["safety_identifier"],
+      `safety_identifier must be at most ${surface.safetyIdentifierMax} ASCII characters`
+    );
+  const resolution = (req.image_config as { resolution?: string } | undefined)
+    ?.resolution;
+  if (resolution !== undefined) {
+    const tiers = surface.resolutionTiers ?? [];
+    if (!tiers.includes(resolution))
+      issue(
+        ["image_config", "resolution"],
+        `${modelTask} does not support resolution='${resolution}'${
+          tiers.length ? `; allowed: ${list(tiers)}` : ""
+        }`
+      );
+  }
+  const layers = (output as { layers?: unknown }).layers;
+  if (layers !== undefined && output.background !== undefined)
+    issue(
+      ["image_output", "background"],
+      "Omit background when extracting layers"
+    );
   if (mask && markup)
     issue(
       ["src_markup_url"],

@@ -2097,6 +2097,121 @@ export function falH3MaxSecondsFloor(
   };
 }
 
+// Seedream 5.5 edit, card re-read 2026-11-20. Each output is $0.03 at 1K or
+// 1.5K and $0.0405 at 2K, plus $0.012 for every input image on that output.
+// An omitted image_size is auto_2K. A custom size is $0.03 through 2,610,000
+// pixels and $0.0405 above that. square_hd is the documented 1024x1024 preset,
+// inside the published area and on the $0.03 side of that split. The other
+// named presets are below the 921,600-pixel minimum, so they are not priced.
+// More than 10 input URLs are truncated to the last 10.
+const SEEDREAM_V55_EDIT = "bytedance/seedream/v5.5/edit";
+const SEEDREAM_V55_AS_OF = "2026-11-20";
+const SEEDREAM_V55_INPUT_USD = 0.012;
+const SEEDREAM_V55_CUSTOM_SPLIT = 2_610_000;
+const SEEDREAM_V55_MIN_AREA = 921_600;
+const SEEDREAM_V55_MAX_AREA = 4_624_220;
+const SEEDREAM_V55_PRESETS = new Set([
+  "square_hd",
+  "square",
+  "portrait_4_3",
+  "portrait_16_9",
+  "landscape_4_3",
+  "landscape_16_9",
+]);
+
+function seedreamV55Tier(p: Record<string, unknown>): "1K" | "2K" | undefined {
+  const size = p.image_size ?? "auto_2K";
+  if (size === "auto_1K" || size === "auto_1.5K") return "1K";
+  if (size === "auto_2K") return "2K";
+  if (typeof size === "string" && SEEDREAM_V55_PRESETS.has(size)) {
+    const dims = PRESET_DIMENSIONS[size];
+    if (!dims) return undefined;
+    const area = dims[0] * dims[1];
+    if (area < SEEDREAM_V55_MIN_AREA || area > SEEDREAM_V55_MAX_AREA) {
+      return undefined;
+    }
+    return area <= SEEDREAM_V55_CUSTOM_SPLIT ? "1K" : "2K";
+  }
+  const explicit = asObject(size);
+  const width = asNumber(explicit?.width);
+  const height = asNumber(explicit?.height);
+  if (
+    width === undefined ||
+    height === undefined ||
+    width <= 0 ||
+    height <= 0
+  ) {
+    return undefined;
+  }
+  return width * height <= SEEDREAM_V55_CUSTOM_SPLIT ? "1K" : "2K";
+}
+
+function seedreamV55Inputs(p: Record<string, unknown>): number | undefined {
+  if (!Array.isArray(p.image_urls) || p.image_urls.length < 1) return undefined;
+  return Math.min(p.image_urls.length, 10);
+}
+
+function seedreamV55Outputs(p: Record<string, unknown>): number | undefined {
+  if (p.num_images === undefined) return 1;
+  const count = asNumber(p.num_images);
+  if (
+    count === undefined ||
+    !Number.isInteger(count) ||
+    count < 1 ||
+    count > 6
+  ) {
+    return undefined;
+  }
+  return count;
+}
+
+const seedreamV55Edit = (): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: (p) => {
+    if (seedreamV55Tier(p) === undefined) return undefined;
+    if (seedreamV55Inputs(p) === undefined) return undefined;
+    return seedreamV55Outputs(p);
+  },
+  extra: (p) => {
+    const outputs = seedreamV55Outputs(p);
+    const inputs = seedreamV55Inputs(p);
+    if (
+      outputs === undefined ||
+      inputs === undefined ||
+      seedreamV55Tier(p) === undefined
+    ) {
+      return undefined;
+    }
+    return outputs * inputs * SEEDREAM_V55_INPUT_USD;
+  },
+  warn: (p) => {
+    const messages: string[] = [];
+    if (seedreamV55Inputs(p) === undefined) {
+      messages.push(
+        `fal '${SEEDREAM_V55_EDIT}': image_urls must list at least one reference`
+      );
+    }
+    if (p.num_images !== undefined && seedreamV55Outputs(p) === undefined) {
+      messages.push(
+        `fal '${SEEDREAM_V55_EDIT}': num_images must be an integer from 1 to 6`
+      );
+    }
+    const size = p.image_size ?? "auto_2K";
+    if (seedreamV55Tier(p) === undefined) {
+      messages.push(
+        typeof size === "string" && SEEDREAM_V55_PRESETS.has(size)
+          ? `fal '${SEEDREAM_V55_EDIT}': image_size '${size}' is below the published minimum area of 921600 pixels, so its output tier is not priced`
+          : `fal '${SEEDREAM_V55_EDIT}': image_size is not a priced 1K, 1.5K, 2K, or custom size`
+      );
+    }
+    return messages;
+  },
+  select: [{ name: "image_size", pick: (p) => seedreamV55Tier(p) }],
+  rates: { "1K": 0.03, "2K": 0.0405 },
+  source: source(SEEDREAM_V55_EDIT, SEEDREAM_V55_AS_OF),
+});
+
 export const fal: Record<string, ModelPricing> = {
   // The recorded 100-step training run billed 100 units, confirmed as $0.43.
   // CostUnit has no steps member; each billed step counts as one generation.
@@ -3179,6 +3294,8 @@ export const fal: Record<string, ModelPricing> = {
   "tripo3d/p2/image-to-3d": tripoP2("tripo3d/p2/image-to-3d", "2026-10-05"),
 
   "tripo3d/p2/text-to-3d": tripoP2("tripo3d/p2/text-to-3d", "2026-10-05"),
+
+  "bytedance/seedream/v5.5/edit": seedreamV55Edit(),
 
   "bytedance/seedream/v5/flash/text-to-image": perImage(
     "bytedance/seedream/v5/flash/text-to-image",

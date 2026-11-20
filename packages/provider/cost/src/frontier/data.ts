@@ -533,6 +533,11 @@ export const FRONTIER = {
         elo: 1160,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "bytedance.seedream.v5p5.edit",
+            pricingKey: "bytedance/seedream/v5.5/edit",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "seedream/5-5-image-to-image",

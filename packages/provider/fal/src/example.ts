@@ -1049,6 +1049,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5p5.edit": {
+    "source": "fal/seedream-v55-edit",
+    "payload": {
+      "prompt": "Add a small red bow tie to the cat.",
+      "image_size": "auto_1K",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST creatify.boreal": {
     "source": "fal/creatify-boreal",
     "payload": {

@@ -1468,6 +1468,90 @@ export const FalSeedreamV5ProEditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedream 5.5 edit
+// ---------------------------------------------------------------------------
+
+// Queue OpenAPI re-read 2026-11-20
+// (sha256 717a8bfaa7293167665dcaeb6bc9d35ab4b16793fc45402fa7626c6dfc19e3c6).
+// The route was not probed: a rejected body can still be billed.
+// Docs: https://fal.ai/models/bytedance/seedream/v5.5/edit/api
+const FalSeedreamV55ImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_1K",
+    "auto_1.5K",
+    "auto_2K",
+  ]),
+  z.object({
+    width: z
+      .number()
+      .int()
+      .min(1)
+      .max(14142)
+      .describe("The width of the generated image."),
+    height: z
+      .number()
+      .int()
+      .min(1)
+      .max(14142)
+      .describe("The height of the generated image."),
+  }),
+]);
+
+export const FalSeedreamV55EditRequestSchema = z.object({
+  prompt: z.string().describe("The text prompt used to edit the image."),
+  image_size: FalSeedreamV55ImageSizeSchema.default("auto_2K").describe(
+    "The size of the generated image. Total pixels must be between 921600 and 4624220, with aspect ratio between 1/16 and 16."
+  ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(6)
+    .default(1)
+    .describe("Number of separate model generations to run with the prompt."),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("png")
+    .describe("The file format of the generated image."),
+  watermark: z
+    .boolean()
+    .default(false)
+    .describe("Whether to add the provider's visible watermark."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  background: z
+    .enum(["auto", "opaque", "transparent"])
+    .default("auto")
+    .describe(
+      "`auto` lets the model choose from the prompt and output format. `transparent` returns an RGBA image and requires `output_format=png`."
+    ),
+  // Upstream keeps at most the last 10 images and does not reject a longer
+  // list, so the cap is not encoded. The list is required and non-empty.
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .describe(
+      "List of URLs of input reference images. Up to 10 images are supported; if more are sent, only the last 10 are used."
+    ),
+});
+
+// ---------------------------------------------------------------------------
 // Bytedance Seed Speech TTS v2
 // ---------------------------------------------------------------------------
 
@@ -3534,6 +3618,16 @@ export type FalSeedreamV5ProEditRequest = z.input<
 export type FalSeedreamV5ProEditRequestInput = FalSeedreamV5ProEditRequest;
 export type FalSeedreamV5ProEditParsedRequest = z.output<
   typeof FalSeedreamV5ProEditRequestSchema
+>;
+export type FalSeedreamV55EditParams = z.infer<
+  typeof FalSeedreamV55EditRequestSchema
+>;
+export type FalSeedreamV55EditRequest = z.input<
+  typeof FalSeedreamV55EditRequestSchema
+>;
+export type FalSeedreamV55EditRequestInput = FalSeedreamV55EditRequest;
+export type FalSeedreamV55EditParsedRequest = z.output<
+  typeof FalSeedreamV55EditRequestSchema
 >;
 export type FalSeedSpeechTtsV2Params = z.infer<
   typeof FalSeedSpeechTtsV2RequestSchema
@@ -19474,6 +19568,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "bytedance/seedream/v5/pro/text-to-image":
     FalSeedreamV5ProTextToImageRequestSchema,
   "bytedance/seedream/v5/pro/edit": FalSeedreamV5ProEditRequestSchema,
+  "bytedance/seedream/v5.5/edit": FalSeedreamV55EditRequestSchema,
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
   "minimax/music-3": FalMinimaxMusic3RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":

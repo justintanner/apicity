@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal Seedream 5.5 edit (`bytedance/seedream/v5.5/edit`) is priced from the
+  card read 2026-11-20: $0.03 per output at 1K or 1.5K and $0.0405 at 2K,
+  plus $0.012 per input image per output (at most 10 inputs). `auto_1K` and
+  `auto_1.5K` are the 1K rate; `auto_2K` and an omitted size are the 2K rate.
+  Custom dimensions at or under 2,610,000 pixels use the 1K rate. Named
+  presets below the published minimum area of 921,600 pixels stay unpriced.
+  Display "Seedream 5.5 Edit", slug `sd5p5`. A recorded `auto_1K` edit with
+  one input billed 1.4 units at $0.03 (0.042 USD) and returned an 864x1152
+  PNG, matching the card. It is the fal entry beside KIE, WaveSpeed, and
+  MachGen on the Seedream 5.5 image-editing frontier row (ac-dghypo).
+
 - fal Kling Image 4.0 text-to-image (`kling/v4/text-to-image`) is priced
   dynamically. The pricing API (read 2026-11-20) lists 0.063 USD per unit
   named "units" and does not define the unit. A recorded default 2K image

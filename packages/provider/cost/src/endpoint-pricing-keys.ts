@@ -165,6 +165,7 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "bytedance/seedream/v5/pro/layerize",
   "fal POST bytedance.seedream.v5.pro.textToImage":
     "bytedance/seedream/v5/pro/text-to-image",
+  "fal POST bytedance.seedream.v5p5.edit": "bytedance/seedream/v5.5/edit",
   "fal POST creatify.boreal": "creatify/boreal",
   "fal POST elevenlabs.music.v2p5": "elevenlabs/music/v2.5",
   "fal POST elevenlabs.tts.elevenV4": "elevenlabs/tts/eleven-v4",

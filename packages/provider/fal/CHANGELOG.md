@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.bytedance.seedream.v5p5.edit`
+  (`POST https://fal.run/bytedance/seedream/v5.5/edit`) adds Seedream 5.5
+  edit, #8 on the 2026-11-19 image-editing board, as a `v5p5` object under
+  the existing `bytedance.seedream` namespace. The schema follows fal's queue
+  OpenAPI (read 2026-11-20, unchanged since the survey): `prompt` (required),
+  `image_urls` (required; the last 10 are used), `image_size` presets
+  including `auto_1K`, `auto_1.5K` and `auto_2K` or custom width and height
+  (default `auto_2K`), `num_images` 1-6, `output_format` jpeg or png,
+  `watermark`, `sync_mode`, `enable_safety_checker`, and `background` `auto`,
+  `opaque` or `transparent`. A recorded `auto_1K` edit of the owned cat photo
+  returned one 864x1152 PNG and billed 1.4 units (0.042 USD) (ac-dghypo).
+
 - `run.kling.v4.textToImage`
   (`POST https://fal.run/kling/v4/text-to-image`) adds Kling Image 4.0
   text-to-image, #7 on the 2026-11-19 text-to-image board, as a leaf on the

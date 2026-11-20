@@ -908,6 +908,7 @@ export const MODEL_SLUGS = {
     "recraft/v4.1/flash/text-to-image": "recraftv41fl",
     "tripo3d/p2/image-to-3d": "tripo3dp2",
     "tripo3d/p2/text-to-3d": "tripo3dp2",
+    "bytedance/seedream/v5.5/edit": "sd5p5",
     "bytedance/seedream/v5/flash/text-to-image": "bytedancesee",
     "bytedance/seedream/v5/flash/edit": "bytedancesee",
     "bytedance/seedream/v5/flash/layerize": "bytedancesee",
@@ -1970,6 +1971,7 @@ export const MODEL_DISPLAY = {
     "recraft/v4.1/flash/text-to-image": "Recraft 4.1 Flash Text To Image",
     "tripo3d/p2/image-to-3d": "Tripo3d P2 Image To 3d",
     "tripo3d/p2/text-to-3d": "Tripo3d P2 Text To 3d",
+    "bytedance/seedream/v5.5/edit": "Seedream 5.5 Edit",
     "bytedance/seedream/v5/flash/text-to-image":
       "Bytedance Seedream V5 Flash Text To Image",
     "bytedance/seedream/v5/flash/edit": "Bytedance Seedream V5 Flash Edit",

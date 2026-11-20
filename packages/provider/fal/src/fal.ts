@@ -460,6 +460,8 @@ import {
   FalSeedreamV5ProTextToImageResponse,
   FalSeedreamV5ProEditRequest,
   FalSeedreamV5ProEditResponse,
+  FalSeedreamV55EditRequest,
+  FalSeedreamV55EditResponse,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
   FalMinimaxMusic3Request,
@@ -782,6 +784,7 @@ import {
   FalMinimaxH3Ref2vaTrainerRequestSchema,
   FalSeedreamV5ProTextToImageRequestSchema,
   FalSeedreamV5ProEditRequestSchema,
+  FalSeedreamV55EditRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
   FalMinimaxMusic3RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
@@ -2487,6 +2490,14 @@ export function createFal(opts: FalOptions): FalProvider {
     FalSeedreamV5ProEditRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/bytedance/seedream/v5.5/edit
+  // Docs: https://fal.ai/models/bytedance/seedream/v5.5/edit/api
+  const seedreamV55Edit = jsonBody<
+    FalSeedreamV55EditRequest,
+    FalSeedreamV55EditResponse
+  >("POST", "/bytedance/seedream/v5.5/edit", FalSeedreamV55EditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2
@@ -5476,6 +5487,11 @@ export function createFal(opts: FalOptions): FalProvider {
             textToImage: seedreamV5ProTextToImage,
             edit: seedreamV5ProEdit,
           },
+        },
+        v5p5: {
+          // POST https://fal.run/bytedance/seedream/v5.5/edit
+          // Docs: https://fal.ai/models/bytedance/seedream/v5.5/edit/api
+          edit: seedreamV55Edit,
         },
       },
     },

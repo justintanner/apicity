@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `run.microsoft.maiImage2p7.edit`
+  (`POST https://fal.run/microsoft/mai-image-2.7/edit`) adds MAI-Image-2.7
+  editing, #1 on the 2026-11-19 image-editing board. It declares the
+  `microsoft.maiImage2p7` object (fal serves no bare `mai-image-2.7` route).
+  The schema follows fal's queue OpenAPI (read 2026-11-20): `prompt` and one to
+  five `image_urls` (required), `image_size` (a preset, a custom width and
+  height, or null to follow the input), `resolution` 1K or 2K, `background`
+  opaque or transparent, and `output_format` png, jpeg or webp. The 768-pixel
+  side minimum, the 2048x2048 pixel cap and the transparent background's
+  png/webp rule stay in the descriptions: free 422 probes showed fal does not
+  check them at field level. A recorded edit of the owned cat photo with no
+  optional input returned one 880x1184 PNG and billed `x-fal-billable-units`
+  0.0409 (ac-uco3qf).
+
 - `run.geminiOmniFlash.v1p2.upscale`
   (`POST https://fal.run/google/gemini-omni-flash/v1.2/upscale`) adds Gemini
   Omni Flash 1.2 upscale, the last leaf on the `geminiOmniFlash.v1p2` object.

@@ -159,6 +159,8 @@ import {
   FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProResponse,
   FalMicrosoftMaiImage2p5ProRequest,
+  FalMicrosoftMaiImage2p7EditResponse,
+  FalMicrosoftMaiImage2p7EditRequest,
   FalOpenaiGptImage2p5FlareTextToImageResponse,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditResponse,
@@ -644,6 +646,7 @@ import {
   FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   FalMicrosoftMaiImage2p5ProEditRequestSchema,
   FalMicrosoftMaiImage2p5ProRequestSchema,
+  FalMicrosoftMaiImage2p7EditRequestSchema,
   FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
@@ -3812,6 +3815,19 @@ export function createFal(opts: FalOptions): FalProvider {
     }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/microsoft/mai-image-2.7/edit
+  // Docs: https://fal.ai/models/microsoft/mai-image-2.7/edit/api
+  const microsoftMaiImage2p7Edit = jsonBody<
+    FalMicrosoftMaiImage2p7EditRequest,
+    FalMicrosoftMaiImage2p7EditResponse
+  >(
+    "POST",
+    "/microsoft/mai-image-2.7/edit",
+    FalMicrosoftMaiImage2p7EditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
   // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
   const nvidiaCosmos3SuperImageToVideo = jsonBody<
@@ -5004,6 +5020,12 @@ export function createFal(opts: FalOptions): FalProvider {
       // POST https://fal.run/microsoft/mai-image-2.5-pro
       // Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/api
       maiImage2p5Pro: microsoftMaiImage2p5Pro,
+      maiImage2p7: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/microsoft/mai-image-2.7/edit
+        // Docs: https://fal.ai/models/microsoft/mai-image-2.7/edit/api
+        edit: microsoftMaiImage2p7Edit,
+      },
     },
     openai: {
       // POST https://fal.run/openai/gpt-image-2

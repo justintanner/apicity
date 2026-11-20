@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal MAI-Image-2.7 edit (`microsoft/mai-image-2.7/edit`) is priced
+  dynamically from fal's token card (read 2026-11-20): $5 per 1M text input
+  tokens, $8 per 1M image input tokens and $34 per 1M image output tokens,
+  rounded up to $0.0001. The output size can be left to the model, so the
+  request does not fix the token count. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for MAI-Image-2.7 on
+  the image-editing frontier board. A recorded edit billed 0.0409 USD
+  (ac-uco3qf).
+
 - KIE LTX 2.5 Pro image-to-video (`ltx/2-5-pro-image-to-video`) is priced at
   the Pro rates per second of video: 0.072 / 0.102 USD (14.4 / 20.4 credits)
   at 720p / 1080p, from the feed rows and the models API pricingDesc read

@@ -70,7 +70,7 @@ describe("apicity frontier", () => {
     const t2i = envelope.data.find((row) => row.type === "t2i");
     expect(t2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "8/10", captured: "2026-11-19" });
+    expect(i2i).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
     expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-19" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
@@ -207,9 +207,8 @@ describe("apicity frontier", () => {
     expect(table).not.toContain("kie");
     expect(table).toContain("Krea 3 (Ultra)");
     expect(table).toContain("krea.v3.edit");
-    expect(table).toContain(
-      "not yet in apicity: MAI-Image-2.7, MAI-Image-2.7-Flash"
-    );
+    expect(table).toContain("microsoft.maiImage2p7.edit");
+    expect(table).toContain("not yet in apicity: MAI-Image-2.7-Flash");
   });
 
   it("prints t2v rows and names the unmapped video models", async () => {

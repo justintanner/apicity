@@ -1,5 +1,11 @@
 {
-  "MAI-Image-2.7": [],
+  "MAI-Image-2.7": [
+    {
+      "provider": "fal",
+      "dotPath": "microsoft.maiImage2p7.edit",
+      "pricingKey": "microsoft/mai-image-2.7/edit"
+    }
+  ],
   "GPT Image 2.6 Sunburst (max)": [
     {
       "provider": "fal",

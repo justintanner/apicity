@@ -118,7 +118,7 @@ const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 ];
 
 const T2I_UNMAPPED = ["MAI-Image-2.7", "MAI-Image-2.6"];
-const I2I_UNMAPPED = ["MAI-Image-2.7", "MAI-Image-2.7-Flash"];
+const I2I_UNMAPPED = ["MAI-Image-2.7-Flash"];
 
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
@@ -1121,7 +1121,7 @@ describe("frontier image snapshots", () => {
     ).toEqual(I2I_SEED.map((row) => [...row]));
     expect(snapshotProblems(i2i.snapshot)).toEqual([]);
     expect(unmappedNames(i2i.endpointMap)).toEqual(I2I_UNMAPPED);
-    expect(mappedCount(i2i.endpointMap)).toBe(8);
+    expect(mappedCount(i2i.endpointMap)).toBe(9);
     expect(Object.keys(i2i.endpointMap)).toHaveLength(10);
   });
 

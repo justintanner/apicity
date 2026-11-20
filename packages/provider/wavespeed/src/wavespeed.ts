@@ -40,6 +40,7 @@ import type {
   WaveSpeedMinimaxH3TextToVideoRequest,
   WaveSpeedOpenaiGptImage2TextToImageRequest,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequest,
+  WaveSpeedOpenaiGptImage2p5SunburstEditRequest,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequest,
   WaveSpeedOpenaiGptImage2p6FlareEditRequest,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequest,
@@ -97,6 +98,7 @@ import {
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
   WaveSpeedOpenaiGptImage2TextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema,
+  WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema,
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareEditRequestSchema,
   WaveSpeedOpenaiGptImage2p6FlareTextToImageRequestSchema,
@@ -1112,6 +1114,23 @@ export function createWaveSpeed(
                 schema:
                   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema,
               }
+            ),
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/openai/gpt-image-2.5-sunburst/edit
+            // Docs: https://wavespeed.ai/models/openai/gpt-image-2.5-sunburst/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedOpenaiGptImage2p5SunburstEditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/openai/gpt-image-2.5-sunburst/edit",
+                  body,
+                  signal
+                );
+              },
+              { schema: WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema }
             ),
           },
           gptImage2p5Flare: {

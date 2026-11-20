@@ -1765,6 +1765,59 @@ export const WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema =
 export const WaveSpeedOpenaiGptImage2p5FlareTextToImageRequestSchema =
   WaveSpeedOpenaiGptImage2p5SunburstTextToImageRequestSchema;
 
+// openai/gpt-image-2.5-sunburst/edit, from WaveSpeed's model catalog
+// (GET /api/v3/models, read 2026-11-20). Unlike the GPT Image 2.6 edit it has
+// no `markup_image`, no `complexity`, no gif output and no frame controls.
+export const WaveSpeedOpenaiGptImage2p5SunburstEditRequestSchema = z.object({
+  prompt: z.string().describe("The positive prompt for the generation."),
+  images: z
+    .array(z.string())
+    .max(16)
+    .describe("Public URLs of 1-16 input images to edit."),
+  mask_image: z
+    .string()
+    .optional()
+    .describe(
+      "Mask for the first input image: white marks the area to edit, black the area to keep (a PNG whose transparent area marks the edit is also accepted). It is resized to the first image."
+    ),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "2:1",
+      "1:3",
+      "3:1",
+      "2:3",
+      "3:2",
+      "3:4",
+      "4:3",
+      "4:5",
+      "5:4",
+      "9:16",
+      "16:9",
+      "9:21",
+      "21:9",
+    ])
+    .optional()
+    .describe(
+      "Aspect ratio of the image. When omitted, it follows the input image."
+    ),
+  resolution: z
+    .enum(["1k", "2k", "4k"])
+    .optional()
+    .describe("Resolution of the image. WaveSpeed default: `1k`."),
+  quality: z
+    .enum(["low", "medium", "high", "xhigh", "max"])
+    .optional()
+    .describe(
+      "Rendering quality. Higher tiers add detail and cost more. WaveSpeed default: `medium`."
+    ),
+  output_format: z
+    .enum(["png", "jpeg", "webp"])
+    .optional()
+    .describe("Format of the output image. WaveSpeed default: `png`."),
+});
+
 // pruna-ai/p-video-2-pro/image-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-18).
 export const WaveSpeedPrunaAiPVideo2ProImageToVideoRequestSchema = z.object({

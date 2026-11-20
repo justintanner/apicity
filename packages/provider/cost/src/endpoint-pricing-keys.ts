@@ -645,6 +645,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "openai/gpt-image-2/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p5Flare.textToImage":
     "openai/gpt-image-2.5-flare/text-to-image",
+  "wavespeed POST api.v3.openai.gptImage2p5Sunburst.edit":
+    "openai/gpt-image-2.5-sunburst/edit",
   "wavespeed POST api.v3.openai.gptImage2p5Sunburst.textToImage":
     "openai/gpt-image-2.5-sunburst/text-to-image",
   "wavespeed POST api.v3.openai.gptImage2p6Flare.edit":

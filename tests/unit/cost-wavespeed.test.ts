@@ -2135,6 +2135,109 @@ describe("wavespeed openai/gpt-image-2.5-sunburst/text-to-image", () => {
   });
 });
 
+describe("wavespeed openai/gpt-image-2.5-sunburst/edit", () => {
+  const model = "openai/gpt-image-2.5-sunburst/edit";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.025 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [image],
+      quality: "low",
+      resolution: "1k",
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.025, 9);
+  });
+
+  it("bills one medium 1k image by default", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, images: [image] }).usd
+    ).toBeCloseTo(0.039, 9);
+  });
+
+  // Free quotes (POST /api/v3/model/price) on 2026-11-20, list price.
+  it("bills every quality at every resolution for one input image", () => {
+    const quoted: Record<string, readonly [number, number, number]> = {
+      low: [0.025, 0.035, 0.045],
+      medium: [0.039, 0.055, 0.085],
+      high: [0.105, 0.165, 0.285],
+      xhigh: [0.175, 0.285, 0.495],
+      max: [0.375, 0.615, 1.015],
+    };
+    for (const [quality, row] of Object.entries(quoted)) {
+      ["1k", "2k", "4k"].forEach((resolution, index) => {
+        expect(
+          estimate(model, {
+            prompt: PROMPT,
+            images: [image],
+            quality,
+            resolution,
+          }).usd,
+          `${quality} ${resolution}`
+        ).toBeCloseTo(row[index], 9);
+      });
+    }
+  });
+
+  it("adds 0.015 USD per input image", () => {
+    for (const [count, usd] of [
+      [2, 0.04],
+      [4, 0.07],
+      [16, 0.25],
+    ] as const) {
+      expect(
+        estimate(model, {
+          prompt: PROMPT,
+          images: Array(count).fill(image),
+          quality: "low",
+        }).usd,
+        `${count} images`
+      ).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("adds 0.015 USD once for a mask image", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        quality: "low",
+        mask_image: image,
+      }).usd
+    ).toBeCloseTo(0.04, 9);
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image, image],
+        quality: "max",
+        resolution: "4k",
+        mask_image: image,
+      }).usd
+    ).toBeCloseTo(1.045, 9);
+  });
+
+  it("adds nothing for the output format or aspect ratio", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        images: [image],
+        quality: "low",
+        output_format: "jpeg",
+        aspect_ratio: "21:9",
+      }).usd
+    ).toBeCloseTo(0.025, 9);
+  });
+
+  it("fails closed without an images list", () => {
+    const result = estimate(model, { prompt: PROMPT });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
+
 describe("wavespeed openai/gpt-image-2.5-flare/text-to-image", () => {
   const model = "openai/gpt-image-2.5-flare/text-to-image";
 

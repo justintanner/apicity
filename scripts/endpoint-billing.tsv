@@ -588,6 +588,7 @@ fal	bytedance.seedream.v5.lite.textToImage	POST	metered	images		https://api.fal.
 fal	bytedance.seedream.v5.pro.edit	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedream.v5.pro.layerize	POST	metered	images	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedream.v5.pro.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	bytedance.seedream.v5p5.edit	POST	metered	images		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	creatify.boreal	POST	metered	units		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	elevenlabs.music.v2p5	POST	metered	minutes		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	elevenlabs.tts.elevenV4	POST	metered	1000 characters		https://api.fal.ai/v1/models/pricing	2026-11-04

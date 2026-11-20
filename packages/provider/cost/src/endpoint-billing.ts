@@ -2214,6 +2214,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST bytedance.seedream.v5.flash.textToImage",
       "POST bytedance.seedream.v5.lite.edit",
       "POST bytedance.seedream.v5.lite.textToImage",
+      "POST bytedance.seedream.v5p5.edit",
       "POST marigoldV2",
       "POST meta.museImage.edit",
       "POST meta.museImage.textToImage",

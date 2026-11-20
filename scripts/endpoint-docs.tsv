@@ -902,6 +902,7 @@ fal	bytedance.seedream.v5.lite.textToImage	POST	https://fal.run/fal-ai/bytedance
 fal	bytedance.seedream.v5.pro.layerize	POST	https://fal.run/bytedance/seedream/v5/pro/layerize	https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api
 fal	bytedance.seedream.v5.pro.textToImage	POST	https://fal.run/bytedance/seedream/v5/pro/text-to-image	https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
 fal	bytedance.seedream.v5.pro.edit	POST	https://fal.run/bytedance/seedream/v5/pro/edit	https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
+fal	bytedance.seedream.v5p5.edit	POST	https://fal.run/bytedance/seedream/v5.5/edit	https://fal.ai/models/bytedance/seedream/v5.5/edit/api
 fal	bytedance.seedSpeech.tts.v2	POST	https://fal.run/fal-ai/bytedance/seed-speech/tts/v2	https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
 fal	falAi.elevenlabs.speechToText.scribeV2	POST	https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2	https://docs.fal.ai
 fal	geminiOmniFlash	POST	https://fal.run/google/gemini-omni-flash	https://fal.ai/models/google/gemini-omni-flash/api

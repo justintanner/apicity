@@ -213,6 +213,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("microsoft.maiImage2p7.edit");
     expect(table).toContain("microsoft.maiImage2p7.flash.edit");
     expect(table).toContain("kling.v4.imageToImage");
+    expect(table).toContain("bytedance.seedream.v5p5.edit");
     expect(table).not.toContain("not yet in apicity");
   });
 

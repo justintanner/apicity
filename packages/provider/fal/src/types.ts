@@ -584,6 +584,7 @@ export type {
   FalMinimaxH3ImageToVideoParams,
   FalSeedreamV5ProTextToImageParams,
   FalSeedreamV5ProEditParams,
+  FalSeedreamV55EditParams,
   FalSeedSpeechTtsV2Params,
   FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -753,6 +754,9 @@ export type {
   FalSeedreamV5ProEditRequest,
   FalSeedreamV5ProEditRequestInput,
   FalSeedreamV5ProEditParsedRequest,
+  FalSeedreamV55EditRequest,
+  FalSeedreamV55EditRequestInput,
+  FalSeedreamV55EditParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -1162,6 +1166,7 @@ import type {
   FalMinimaxH3ImageToVideoLoraRequest,
   FalSeedreamV5ProTextToImageRequest,
   FalSeedreamV5ProEditRequest,
+  FalSeedreamV55EditRequest,
   FalSeedSpeechTtsV2Request,
   FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -2101,6 +2106,21 @@ export interface FalSeedreamV5ProEditResponse {
   images: FalSeedreamV5ProEditImage[];
 }
 
+// Bytedance Seedream 5.5 edit. fal's `Image` schema requires only `url` and
+// makes every other field nullable.
+export interface FalSeedreamV55EditImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface FalSeedreamV55EditResponse {
+  images: FalSeedreamV55EditImage[];
+}
+
 // Bytedance Seed Speech TTS v2
 export type FalSeedSpeechTtsV2Voice =
   | "vivi_mixed_en_zh_ja_es_id"
@@ -2849,8 +2869,20 @@ export interface FalRunBytedanceSeedreamV5Namespace {
   pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
 
+type FalSeedreamV55EditFn = ((
+  params: FalSeedreamV55EditRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV55EditResponse>) & {
+  schema: ApicitySchema<FalSeedreamV55EditRequest>;
+};
+
+export interface FalRunBytedanceSeedreamV5p5Namespace {
+  edit: FalSeedreamV55EditFn;
+}
+
 export interface FalRunBytedanceSeedreamNamespace {
   v5: FalRunBytedanceSeedreamV5Namespace;
+  v5p5: FalRunBytedanceSeedreamV5p5Namespace;
 }
 
 type FalSeedSpeechTtsV2Fn = ((

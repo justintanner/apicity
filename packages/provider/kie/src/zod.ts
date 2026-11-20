@@ -454,6 +454,9 @@ export const KIE_MEDIA_MODELS = [
   // Vidu Q4 — explicit operations, no family alias.
   "vidu-q4/image-to-video",
   "vidu-q4/reference-to-video",
+  // LTX 2.5 (Lightricks) — enum-only vendor (no alias hatch). Docs under
+  // https://docs.kie.ai/market/ltx/.
+  "ltx/2-5-fast-text-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -4594,6 +4597,105 @@ export const ViduQ4ReferenceToVideoRequestSchema = z.object({
     audio: z.boolean().default(true),
   }),
 });
+
+// ---------------------------------------------------------------------------
+// LTX 2.5 (Lightricks). Docs under https://docs.kie.ai/market/ltx/.
+// ---------------------------------------------------------------------------
+// The five LTX 2.5 pages (Fast text-, image- and audio-to-video, Pro text- and
+// image-to-video), read on 2026-11-19 and re-read on 2026-11-20 (ac-ujmlmh),
+// share one input contract: a prompt of 1-5000 characters (text in quotes is
+// spoken; "Shot 1 / Shot 2" writes several shots), fps 24 | 25 | 48 | 50
+// (default 24, "Does not change the price") and an optional integer seed
+// 0-2147483647. The two text-to-video pages add one aspect_ratio enum. Every
+// task makes video with native audio. The ids are enum-only: `ltx/` is one
+// vendor's task slugs, not a version grammar.
+export const Ltx25FpsSchema = z.union([
+  z.literal(24),
+  z.literal(25),
+  z.literal(48),
+  z.literal(50),
+]);
+export const Ltx25AspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "1:1",
+  "3:2",
+  "2:3",
+]);
+export const Ltx25SeedSchema = z.number().int().min(0).max(2147483647);
+
+// LTX 2.5 Fast: 720p | 1080p | 1440p (the short side; default 1080p) and a
+// duration of 6-20 seconds in steps of 2 (default 10). The page: "6, 8, 10,
+// 12, 14, 16, 18 or 20 at 720p / 1080p with 24 / 25 fps; only 6, 8 or 10 at
+// 1440p or at 48 / 50 fps."
+export const Ltx25FastResolutionSchema = z.enum(["720p", "1080p", "1440p"]);
+export const Ltx25FastDurationSchema = z.union([
+  z.literal(6),
+  z.literal(8),
+  z.literal(10),
+  z.literal(12),
+  z.literal(14),
+  z.literal(16),
+  z.literal(18),
+  z.literal(20),
+]);
+
+// The longest LTX 2.5 Fast clip at 1440p or at 48 or 50 fps.
+const LTX_25_FAST_SHORT_MAX_SECONDS = 10;
+
+// Refuses an LTX 2.5 Fast duration past 10 seconds at 1440p or at 48 or 50
+// fps. It reads the parsed input, whose defaults (1080p, 24 fps, 10 s) are
+// KIE's own, so an omitted field never conflicts.
+function addLtx25FastDurationIssues(
+  input: { resolution: string; fps: number; duration: number },
+  ctx: z.RefinementCtx
+): void {
+  if (input.duration <= LTX_25_FAST_SHORT_MAX_SECONDS) return;
+  const limitedBy =
+    input.resolution === "1440p"
+      ? "1440p"
+      : input.fps === 48 || input.fps === 50
+        ? `${input.fps} fps`
+        : undefined;
+  if (!limitedBy) return;
+  ctx.addIssue({
+    code: "custom",
+    message: `LTX 2.5 Fast allows only 6, 8 or 10 seconds at ${limitedBy}`,
+    path: ["input", "duration"],
+  });
+}
+
+// Docs: https://docs.kie.ai/market/ltx/2-5-fast-text-to-video
+export const Ltx25FastTextToVideoInputSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots'
+    ),
+  resolution: Ltx25FastResolutionSchema.default("1080p").describe(
+    "Output resolution, the short side (default 1080p); billing depends on resolution"
+  ),
+  fps: Ltx25FpsSchema.default(24).describe(
+    "Frame rate (default 24); does not change the price"
+  ),
+  duration: Ltx25FastDurationSchema.default(10).describe(
+    "Seconds (default 10): 6-20 in steps of 2 at 720p or 1080p with 24 or 25 fps; only 6, 8 or 10 at 1440p or at 48 or 50 fps"
+  ),
+  aspect_ratio: Ltx25AspectRatioSchema.default("16:9"),
+  seed: Ltx25SeedSchema.optional().describe(
+    "Random seed 0-2147483647; random when omitted"
+  ),
+});
+
+export const Ltx25FastTextToVideoRequestSchema = z
+  .object({
+    model: z.literal("ltx/2-5-fast-text-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: Ltx25FastTextToVideoInputSchema,
+  })
+  .superRefine((value, ctx) => addLtx25FastDurationIssues(value.input, ctx));
 
 // Docs: https://docs.kie.ai/market/google/nanobanana-2-1
 // Same knobs as Nano Banana 2, except image_input accepts at most 10 URLs.
@@ -10368,6 +10470,7 @@ export const MediaGenerationRequestSchema = z.union([
   NanoBanana21RequestSchema,
   ViduQ4ImageToVideoRequestSchema,
   ViduQ4ReferenceToVideoRequestSchema,
+  Ltx25FastTextToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -12388,6 +12491,21 @@ export type ViduQ4ImageToVideoRequest = z.input<
 export type ViduQ4ImageToVideoRequestInput = ViduQ4ImageToVideoRequest;
 export type ViduQ4ImageToVideoParsedRequest = z.output<
   typeof ViduQ4ImageToVideoRequestSchema
+>;
+
+export type Ltx25Fps = z.infer<typeof Ltx25FpsSchema>;
+export type Ltx25AspectRatio = z.infer<typeof Ltx25AspectRatioSchema>;
+export type Ltx25FastResolution = z.infer<typeof Ltx25FastResolutionSchema>;
+export type Ltx25FastDuration = z.infer<typeof Ltx25FastDurationSchema>;
+export type Ltx25FastTextToVideoInput = z.infer<
+  typeof Ltx25FastTextToVideoInputSchema
+>;
+export type Ltx25FastTextToVideoRequest = z.input<
+  typeof Ltx25FastTextToVideoRequestSchema
+>;
+export type Ltx25FastTextToVideoRequestInput = Ltx25FastTextToVideoRequest;
+export type Ltx25FastTextToVideoParsedRequest = z.output<
+  typeof Ltx25FastTextToVideoRequestSchema
 >;
 
 export type ViduQ4ReferenceAspectRatio = z.infer<

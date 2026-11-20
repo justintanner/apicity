@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE LTX 2.5 Fast text-to-video (`ltx/2-5-fast-text-to-video`) is priced per
+  second of video by resolution: 0.054 / 0.078 / 0.114 USD (10.8 / 15.6 / 22.8
+  credits) at 720p / 1080p / 1440p, from the feed rows and the models API
+  pricingDesc read 2026-11-20, which agree. Resolution defaults to 1080p and
+  duration to 10 s; fps does not change the price. A recorded 6 s clip at
+  720p billed 64.8 credits (ac-ujmlmh).
+
 - MachGen `Seedream-5.5` text-to-image and image-to-image are priced from the docs page, re-read 2026-11-20: 0.008 USD per input image plus 0.020 USD per output through 2,601,123 pixels, or 0.035 USD through 4,624,220. Automatic size, `src_task_ids`, and a size outside that pixel range have no upfront estimate. `image_output.layers.max_images` is the priced output count. The public pricebook the same day lists one flat 0.020 USD per image and no input surcharge. A recorded 1024 edit of one source image billed 0.028 USD (task 0d1e6d3e) (ac-3pjy9k).
 
 - Frontier rows can name an `adapter` and a `note`. Hyperflow H3 and

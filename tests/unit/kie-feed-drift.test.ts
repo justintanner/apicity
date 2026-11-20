@@ -896,6 +896,83 @@ describe("KIE feed drift", () => {
   // for each reference image or element. The reference row is the extra for
   // one reference, not a resolution cell, and the long-image rows of the same
   // page belong to another model (2026-11-19 feed, ac-i4vebc).
+  // LTX 2.5 rows read "LTX 2.5 Fast, text to video, 1440p", and 1440p is
+  // outside the generic resolution vocabulary, so the ltx-2-5-resolution
+  // selector rule reads it. The anchor's model query maps each row to its key;
+  // a model with no key yet (LTX 2.5 Pro here) stays not compared
+  // (2026-11-20 feed, ac-ujmlmh).
+  it("compares the ltx/2-5-fast-text-to-video rows, 1440p included", async () => {
+    const anchor = (model: string) =>
+      `https://kie.ai/ltx-2-5?model=${encodeURIComponent(model)}`;
+    const row = (
+      modelDescription: string,
+      creditPrice: string,
+      usdPrice: string,
+      model = "ltx/2-5-fast-text-to-video"
+    ) => ({
+      occurrenceId: `sha256:${modelDescription}#1`,
+      rowHash: `sha256:${modelDescription}`,
+      semanticKey: `sha256:${modelDescription}`,
+      raw: {
+        modelDescription,
+        interfaceType: "video",
+        provider: "Lightricks",
+        creditPrice,
+        creditUnit: "per second",
+        usdPrice,
+        anchor: anchor(model),
+      },
+    });
+    const tiers = [
+      row("LTX 2.5 Fast, text to video, 720p", "10.8", "0.054"),
+      row("LTX 2.5 Fast, text to video, 1080p", "15.6", "0.078"),
+      row("LTX 2.5 Fast, text to video, 1440p", "22.8", "0.114"),
+    ];
+    const pro = row(
+      "LTX 2.5 Pro, text to video, 720p",
+      "14.4",
+      "0.072",
+      "ltx/2-5-pro-text-to-video"
+    );
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const write = async (rows: ReturnType<typeof row>[]) => {
+        const file = path.join(dir, "snapshot.json");
+        await writeFile(
+          file,
+          JSON.stringify({
+            ...JSON.parse(await readFile(FIXTURE, "utf8")),
+            records: rows,
+          })
+        );
+        return report(
+          await build({ snapshotPath: file, metadataPath: file, live: true })
+        );
+      };
+      const result = await write([...tiers, pro]);
+      expect(result.differ).toEqual([]);
+      expect(result.same).toBe(3);
+      expect(result.compared).toBe(3);
+      expect(result.notCompared.map(({ description }) => description)).toEqual([
+        "LTX 2.5 Pro, text to video, 720p",
+      ]);
+
+      const moved = await write([
+        ...tiers.slice(0, 2),
+        row("LTX 2.5 Fast, text to video, 1440p", "24", "0.12"),
+      ]);
+      expect(moved.differ).toEqual([
+        expect.objectContaining({
+          key: "ltx/2-5-fast-text-to-video",
+          variant: "1440p",
+          tableUsd: 0.114,
+        }),
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   it("compares the kling-4-0/image tier rows and its per-reference extra", async () => {
     const anchor = "https://kie.ai/kling-image-4-0?model=kling-4-0%2Fimage";
     const row = (

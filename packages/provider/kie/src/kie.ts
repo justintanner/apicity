@@ -189,6 +189,7 @@ import {
   Ltx25FastTextToVideoRequestSchema,
   Ltx25FastImageToVideoRequestSchema,
   Ltx25FastAudioToVideoRequestSchema,
+  Ltx25ProTextToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -519,6 +520,7 @@ export const CREATE_TASK_GUARDS = {
   "ltx/2-5-fast-text-to-video": Ltx25FastTextToVideoRequestSchema,
   "ltx/2-5-fast-image-to-video": Ltx25FastImageToVideoRequestSchema,
   "ltx/2-5-fast-audio-to-video": Ltx25FastAudioToVideoRequestSchema,
+  "ltx/2-5-pro-text-to-video": Ltx25ProTextToVideoRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

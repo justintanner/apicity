@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `ltx/2-5-pro-text-to-video` (LTX 2.5 Pro text-to-video) on createTask, from the docs as re-read on 2026-11-20: `prompt`, `fps`, `aspect_ratio` and `seed` as on `ltx/2-5-fast-text-to-video`, with `resolution` `720p` or `1080p` (default) and `duration` 6, 8 or 10 (default 10) at any frame rate. The Pro tier schemas `Ltx25ProResolutionSchema` and `Ltx25ProDurationSchema` are exported, with `Ltx25ProTextToVideoInputSchema` and `Ltx25ProTextToVideoRequestSchema` (ac-dwmekr).
+
 - `ltx/2-5-fast-audio-to-video` (LTX 2.5 Fast audio-to-video) on createTask, from the docs as re-read on 2026-11-20: a required `audio_url` (kept as the soundtrack), an optional first-frame `image_url`, a required `prompt` (1-5000 characters), `resolution` and `fps` as on the other Fast models, an optional `seed`, and an optional `duration`: a number from 2 to 20, cut from the start of the audio, with at most 10 at 1440p or at 48 or 50 fps (refused otherwise). `Ltx25FastAudioToVideoInputSchema` and `Ltx25FastAudioToVideoRequestSchema` are exported (ac-ium3f4).
 
 - `ltx/2-5-fast-image-to-video` (LTX 2.5 Fast image-to-video) on createTask, from the docs as re-read on 2026-11-20: a required `image_url` (the first frame; it sets the aspect ratio, so there is no `aspect_ratio` field), a required `prompt` (1-5000 characters), and `resolution`, `fps`, `duration` and `seed` as on `ltx/2-5-fast-text-to-video`, including the 6, 8 or 10 second limit at 1440p or at 48 or 50 fps. `Ltx25FastImageToVideoInputSchema` and `Ltx25FastImageToVideoRequestSchema` are exported (ac-ey3b9p).

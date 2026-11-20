@@ -459,6 +459,7 @@ export const KIE_MEDIA_MODELS = [
   "ltx/2-5-fast-text-to-video",
   "ltx/2-5-fast-image-to-video",
   "ltx/2-5-fast-audio-to-video",
+  "ltx/2-5-pro-text-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -4805,6 +4806,46 @@ export const Ltx25FastAudioToVideoRequestSchema = z
   .superRefine((value, ctx) =>
     addLtx25FastDurationIssues(value.input, ctx, "at most 10 seconds")
   );
+
+// LTX 2.5 Pro: 720p | 1080p (default 1080p) and 6, 8 or 10 seconds (default
+// 10) "at any frame rate", so the Fast tier's 1440p / 48-50 fps limit does
+// not apply. Shared by Pro text- and image-to-video (ac-dwmekr).
+export const Ltx25ProResolutionSchema = z.enum(["720p", "1080p"]);
+export const Ltx25ProDurationSchema = z.union([
+  z.literal(6),
+  z.literal(8),
+  z.literal(10),
+]);
+
+// Docs: https://docs.kie.ai/market/ltx/2-5-pro-text-to-video
+export const Ltx25ProTextToVideoInputSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      'Text prompt, 1-5000 characters; text in quotes is spoken as dialogue, and "Shot 1 / Shot 2" writes several shots'
+    ),
+  resolution: Ltx25ProResolutionSchema.default("1080p").describe(
+    "Output resolution, the short side (default 1080p); billing depends on resolution"
+  ),
+  fps: Ltx25FpsSchema.default(24).describe(
+    "Frame rate (default 24); does not change the price"
+  ),
+  duration: Ltx25ProDurationSchema.default(10).describe(
+    "Seconds: 6, 8 or 10 (default 10), at any frame rate"
+  ),
+  aspect_ratio: Ltx25AspectRatioSchema.default("16:9"),
+  seed: Ltx25SeedSchema.optional().describe(
+    "Random seed 0-2147483647; random when omitted"
+  ),
+});
+
+export const Ltx25ProTextToVideoRequestSchema = z.object({
+  model: z.literal("ltx/2-5-pro-text-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: Ltx25ProTextToVideoInputSchema,
+});
 
 // Docs: https://docs.kie.ai/market/google/nanobanana-2-1
 // Same knobs as Nano Banana 2, except image_input accepts at most 10 URLs.
@@ -10582,6 +10623,7 @@ export const MediaGenerationRequestSchema = z.union([
   Ltx25FastTextToVideoRequestSchema,
   Ltx25FastImageToVideoRequestSchema,
   Ltx25FastAudioToVideoRequestSchema,
+  Ltx25ProTextToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -12637,6 +12679,18 @@ export type Ltx25FastAudioToVideoRequest = z.input<
 export type Ltx25FastAudioToVideoRequestInput = Ltx25FastAudioToVideoRequest;
 export type Ltx25FastAudioToVideoParsedRequest = z.output<
   typeof Ltx25FastAudioToVideoRequestSchema
+>;
+export type Ltx25ProResolution = z.infer<typeof Ltx25ProResolutionSchema>;
+export type Ltx25ProDuration = z.infer<typeof Ltx25ProDurationSchema>;
+export type Ltx25ProTextToVideoInput = z.infer<
+  typeof Ltx25ProTextToVideoInputSchema
+>;
+export type Ltx25ProTextToVideoRequest = z.input<
+  typeof Ltx25ProTextToVideoRequestSchema
+>;
+export type Ltx25ProTextToVideoRequestInput = Ltx25ProTextToVideoRequest;
+export type Ltx25ProTextToVideoParsedRequest = z.output<
+  typeof Ltx25ProTextToVideoRequestSchema
 >;
 
 export type ViduQ4ReferenceAspectRatio = z.infer<

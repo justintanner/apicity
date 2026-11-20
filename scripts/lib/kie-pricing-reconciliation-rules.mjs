@@ -398,6 +398,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Kling 4.0 Image was added after the frozen September catalog; the dated feed capture supplies the rates (each output image is billed, and each reference image or element adds 0.5 credits), and the billed recording confirms the 2K cell.",
   })),
 
+  ...["720p", "1080p"].map((variant) => ({
+    key: "ltx/2-5-pro-text-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/ltx-2-5-pro-text-to-video-2026-11-20.json: feed rows and models pricingDesc read 2026-11-20: 14.4/20.4 credits = 0.072/0.102 USD per second of video at 720p/1080p; fps does not change the price",
+    rationale:
+      "LTX 2.5 Pro text-to-video was added after the frozen September catalog; the dated feed capture supplies the rates (seconds of output by resolution), and the billed recording confirms the 720p cell.",
+  })),
+
   ...["720p", "1080p", "1440p"].map((variant) => ({
     key: "ltx/2-5-fast-audio-to-video",
     variant,

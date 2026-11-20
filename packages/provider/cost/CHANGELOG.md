@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE LTX 2.5 Pro text-to-video (`ltx/2-5-pro-text-to-video`) is priced per
+  second of video by resolution: 0.072 / 0.102 USD (14.4 / 20.4 credits) at
+  720p / 1080p, from the feed rows and the models API pricingDesc read
+  2026-11-20, which agree. Resolution defaults to 1080p and duration to 10 s;
+  fps does not change the price. A recorded 6 s clip at 720p billed 86.4
+  credits (ac-dwmekr).
+
 - KIE LTX 2.5 Fast audio-to-video (`ltx/2-5-fast-audio-to-video`) is priced
   at the Fast rates, 0.054 / 0.078 / 0.114 USD (10.8 / 15.6 / 22.8 credits)
   per second at 720p / 1080p / 1440p, on the output length, which KIE bills

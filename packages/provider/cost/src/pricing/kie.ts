@@ -1515,6 +1515,15 @@ export const kie: Record<string, ModelPricing> = {
     { "720p": 0.054, "1080p": 0.078, "1440p": 0.114 },
     ltx25AudioSeconds
   ),
+  // ltx/2-5-pro-text-to-video: 14.4 / 20.4 credits ($0.072 / $0.102) per
+  // second at 720p / 1080p, the only Pro resolutions (feed rows "LTX 2.5 Pro,
+  // text to video, <res>" and pricingDesc, re-read 2026-11-20; evidence in
+  // tests/fixtures/kie-pricing-evidence/ltx-2-5-pro-text-to-video-2026-11-20.json).
+  // Duration defaults to 10 s.
+  "ltx/2-5-pro-text-to-video": ltx25Page("ltx/2-5-pro-text-to-video", {
+    "720p": 0.072,
+    "1080p": 0.102,
+  }),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85. The frozen pull's
   // text-to-video row said 380 credits against image-to-video's 370, and the
   // 2026-11-04 feed says 370 on both.

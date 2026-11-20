@@ -508,7 +508,13 @@ export const FRONTIER = {
         model: "MAI-Image-2.7-Flash",
         creator: "Microsoft AI",
         elo: 1179,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "microsoft.maiImage2p7.flash.edit",
+            pricingKey: "microsoft/mai-image-2.7/flash/edit",
+          },
+        ],
       },
       {
         rank: 8,

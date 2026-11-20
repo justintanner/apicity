@@ -11107,6 +11107,24 @@ export type FalMicrosoftMaiImage2p7EditParsedRequest = z.output<
 >;
 
 // Pinned to the live queue OpenAPI read on 2026-11-20
+// (sha256 48c07fe76b2e06e358aa5ed4796d54b208621c5cf5d5b2d019c50d677112b639).
+// Docs: https://fal.ai/models/microsoft/mai-image-2.7/flash/edit/api
+// The Flash edit Input matches the MAI-Image-2.7 edit Input field for field
+// (names, order, required, bounds, defaults and descriptions), so it reuses
+// that shape; only the token card differs. The same free 422 probes drew no
+// field error for the documented size and background rules.
+export const FalMicrosoftMaiImage2p7FlashEditRequestSchema =
+  FalMicrosoftMaiImage2p7EditRequestSchema.extend({});
+export type FalMicrosoftMaiImage2p7FlashEditRequest = z.input<
+  typeof FalMicrosoftMaiImage2p7FlashEditRequestSchema
+>;
+export type FalMicrosoftMaiImage2p7FlashEditRequestInput =
+  FalMicrosoftMaiImage2p7FlashEditRequest;
+export type FalMicrosoftMaiImage2p7FlashEditParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p7FlashEditRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-11-20
 // (sha256 bc8c6966d7827b0eef018d29dacb5a883aeffc736f9ae0fd5ca5881201b29b6a). Field order follows x-fal-order-properties.
 // Docs: https://fal.ai/models/microsoft/mai-image-2.7/text-to-image/api
 // As on the edit leaf, the image_size side and pixel limits and the
@@ -19096,6 +19114,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalMicrosoftMaiImage2p5ProEditRequestSchema,
   "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,
   "microsoft/mai-image-2.7/edit": FalMicrosoftMaiImage2p7EditRequestSchema,
+  "microsoft/mai-image-2.7/flash/edit":
+    FalMicrosoftMaiImage2p7FlashEditRequestSchema,
   "microsoft/mai-image-2.7/text-to-image":
     FalMicrosoftMaiImage2p7TextToImageRequestSchema,
   "openai/gpt-image-2.5/flare/text-to-image":

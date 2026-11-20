@@ -2089,6 +2089,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST lightricks.ltx2p5.imageToVideo.fast",
       "POST lightricks.ltx2p5.imageToVideo.pro",
       "POST microsoft.maiImage2p7.edit",
+      "POST microsoft.maiImage2p7.flash.edit",
       "POST microsoft.maiImage2p7.textToImage",
       "POST minimax.h3Max.reframeVideo",
       "POST minimax.h3Max.threeDToVideo",

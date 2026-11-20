@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- fal MAI-Image-2.7 Flash edit (`microsoft/mai-image-2.7/flash/edit`) is
+  priced dynamically from fal's Flash token card (read 2026-11-20): $1.75 per
+  1M text input tokens, $2.50 per 1M image input tokens and $10 per 1M image
+  output tokens, rounded up to $0.0001. It joins
+  `FAL_DYNAMIC_PRICING_ENDPOINTS` and `FAL_DYNAMIC_BILLED_UNITS`, has a
+  display-only `MODEL_DISPLAY` name, and is the fal entry for
+  MAI-Image-2.7-Flash, which completes the image-editing frontier board
+  (10/10). A recorded edit billed 0.0122 USD (ac-c3yi63).
+
 - fal MAI-Image-2.7 text-to-image (`microsoft/mai-image-2.7/text-to-image`) is
   priced dynamically from fal's token card (read 2026-11-20): $5 per 1M text
   input tokens and $34 per 1M image output tokens, rounded up to $0.0001; a

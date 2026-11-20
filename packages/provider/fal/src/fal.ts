@@ -163,6 +163,8 @@ import {
   FalMicrosoftMaiImage2p7EditRequest,
   FalMicrosoftMaiImage2p7TextToImageResponse,
   FalMicrosoftMaiImage2p7TextToImageRequest,
+  FalMicrosoftMaiImage2p7FlashEditResponse,
+  FalMicrosoftMaiImage2p7FlashEditRequest,
   FalOpenaiGptImage2p5FlareTextToImageResponse,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditResponse,
@@ -650,6 +652,7 @@ import {
   FalMicrosoftMaiImage2p5ProRequestSchema,
   FalMicrosoftMaiImage2p7EditRequestSchema,
   FalMicrosoftMaiImage2p7TextToImageRequestSchema,
+  FalMicrosoftMaiImage2p7FlashEditRequestSchema,
   FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
@@ -3844,6 +3847,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/microsoft/mai-image-2.7/flash/edit
+  // Docs: https://fal.ai/models/microsoft/mai-image-2.7/flash/edit/api
+  const microsoftMaiImage2p7FlashEdit = jsonBody<
+    FalMicrosoftMaiImage2p7FlashEditRequest,
+    FalMicrosoftMaiImage2p7FlashEditResponse
+  >(
+    "POST",
+    "/microsoft/mai-image-2.7/flash/edit",
+    FalMicrosoftMaiImage2p7FlashEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
   // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
   const nvidiaCosmos3SuperImageToVideo = jsonBody<
@@ -5045,6 +5061,12 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/microsoft/mai-image-2.7/text-to-image
         // Docs: https://fal.ai/models/microsoft/mai-image-2.7/text-to-image/api
         textToImage: microsoftMaiImage2p7TextToImage,
+        flash: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/microsoft/mai-image-2.7/flash/edit
+          // Docs: https://fal.ai/models/microsoft/mai-image-2.7/flash/edit/api
+          edit: microsoftMaiImage2p7FlashEdit,
+        },
       },
     },
     openai: {

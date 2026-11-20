@@ -111,7 +111,13 @@
       "modelId": "kling-4-0/image"
     }
   ],
-  "MAI-Image-2.7-Flash": [],
+  "MAI-Image-2.7-Flash": [
+    {
+      "provider": "fal",
+      "dotPath": "microsoft.maiImage2p7.flash.edit",
+      "pricingKey": "microsoft/mai-image-2.7/flash/edit"
+    }
+  ],
   "Seedream 5.5": [
     {
       "provider": "kie",

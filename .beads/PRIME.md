@@ -37,7 +37,8 @@ work is done:
 3. Close completed beads with a specific reason.
 4. Check `git status --short`.
 5. Commit the intended code, fixture, docs, lockfile, and bead changes.
-6. Push bead data when bead state changed: `bd dolt push`.
+6. Leave bead data to the city's beads-maintenance loop, which owns remote
+   beads sync: never run `bd dolt push` by hand.
 7. Run `git pull --rebase`, then `git push`.
 8. Verify `git status --branch --short` shows the branch up to date with
    origin.
@@ -54,7 +55,6 @@ bd show <id> --json
 bd update <id> --claim --json
 bd close <id> --reason="Completed" --json
 bd memories --json
-bd dolt push
 ```
 
 ```bash

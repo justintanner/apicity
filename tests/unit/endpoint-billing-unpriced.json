@@ -22,8 +22,8 @@
   "telegram POST transferBusinessAccountStars": "Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up",
   "telegram POST transferGift": "Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up",
   "telegram POST upgradeGift": "Spends Telegram Stars from the bot's balance; Stars have no USD list rate in any table; ruling ac-stu9mv, no follow-up",
-  "x GET v2.media.upload": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f",
-  "x POST v2.media.upload.append": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f",
-  "x POST v2.media.upload.finalize": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f",
-  "x POST v2.media.upload.initialize": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f"
+  "x GET v2.media.upload": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; ruling ac-s54otf, no follow-up",
+  "x POST v2.media.upload.append": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; ruling ac-s54otf, no follow-up",
+  "x POST v2.media.upload.finalize": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; ruling ac-s54otf, no follow-up",
+  "x POST v2.media.upload.initialize": "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; ruling ac-s54otf, no follow-up"
 }

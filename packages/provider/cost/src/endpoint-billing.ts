@@ -3346,7 +3346,7 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
         "Multipart upload is documented, but no upstream upload price is stated. A balance observation is not a free-rate guarantee; ruling ac-2h3t3v, no follow-up",
       source: {
         url: "https://www.machgen.ai/docs/rest_api/models/h3#upscale-your-own-video-to-2k",
-        asOf: "2026-11-07",
+        asOf: "2026-11-21",
       },
     },
     ["POST api.v0.upload"]
@@ -5497,10 +5497,10 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "unpriced",
       unit: "requests",
       reason:
-        "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; follow-up ac-h2808f",
+        "Console rate needed: no public media-upload class is published; Media Metadata is a different endpoint; ruling ac-s54otf, no follow-up",
       source: {
         url: "https://docs.x.com/x-api/getting-started/pricing.md",
-        asOf: "2026-11-04",
+        asOf: "2026-11-21",
       },
     },
     [

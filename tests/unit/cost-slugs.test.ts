@@ -82,6 +82,18 @@ describe("MODEL_SLUGS", () => {
     expect(MODEL_DISPLAY.openai["gpt-image-2.5-flare"]).toBe(
       "GPT Image 2.5 Flare"
     );
+    expect(MODEL_SLUGS.openai["gpt-image-2.6-sunburst"]).toBe(
+      MODEL_SLUGS.kie["gpt-image-2-6/sunburst-text-to-image"]
+    );
+    expect(MODEL_SLUGS.openai["gpt-image-2.6-flare"]).toBe(
+      MODEL_SLUGS.kie["gpt-image-2-6/flare-text-to-image"]
+    );
+    expect(MODEL_DISPLAY.openai["gpt-image-2.6-sunburst"]).toBe(
+      "GPT Image 2.6 Sunburst"
+    );
+    expect(MODEL_DISPLAY.openai["gpt-image-2.6-flare"]).toBe(
+      "GPT Image 2.6 Flare"
+    );
   });
 
   it("registers a slug for every fal pricing entry", () => {

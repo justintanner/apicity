@@ -212,6 +212,43 @@ describe("OpenAI Zod schemas", () => {
       });
       expect(result.success).toBe(false);
     });
+
+    it("accepts GPT Image 2.6 complexity, gif/svg formats, and safety_identifier", () => {
+      for (const complexity of ["low", "medium", "high"] as const) {
+        expect(
+          OpenAiImageGenerationRequestSchema.safeParse({
+            model: "gpt-image-2.6-sunburst",
+            prompt: "A paper scene",
+            complexity,
+          }).success
+        ).toBe(true);
+      }
+      expect(
+        OpenAiImageGenerationRequestSchema.safeParse({
+          model: "gpt-image-2.6-flare",
+          prompt: "An icon",
+          output_format: "svg",
+          n: 1,
+          safety_identifier: "user_hash_1",
+        }).success
+      ).toBe(true);
+      expect(
+        OpenAiImageGenerationRequestSchema.safeParse({
+          model: "gpt-image-2.6-sunburst",
+          prompt: "A glowing lantern",
+          output_format: "gif",
+          frame_count: 9,
+          frame_duration_ms: 200,
+        }).success
+      ).toBe(true);
+      expect(
+        OpenAiImageGenerationRequestSchema.safeParse({
+          model: "gpt-image-2.6-flare",
+          prompt: "x",
+          complexity: "ultra",
+        }).success
+      ).toBe(false);
+    });
   });
 
   // gpt-image-2 and the 2.5 models take custom WIDTHxHEIGHT sizes, and the
@@ -263,6 +300,28 @@ describe("OpenAI Zod schemas", () => {
       );
       expect(json).toContain("xhigh");
       expect(json).toContain("WIDTHxHEIGHT");
+    });
+
+    it("accepts GPT Image 2.6 complexity, markup, gif frames, and rejects svg", () => {
+      expect(
+        edit({
+          model: "gpt-image-2.6-flare",
+          quality: "max",
+          complexity: "medium",
+          markup: new Blob(["overlay"]),
+          output_format: "gif",
+          frame_count: 4,
+          frame_duration_ms: 200,
+          moderation: "low",
+          safety_identifier: "user_hash_1",
+        }).success
+      ).toBe(true);
+      expect(
+        edit({ model: "gpt-image-2.6-flare", output_format: "svg" }).success
+      ).toBe(false);
+      expect(
+        edit({ model: "gpt-image-2.6-sunburst", complexity: "ultra" }).success
+      ).toBe(false);
     });
   });
 

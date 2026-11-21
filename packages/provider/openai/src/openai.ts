@@ -494,20 +494,31 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
           }
           form.append("prompt", req.prompt);
           if (req.mask !== undefined) form.append("mask", req.mask);
+          if (req.markup !== undefined) form.append("markup", req.markup);
           if (req.model !== undefined) form.append("model", req.model);
           if (req.n !== undefined) form.append("n", String(req.n));
           if (req.size !== undefined) form.append("size", req.size);
           if (req.quality !== undefined) form.append("quality", req.quality);
+          if (req.complexity !== undefined)
+            form.append("complexity", req.complexity);
           if (req.output_format !== undefined)
             form.append("output_format", req.output_format);
+          if (req.frame_count !== undefined)
+            form.append("frame_count", String(req.frame_count));
+          if (req.frame_duration_ms !== undefined)
+            form.append("frame_duration_ms", String(req.frame_duration_ms));
           if (req.response_format !== undefined)
             form.append("response_format", req.response_format);
           if (req.background !== undefined)
             form.append("background", req.background);
+          if (req.moderation !== undefined)
+            form.append("moderation", req.moderation);
           if (req.input_fidelity !== undefined)
             form.append("input_fidelity", req.input_fidelity);
           if (req.output_compression !== undefined)
             form.append("output_compression", String(req.output_compression));
+          if (req.safety_identifier !== undefined)
+            form.append("safety_identifier", req.safety_identifier);
           if (req.user !== undefined) form.append("user", req.user);
 
           return makeRequest<OpenAiImageEditResponse>(

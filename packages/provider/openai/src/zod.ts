@@ -116,34 +116,45 @@ export const OpenAiEmbeddingRequestSchema = z.object({
 
 const blobSchema = z.instanceof(Blob);
 
-// gpt-image-2 and the 2.5 models also take custom WIDTHxHEIGHT sizes, and the
-// 2.5 models add the xhigh and max qualities
+// gpt-image-2 and the 2.5 / 2.6 models take custom WIDTHxHEIGHT sizes, and the
+// 2.5 / 2.6 models add xhigh and max qualities; 2.6 also adds complexity,
+// markup-guided edits, and gif/svg output
 // (https://developers.openai.com/api/docs/guides/image-generation, read
-// 2026-10-31). OpenAI applies the per-model rules.
+// 2026-11-21). OpenAI applies the per-model rules.
 const OpenAiImageEditSizeSchema = z
   .enum(["256x256", "512x512", "1024x1024", "1536x1024", "1024x1536", "auto"])
   .or(z.string().regex(/^[1-9]\d*x[1-9]\d*$/))
   .describe(
-    "A listed size, or WIDTHxHEIGHT for gpt-image-2 and the 2.5 models: both edges multiples of 16, at most 3840 px and 3:1, 655,360 to 8,294,400 pixels."
+    "A listed size, or WIDTHxHEIGHT for gpt-image-2 and the 2.5/2.6 models: both edges multiples of 16, at most 3840 px and 3:1, 655,360 to 8,294,400 pixels."
   );
 
 const OpenAiImageEditQualitySchema = z
   .enum(["standard", "low", "medium", "high", "xhigh", "max", "auto"])
-  .describe("xhigh and max: gpt-image-2.5-sunburst and gpt-image-2.5-flare.");
+  .describe(
+    "xhigh and max: gpt-image-2.5-sunburst, gpt-image-2.5-flare, gpt-image-2.6-sunburst and gpt-image-2.6-flare."
+  );
+
+export const OpenAiImageComplexitySchema = z.enum(["low", "medium", "high"]);
 
 export const OpenAiImageEditRequestSchema = z.object({
   image: z.union([blobSchema, z.array(blobSchema)]),
   prompt: z.string().min(1),
   mask: blobSchema.optional(),
+  markup: blobSchema.optional(),
   model: z.string().optional(),
   n: z.number().int().min(1).max(10).optional(),
   size: OpenAiImageEditSizeSchema.optional(),
   quality: OpenAiImageEditQualitySchema.optional(),
-  output_format: z.enum(["png", "jpeg", "webp"]).optional(),
+  complexity: OpenAiImageComplexitySchema.optional(),
+  output_format: z.enum(["png", "jpeg", "webp", "gif"]).optional(),
+  frame_count: z.number().int().min(2).max(16).optional(),
+  frame_duration_ms: z.number().int().min(20).max(2000).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
   background: z.enum(["transparent", "opaque", "auto"]).optional(),
+  moderation: z.enum(["low", "auto"]).optional(),
   input_fidelity: z.enum(["high", "low"]).optional(),
   output_compression: z.number().min(0).max(100).optional(),
+  safety_identifier: z.string().max(128).optional(),
   user: z.string().optional(),
 });
 
@@ -153,12 +164,16 @@ export const OpenAiImageGenerationRequestSchema = z.object({
   n: z.number().int().min(1).max(10).optional(),
   size: z.string().optional(),
   quality: z.string().optional(),
+  complexity: OpenAiImageComplexitySchema.optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
   style: z.enum(["vivid", "natural"]).optional(),
   background: z.enum(["transparent", "opaque", "auto"]).optional(),
   moderation: z.enum(["low", "auto"]).optional(),
-  output_format: z.enum(["png", "jpeg", "webp"]).optional(),
+  output_format: z.enum(["png", "jpeg", "webp", "gif", "svg"]).optional(),
+  frame_count: z.number().int().min(2).max(16).optional(),
+  frame_duration_ms: z.number().int().min(20).max(2000).optional(),
   output_compression: z.number().min(0).max(100).optional(),
+  safety_identifier: z.string().max(128).optional(),
   user: z.string().optional(),
 });
 export const OpenAiImageVariationRequestSchema = z.object({
@@ -1234,6 +1249,7 @@ export type OpenAiEmbeddingRequestInput = OpenAiEmbeddingRequest;
 export type OpenAiEmbeddingParsedRequest = z.output<
   typeof OpenAiEmbeddingRequestSchema
 >;
+export type OpenAiImageComplexity = z.infer<typeof OpenAiImageComplexitySchema>;
 export type OpenAiImageEditRequest = z.input<
   typeof OpenAiImageEditRequestSchema
 >;

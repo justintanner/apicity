@@ -67,6 +67,7 @@ export type {
   OpenAiEmbeddingData,
   OpenAiEmbeddingUsage,
   OpenAiEmbeddingResponse,
+  OpenAiImageComplexity,
   OpenAiImageEditRequest,
   OpenAiImageEditRequestInput,
   OpenAiImageEditParsedRequest,

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `v1.images.generations` and `v1.images.edits` support GPT Image 2.6 (`gpt-image-2.6-sunburst` and `gpt-image-2.6-flare`): exported `OpenAiImageComplexitySchema` / `OpenAiImageComplexity` (`"low" | "medium" | "high"`, default `"high"` upstream), optional `frame_count`, `frame_duration_ms`, `safety_identifier`, `"gif"` output format (`"svg"` on `generations` too), and `markup` / `moderation` forwarding on `v1.images.edits`, plus extended image usage/response metadata fields and a recorded `gpt-image-2.6-flare` generation (824 output tokens, ~$0.0248 USD) alongside a free unknown-model 404 read (ac-xbnboo).
+
 ### Fixed
 
 - `v1.images.edits` accepts `quality` `xhigh` and `max`, which

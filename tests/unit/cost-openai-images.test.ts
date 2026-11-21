@@ -19,6 +19,14 @@ const estimate = (payload: Record<string, unknown>) =>
 const PATCHES: Record<string, Record<string, number>> = {
   "gpt-image-2": { low: 16, medium: 48, high: 96 },
   "gpt-image-2.5": { low: 16, medium: 24, high: 48, xhigh: 64, max: 96 },
+  "gpt-image-2.6": { low: 16, medium: 24, high: 48, xhigh: 64, max: 96 },
+};
+const MULTIPLIERS_26: Record<string, number> = {
+  low: 4.2,
+  medium: 3.3,
+  high: 1,
+  xhigh: 1,
+  max: 1,
 };
 function calculatorTokens(
   family: string,
@@ -36,7 +44,10 @@ function calculatorTokens(
   const grid =
     (width >= height ? patches : rounded) *
     (width >= height ? rounded : patches);
-  return Math.ceil((grid * (2e6 + width * height)) / 4e6);
+  const base = Math.ceil((grid * (2e6 + width * height)) / 4e6);
+  return family === "gpt-image-2.6"
+    ? Math.round(base * MULTIPLIERS_26[quality]!)
+    : base;
 }
 
 describe("openai GPT Image 2 and 2.5", () => {
@@ -71,8 +82,9 @@ describe("openai GPT Image 2 and 2.5", () => {
   // `medium`, and billed the calculator's output tokens.
   it("matches the output tokens of every recorded gpt-image-2 call", () => {
     const dir = resolve(__dirname, "../recordings/openai_3991279299");
-    const recordings = readdirSync(dir).filter((name) =>
-      name.startsWith("gpt-image-2-")
+    const recordings = readdirSync(dir).filter(
+      (name) =>
+        name.startsWith("gpt-image-2-") && !name.startsWith("gpt-image-2-6")
     );
     expect(recordings.length).toBeGreaterThanOrEqual(3);
     for (const name of recordings) {
@@ -101,6 +113,8 @@ describe("openai GPT Image 2 and 2.5", () => {
       "gpt-image-2": "gpt-image-2",
       "gpt-image-2.5-sunburst": "gpt-image-2.5",
       "gpt-image-2.5-flare": "gpt-image-2.5",
+      "gpt-image-2.6-sunburst": "gpt-image-2.6",
+      "gpt-image-2.6-flare": "gpt-image-2.6",
     };
     let checked = 0;
     for (const [model, family] of Object.entries(models)) {
@@ -188,12 +202,54 @@ describe("openai GPT Image 2 and 2.5", () => {
     ]);
   });
 
-  it("names the 2.5 qualities when it fails closed", () => {
-    expect(
-      estimate({ model: "gpt-image-2.5-sunburst", prompt: "x" }).warnings
-    ).toEqual([
-      "openai 'gpt-image-2.5-sunburst': needs an explicit quality (low, medium, high, xhigh, max) and a WIDTHxHEIGHT size within the GPT Image size rules; auto depends on the generated image",
-    ]);
+  it("names the 2.5 and 2.6 qualities when closing and prices 2.6 multipliers", () => {
+    for (const model of [
+      "gpt-image-2.5-sunburst",
+      "gpt-image-2.6-sunburst",
+      "gpt-image-2.6-flare",
+    ]) {
+      expect(estimate({ model, prompt: "x" }).warnings).toEqual([
+        `openai '${model}': needs an explicit quality (low, medium, high, xhigh, max) and a WIDTHxHEIGHT size within the GPT Image size rules; auto depends on the generated image`,
+      ]);
+    }
+
+    // 1024x1024 low (196 * 4.2 = 823) and medium (440 * 3.3 = 1452) apply
+    // 2.6's output-token multipliers; complexity adds nothing.
+    const low = estimate({
+      model: "gpt-image-2.6-flare",
+      prompt: "x",
+      quality: "low",
+      complexity: "low",
+      size: "1024x1024",
+    });
+    expect(low.breakdown.units).toBe(823);
+    expect(low.usd).toBeCloseTo(823 * 0.00003, 10);
+    expect(low.warnings).toEqual([floor("gpt-image-2.6-flare")]);
+
+    const medium = estimate({
+      model: "gpt-image-2.6-sunburst",
+      prompt: "x",
+      quality: "medium",
+      complexity: "high",
+      size: "1024x1024",
+      n: 2,
+    });
+    expect(medium.breakdown.units).toBe(2 * 1449);
+    expect(medium.usd).toBeCloseTo(2 * 1449 * 0.00003, 10);
+
+    for (const output_format of ["gif", "svg"]) {
+      const special = estimate({
+        model: "gpt-image-2.6-sunburst",
+        prompt: "x",
+        quality: "low",
+        size: "1024x1024",
+        output_format,
+      });
+      expect(special.usd).toBe(0);
+      expect(special.warnings).toEqual([
+        `openai 'gpt-image-2.6-sunburst': output_format "${output_format}" cannot be derived from image size and quality alone`,
+      ]);
+    }
   });
 });
 

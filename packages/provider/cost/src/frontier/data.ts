@@ -104,6 +104,11 @@ export const FRONTIER = {
             modelId: "GPT-Image-2.6-Sunburst",
           },
           {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-2.6-sunburst",
+          },
+          {
             provider: "wavespeed",
             dotPath: "api.v3.openai.gptImage2p6Sunburst.textToImage",
             pricingKey: "openai/gpt-image-2.6-sunburst/text-to-image",
@@ -168,6 +173,11 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.6-Flare",
+          },
+          {
+            provider: "openai",
+            dotPath: "v1.images.generations",
+            modelId: "gpt-image-2.6-flare",
           },
           {
             provider: "wavespeed",
@@ -400,6 +410,11 @@ export const FRONTIER = {
             modelId: "GPT-Image-2.6-Sunburst",
           },
           {
+            provider: "openai",
+            dotPath: "v1.images.edits",
+            modelId: "gpt-image-2.6-sunburst",
+          },
+          {
             provider: "wavespeed",
             dotPath: "api.v3.openai.gptImage2p6Sunburst.edit",
             pricingKey: "openai/gpt-image-2.6-sunburst/edit",
@@ -431,6 +446,11 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "GPT-Image-2.6-Flare",
+          },
+          {
+            provider: "openai",
+            dotPath: "v1.images.edits",
+            modelId: "gpt-image-2.6-flare",
           },
           {
             provider: "wavespeed",

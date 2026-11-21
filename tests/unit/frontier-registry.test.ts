@@ -294,16 +294,21 @@ const FREE_STRING_IMAGE_MODELS: ReadonlyArray<{
     modelId: "gemini-3.1-flash-image",
   },
   // Each https://developers.openai.com/api/docs/models/<id> page (read
-  // 2026-10-31) marks v1/images/generations and v1/images/edits supported.
+  // 2026-10-31 and 2026-11-21) marks v1/images/generations and
+  // v1/images/edits supported.
   ...(
     [
       ["t2i", "v1.images.generations"],
       ["i2i", "v1.images.edits"],
     ] as const
   ).flatMap(([type, dotPath]) =>
-    ["gpt-image-2.5-sunburst", "gpt-image-2.5-flare", "gpt-image-2"].map(
-      (modelId) => ({ type, provider: "openai", dotPath, modelId })
-    )
+    [
+      "gpt-image-2.6-sunburst",
+      "gpt-image-2.6-flare",
+      "gpt-image-2.5-sunburst",
+      "gpt-image-2.5-flare",
+      "gpt-image-2",
+    ].map((modelId) => ({ type, provider: "openai", dotPath, modelId }))
   ),
   {
     type: "t2i",
@@ -1286,7 +1291,6 @@ describe("frontier image snapshots", () => {
   });
 
   // PRICING.openai prices each GPT Image id, so the rows carry no pricingKey.
-  // GPT Image 2.6 is not yet in apicity, so its rows have no OpenAI call.
   it("lists OpenAI's images calls on every mapped GPT Image row", () => {
     const openaiRows = (
       map: Record<string, ReadonlyArray<{ provider: string }>>
@@ -1304,6 +1308,14 @@ describe("frontier image snapshots", () => {
       modelId,
     });
     expect(openaiRows(t2i.endpointMap)).toEqual({
+      "GPT Image 2.6 Sunburst (max)": row(
+        "v1.images.generations",
+        "gpt-image-2.6-sunburst"
+      ),
+      "GPT Image 2.6 Flare (max)": row(
+        "v1.images.generations",
+        "gpt-image-2.6-flare"
+      ),
       "GPT Image 2.5 Sunburst (max)": row(
         "v1.images.generations",
         "gpt-image-2.5-sunburst"
@@ -1315,6 +1327,14 @@ describe("frontier image snapshots", () => {
       "GPT Image 2 (high)": row("v1.images.generations", "gpt-image-2"),
     });
     expect(openaiRows(i2i.endpointMap)).toEqual({
+      "GPT Image 2.6 Sunburst (max)": row(
+        "v1.images.edits",
+        "gpt-image-2.6-sunburst"
+      ),
+      "GPT Image 2.6 Flare (max)": row(
+        "v1.images.edits",
+        "gpt-image-2.6-flare"
+      ),
       "GPT Image 2.5 Sunburst (max)": row(
         "v1.images.edits",
         "gpt-image-2.5-sunburst"

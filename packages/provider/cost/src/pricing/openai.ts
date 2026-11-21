@@ -35,12 +35,17 @@ function gptImageSize(
   return gptImageDimensions(width, height);
 }
 
-// gpt-image-2 and the 2.5 models bill 30 USD per 1M image output tokens.
+// gpt-image-2 and the 2.5 / 2.6 models bill 30 USD per 1M image output
+// tokens.
 const gptImageTokens = (
   model: string,
-  patchesByQuality: Record<string, number>
+  patchesByQuality: Record<string, number>,
+  multipliersByQuality?: Record<string, number>,
+  asOf = "2026-10-31"
 ): ModelPricing => {
   const outputTokens = (p: Record<string, unknown>): number | undefined => {
+    const format = asString(p.output_format);
+    if (format === "gif" || format === "svg") return undefined;
     const quality = asString(p.quality);
     const patches =
       quality !== undefined && Object.hasOwn(patchesByQuality, quality)
@@ -48,9 +53,16 @@ const gptImageTokens = (
         : undefined;
     const size = gptImageSize(p);
     if (patches === undefined || size === undefined) return undefined;
-    return (
-      imageCount(p) * gptImageOutputTokens(patches, size.width, size.height)
-    );
+    const baseTokens = gptImageOutputTokens(patches, size.width, size.height);
+    const multiplier =
+      multipliersByQuality !== undefined &&
+      quality !== undefined &&
+      Object.hasOwn(multipliersByQuality, quality)
+        ? multipliersByQuality[quality]!
+        : 1;
+    const tokens =
+      multiplier === 1 ? baseTokens : Math.round(baseTokens * multiplier);
+    return imageCount(p) * tokens;
   };
   const qualities = Object.keys(patchesByQuality).join(", ");
   return {
@@ -59,15 +71,22 @@ const gptImageTokens = (
     units: outputTokens,
     select: [],
     rates: { "": 0.00003 },
-    warn: (p) =>
-      outputTokens(p) === undefined
+    warn: (p) => {
+      const format = asString(p.output_format);
+      if (format === "gif" || format === "svg") {
+        return [
+          `openai '${model}': output_format "${format}" cannot be derived from image size and quality alone`,
+        ];
+      }
+      return outputTokens(p) === undefined
         ? [
             `openai '${model}': needs an explicit quality (${qualities}) and a WIDTHxHEIGHT size within the GPT Image size rules; auto depends on the generated image`,
           ]
-        : [gptImageFloor(model)],
+        : [gptImageFloor(model)];
+    },
     source: {
       url: "https://developers.openai.com/api/docs/guides/image-generation",
-      asOf: "2026-10-31",
+      asOf,
     },
   };
 };
@@ -78,6 +97,17 @@ const gptImage2p5Patches = {
   high: 48,
   xhigh: 64,
   max: 96,
+};
+
+// GPT Image 2.6 keeps the 2.5 patch grid and scales low (x4.2) and medium
+// (x3.3) output tokens rounded to nearest integer (developers.openai.com
+// GptImageTokenCalculator.react.*.js, read 2026-11-21). complexity adds nothing.
+const gptImage2p6Multipliers = {
+  low: 4.2,
+  medium: 3.3,
+  high: 1,
+  xhigh: 1,
+  max: 1,
 };
 
 // gpt-image-1.5's model page lists a price per image for each quality and its
@@ -679,7 +709,7 @@ export const openai: Record<string, ModelPricing> = {
   "tts-1": perCharacter(15),
   "tts-1-hd": perCharacter(30),
 
-  // GPT Image — USD per image (1.5) or per image output token (2 and 2.5).
+  // GPT Image — USD per image (1.5) or per image output token (2, 2.5 and 2.6).
   "gpt-image-1.5": gptImage1p5,
   "gpt-image-2": gptImageTokens("gpt-image-2", {
     low: 16,
@@ -693,5 +723,17 @@ export const openai: Record<string, ModelPricing> = {
   "gpt-image-2.5-flare": gptImageTokens(
     "gpt-image-2.5-flare",
     gptImage2p5Patches
+  ),
+  "gpt-image-2.6-sunburst": gptImageTokens(
+    "gpt-image-2.6-sunburst",
+    gptImage2p5Patches,
+    gptImage2p6Multipliers,
+    "2026-11-21"
+  ),
+  "gpt-image-2.6-flare": gptImageTokens(
+    "gpt-image-2.6-flare",
+    gptImage2p5Patches,
+    gptImage2p6Multipliers,
+    "2026-11-21"
   ),
 };

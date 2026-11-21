@@ -626,6 +626,31 @@ const FIREWORKS_AUDIO_BATCH_STATE = [
  */
 export const ENDPOINT_NOTES = new Map([
   [
+    "openai\tv1.images.generations\tPOST",
+    [
+      "Serves `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`,",
+      "`gpt-image-2.5-sunburst`, `gpt-image-2.5-flare`, `gpt-image-2` and",
+      "`gpt-image-1.5`. The 2.6 models accept `complexity` (`low`, `medium` or",
+      "`high`, default `high`, no extra fee) and `output_format` `gif` or",
+      "`svg` (`svg` requires `n: 1`). `@apicity/cost` prices 2.6 raster",
+      "images from the guide's calculator at $30/1M image output tokens",
+      "(applying the `4.2` low and `3.3` medium multipliers) with a floor",
+      "warning for unbilled input tokens; `auto`, `gif` and `svg` fail",
+      "closed.",
+    ].join(" "),
+  ],
+  [
+    "openai\tv1.images.edits\tPOST",
+    [
+      "Serves `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`,",
+      "`gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` and `gpt-image-2`.",
+      "Accepts `complexity` (`low`, `medium` or `high`), a visual `markup`",
+      'overlay alongside `image`, `WIDTHxHEIGHT` custom sizes and `"gif"`',
+      "output (edits do not support `svg`). `@apicity/cost` prices 2.6",
+      "raster outputs at $30/1M image output tokens as a floor.",
+    ].join(" "),
+  ],
+  [
     "nunchux\tv2.openai.images.generations\tPOST",
     [
       "> **Board setting:** Artificial Analysis ranks GPT Image 2.6 Sunburst",

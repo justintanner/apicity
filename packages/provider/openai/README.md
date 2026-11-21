@@ -593,6 +593,8 @@ Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
+Serves `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` and `gpt-image-2`. Accepts `complexity` (`low`, `medium` or `high`), a visual `markup` overlay alongside `image`, `WIDTHxHEIGHT` custom sizes and `"gif"` output (edits do not support `svg`). `@apicity/cost` prices 2.6 raster outputs at $30/1M image output tokens as a floor.
+
 ```typescript
 const res = await openai.post.v1.images.edits({ /* ... */ });
 ```
@@ -609,6 +611,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
+
+Serves `gpt-image-2.6-sunburst`, `gpt-image-2.6-flare`, `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare`, `gpt-image-2` and `gpt-image-1.5`. The 2.6 models accept `complexity` (`low`, `medium` or `high`, default `high`, no extra fee) and `output_format` `gif` or `svg` (`svg` requires `n: 1`). `@apicity/cost` prices 2.6 raster images from the guide's calculator at $30/1M image output tokens (applying the `4.2` low and `3.3` medium multipliers) with a floor warning for unbilled input tokens; `auto`, `gif` and `svg` fail closed.
 
 ```typescript
 const res = await openai.post.v1.images.generations({ /* ... */ });

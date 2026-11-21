@@ -39,6 +39,7 @@ export type {
   OpenAiEmbeddingRequest,
   OpenAiEmbeddingRequestInput,
   OpenAiEmbeddingParsedRequest,
+  OpenAiImageComplexity,
   OpenAiImageEditRequest,
   OpenAiImageEditRequestInput,
   OpenAiImageEditParsedRequest,
@@ -364,8 +365,8 @@ export interface OpenAiImageEditResponse {
   created: number;
   data?: OpenAiImageData[];
   background?: "transparent" | "opaque" | null;
-  output_format?: "png" | "webp" | "jpeg" | null;
-  quality?: "low" | "medium" | "high" | null;
+  output_format?: "png" | "webp" | "jpeg" | "gif" | null;
+  quality?: "low" | "medium" | "high" | "xhigh" | "max" | null;
   size?: string | null;
   usage?: OpenAiImageEditUsage | null;
 }
@@ -384,12 +385,21 @@ export interface OpenAiImageGenerationUsage {
     text_tokens: number;
   };
   output_tokens: number;
+  output_tokens_details?: {
+    image_tokens: number;
+    text_tokens: number;
+  };
   total_tokens: number;
 }
 
 export interface OpenAiImageGenerationResponse {
   created: number;
   data: OpenAiGeneratedImage[];
+  background?: "transparent" | "opaque" | null;
+  output_format?: "png" | "webp" | "jpeg" | "gif" | "svg" | null;
+  quality?: "low" | "medium" | "high" | "xhigh" | "max" | null;
+  size?: string | null;
+  safety_identifier?: string | null;
   usage?: OpenAiImageGenerationUsage;
 }
 

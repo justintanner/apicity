@@ -491,6 +491,44 @@ const kling40ReferenceWarning =
     return [];
   };
 
+const KLING_40_HDR_RATES: Record<string, number> = {
+  "1080p": 0.0425,
+  "4k": 0.07,
+};
+
+const kling40HdrWarning = (
+  key: string,
+  p: Record<string, unknown>
+): string[] => {
+  const rawRange = asObject(p.input)?.dynamic_range;
+  if (rawRange === undefined || rawRange === "sdr") return [];
+  if (rawRange !== "hdr") {
+    return [
+      `kie '${key}': unsupported dynamic_range '${String(rawRange)}'; pass "sdr" or "hdr"`,
+    ];
+  }
+  const resolution = inputResolution(p) ?? "720p";
+  if (!(resolution in KLING_40_HDR_RATES)) {
+    return [
+      `kie '${key}': dynamic_range "hdr" is only supported at 1080p and 4k, not ${resolution}`,
+    ];
+  }
+  return [];
+};
+
+// HDR adds 8.5 credits/s ($0.0425/s) at 1080p or 14 credits/s ($0.07/s) at 4k on
+// output seconds only (reference video input duration is not charged for HDR).
+// 720p with HDR is rejected by upstream, so fail closed.
+const kling40HdrExtra = (p: Record<string, unknown>): number | undefined => {
+  const rawRange = asObject(p.input)?.dynamic_range;
+  if (rawRange === undefined || rawRange === "sdr") return 0;
+  if (rawRange !== "hdr") return undefined;
+  const output = kling40Seconds(p);
+  if (output === undefined) return undefined;
+  const rate = KLING_40_HDR_RATES[inputResolution(p) ?? "720p"];
+  return rate === undefined ? undefined : output * rate;
+};
+
 // Both Wan 3.0 entries: resolution-tiered per second on the (input + output)
 // rule. Mirrors tieredVideoPage's `resolution` picker and `1080P` default byte
 // for byte; only the units resolver and the warn hook differ. Spreading
@@ -1737,13 +1775,15 @@ export const kie: Record<string, ModelPricing> = {
   },
 
   // Kling 4.0: both tasks bill the output seconds (3-30, default 5) at 720p
-  // 28.5 credits ($0.1425) and 1080p 42.5 credits ($0.2125), resolution
-  // default 720p. Reference-to-video with video input switches to 17 credits
-  // ($0.085) and 25.5 credits ($0.1275) on output + max(output, input)
-  // seconds (kling40ReferenceSeconds). The live feed rows, the kie.ai/kling-4-0
-  // page and the docs callback examples (keyframe 10 s 720p = 285 credits,
-  // reference 10 s 1080p without video = 425 credits) agree; read 2026-10-25,
-  // tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json.
+  // 28.5 credits ($0.1425), 1080p 42.5 credits ($0.2125), and 4k 99 credits
+  // ($0.495), resolution default 720p. Reference-to-video with video input
+  // switches to 17 credits ($0.085), 25.5 credits ($0.1275), and 59 credits
+  // ($0.295) on output + max(output, input) seconds (kling40ReferenceSeconds).
+  // Setting dynamic_range to "hdr" (1080p and 4k only; 720p fails closed)
+  // adds +8.5 credits/s ($0.0425) at 1080p or +14 credits/s ($0.07) at 4k on
+  // output seconds only (kling40HdrExtra). Live feed rows, kie.ai/kling-4-0,
+  // and GET /api/v1/models/{id}/price agree; read 2026-10-25 and 2026-11-21
+  // (tests/fixtures/kie-pricing-evidence/kling-4-0-2026-11-21.json).
   "kling-4.0/reference-to-video": {
     kind: "perUnit",
     unit: "seconds",
@@ -1760,11 +1800,17 @@ export const kie: Record<string, ModelPricing> = {
       "720p|video": 0.085,
       "1080p": 0.2125,
       "1080p|video": 0.1275,
+      "4k": 0.495,
+      "4k|video": 0.295,
     },
-    warn: kling40ReferenceWarning("kling-4.0/reference-to-video"),
+    extra: kling40HdrExtra,
+    warn: (p, hints) => [
+      ...kling40ReferenceWarning("kling-4.0/reference-to-video")(p, hints),
+      ...kling40HdrWarning("kling-4.0/reference-to-video", p),
+    ],
     source: pricePage(
       "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
-      "2026-10-25"
+      "2026-11-21"
     ),
   },
   "kling-4.0/keyframe-to-video": {
@@ -1772,10 +1818,12 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: kling40Seconds,
     select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
-    rates: { "720p": 0.1425, "1080p": 0.2125 },
+    rates: { "720p": 0.1425, "1080p": 0.2125, "4k": 0.495 },
+    extra: kling40HdrExtra,
+    warn: (p) => kling40HdrWarning("kling-4.0/keyframe-to-video", p),
     source: pricePage(
       "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
-      "2026-10-25"
+      "2026-11-21"
     ),
   },
 

@@ -1,0 +1,251 @@
+{
+  "capturedAt": "2026-11-21T05:19:13.444Z",
+  "bead": "ac-91jg63",
+  "source": "https://kie.ai/kling-4-0",
+  "models": [
+    "kling-4.0/reference-to-video",
+    "kling-4.0/keyframe-to-video",
+    "kling-4.0/flash-reference-to-video",
+    "kling-4.0/flash-keyframe-to-video"
+  ],
+  "basis": "KIE added 4K resolution (resolution: 4k), HDR dynamic_range (sdr | hdr at 1080p or 4k only, +8.5 cr = $0.0425/s at 1080p and +14 cr = $0.07/s at 4k on output seconds only; 720p with hdr rejected), and 4:3 / 3:4 aspect ratios to Kling 4.0 video models.",
+  "productPage": {
+    "url": "https://kie.ai/kling-4-0",
+    "sha256": "5ea7bc84c68aea4f86b32cf306aa265381d10dcb6ff7248f525554ecb34f3d93"
+  },
+  "docs": [
+    {
+      "url": "https://docs.kie.ai/market/kling/v4-reference-to-video.md",
+      "fetchedAt": "2026-11-21T05:19:14.833Z",
+      "sha256": "22d727ac24e6f73795811b1c9fd480c2bdc8a3366bf4c6fb9d544ae2296dcd02",
+      "resolutionExcerpt": "Resolution and HDR\n\n\n        `resolution` sets the frame size and `dynamic_range` sets SDR or HDR;\n        the two are set independently.\n\n\n        | `resolution` | `dynamic_range` | Output (16:9, MP4) |\n\n",
+      "dynamicRangeExcerpt": "`dynamic_range` sets SDR or HDR;\n        the two are set independently.\n\n\n        | `resolution` | `dynamic_range` | Output (16:9, MP4) |\n\n        |---|---|---|\n\n        | `720p` | `sdr` | 1280×720 |\n\n        | `1080p` | `sdr` | 1920×1080 |\n\n        | `4k` | `sdr` | 3840×2160, H.264 8-bit |\n\n        | `1080p` | `hdr` | 1920×1080, HEVC 10-bit, BT.2020, HLG |\n\n        | `4k` | `hdr` | 3840×2160, HEVC 10-bit, BT.2020, HLG |\n\n        | `720p` | `hdr` | Not supported, returns a parameter error |\n\n\n  ",
+      "aspectRatioExcerpt": "`aspect_ratio` is omitted, the ratio adapts to your materials if\n        any are provided, and falls back to `16:9` when none are. When `videos`\n        is provided, `keep_original_sound` controls whether the original audio\n        is kept; when `videos` is omitted, native audio is enabled by default.\n\n        :::\n\n\n        ## Resolution and HDR\n\n\n        `resolution` sets the frame size and `dynamic_range` sets SDR or HDR;\n        the two are se"
+    },
+    {
+      "url": "https://docs.kie.ai/market/kling/v4-keyframe-to-video.md",
+      "fetchedAt": "2026-11-21T05:19:19.846Z",
+      "sha256": "3fbe17afc5f39975b9c7813eb1db6f1e5f5340fbc8f1e3ffdcdd1609fdd7b1f4",
+      "resolutionExcerpt": "Resolution and HDR\n\n\n        `resolution` sets the frame size and `dynamic_range` sets SDR or HDR;\n        the two are set independently.\n\n\n        | `resolution` | `dynamic_range` | Output (16:9, MP4) |\n\n",
+      "dynamicRangeExcerpt": "`dynamic_range` sets SDR or HDR;\n        the two are set independently.\n\n\n        | `resolution` | `dynamic_range` | Output (16:9, MP4) |\n\n        |---|---|---|\n\n        | `720p` | `sdr` | 1280×720 |\n\n        | `1080p` | `sdr` | 1920×1080 |\n\n        | `4k` | `sdr` | 3840×2160, H.264 8-bit |\n\n        | `1080p` | `hdr` | 1920×1080, HEVC 10-bit, BT.2020, HLG |\n\n        | `4k` | `hdr` | 3840×2160, HEVC 10-bit, BT.2020, HLG |\n\n        | `720p` | `hdr` | Not supported, returns a parameter error |\n\n\n  ",
+      "aspectRatioExcerpt": "aspect_ratio:\n                      type: string\n                      enum:\n                        - auto\n                        - '16:9'\n                        - '9:16'\n                        - '1:1'\n                        - '21:9'\n                        - '4:3'\n                        - '3:4'\n                      description: >-\n                        Output aspect ratio. Only used when no frame is provided\n                        (tex"
+    },
+    {
+      "url": "https://docs.kie.ai/market/kling/v4-flash-reference-to-video.md",
+      "fetchedAt": "2026-11-21T05:19:28.291Z",
+      "sha256": "8d8a0822dcfa933c5f3ca71e905b78e5b03f487c036a7ed4d6e99ad1f65573ac",
+      "resolutionExcerpt": "resolution:\n                      type: string\n                      enum:\n                        - 720p\n                      default: 720p\n                      description: >-\n                        Output resolution. Kling 4.0 Flash only supports `720p`.\n                        Default: `720p`.\n                    aspect_ratio:\n",
+      "aspectRatioExcerpt": "`aspect_ratio` is omitted, the model uses `auto` if any reference\n        material is provided, and `16:9` when none are. When `video_urls` is\n        provided, `keep_original_sound` controls whether the original audio is\n        kept.\n\n        :::\n\n\n        ## Query Task Status\n\n\n        After submitting a task, you can check the task progress and retrieve\n        generation results via the unified query endpoint:\n\n\n        <Card title=\"Get Task"
+    },
+    {
+      "url": "https://docs.kie.ai/market/kling/v4-flash-keyframe-to-video.md",
+      "fetchedAt": "2026-11-21T05:19:42.293Z",
+      "sha256": "5020646bad1768300d31093ea6cfbd078ce314c08e65053a2de0b979da00fa22",
+      "resolutionExcerpt": "resolution:\n                      type: string\n                      enum:\n                        - 720p\n                      default: 720p\n                      description: >-\n                        Output resolution. Kling 4.0 Flash only supports `720p`.\n                        Default: `720p`.\n                    aspect_ratio:\n",
+      "aspectRatioExcerpt": "`aspect_ratio` is only used when no first frame is sent (default\n        `16:9`).\n\n\n        ## Query Task Status\n\n\n        After submitting a task, you can check the task progress and retrieve\n        generation results via the unified query endpoint:\n\n\n        <Card title=\"Get Task Details\" icon=\"lucide-search\"\n        href=\"/market/common/get-task-detail\">\n          Learn how to check the task status and obtain the generated results\n        </C"
+    }
+  ],
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "rowCount": 14,
+    "rows": [
+      {
+        "modelDescription": "kling 4.0 flash, keyframe-to-video, 720P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-keyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0 flash, reference-to-video, 720P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "11.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0565",
+        "falPrice": "0.063",
+        "discountRate": 10.32,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0 flash, reference-to-video, 720P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0-flash?model=kling-4.0%2Fflash-reference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, keyframe-to-video, 4K",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "99",
+        "creditUnit": "per second",
+        "usdPrice": "0.495",
+        "falPrice": "0.549",
+        "discountRate": 9.84,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 4K with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "59",
+        "creditUnit": "per second",
+        "usdPrice": "0.295",
+        "falPrice": "0.329",
+        "discountRate": 10.33,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 4K no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "99",
+        "creditUnit": "per second",
+        "usdPrice": "0.495",
+        "falPrice": "0.549",
+        "discountRate": 9.84,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, HDR add-on, 4K (output seconds only)",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "14",
+        "creditUnit": "per second",
+        "usdPrice": "0.07",
+        "falPrice": "0.078",
+        "discountRate": 10.26,
+        "anchor": "https://kie.ai/kling-4-0",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, HDR add-on, 1080P (output seconds only)",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "8.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0425",
+        "falPrice": "0.047",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, keyframe-to-video, 1080P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, keyframe-to-video, 720P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "28.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1425",
+        "falPrice": "0.157",
+        "discountRate": 9.24,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "25.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1275",
+        "falPrice": "0.141",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 720P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 720P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "28.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1425",
+        "falPrice": "0.157",
+        "discountRate": 9.24,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "priceApi": {
+    "kling-4.0/reference-to-video": {
+      "url": "https://api.kie.ai/api/v1/models/kling-4.0/reference-to-video/price",
+      "status": 200,
+      "sha256": "4fa8fa9bee5c173fc657deb78e5c0e748dcfd4534a8f1bb1e0d2ec239bc8d427",
+      "body": {
+        "code": 200,
+        "msg": "success",
+        "data": {
+          "model": "kling-4.0/reference-to-video",
+          "pricingDesc": "720P: 17 credits/s ($0.085/s, with video) | 28.5 credits/s ($0.1425/s, no video)\n1080P: 25.5 credits/s ($0.1275/s, with video) | 42.5 credits/s ($0.2125/s, no video)\n4K: 59 credits/s ($0.295/s, with video) | 99 credits/s ($0.495/s, no video)\nHDR (1080P / 4K only): +8.5 credits/s ($0.0425/s) at 1080P | +14 credits/s ($0.07/s) at 4K\n\n🔸Note🔸: Video input has a lower per-second rate because the input duration is billed as well.\n\n- No video input (text, images, image subjects or voices only): rate × output duration\n- With video input: rate × (output × 2) when total input duration ≤ output duration; rate × (input + output) when input is longer. Multiple input videos are summed. Example: 10 s output + 5 s input = 20 s; with a 15 s input, 25 s.\n- HDR: the HDR rate × output duration is added on top; input duration is not charged for HDR.\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+        }
+      }
+    },
+    "kling-4.0/keyframe-to-video": {
+      "url": "https://api.kie.ai/api/v1/models/kling-4.0/keyframe-to-video/price",
+      "status": 200,
+      "sha256": "87b219ae6fcf762b1c75e9f49f04d1debbcb755639bc89a75d67dcff75204678",
+      "body": {
+        "code": 200,
+        "msg": "success",
+        "data": {
+          "model": "kling-4.0/keyframe-to-video",
+          "pricingDesc": "720P: 28.5 credits/s ($0.1425), 1080P: 42.5 credits/s ($0.2125), 4K: 99 credits/s ($0.495) — billed on the output duration (3–30 s).\nHDR (1080P / 4K only): +8.5 credits/s ($0.0425) at 1080P, +14 credits/s ($0.07) at 4K.\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+        }
+      }
+    }
+  },
+  "recordings": []
+}

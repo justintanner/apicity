@@ -705,6 +705,7 @@ export type {
   KlingOmniMultiShotPrompt,
   KlingOmniElement,
   Kling40Resolution,
+  Kling40DynamicRange,
   Kling40Duration,
   Kling40AspectRatio,
   Kling40ElementTag,

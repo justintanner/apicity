@@ -493,6 +493,60 @@ describe("KIE feed drift", () => {
     }
   });
 
+  it("compares the Kling 4.0 4K rows and checks HDR add-on rows on both non-Flash models", async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), "kie-feed-drift-test-"));
+    try {
+      const evidence = JSON.parse(
+        await readFile(
+          "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-11-21.json",
+          "utf8"
+        )
+      ) as { feed: { rows: Array<Row["official"]> } };
+      const rows = evidence.feed.rows.filter(
+        (raw) => !/flash/i.test(String(raw.modelDescription ?? ""))
+      );
+      const file = path.join(dir, "kling40.json");
+      await writeFile(
+        file,
+        JSON.stringify({
+          records: rows.map((raw) => ({ raw })),
+        })
+      );
+      const manifest = await build({
+        snapshotPath: file,
+        metadataPath: file,
+        live: true,
+      });
+      const result = report(manifest);
+      expect(result.differ).toEqual([]);
+      expect(result.notCompared).toEqual([]);
+      // 6 reference-to-video + 3 keyframe-to-video base rows + 2 HDR add-on rows
+      // (each HDR add-on row checks both keyframe-to-video and reference-to-video).
+      expect(result.compared).toBe(13);
+      expect(result.same).toBe(13);
+
+      const hdr1080 = "kling 4.0, HDR add-on, 1080P (output seconds only)";
+      expect(
+        cellsOf(report(withPrice(manifest, hdr1080, "0.05", "10")), hdr1080)
+          .map(({ key, variant, tableUsd }) => ({ key, variant, tableUsd }))
+          .sort((a, b) => a.key.localeCompare(b.key))
+      ).toEqual([
+        {
+          key: "kling-4.0/keyframe-to-video",
+          variant: "extra",
+          tableUsd: 5 * 0.0425,
+        },
+        {
+          key: "kling-4.0/reference-to-video",
+          variant: "extra",
+          tableUsd: 5 * 0.0425,
+        },
+      ]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   // The 2026-11-19 feed added a Cached Input row for Gemini 4 Argon. The table
   // does not apply it (mayor ruling, ac-on0k4o): KIE's response reports no
   // cached-token count. That one cell stays out of the comparison with its

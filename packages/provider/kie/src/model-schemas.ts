@@ -30,7 +30,9 @@ import {
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
   Kling40AspectRatioSchema,
+  Kling40DynamicRangeSchema,
   Kling40ElementTagSchema,
+  Kling40FixedAspectRatioSchema,
   Kling40ResolutionSchema,
   Kling40FlashResolutionSchema,
   KlingOmniAspectRatioSchema,
@@ -387,6 +389,13 @@ const kling40ResolutionField = {
   enum: Kling40ResolutionSchema.options,
   default: "720p",
   description: "Output resolution (default 720p)",
+} as const;
+const kling40DynamicRangeField = {
+  type: "string",
+  enum: Kling40DynamicRangeSchema.options,
+  default: "sdr",
+  description:
+    "Dynamic range: sdr (default) or hdr; hdr is supported only with resolution 1080p or 4k",
 } as const;
 
 // Kling 4.0 Flash limits, shared by both Flash models.
@@ -1551,6 +1560,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: kling40DurationField,
       resolution: kling40ResolutionField,
+      dynamic_range: kling40DynamicRangeField,
       aspect_ratio: {
         type: "string",
         enum: Kling40AspectRatioSchema.options,
@@ -1616,6 +1626,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "Output seconds, 3-30 (default 5). Also caps first + keyframes + last: 3 s allows 4 frames, one more per second, 10 from 9 s",
       },
       resolution: kling40ResolutionField,
+      dynamic_range: kling40DynamicRangeField,
       aspect_ratio: {
         type: "string",
         enum: Kling40AspectRatioSchema.options,
@@ -1659,7 +1670,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: kling40FlashResolutionField,
       aspect_ratio: {
         type: "string",
-        enum: ["16:9", "9:16", "1:1", "21:9"],
+        enum: Kling40FixedAspectRatioSchema.options,
         description:
           "Used only without first_frame_url (text-to-video, default 16:9); with a first frame the output follows it. There is no auto",
       },

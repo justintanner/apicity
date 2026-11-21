@@ -341,11 +341,29 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     variant,
     ...KLING_40_EXCEPTION,
   })),
+  ...["4k", "4k|video"].map((variant) => ({
+    key: "kling-4.0/reference-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-11-21.json: feed rows and GET /api/v1/models/{id}/price pricingDesc read 2026-11-21: 99/59 credits = 0.495/0.295 USD/s at 4K without/with video input; HDR add-on +8.5/+14 credits = +0.0425/+0.07 USD/s at 1080p/4k on output seconds",
+    rationale:
+      "Kling 4.0's 4K tier was added after the frozen September catalog; the dated feed and models pricing capture supply the rates (with video input, output + max(output, input) seconds are billed).",
+  })),
   ...["720p", "1080p"].map((variant) => ({
     key: "kling-4.0/keyframe-to-video",
     variant,
     ...KLING_40_EXCEPTION,
   })),
+  {
+    key: "kling-4.0/keyframe-to-video",
+    variant: "4k",
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-11-21.json: feed row and GET /api/v1/models/{id}/price pricingDesc read 2026-11-21: 99 credits = 0.495 USD/s at 4K; HDR add-on +8.5/+14 credits = +0.0425/+0.07 USD/s at 1080p/4k on output seconds",
+    rationale:
+      "Kling 4.0's 4K tier was added after the frozen September catalog; the dated feed and models pricing capture supply the rate.",
+  },
 
   ...["480p|video", "480p|no-video", "720p|video", "720p|no-video"].map(
     (variant) => ({
@@ -916,6 +934,10 @@ export const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([
     key: "suno/sounds-generate",
     patterns: [/suno,\s*generate sounds?/i],
   },
+  {
+    key: "kling-4.0/keyframe-to-video",
+    patterns: [/kling 4\.0,\s*HDR add-on/i],
+  },
 ]);
 
 const FAMILY_MAPPING_RULES = Object.freeze([
@@ -1000,6 +1022,7 @@ const FAMILY_MAPPING_RULES = Object.freeze([
   [/suno,.*add-instrumental/i, "suno/add-instrumental-generate"],
   [/suno,.*add-vocals/i, "suno/add-vocals-generate"],
   [/suno,.*generate\s*$/i, "suno/generate"],
+  [/kling 4\.0,\s*HDR add-on/i, "kling-4.0/keyframe-to-video"],
 ]);
 
 export function explicitOperationKey(description, pricing) {
@@ -1100,6 +1123,15 @@ const SELECTOR_RULES = Object.freeze([
     matches: (key) => key.startsWith("kling-3.0-omni/"),
     apply: (_key, text, candidates) => {
       if (/with native audio/i.test(text)) candidates.audio = true;
+    },
+  },
+  {
+    family: "kling-4-0-hdr",
+    matches: (key) =>
+      key === "kling-4.0/keyframe-to-video" ||
+      key === "kling-4.0/reference-to-video",
+    apply: (_key, text, candidates) => {
+      if (/hdr add-on/i.test(text)) candidates.dynamic_range = "hdr";
     },
   },
   {
@@ -1904,6 +1936,16 @@ const FEED_UNIT_RULES = Object.freeze([
     matches: (description, key) =>
       /^wan\/2-2-a14b-(?:text|image)-to-video-turbo$/.test(key) &&
       /^Wan 2\.2 A14B Turbo API (?:text|image) to Video,/i.test(description),
+    feedUnitsPerTableUnit: 5,
+  },
+  // Kling 4.0 HDR add-on feed rows print credits/USD per output second, while
+  // the schema-valid representative payload defaults to duration: 5 (min 3).
+  {
+    family: "kling-4-0-hdr-add-on",
+    matches: (description, key) =>
+      (key === "kling-4.0/keyframe-to-video" ||
+        key === "kling-4.0/reference-to-video") &&
+      /kling 4\.0,\s*HDR add-on/i.test(description),
     feedUnitsPerTableUnit: 5,
   },
 ]);

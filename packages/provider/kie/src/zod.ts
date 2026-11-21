@@ -2616,14 +2616,20 @@ export const KlingOmniTransformationRequestSchema =
 //       https://docs.kie.ai/market/kling/v4-keyframe-to-video
 // ---------------------------------------------------------------------------
 
-export const Kling40ResolutionSchema = z.enum(["720p", "1080p"]);
+export const Kling40ResolutionSchema = z.enum(["720p", "1080p", "4k"]);
+export const Kling40DynamicRangeSchema = z.enum(["sdr", "hdr"]);
 export const Kling40DurationSchema = z.number().int().min(3).max(30);
-export const Kling40AspectRatioSchema = z.enum([
-  "auto",
+export const Kling40FixedAspectRatioSchema = z.enum([
   "16:9",
   "9:16",
   "1:1",
   "21:9",
+  "4:3",
+  "3:4",
+]);
+export const Kling40AspectRatioSchema = z.enum([
+  "auto",
+  ...Kling40FixedAspectRatioSchema.options,
 ]);
 export const Kling40MediaUrlSchema = z.string().regex(/^https?:\/\/.+/);
 export const Kling40ElementTagSchema = z.enum([
@@ -2688,6 +2694,9 @@ export const Kling40ReferenceToVideoInputSchema = z.object({
   ),
   duration: Kling40DurationSchema.default(5),
   resolution: Kling40ResolutionSchema.default("720p"),
+  dynamic_range: Kling40DynamicRangeSchema.default("sdr").describe(
+    "Dynamic range: sdr (default) or hdr; hdr is supported only with resolution 1080p or 4k"
+  ),
   aspect_ratio: Kling40AspectRatioSchema.optional().describe(
     "Output aspect ratio; upstream uses auto when any material is provided and 16:9 otherwise"
   ),
@@ -2723,6 +2732,21 @@ export const Kling40ReferenceToVideoInputSchema = z.object({
     .describe("Standalone voice references, mentioned as @name"),
 });
 
+// HDR output is supported only at 1080p or 4k; upstream rejects 720p + hdr.
+function validateKling40DynamicRange(
+  input: { resolution: Kling40Resolution; dynamic_range: Kling40DynamicRange },
+  ctx: z.RefinementCtx
+): void {
+  if (input.dynamic_range === "hdr" && input.resolution === "720p") {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        'dynamic_range "hdr" requires resolution "1080p" or "4k" (720p is not supported)',
+      path: ["input", "dynamic_range"],
+    });
+  }
+}
+
 const Kling40ReferenceToVideoRequestObjectSchema = z.object({
   model: z.literal("kling-4.0/reference-to-video"),
   callBackUrl: z.string().url().optional(),
@@ -2732,6 +2756,7 @@ const Kling40ReferenceToVideoRequestObjectSchema = z.object({
 export const Kling40ReferenceToVideoRequestSchema =
   Kling40ReferenceToVideoRequestObjectSchema.superRefine((value, ctx) => {
     const { input } = value;
+    validateKling40DynamicRange(input, ctx);
     const issue = (message: string, path: Array<string | number>) =>
       ctx.addIssue({ code: "custom", message, path: ["input", ...path] });
 
@@ -2814,6 +2839,9 @@ export const Kling40KeyframeToVideoInputSchema = z.object({
     "Output seconds, 3-30 (default 5). Also caps first + keyframes + last: 3 s allows 4 frames, one more per second, 10 from 9 s"
   ),
   resolution: Kling40ResolutionSchema.default("720p"),
+  dynamic_range: Kling40DynamicRangeSchema.default("sdr").describe(
+    "Dynamic range: sdr (default) or hdr; hdr is supported only with resolution 1080p or 4k"
+  ),
   aspect_ratio: Kling40AspectRatioSchema.optional().describe(
     "Used only without frames (text-to-video, default 16:9); with frames the output follows the first frame"
   ),
@@ -2843,6 +2871,7 @@ const Kling40KeyframeToVideoRequestObjectSchema = z.object({
 export const Kling40KeyframeToVideoRequestSchema =
   Kling40KeyframeToVideoRequestObjectSchema.superRefine((value, ctx) => {
     const { input } = value;
+    validateKling40DynamicRange(input, ctx);
     const frames =
       (input.first_frame_url === undefined ? 0 : 1) +
       input.keyframe_urls.length +
@@ -2888,11 +2917,9 @@ export const Kling40FlashKeyframeToVideoRequestSchema = z.object({
       resolution: Kling40FlashResolutionSchema.default("720p").describe(
         "Output resolution. Kling 4.0 Flash only supports 720p. Default: 720p."
       ),
-      aspect_ratio: Kling40AspectRatioSchema.exclude(["auto"])
-        .optional()
-        .describe(
-          "Output aspect ratio: 16:9, 9:16, 1:1 or 21:9. There is no auto. Only used when first_frame_url is omitted (text-to-video); default 16:9. When a first frame is provided, the output follows that image's aspect ratio."
-        ),
+      aspect_ratio: Kling40FixedAspectRatioSchema.optional().describe(
+        "Output aspect ratio: 16:9, 9:16, 1:1, 21:9, 4:3 or 3:4. There is no auto. Only used when first_frame_url is omitted (text-to-video); default 16:9. When a first frame is provided, the output follows that image's aspect ratio."
+      ),
       first_frame_url: Kling40MediaUrlSchema.optional().describe(
         "Optional first-frame image URL, mentioned in the prompt as @first_frame. If omitted, the request is plain text-to-video."
       ),
@@ -11007,6 +11034,7 @@ export type KlingOmniMultiShotPrompt = z.input<
 >;
 export type KlingOmniElement = z.input<typeof KlingOmniElementSchema>;
 export type Kling40Resolution = z.infer<typeof Kling40ResolutionSchema>;
+export type Kling40DynamicRange = z.infer<typeof Kling40DynamicRangeSchema>;
 export type Kling40Duration = z.infer<typeof Kling40DurationSchema>;
 export type Kling40AspectRatio = z.infer<typeof Kling40AspectRatioSchema>;
 export type Kling40ElementTag = z.infer<typeof Kling40ElementTagSchema>;

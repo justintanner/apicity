@@ -1183,6 +1183,13 @@ function classifyRawRow(raw, inventories, live = false) {
     ) {
       result.billingComponent = "extra";
     }
+    if (
+      (key === "kling-4.0/keyframe-to-video" ||
+        key === "kling-4.0/reference-to-video") &&
+      /hdr add-on/i.test(String(official.modelDescription ?? ""))
+    ) {
+      result.billingComponent = "extra";
+    }
     result.rateBasis = {
       kind: "official-usd-price",
       creditPrice: official.creditPrice,

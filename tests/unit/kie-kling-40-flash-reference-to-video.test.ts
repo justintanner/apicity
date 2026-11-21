@@ -104,14 +104,23 @@ describe("Kie Kling 4.0 Flash reference-to-video request contract", () => {
     });
   });
 
-  it("keeps Flash's limits: 3-20 s, 720p only, auto allowed", () => {
-    expect(parseInput({ prompt: "x", aspect_ratio: "auto" }).success).toBe(
-      true
-    );
+  it("keeps Flash's limits: 3-20 s, 720p only, auto and 4:3/3:4 allowed", () => {
+    for (const aspect_ratio of [
+      "auto",
+      "16:9",
+      "9:16",
+      "1:1",
+      "21:9",
+      "4:3",
+      "3:4",
+    ]) {
+      expect(parseInput({ prompt: "x", aspect_ratio }).success).toBe(true);
+    }
     for (const [field, value] of [
       ["duration", 2],
       ["duration", 21],
       ["resolution", "1080p"],
+      ["aspect_ratio", "3:2"],
     ] as const) {
       const result = parseInput({ prompt: "x", [field]: value });
       expect(result.success, `${field}=${value}`).toBe(false);

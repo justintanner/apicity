@@ -117,9 +117,17 @@ function ttsKey(description) {
   return TTS_ROW_KEYS.find(([pattern]) => pattern.test(description))?.[1];
 }
 
-// One feed row prices both tabs of a text and image pair, and its anchor names
-// one of them.
+// One feed row prices both tabs of a text and image pair (or both Kling 4.0
+// video tabs on the HDR add-on rows), and its anchor names at most one.
 function twinKey(description, key) {
+  if (/kling 4\.0,\s*HDR add-on/i.test(description)) {
+    if (key === "kling-4.0/keyframe-to-video") {
+      return "kling-4.0/reference-to-video";
+    }
+    if (key === "kling-4.0/reference-to-video") {
+      return "kling-4.0/keyframe-to-video";
+    }
+  }
   if (!/text\s*\/\s*image to video/i.test(description)) return undefined;
   if (key.endsWith("/text-to-video")) {
     return key.replace(/text-to-video$/, "image-to-video");

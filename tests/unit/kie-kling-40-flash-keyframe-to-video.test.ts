@@ -105,14 +105,14 @@ describe("Kie Kling 4.0 Flash keyframe-to-video request contract", () => {
     }
   });
 
-  it("takes only 720p and the four fixed ratios, with no auto", () => {
-    for (const aspect_ratio of ["16:9", "9:16", "1:1", "21:9"]) {
+  it("takes only 720p and the six fixed ratios, with no auto", () => {
+    for (const aspect_ratio of ["16:9", "9:16", "1:1", "21:9", "4:3", "3:4"]) {
       expect(parseInput({ prompt: "x", aspect_ratio }).success).toBe(true);
     }
     for (const [field, value] of [
       ["resolution", "1080p"],
       ["aspect_ratio", "auto"],
-      ["aspect_ratio", "4:3"],
+      ["aspect_ratio", "3:2"],
     ] as const) {
       const result = parseInput({ prompt: "x", [field]: value });
       expect(result.success, `${field}=${value}`).toBe(false);
@@ -180,6 +180,8 @@ describe("Kie Kling 4.0 Flash keyframe-to-video request contract", () => {
       "9:16",
       "1:1",
       "21:9",
+      "4:3",
+      "3:4",
     ]);
   });
 });
@@ -223,6 +225,8 @@ describe("Kie Kling 4.0 Flash keyframe-to-video model id", () => {
       "9:16",
       "1:1",
       "21:9",
+      "4:3",
+      "3:4",
     ]);
     expect(descriptor.fields.aspect_ratio.default).toBeUndefined();
   });
@@ -251,6 +255,8 @@ describe("Kie Kling 4.0 Flash keyframe-to-video public exports", () => {
     >().toEqualTypeOf<"kling-4.0/flash-keyframe-to-video">();
     expectTypeOf<
       Kling40FlashKeyframeToVideoRequest["input"]["aspect_ratio"]
-    >().toEqualTypeOf<"16:9" | "9:16" | "1:1" | "21:9" | undefined>();
+    >().toEqualTypeOf<
+      "16:9" | "9:16" | "1:1" | "21:9" | "4:3" | "3:4" | undefined
+    >();
   });
 });

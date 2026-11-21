@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
+  Kling40DynamicRangeSchema as RootKling40DynamicRangeSchema,
+  type Kling40DynamicRange,
+} from "@apicity/kie";
+import {
   CreateTaskRequestSchema,
+  Kling40DynamicRangeSchema,
   Kling40KeyframeToVideoInputSchema,
   Kling40KeyframeToVideoRequestSchema,
   Kling40ReferenceToVideoInputSchema,
@@ -57,6 +62,7 @@ describe("Kling 4.0 createTask models", () => {
       prompt: "A cat waves",
       duration: 5,
       resolution: "720p",
+      dynamic_range: "sdr",
       image_urls: [],
       video_urls: [],
       keep_original_sound: false,
@@ -74,6 +80,7 @@ describe("Kling 4.0 createTask models", () => {
       prompt: "A cat waves",
       duration: 5,
       resolution: "720p",
+      dynamic_range: "sdr",
       keyframe_urls: [],
     });
   });
@@ -82,10 +89,22 @@ describe("Kling 4.0 createTask models", () => {
     "%s accepts every documented enum value and the duration bounds",
     (model) => {
       const parse = model === REFERENCE ? reference : keyframe;
-      for (const resolution of ["720p", "1080p"]) {
+      for (const resolution of ["720p", "1080p", "4k"]) {
         expect(parse({ resolution }).success).toBe(true);
       }
-      for (const aspect_ratio of ["auto", "16:9", "9:16", "1:1", "21:9"]) {
+      for (const resolution of ["1080p", "4k"]) {
+        expect(parse({ resolution, dynamic_range: "hdr" }).success).toBe(true);
+      }
+      expect(parse({ dynamic_range: "sdr" }).success).toBe(true);
+      for (const aspect_ratio of [
+        "auto",
+        "16:9",
+        "9:16",
+        "1:1",
+        "21:9",
+        "4:3",
+        "3:4",
+      ]) {
         expect(parse({ aspect_ratio }).success).toBe(true);
       }
       for (const duration of [3, 30]) {
@@ -100,13 +119,36 @@ describe("Kling 4.0 createTask models", () => {
     { duration: 31 },
     { duration: 5.5 },
     { duration: "5" },
-    { resolution: "4k" },
-    { aspect_ratio: "4:3" },
+    { resolution: "480p" },
+    { aspect_ratio: "3:2" },
+    { dynamic_range: "wide" },
+    { dynamic_range: "hdr" },
+    { resolution: "720p", dynamic_range: "hdr" },
     { prompt: "" },
     { prompt: "x".repeat(8001) },
   ])("rejects shared input %#", (input) => {
     expect(reference(input).success).toBe(false);
     expect(keyframe(input).success).toBe(false);
+  });
+
+  it.each([REFERENCE, KEYFRAME] as const)(
+    "%s rejects hdr at 720p on input.dynamic_range",
+    (model) => {
+      const parse = model === REFERENCE ? reference : keyframe;
+      const result = parse({ dynamic_range: "hdr" });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0]).toMatchObject({
+        path: ["input", "dynamic_range"],
+        message:
+          'dynamic_range "hdr" requires resolution "1080p" or "4k" (720p is not supported)',
+      });
+    }
+  );
+
+  it("exports Kling40DynamicRangeSchema identically from root and zod subpath", () => {
+    expect(RootKling40DynamicRangeSchema).toBe(Kling40DynamicRangeSchema);
+    const range: Kling40DynamicRange = "hdr";
+    expect(Kling40DynamicRangeSchema.parse(range)).toBe("hdr");
   });
 
   it.each([
@@ -416,11 +458,90 @@ describe("Kling 4.0 pricing", () => {
       expect(
         estimate(model, { duration: 10, resolution: "1080p" }).usd
       ).toBeCloseTo(2.125, 10);
+      expect(
+        estimate(model, { duration: 10, resolution: "4k" }).usd
+      ).toBeCloseTo(4.95, 10);
+      const hdr1080 = estimate(model, {
+        duration: 5,
+        resolution: "1080p",
+        dynamic_range: "hdr",
+      });
+      expect(hdr1080.usd).toBeCloseTo(5 * 0.2125 + 5 * 0.0425, 10);
+      expect(hdr1080.breakdown.extraUsd).toBeCloseTo(5 * 0.0425, 10);
+      expect(hdr1080.warnings).toEqual([]);
+      const hdr4k = estimate(model, {
+        duration: 4,
+        resolution: "4k",
+        dynamic_range: "hdr",
+      });
+      expect(hdr4k.usd).toBeCloseTo(4 * 0.495 + 4 * 0.07, 10);
+      expect(hdr4k.breakdown.extraUsd).toBeCloseTo(4 * 0.07, 10);
+      expect(hdr4k.warnings).toEqual([]);
+      const sdr = estimate(model, {
+        duration: 4,
+        resolution: "4k",
+        dynamic_range: "sdr",
+      });
+      expect(sdr.usd).toBeCloseTo(4 * 0.495, 10);
+      expect(sdr.breakdown.extraUsd).toBeUndefined();
+      const hdr720Default = estimate(model, { dynamic_range: "hdr" });
+      expect(hdr720Default.usd).toBe(0);
+      expect(hdr720Default.warnings.join(" ")).toContain("1080p and 4k");
+      const hdr720Explicit = estimate(model, {
+        resolution: "720p",
+        dynamic_range: "hdr",
+      });
+      expect(hdr720Explicit.usd).toBe(0);
+      expect(hdr720Explicit.warnings.join(" ")).toContain("1080p and 4k");
+      const badRange = estimate(model, {
+        resolution: "1080p",
+        dynamic_range: "wide",
+      });
+      expect(badRange.usd).toBe(0);
+      expect(badRange.warnings.join(" ")).toContain(
+        "unsupported dynamic_range"
+      );
       const malformed = estimate(model, { duration: null });
       expect(malformed.usd).toBe(0);
       expect(malformed.warnings.join(" ")).toContain("could not derive units");
     }
   );
+
+  it("bills 4k and HDR add-on (output seconds only) on video-input requests", () => {
+    const fourK = estimate(
+      REFERENCE,
+      { duration: 4, resolution: "4k", video_urls: videos(1) },
+      10
+    );
+    expect(fourK.usd).toBeCloseTo((4 + 10) * 0.295, 10);
+    expect(fourK.breakdown.extraUsd).toBeUndefined();
+    const hdr1080WithVideo = estimate(
+      REFERENCE,
+      {
+        duration: 4,
+        resolution: "1080p",
+        dynamic_range: "hdr",
+        video_urls: videos(1),
+      },
+      10
+    );
+    expect(hdr1080WithVideo.usd).toBeCloseTo(14 * 0.1275 + 4 * 0.0425, 10);
+    expect(hdr1080WithVideo.breakdown.extraUsd).toBeCloseTo(4 * 0.0425, 10);
+    expect(hdr1080WithVideo.warnings).toEqual([]);
+    const hdr4kWithVideo = estimate(
+      REFERENCE,
+      {
+        duration: 5,
+        resolution: "4k",
+        dynamic_range: "hdr",
+        video_urls: videos(1),
+      },
+      10
+    );
+    expect(hdr4kWithVideo.usd).toBeCloseTo(15 * 0.295 + 5 * 0.07, 10);
+    expect(hdr4kWithVideo.breakdown.extraUsd).toBeCloseTo(5 * 0.07, 10);
+    expect(hdr4kWithVideo.warnings).toEqual([]);
+  });
 
   it("bills images, image subjects and voices as no video input", () => {
     const result = estimate(REFERENCE, {

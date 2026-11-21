@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` accept `resolution: "4k"`, `dynamic_range` (`"sdr"` by default, or `"hdr"`, exported as `Kling40DynamicRangeSchema` and `Kling40DynamicRange`; `"hdr"` requires `resolution` `"1080p"` or `"4k"` and is refused at `"720p"`), and aspect ratios `"4:3"` and `"3:4"`. `kling-4.0/flash-reference-to-video` and `kling-4.0/flash-keyframe-to-video` also accept `"4:3"` and `"3:4"`, matching the KIE docs read 2026-11-21 (ac-91jg63).
+
 - `ltx/2-5-pro-image-to-video` (LTX 2.5 Pro image-to-video) on createTask, from the docs as re-read on 2026-11-20: a required `image_url` (the first frame; no `aspect_ratio` field), a required `prompt` (1-5000 characters), and `resolution`, `fps`, `duration` and `seed` as on `ltx/2-5-pro-text-to-video`. `Ltx25ProImageToVideoInputSchema` and `Ltx25ProImageToVideoRequestSchema` are exported (ac-kevvtj).
 
 - `ltx/2-5-pro-text-to-video` (LTX 2.5 Pro text-to-video) on createTask, from the docs as re-read on 2026-11-20: `prompt`, `fps`, `aspect_ratio` and `seed` as on `ltx/2-5-fast-text-to-video`, with `resolution` `720p` or `1080p` (default) and `duration` 6, 8 or 10 (default 10) at any frame rate. The Pro tier schemas `Ltx25ProResolutionSchema` and `Ltx25ProDurationSchema` are exported, with `Ltx25ProTextToVideoInputSchema` and `Ltx25ProTextToVideoRequestSchema` (ac-dwmekr).

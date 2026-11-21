@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` price `resolution: "4k"` (99 credits = 0.495 USD/s without video input or on keyframe; 59 credits = 0.295 USD/s with video input) and the `dynamic_range: "hdr"` output-seconds add-on (+8.5 credits = +0.0425 USD/s at `1080p`, +14 credits = +0.07 USD/s at `4k`; input video duration is not charged for HDR, and `"720p"` + `"hdr"` fails closed), from the live KIE price feed, `https://kie.ai/kling-4-0`, and `GET /api/v1/models/{id}/price` read 2026-11-21 (`tests/fixtures/kie-pricing-evidence/kling-4-0-2026-11-21.json`) (ac-91jg63).
+
 - Pay-gate provider grants (`paygate-grant.ts`, excluded from `@apicity/kie` and `@apicity/xai` copies): `mintGrant`, `verifyGrant`, `isGrantProviderName`, `grantFileName`, `grantDirectory`, `GRANT_TOKEN_PREFIX`, `GRANT_DEFAULT_TTL_SECONDS`, `GRANT_MAX_TTL_SECONDS`, `GRANT_CLOCK_SKEW_SECONDS`, plus `apicity-paygate grant mint|list|revoke` subcommands. Grants use the `apicity-grant-v1.` prefix inside the HMAC input so OTPs and grants are never interchangeable, enforce a 1h default / 24h maximum lifetime, cover `gate: "cli"` endpoints (584 rows across 17 providers), and leave the 27 `PAID_ENDPOINTS` (`kie` 21, `xai` 6) OTP-only (ac-upjl0y).
 
 - WaveSpeed GPT Image 2.5 Flare edit (`openai/gpt-image-2.5-flare/edit`)

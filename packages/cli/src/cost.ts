@@ -195,6 +195,25 @@ export interface CostHelpers {
     }
   ) => Promise<T>;
   canonicalHash: (value: unknown) => `sha256:${string}`;
+  verifyGrant: (input: {
+    token: string;
+    secret: string;
+    provider: string;
+    nowSeconds?: number;
+  }) =>
+    | {
+        ok: true;
+        payload: {
+          v: 1;
+          jti: string;
+          provider: string;
+          iat: number;
+          exp: number;
+        };
+      }
+    | { ok: false; code: string; message: string };
+  grantDirectory: (env?: NodeJS.ProcessEnv) => string;
+  grantFileName: (provider: string) => string;
   ENDPOINT_BILLING: readonly CostHelperBillingPolicy[];
   endpointBilling: (
     provider: string,
@@ -250,6 +269,9 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     const isPaidEndpoint = exports.isPaidEndpoint;
     const dispatchGated = exports.dispatchGated;
     const canonicalHash = exports.canonicalHash;
+    const verifyGrant = exports.verifyGrant;
+    const grantDirectory = exports.grantDirectory;
+    const grantFileName = exports.grantFileName;
     const billingPolicies = exports.ENDPOINT_BILLING;
     const endpointBilling = exports.endpointBilling;
     const frontier = exports.frontier;
@@ -275,6 +297,21 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     if (typeof canonicalHash !== "function") {
       throw new Error(
         "Expected @apicity/cost to export canonicalHash as a function"
+      );
+    }
+    if (typeof verifyGrant !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export verifyGrant as a function"
+      );
+    }
+    if (typeof grantDirectory !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export grantDirectory as a function"
+      );
+    }
+    if (typeof grantFileName !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export grantFileName as a function"
       );
     }
     if (!Array.isArray(billingPolicies)) {
@@ -315,6 +352,9 @@ export function loadCostHelpers(): Promise<CostHelpers> {
       isPaidEndpoint: isPaidEndpoint as CostHelpers["isPaidEndpoint"],
       dispatchGated: dispatchGated as CostHelpers["dispatchGated"],
       canonicalHash: canonicalHash as CostHelpers["canonicalHash"],
+      verifyGrant: verifyGrant as CostHelpers["verifyGrant"],
+      grantDirectory: grantDirectory as CostHelpers["grantDirectory"],
+      grantFileName: grantFileName as CostHelpers["grantFileName"],
       ENDPOINT_BILLING: billingPolicies as CostHelpers["ENDPOINT_BILLING"],
       endpointBilling: endpointBilling as CostHelpers["endpointBilling"],
       frontier: frontier as CostHelpers["frontier"],

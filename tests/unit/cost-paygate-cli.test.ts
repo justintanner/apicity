@@ -11,15 +11,19 @@ import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
+import { readFileSync } from "node:fs";
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 
 import {
+  GRANT_TOKEN_PREFIX,
+  grantFileName,
   mintOtp,
   parseTtl,
   parseOtp,
+  verifyGrant,
   verifyOtp,
   canonicalHash,
-} from "../../packages/provider/cost/src/paygate.js";
+} from "@apicity/cost";
 
 const SECRET = "test-shared-hmac-secret-value";
 
@@ -246,8 +250,8 @@ describe("CLI subprocess", () => {
       dirname(fileURLToPath(import.meta.url)),
       "../../packages/provider/cost/src"
     );
-    const sources = ["paygate-cli.ts", "paygate.ts"].map((f) =>
-      join(cliSrcDir, f)
+    const sources = ["paygate-cli.ts", "paygate.ts", "paygate-grant.ts"].map(
+      (f) => join(cliSrcDir, f)
     );
     const stale =
       !existsSync(cliDistPath) ||
@@ -409,5 +413,131 @@ describe("CLI subprocess", () => {
     ).rejects.toMatchObject({
       stderr: expect.stringContaining("never both"),
     });
+  });
+
+  it("mints, lists, and revokes provider grants without leaking tokens or secret", async () => {
+    const grantDir = join(testDir, "grants");
+
+    const minted = await runCli([
+      "grant",
+      "mint",
+      "--secret-file",
+      secretFile,
+      "--provider",
+      "kie",
+      "--ttl",
+      "2h",
+      "--grant-dir",
+      grantDir,
+    ]);
+    const grantPath = join(grantDir, grantFileName("kie"));
+    const token = readFileSync(grantPath, "utf8").trim();
+    expect(token.startsWith(GRANT_TOKEN_PREFIX)).toBe(true);
+    const [, seg, sig] = token.slice(GRANT_TOKEN_PREFIX.length).split(".") as [
+      string,
+      string,
+      string,
+    ];
+    for (const secretText of [token, seg, sig, SECRET]) {
+      if (!secretText) continue;
+      expect(minted.stdout + minted.stderr).not.toContain(secretText);
+    }
+    expect(minted.stdout).toContain("id:");
+    expect(minted.stdout).toContain("expires:");
+    expect(minted.stdout).toContain(grantPath);
+    expect(minted.stdout).toContain(
+      "21 endpoints are checked by the provider package and still need an OTP for each request."
+    );
+    const mode = statSync(grantPath).mode & 0o777;
+    const dirMode = statSync(grantDir).mode & 0o777;
+    expect(dirMode).toBe(0o700);
+    expect(mode).toBe(0o600);
+    expect(verifyGrant({ token, secret: SECRET, provider: "kie" }).ok).toBe(
+      true
+    );
+
+    const listed = await runCli([
+      "grant",
+      "list",
+      "--secret-file",
+      secretFile,
+      "--grant-dir",
+      grantDir,
+    ]);
+    expect(listed.stdout).toContain("valid until");
+    for (const secretText of [token, seg, sig, SECRET]) {
+      if (!secretText) continue;
+      expect(listed.stdout + listed.stderr).not.toContain(secretText);
+    }
+
+    const revoked = await runCli([
+      "grant",
+      "revoke",
+      "--provider",
+      "kie",
+      "--grant-dir",
+      grantDir,
+    ]);
+    expect(existsSync(grantPath)).toBe(false);
+    expect(revoked.stdout).toContain("24 hours");
+    expect(revoked.stdout).toContain("new pay-gate secret");
+    for (const secretText of [token, seg, sig, SECRET]) {
+      if (!secretText) continue;
+      expect(revoked.stdout + revoked.stderr).not.toContain(secretText);
+    }
+  });
+
+  it("refuses unknown provider, path traversal, >24h TTL, or empty secret on grant mint", async () => {
+    const grantDir = join(testDir, "bad-grants");
+    const emptySecret = join(testDir, "empty.secret");
+    writeFileSync(emptySecret, "\n", "utf8");
+
+    for (const badArgs of [
+      [
+        "grant",
+        "mint",
+        "--secret-file",
+        secretFile,
+        "--provider",
+        "nope",
+        "--grant-dir",
+        grantDir,
+      ],
+      [
+        "grant",
+        "mint",
+        "--secret-file",
+        secretFile,
+        "--provider",
+        "../fal",
+        "--grant-dir",
+        grantDir,
+      ],
+      [
+        "grant",
+        "mint",
+        "--secret-file",
+        secretFile,
+        "--provider",
+        "fal",
+        "--ttl",
+        "25h",
+        "--grant-dir",
+        grantDir,
+      ],
+      [
+        "grant",
+        "mint",
+        "--secret-file",
+        emptySecret,
+        "--provider",
+        "fal",
+        "--grant-dir",
+        grantDir,
+      ],
+    ]) {
+      await expect(runCli(badArgs)).rejects.toThrow();
+    }
+    expect(existsSync(grantDir)).toBe(false);
   });
 });

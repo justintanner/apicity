@@ -155,7 +155,10 @@ retry.
 
 Operators (or the code client) mint OTPs with `mintOtp(secret, { provider,
 method, dotPath, requestHash, ttl })`, `mintOtp(secret, { dotPath, request,
-ttl })`, or the CLI — the secret is read from a file, never an env var:
+ttl })`, or the CLI — the secret is read from a file, never an env var. Because
+`apicity-paygate` ships with `@apicity/cost` (installing `@apicity/cli` globally
+does not put it directly on `PATH`), install `@apicity/cost` globally (`npm install -g @apicity/cost`)
+or run `npx -p @apicity/cost apicity-paygate`:
 
 ```bash
 apicity-paygate otp mint \
@@ -167,10 +170,69 @@ apicity-paygate otp mint \
   --ttl 10m
 ```
 
-A blocked call raises `PayGateError` whose `.code` is one of
-`paygate-not-configured`, `otp-missing`, `otp-malformed`,
-`otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`, or
-`otp-replayed`.
+## Grants
+
+For **`gate: "cli"`** endpoints (584 rows across 17 billed providers), an
+operator can alternatively mint a time-boxed **provider grant** once per
+provider instead of minting an OTP per request. The 27 **`gate: "sdk"`**
+registry endpoints (`kie` and `xai`) never accept a grant and still require a
+per-request OTP checked by the provider package.
+
+```bash
+apicity-paygate grant mint \
+  --secret-file ./paygate.secret \
+  --provider fal \
+  --ttl 4h
+
+apicity-paygate grant list --secret-file ./paygate.secret
+apicity-paygate grant revoke --provider fal
+```
+
+How grants work:
+
+- **What a grant covers (and ignores).** A grant token is signed with the
+  shared secret, one provider name, and an expiry (`1h` default, `24h` max;
+  up to 5 minutes ahead of clock skew allowed; valid through its `exp` second).
+  It is **not** bound to a method, `dotPath`, request, host, lane, session, or
+  process, and it is **reusable** across calls and processes until it expires.
+  No host without a secret reads the grant directory.
+- **Stored on disk, never passed on the command line.** `grant mint` writes
+  `<grant dir>/<provider>.grant` (`0600`) in `<grant dir>` (`0700`) and prints
+  the grant `id`, `expires`, and `path` — never the token. There is no CLI flag
+  or environment variable that carries a grant token.
+- **Directory resolution.** Both `apicity-paygate` and `@apicity/cli` resolve
+  the grant directory from `$APICITY_PAYGATE_GRANT_DIR`, defaulting to
+  `~/.config/apicity/paygate-grants`. Because `@apicity/cli` also reads
+  `APICITY_PAYGATE_GRANT_DIR` from its `.env` / `--env-file` while
+  `apicity-paygate` does not, a grant-directory line in the CLI's env file moves
+  the directory for the CLI only — which is why refusal hints include
+  `--grant-dir <dir>`.
+- **Per OS user, not per lane.** Any process running as that OS user that reads
+  the same grant directory can use the grant (an operator can point one lane at
+  its own `APICITY_PAYGATE_GRANT_DIR`, though same-user OS isolation still
+  applies: since the CLI must read both the secret file and the grant file, any
+  process running as the same OS user technically has OS file access unless rules
+  forbid it). Keep the grant directory out of repositories and synced/shared
+  folders, and move grants as files rather than pasted text.
+- **Explicit `--otp` wins alone.** If a caller passes `--otp`, only that OTP is
+  verified — even if a valid grant exists, a bad OTP still refuses without
+  touching or recording against the grant.
+- **Audit trail (`uses.jsonl`).** Every `gate: "cli"` call approved under a
+  grant appends one JSON line to `<grant dir>/uses.jsonl` (`0600`) **before**
+  dispatching (`ts`, `grant`, `provider`, `method`, `dotPath`, `requestHash`,
+  `expires`, `cwd` — no token or request body). If writing fails, the call is
+  refused with `grant-unrecorded` before reaching the provider.
+- **Revocation.** `apicity-paygate grant revoke --provider <p>` deletes
+  `<grant dir>/<p>.grant`. Copies kept elsewhere remain valid until their expiry
+  (`24h` max); rotating the pay-gate secret is the hard stop that voids every
+  existing grant and OTP immediately.
+
+A blocked call raises `PayGateError` (or `GrantRefusal` in `@apicity/cli`) whose
+`.code` is one of `paygate-not-configured`, `otp-missing`, `otp-malformed`,
+`otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`,
+`otp-replayed`, `grant-malformed`, `grant-invalid-signature`,
+`grant-not-yet-valid`, `grant-expired`, `grant-mismatched-provider`,
+`grant-unreadable`, or `grant-unrecorded`.
 
 The SDK gate covers every entry listed in `PAID_ENDPOINTS` (`kie` and `xai`),
 while `@apicity/cli` automatically gates every other endpoint whose billing

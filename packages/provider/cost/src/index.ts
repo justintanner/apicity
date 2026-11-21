@@ -116,6 +116,25 @@ export type {
   VerifyResult,
 } from "./paygate";
 
+export {
+  GRANT_CLOCK_SKEW_SECONDS,
+  GRANT_DEFAULT_TTL_SECONDS,
+  GRANT_MAX_TTL_SECONDS,
+  GRANT_TOKEN_PREFIX,
+  grantDirectory,
+  grantFileName,
+  isGrantProviderName,
+  mintGrant,
+  verifyGrant,
+} from "./paygate-grant";
+export type {
+  GrantPayload,
+  GrantVerifyFailureCode,
+  GrantVerifyResult,
+  MintGrantOptions,
+  VerifyGrantInput,
+} from "./paygate-grant";
+
 export { withPaidGate } from "./with-paid-gate";
 export type { WithPaidGateOptions } from "./with-paid-gate";
 

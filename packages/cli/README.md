@@ -166,18 +166,19 @@ each call actually requested, which is how to check rather than guess.
 
 ## Environment variables
 
-| Variable                      | Effect                                                                     |
-| ----------------------------- | -------------------------------------------------------------------------- |
-| `APICITY_ENV_FILE`            | The dotenv file to load when `--env-file` is absent.                       |
-| `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`; `apicity setup 1password` saves it.  |
-| `APICITY_OP_SERVICE_TOKEN`    | The 1Password token, as `--op-token`; `apicity setup 1password` saves it.  |
-| `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.   |
-| `APICITY_HAR_CAPTURE`         | `all`, `failures` or `off` (default). Endpoint flag wins.                  |
-| `APICITY_HAR_DIR`             | Capture directory; defaults to `$HOME/.config/apicity/har`.                |
-| `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                     |
-| `APICITY_SETUP_AGENT`         | `claude`, `codex`, `all` or `none` — what `apicity setup agents` connects. |
-| `CLAUDE_PROJECT_DIR`          | Read by Claude Code sessions; the output directory when nothing else says. |
-| Provider variables            | One or more per provider; see [Credentials](#credentials).                 |
+| Variable                      | Effect                                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `APICITY_ENV_FILE`            | The dotenv file to load when `--env-file` is absent.                                                               |
+| `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`; `apicity setup 1password` saves it.                                          |
+| `APICITY_OP_SERVICE_TOKEN`    | The 1Password token, as `--op-token`; `apicity setup 1password` saves it.                                          |
+| `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.                                           |
+| `APICITY_PAYGATE_GRANT_DIR`   | Provider grant directory; defaults to `~/.config/apicity/paygate-grants` (`--env-file` moves it for the CLI only). |
+| `APICITY_HAR_CAPTURE`         | `all`, `failures` or `off` (default). Endpoint flag wins.                                                          |
+| `APICITY_HAR_DIR`             | Capture directory; defaults to `$HOME/.config/apicity/har`.                                                        |
+| `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                                                             |
+| `APICITY_SETUP_AGENT`         | `claude`, `codex`, `all` or `none` — what `apicity setup agents` connects.                                         |
+| `CLAUDE_PROJECT_DIR`          | Read by Claude Code sessions; the output directory when nothing else says.                                         |
+| Provider variables            | One or more per provider; see [Credentials](#credentials).                                                         |
 
 With no `--env-file` and no `APICITY_ENV_FILE`, a call loads
 `~/.config/apicity/.env` when that file exists. For each variable of the
@@ -461,9 +462,47 @@ caller's command without `--otp`: the refusal prints the exact same
 
 Each OTP covers one provider, method, and `dotPath`, one exact request, is valid
 until expiration (`10m` by default or `--ttl <duration>` with no upper limit),
-and is single-use within one process. The agent driving the CLI never sees the
-secret, so it cannot self-approve. See [@apicity/cost](../provider/cost) and
-[docs/paygate.md](../../docs/paygate.md) for the full spec.
+and is single-use within one process. Because `@apicity/cli` must read the
+secret file and grant directory when armed, same-user processes have filesystem
+access to both under OS permissions; the gate relies on agent rule adherence.
+See [@apicity/cost](../provider/cost) and [docs/paygate.md](../../docs/paygate.md)
+for the full spec.
+
+### Grants
+
+On an armed host, the operator can alternatively mint a time-boxed **provider
+grant** (`1h` default, `24h` max) for any provider whose endpoints the CLI
+gates (`gate: "cli"`, 584 endpoints across 17 billed providers). The 27
+`gate: "sdk"` registry rows (`kie` and `xai`) never accept grants and still
+require an OTP per exact request.
+
+```bash
+# Install @apicity/cost globally or invoke via npx (`@apicity/cli` does not place apicity-paygate on PATH):
+npx -p @apicity/cost apicity-paygate grant mint \
+  --secret-file ./paygate.secret \
+  --provider fal \
+  --ttl 4h
+
+npx -p @apicity/cost apicity-paygate grant list --secret-file ./paygate.secret
+npx -p @apicity/cost apicity-paygate grant revoke --provider fal
+```
+
+Grants live at `$APICITY_PAYGATE_GRANT_DIR/<provider>.grant` (else
+`~/.config/apicity/paygate-grants/<provider>.grant`) with mode `0600` inside a
+`0700` directory; no CLI flag or env var carries the token itself, and nothing
+ever prints the token. Setting `APICITY_PAYGATE_GRANT_DIR` in the CLI's `.env`
+moves the directory for the CLI only (which is why refusal hints include
+`--grant-dir <dir>`). A grant is reusable across calls and processes for that
+OS user until its expiry — not single-use, and not bound to one session or
+lane. An explicit `--otp` on a call always decides alone without checking or
+recording against any grant file. Every call approved under a grant appends an
+audit line (`ts`, `grant`, `provider`, `method`, `dotPath`, `requestHash`,
+`expires`, `cwd`) to `<grant dir>/uses.jsonl` (`0600`) before dispatching (or
+fails closed with `grant-unrecorded`). Removing the file with `grant revoke`
+stops calls reading that directory, while copies kept elsewhere stay valid
+until expiry; rotating the secret voids all grants and OTPs immediately. Keep
+grant directories outside repositories and synced folders, and transfer grant
+files directly without pasting tokens.
 
 ## The skill and the Claude Code plugin
 
@@ -610,7 +649,9 @@ const endpoints = await loadCatalog();
 console.log(endpoints.filter((e) => e.provider === "openai").length);
 ```
 
-`runMain()`, `zodToJsonSchema()`, `loadEnvFile()` and the 1Password helpers
+`runMain()`, `zodToJsonSchema()`, `loadEnvFile()`, the pay-gate helpers
+(`GateKind`, `gateRequest()`, `dispatchThroughGate()`, `GatedCall`,
+`GrantRefusal`, `GrantRefusalCode`, `GRANT_USES_FILE`), and the 1Password helpers
 are exported too. For diagnostics and bulk checks, `buildRegistry()` resolves
 the tsv in one pass against every provider it can instantiate, skipping any
 whose required credential is unset; `loadCatalog()` above is the cheap path.

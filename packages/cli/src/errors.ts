@@ -66,6 +66,8 @@ export interface ClassifyContext {
   method?: string;
   dotPath?: string;
   requestHash?: `sha256:${string}`;
+  gate?: string;
+  grantDir?: string;
 }
 
 /** The transport-level `cause.code`s that mean "the request never landed". */
@@ -113,12 +115,20 @@ export function classifyError(
     const dotPath = err.dotPath || context.dotPath || "<dotPath>";
     const secretFile = context.paygateSecretFile ?? "<path>";
     const requestHash = context.requestHash ?? "<sha256:...>";
+    const tail =
+      context.gate === "sdk"
+        ? "; no grant covers this endpoint: the provider package checks it"
+        : context.gate === "cli"
+          ? `; or grant ${provider} for a time window with: apicity-paygate grant mint ` +
+            `--secret-file ${secretFile} --provider ${provider} ` +
+            `--grant-dir ${context.grantDir ?? "<grant-dir>"}`
+          : "";
     return new CliError("paygate", err.message, {
       hint:
         `${err.code}; mint with: apicity-paygate otp mint ` +
         `--secret-file ${secretFile} --provider ${provider} ` +
         `--method ${method} --dot-path ${dotPath} ` +
-        `--request-hash ${requestHash}`,
+        `--request-hash ${requestHash}${tail}`,
       ...(context.requestHash
         ? { meta: { requestHash: context.requestHash } }
         : {}),

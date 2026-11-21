@@ -797,7 +797,9 @@ for (const { command, argv, data, direct, human } of DISCOVERY) {
       expect(exit).toBe(0);
       expect(out.split("\n")[0]).toMatch(human);
       if (command === "describe") {
-        expect(out).toContain("gated:         yes\ngate:          sdk");
+        expect(out).toContain(
+          "gated:         yes\ngate:          sdk (armed: an OTP for the request; no grant covers it)"
+        );
       }
     });
 

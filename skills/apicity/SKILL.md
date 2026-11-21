@@ -52,12 +52,13 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    message. `apicity` reads its own credentials from the environment; your job
    is to call the endpoint, not to handle the secret. Naming a variable is
    fine, printing its value never is.
-2. **Never mint an OTP and never ask for the pay-gate secret.** An operator can
-   arm a pay gate on gated endpoints; a gated call then answers `paygate` until
-   it carries a request-bound OTP the operator minted out of band. If a call
-   answers `paygate`, report what the `hint` says the operator must do and
-   stop. Do not read the secret file, do not run the minting command, do not
-   retry.
+2. **Never mint an OTP or a grant, never ask for the pay-gate secret, and never read or print files in the grant directory.**
+   An operator can arm a pay gate on gated endpoints; a gated call then answers
+   `paygate` until an operator-minted OTP (or, for `gate: "cli"` endpoints, an
+   operator-minted provider grant on disk) covers it. If a call answers
+   `paygate`, report what the `hint` says the operator must do and stop. Do not
+   read the secret file or grant directory, do not run the minting command, do
+   not retry.
 3. **Prefer `--json`.** It selects the machine envelope on every command, so
    you parse one predictable document instead of a rendered table. Add
    `--quiet` when you want the data with no envelope around it.
@@ -542,8 +543,10 @@ names each item the vault lacks and labels the optional ones `(optional)`.
 
 Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 (where media lands), `$APICITY_PAYGATE_SECRET_FILE` (the operator's pay-gate
-secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
-`apicity setup agents` connects). `apicity help environment` lists them.
+secret — never read it yourself), `$APICITY_PAYGATE_GRANT_DIR` (the operator's
+provider grant directory — never read or print files inside it),
+`$APICITY_SETUP_AGENT` (which agent `apicity setup agents` connects).
+`apicity help environment` lists them.
 
 | Provider                 | Credential variables (names only)                                                                                                                                                                                                       |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -605,8 +608,9 @@ apicity describe openai v1.embeddings --json         # "paid": true, "gated": tr
 apicity commands --provider xai --json               # each row carries "paid", "gated", "gate"
 ```
 
-`paid: true` means the call bills, armed or not. Say so first — name the
-endpoint and that it bills — then call it without a token:
+`paid: true` means the call bills, armed or not. A provider grant never changes
+rule 6: always state the endpoint and that it bills before calling it, then call
+it without a token:
 
 ```bash
 apicity kie api.v1.jobs.createTask --data-file ./job.json
@@ -614,40 +618,53 @@ apicity kie api.v1.jobs.createTask --data-file ./job.json
 
 The pay gate is off unless the operator armed it by giving the CLI a secret
 file (`--paygate-secret-file` or `$APICITY_PAYGATE_SECRET_FILE`), so that call
-usually runs directly. Two answers mean something else:
+usually runs directly. On an armed host, **`gate: "cli"`** endpoints also run
+without `--otp` when a valid operator-minted provider grant exists on disk (no
+flag passes a grant — the CLI reads `$APICITY_PAYGATE_GRANT_DIR` or
+`~/.config/apicity/paygate-grants` itself); **`gate: "sdk"`** endpoints (`kie`
+and `xai` registry rows) never accept grants and still require a per-request
+OTP. Grants are per provider for that host OS user until `--ttl` expires (`1h`
+default, `24h` max) — reusable across calls, not single-use or per-session.
+Two refusal answers mean something else:
 
-- **`paygate`, with `otp-missing` in `hint`.** The operator armed the gate:
-  every paid call now needs an OTP bound to that endpoint and exact request
-  until it expires (10 minutes by default unless `--ttl` is passed; single-use
-  within one process), and a missing or bad one fails closed. Report the exact
-  `apicity-paygate otp mint ...` command from `hint` (and `meta.requestHash`),
-  and stop so the operator can mint it.
+- **`paygate`, with `otp-missing` or `grant-*` in `hint`.** The operator armed
+  the gate (`grant-expired`, `grant-invalid-signature`, `grant-malformed`,
+  `grant-not-yet-valid`, `grant-mismatched-provider`, `grant-unreadable`,
+  `grant-unrecorded`, or `otp-*`). Report the exact `hint` (both the
+  `apicity-paygate` mint/grant commands and `meta.requestHash`), and stop without
+  reading secret or grant files so the operator can mint out of band (via
+  `@apicity/cost` or `npx -p @apicity/cost apicity-paygate`).
 - **`paygate`, with `paygate-not-configured` in `hint`, on a call where you
   passed an operator-supplied `--otp`.** This host has no gate armed, so the
   token cannot be checked. Report the unarmed host and stop. Never retry
   without the `--otp`: the operator meant that call to be gated.
 
-**The operator mints the token; you never do.** When an armed host refuses a
-call, `hint` prints the full `--request-hash` mint command and `meta.requestHash`
-carries the digest; `--payload-file` still mints for single-object requests
-with no path parameters, and running the caller's command without `--otp` lets
-the operator check what `requestHash` covers without calling upstream:
+**The operator mints the token or grant; you never do.** When an armed host
+refuses a call, `hint` prints the complete `--request-hash` OTP command — and
+for `gate: "cli"` rows, also the `apicity-paygate grant mint ... --grant-dir <dir>`
+command (`APICITY_PAYGATE_GRANT_DIR` in the CLI's `.env` moves `<dir>` for the
+CLI only) — and `meta.requestHash` carries the digest; `--payload-file` still
+mints OTPs for single-object requests with no path parameters, and running the
+caller's command without `--otp` lets the operator verify what `requestHash`
+covers without calling upstream:
 
 ```bash
 apicity-paygate otp mint --secret-file <path> --provider <provider> --method <M> --dot-path <api.path> --request-hash sha256:<hex>
 ```
 
-They hand you the token, which you pass unchanged:
+If they give you an OTP token, pass it unchanged:
 
 ```bash
 apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json
 ```
 
-The token is bound to the exact endpoint and request — `--data` / `--data-file`,
+An OTP token is bound to the exact endpoint and request — `--data` / `--data-file`,
 path parameters (`--voiceId`), and request-field flags (`--bucket`, `--key`)
-included — so change any of them and the operator must mint again. If you have
-no token, report the block and stop — do not read the secret file, and do not
-run the minting command yourself.
+included — valid until expiry (10 minutes default; single-use within one
+process), so change any field and the operator must mint again. If you have
+no token (and no valid grant applies), report the block and `hint` and stop —
+never read the secret file or grant directory, and never run `apicity-paygate`
+yourself.
 
 ## Troubleshooting
 

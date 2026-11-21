@@ -3,6 +3,7 @@ import {
   loadCatalog,
   selectEntry,
   type CatalogEntry,
+  type GateKind,
 } from "./catalog.js";
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
 import {
@@ -315,6 +316,16 @@ export async function runDescribe(
   return respond(writer, options, description, () => describeText(description));
 }
 
+function describeGateText(gate: GateKind): string {
+  if (gate === "cli") {
+    return "cli (armed: an OTP for the request, or a grant for the provider)";
+  }
+  if (gate === "sdk") {
+    return "sdk (armed: an OTP for the request; no grant covers it)";
+  }
+  return "none";
+}
+
 function describeText(description: EndpointDescription): string {
   const lines = [
     `${description.provider} ${description.dotPath}`,
@@ -327,7 +338,7 @@ function describeText(description: EndpointDescription): string {
     `paid:          ${description.paid ? "yes" : "no"}`,
     `billing:       ${description.billing}`,
     `gated:         ${description.gated ? "yes" : "no"}`,
-    `gate:          ${description.gate}`,
+    `gate:          ${describeGateText(description.gate)}`,
   ];
   if (description.schema !== undefined) {
     lines.push("", "schema:", JSON.stringify(description.schema, null, 2));

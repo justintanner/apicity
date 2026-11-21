@@ -202,7 +202,8 @@ describe("a paid endpoint with a secret but no approval", () => {
     expect(envelope.hint).toBe(
       `otp-missing; mint with: apicity-paygate otp mint ` +
         `--secret-file ${secret} --provider kie --method POST ` +
-        `--dot-path ${DOT_PATH} --request-hash ${requestHash}`
+        `--dot-path ${DOT_PATH} --request-hash ${requestHash}; ` +
+        `no grant covers this endpoint: the provider package checks it`
     );
     // The shared secret is read only to hand to the factory.
     expect([...cap.out, ...cap.err].join("\n")).not.toContain(SECRET);
@@ -462,12 +463,19 @@ describe("a billed endpoint outside the pay-gate registry", () => {
     const calls: unknown[][] = [];
     const cap = capture();
     const secret = secretFile();
+    const opts = openAiOptions(calls);
+    const grantDir = join(
+      String(opts.env?.HOME),
+      ".config",
+      "apicity",
+      "paygate-grants"
+    );
 
     const exit = await runEndpoint(
       "openai",
       [EMBEDDINGS, "--data-file", bodyFile(), "--paygate-secret-file", secret],
       cap.writer,
-      openAiOptions(calls)
+      opts
     );
 
     expect(exit).toBe(4);
@@ -479,7 +487,9 @@ describe("a billed endpoint outside the pay-gate registry", () => {
     expect(envelope.hint).toBe(
       `otp-missing; mint with: apicity-paygate otp mint ` +
         `--secret-file ${secret} --provider openai --method POST ` +
-        `--dot-path ${EMBEDDINGS} --request-hash ${expectedHash}`
+        `--dot-path ${EMBEDDINGS} --request-hash ${expectedHash}; ` +
+        `or grant openai for a time window with: apicity-paygate grant mint ` +
+        `--secret-file ${secret} --provider openai --grant-dir ${grantDir}`
     );
   });
 
@@ -774,7 +784,7 @@ describe("the CLI is the code client, never the minter", () => {
     const found = await new Promise<string>((resolve) => {
       execFile(
         "grep",
-        ["-rn", "mintOtp", "packages/cli/src"],
+        ["-rnE", "mintOtp|mintGrant", "packages/cli/src"],
         (_error, stdout) => resolve(stdout)
       );
     });

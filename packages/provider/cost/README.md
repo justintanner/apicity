@@ -1060,9 +1060,11 @@ persistent `ReplayStore`). An armed gate is fail-closed and does **no** cost
 estimation — pure authorization: a gated call cannot fire unless the caller
 presents a valid, request-bound OTP. The autonomous caller never holds the
 secret, so it cannot self-approve; only the human or code client that holds the
-secret can mint. There are **no environment variables and no key files** — the
-secret is passed in via factory options (or the CLI's `--paygate-secret-file` /
-`APICITY_PAYGATE_SECRET_FILE`).
+secret can mint. There are **no environment variables and no key files** for the
+provider package OTP gate — the secret is passed in via factory options (while
+`@apicity/cli` adds `--paygate-secret-file` / `APICITY_PAYGATE_SECRET_FILE` and
+its CLI-only grant directory `$APICITY_PAYGATE_GRANT_DIR` /
+`~/.config/apicity/paygate-grants`).
 
 An OTP presented to a provider or CLI built without a secret is refused with
 `paygate-not-configured`, never silently dropped: whoever passes one believes a
@@ -1293,9 +1295,12 @@ try {
 
 ### CLI: minting OTPs
 
-The `apicity-paygate` binary mints OTPs from either `--payload-file` or a
-precomputed `--request-hash` (one of the two, never both). The secret is read
-from a **file** (never an env var); only the OTP is printed to stdout:
+The `apicity-paygate` binary (installed with `npm install -g @apicity/cost` or
+invoked via `npx -p @apicity/cost apicity-paygate`) mints OTPs from either
+`--payload-file` or a precomputed `--request-hash` (one of the two, never
+both), and manages provider grants (`grant mint`, `grant list`, `grant revoke`).
+The secret is read from a **file** (never an env var), and tokens/secrets are
+never printed on grant commands:
 
 ```bash
 apicity-paygate otp mint \
@@ -1312,7 +1317,38 @@ apicity-paygate otp mint \
   --dot-path api.v1.jobs.createTask \
   --payload-file request.json \
   --ttl 10m
+
+# Provider grants (for CLI-gated endpoints only; default 1h, max 24h):
+apicity-paygate grant mint --secret-file ./paygate.secret --provider fal --ttl 4h
+apicity-paygate grant list --secret-file ./paygate.secret
+apicity-paygate grant revoke --provider fal
 ```
+
+### Grants
+
+Provider grants live in a dedicated module (`paygate-grant.ts`, excluded from
+provider copies in `@apicity/kie` and `@apicity/xai`) so direct SDK gates stay
+OTP-only while `@apicity/cli` can accept time-boxed grants for `gate: "cli"`
+endpoints:
+
+- **Token format:** `apicity-grant-v1.<base64url(payloadJson)>.<base64url(signature)>`,
+  signed with HMAC-SHA256 over `"apicity-grant-v1." + payloadSegment` (domain-separated
+  from bare OTPs). Payload claims: `{ v: 1, jti, provider, iat, exp }`.
+- **Constants:** `GRANT_TOKEN_PREFIX` (`"apicity-grant-v1."`),
+  `GRANT_DEFAULT_TTL_SECONDS` (`3600`), `GRANT_MAX_TTL_SECONDS` (`86400`),
+  `GRANT_CLOCK_SKEW_SECONDS` (`300`).
+- **Helpers:** `mintGrant(secret, { provider, ttl })`, `verifyGrant({ token,
+secret, provider, nowSeconds })`, `isGrantProviderName(name)`,
+  `grantFileName(provider)` (`<provider>.grant`), and `grantDirectory(env)`
+  (`$APICITY_PAYGATE_GRANT_DIR` else `<home>/.config/apicity/paygate-grants`).
+
+| Condition                            | `GrantVerifyFailureCode`    |
+| ------------------------------------ | --------------------------- |
+| Wrong prefix, envelope, claims, >24h | `grant-malformed`           |
+| Invalid HMAC signature               | `grant-invalid-signature`   |
+| `iat` more than 300s in the future   | `grant-not-yet-valid`       |
+| Past `exp` (`nowSeconds > exp`)      | `grant-expired`             |
+| Token provider differs from target   | `grant-mismatched-provider` |
 
 ### Wiring the gate into a custom provider
 

@@ -486,9 +486,15 @@ export async function runEndpoint(
         }
 
         const gatedRequest = gateRequest(entry, bound.positional, request);
+        let requestHash: `sha256:${string}` | undefined;
+        let grantDir: string | undefined;
         if (paygateSecret !== undefined && entry.gated) {
           const helpers = await loadCostHelpers();
-          context.requestHash = helpers.canonicalHash(gatedRequest);
+          requestHash = helpers.canonicalHash(gatedRequest);
+          grantDir = helpers.grantDirectory(env);
+          context.requestHash = requestHash;
+          context.gate = entry.gate;
+          context.grantDir = grantDir;
         }
 
         return await dispatchThroughGate({
@@ -496,6 +502,9 @@ export async function runEndpoint(
           request: gatedRequest,
           otp: flags.otp,
           secret: paygateSecret,
+          grantDir,
+          requestHash,
+          cwd: options.cwd ?? process.cwd(),
           dispatch: () =>
             callEndpoint(
               instance,

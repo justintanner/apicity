@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Pay-gate provider grants (`paygate-grant.ts`, excluded from `@apicity/kie` and `@apicity/xai` copies): `mintGrant`, `verifyGrant`, `isGrantProviderName`, `grantFileName`, `grantDirectory`, `GRANT_TOKEN_PREFIX`, `GRANT_DEFAULT_TTL_SECONDS`, `GRANT_MAX_TTL_SECONDS`, `GRANT_CLOCK_SKEW_SECONDS`, plus `apicity-paygate grant mint|list|revoke` subcommands. Grants use the `apicity-grant-v1.` prefix inside the HMAC input so OTPs and grants are never interchangeable, enforce a 1h default / 24h maximum lifetime, cover `gate: "cli"` endpoints (584 rows across 17 providers), and leave the 27 `PAID_ENDPOINTS` (`kie` 21, `xai` 6) OTP-only (ac-upjl0y).
+
 - WaveSpeed GPT Image 2.5 Flare edit (`openai/gpt-image-2.5-flare/edit`)
   bills exactly like the Sunburst edit: the GPT Image 2.5 text-to-image rate
   for the quality and resolution, plus 0.015 USD per input image, plus

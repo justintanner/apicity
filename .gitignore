@@ -19,6 +19,9 @@ harness_media/
 # tracked source stays at the repository root.
 /packages/cli/skills/
 
+# Operator pay-gate provider grant tokens
+*.grant
+
 # Logs
 logs
 *.log

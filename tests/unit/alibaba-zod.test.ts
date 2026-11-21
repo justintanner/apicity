@@ -253,6 +253,8 @@ describe("Alibaba Zod schema validation", () => {
   describe("AlibabaVideoSynthesisRequestSchema", () => {
     it("should expose video model options without unwrapping refinements", () => {
       expect(enumBranchOf(AlibabaVideoSynthesisModelSchema)).toEqual([
+        "wan3.0-video",
+        "wan3.0-video-prime",
         "wan2.7-i2v",
         "wan2.7-videoedit",
       ]);
@@ -275,7 +277,14 @@ describe("Alibaba Zod schema validation", () => {
           media: [{ type: "video", url: "https://example.com/vid.mp4" }],
         },
       };
-      const invalidVideoEditDuration = {
+      const outOfRangeDuration = {
+        model: "wan2.7-videoedit",
+        input: {
+          media: [{ type: "video", url: "https://example.com/vid.mp4" }],
+        },
+        parameters: { duration: 35 },
+      };
+      const wan27TooLongDuration = {
         model: "wan2.7-videoedit",
         input: {
           media: [{ type: "video", url: "https://example.com/vid.mp4" }],
@@ -291,12 +300,18 @@ describe("Alibaba Zod schema validation", () => {
         AlibabaVideoSynthesisRequestSchema.safeParse(invalidI2vMedia).success
       ).toBe(false);
       expect(
-        AlibabaVideoSynthesisRequestObjectSchema.safeParse(
-          invalidVideoEditDuration
-        ).success
+        AlibabaVideoSynthesisRequestObjectSchema.safeParse(outOfRangeDuration)
+          .success
       ).toBe(false);
       expect(
-        AlibabaVideoSynthesisRequestSchema.safeParse(invalidVideoEditDuration)
+        AlibabaVideoSynthesisRequestSchema.safeParse(outOfRangeDuration).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestObjectSchema.safeParse(wan27TooLongDuration)
+          .success
+      ).toBe(true);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse(wan27TooLongDuration)
           .success
       ).toBe(false);
     });
@@ -645,6 +660,187 @@ describe("Alibaba Zod schema validation", () => {
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+
+    it("should accept wan3.0-video and wan3.0-video-prime across T2V, I2V, R2V, and V2V shapes", () => {
+      for (const model of ["wan3.0-video", "wan3.0-video-prime"] as const) {
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: { prompt: "A red cube rotates slowly" },
+            parameters: {
+              resolution: "480P",
+              ratio: "adaptive",
+              duration: 2,
+              audio: false,
+              seed: -1,
+            },
+          }).success
+        ).toBe(true);
+
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: {
+              prompt: "a".repeat(20000),
+              media: [
+                { type: "first_frame", url: "https://example.com/start.jpg" },
+                { type: "last_frame", url: "https://example.com/end.jpg" },
+              ],
+            },
+            parameters: {
+              resolution: "1080P",
+              ratio: "21:9",
+              duration: -1,
+            },
+          }).success
+        ).toBe(true);
+
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: {
+              media: [
+                { type: "reference_image", url: "https://example.com/1.jpg" },
+                { type: "reference_video", url: "https://example.com/1.mp4" },
+                { type: "reference_video", url: "https://example.com/2.mp4" },
+                { type: "reference_audio", url: "https://example.com/1.mp3" },
+                { type: "file", url: "https://example.com/deck.pdf" },
+              ],
+            },
+            parameters: { duration: 30, prompt_extend: true },
+          }).success
+        ).toBe(true);
+      }
+    });
+
+    it("should enforce wan3.0 input, media combination, and parameter rules", () => {
+      // Neither prompt nor media
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {},
+        }).success
+      ).toBe(false);
+
+      // Disallowed wan2.7-only media types
+      for (const type of ["video", "driving_audio", "first_clip"] as const) {
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "wan3.0-video",
+            input: { media: [{ type, url: "https://example.com/asset" }] },
+          }).success
+        ).toBe(false);
+      }
+
+      // first_frame / last_frame cannot mix with reference / file / link
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: [
+              { type: "first_frame", url: "https://example.com/a.jpg" },
+              { type: "reference_audio", url: "https://example.com/a.mp3" },
+            ],
+          },
+        }).success
+      ).toBe(false);
+
+      // last_frame requires first_frame on wan3.0
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video-prime",
+          input: {
+            media: [{ type: "last_frame", url: "https://example.com/b.jpg" }],
+          },
+        }).success
+      ).toBe(false);
+
+      // file and link are mutually exclusive
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: [
+              { type: "file", url: "https://example.com/doc.pdf" },
+              { type: "link", url: "https://example.com/article" },
+            ],
+          },
+        }).success
+      ).toBe(false);
+
+      // file or link requires prompt_extend not to be false
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: [{ type: "link", url: "https://example.com/article" }],
+          },
+          parameters: { prompt_extend: false },
+        }).success
+      ).toBe(false);
+
+      // duration: 0 and audio_setting belong only to wan2.7
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: { prompt: "hi" },
+          parameters: { duration: 0 },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: { prompt: "hi" },
+          parameters: { audio_setting: "auto" },
+        }).success
+      ).toBe(false);
+
+      // Per-type reference limits: > 10 images, > 5 videos, > 5 audios
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: Array.from({ length: 11 }, (_, i) => ({
+              type: "reference_image" as const,
+              url: `https://example.com/${i}.jpg`,
+            })),
+          },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: Array.from({ length: 6 }, (_, i) => ({
+              type: "reference_video" as const,
+              url: `https://example.com/${i}.mp4`,
+            })),
+          },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-video",
+          input: {
+            media: Array.from({ length: 6 }, (_, i) => ({
+              type: "reference_audio" as const,
+              url: `https://example.com/${i}.mp3`,
+            })),
+          },
+        }).success
+      ).toBe(false);
+
+      // Rejects audio on wan2.7
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan2.7-i2v",
+          input: {
+            media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+          },
+          parameters: { audio: true },
+        }).success
+      ).toBe(false);
     });
   });
 

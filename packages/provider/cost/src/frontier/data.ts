@@ -706,6 +706,16 @@ export const FRONTIER = {
             dotPath: "v1.alibaba.services.aigc.videoGeneration.videoSynthesis",
             modelId: "wan3.0-video",
           },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video",
+          },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video-prime",
+          },
         ],
       },
       {
@@ -1142,6 +1152,16 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "wan/3-0-video-prime",
           },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video",
+          },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video-prime",
+          },
         ],
       },
       {
@@ -1404,6 +1424,16 @@ export const FRONTIER = {
             provider: "nunchux",
             dotPath: "v1.alibaba.services.aigc.videoGeneration.videoSynthesis",
             modelId: "wan3.0-video",
+          },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video",
+          },
+          {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "wan3.0-video-prime",
           },
         ],
       },

@@ -1,7 +1,13 @@
 import { ALIBABA_CHAT } from "./alibaba-chat";
 import type { CostHints } from "../types";
 import type { ModelPricing, PerUnitPricing } from "./types";
-import { asNumber, asObject, asString, hintInputSeconds } from "./helpers";
+import {
+  asNumber,
+  asObject,
+  asString,
+  hintInputSeconds,
+  hintSeconds,
+} from "./helpers";
 
 const source = {
   url: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
@@ -15,6 +21,76 @@ const source = {
 const mediaSource = { ...source, asOf: "2026-07-20" };
 const wan27ImageSource = { ...source, asOf: "2026-07-22" };
 const wan27VideoSource = { ...source, asOf: "2026-11-05" };
+const wan30VideoSource = { ...source, asOf: "2026-11-21" };
+
+const wan30OutputSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const duration = asObject(p.parameters)?.duration;
+  if (duration === undefined) return 5;
+  if (duration === -1) return hintSeconds(hints);
+  const d = asNumber(duration);
+  return d !== undefined && Number.isInteger(d) && d >= 2 && d <= 30
+    ? d
+    : undefined;
+};
+
+const wan30HasVideoRef = (p: Record<string, unknown>): boolean => {
+  const media = asObject(p.input)?.media;
+  return (
+    Array.isArray(media) &&
+    media.some((m) => asObject(m)?.type === "reference_video")
+  );
+};
+
+const wan30Video = (
+  model: string,
+  rates: Record<string, number>
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: (p, hints) => {
+    const output = wan30OutputSeconds(p, hints);
+    if (output === undefined) return undefined;
+    const media = asObject(p.input)?.media;
+    if (media !== undefined && !Array.isArray(media)) return undefined;
+    if (!wan30HasVideoRef(p)) return output;
+    const input = hintInputSeconds(hints);
+    if (input === undefined || input > 15) return undefined;
+    const total = output + input;
+    return total <= 30 ? total : undefined;
+  },
+  warn: (p, hints) => {
+    const warnings: string[] = [];
+    if (
+      asObject(p.parameters)?.duration === -1 &&
+      hintSeconds(hints) === undefined
+    ) {
+      warnings.push(
+        `alibaba '${model}': duration -1 chooses length dynamically; pass costHints.durationSeconds`
+      );
+    }
+    const media = asObject(p.input)?.media;
+    const needsInput =
+      (media !== undefined && !Array.isArray(media)) || wan30HasVideoRef(p);
+    if (needsInput && hintInputSeconds(hints) === undefined) {
+      warnings.push(
+        `alibaba '${model}': reference_video clips bill their input seconds beside the output; pass their total seconds in costHints.inputDurationSeconds`
+      );
+    }
+    return warnings;
+  },
+  select: [
+    {
+      name: "resolution",
+      required: true,
+      pick: (p) => asString(asObject(p.parameters)?.resolution) ?? "1080P",
+    },
+  ],
+  rates,
+  source: wan30VideoSource,
+});
 
 // DashScope image endpoints carry the batch count in `parameters.n`
 // (1-12 for wan2.7-image*, 1-6 for the qwen-image* family). Absent means a
@@ -132,4 +208,19 @@ export const alibaba: Record<string, ModelPricing> = {
         : [],
     source: wan27VideoSource,
   },
+
+  // Video — Wan 3.0 All-in-One (`wan3.0-video`, `wan3.0-video-prime`),
+  // International (Singapore) list rates per second. Both input reference
+  // videos (when present) and output video are billed at the output
+  // resolution rate.
+  "wan3.0-video": wan30Video("wan3.0-video", {
+    "480P": 0.05,
+    "720P": 0.1,
+    "1080P": 0.2,
+  }),
+  "wan3.0-video-prime": wan30Video("wan3.0-video-prime", {
+    "480P": 0.068,
+    "720P": 0.14,
+    "1080P": 0.28,
+  }),
 };

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Price `@apicity/alibaba` `wan3.0-video` (`$0.05`/`$0.10`/`$0.20` per s) and `wan3.0-video-prime` (`$0.068`/`$0.14`/`$0.28` per s) across `480P`/`720P`/`1080P` with `costHints.durationSeconds` (`-1` sentinel) and `costHints.inputDurationSeconds` (`reference_video` billing), plus `MODEL_SLUGS.alibaba` / `MODEL_DISPLAY.alibaba` entries (`wan3p0`, `wan3p0p`).
+
+### Added
+
 - Google `gemini-nano-banana-2.1` (`MODEL_SLUGS.google` `nb21`, `MODEL_DISPLAY.google` `"Nano Banana 2.1"`) prices `$1.50/1M` input tokens (`$0.15/1M` cached input), `$7.50/1M` text/reasoning output tokens, and `$30/1M` image output tokens (`source.asOf: "2026-11-21"`), allows image inputs and `IMAGE` response modality on `gemini-nano-banana-2.1` while keeping text-only models fail-closed, extracts `promptTokensDetails`/`candidatesTokensDetails` image token counts in `extractActual` (pinning the recorded 1K generation at `0.0393615` USD), adds `ENDPOINT_BILLING` for `POST v1.projects.locations.global.publishers.google.models.generateContent`, and maps `google` on the `Nano Banana 2.1` frontier t2i and i2i rows (ac-hvvd6d).
 
 - OpenAI `gpt-image-2.6-sunburst` and `gpt-image-2.6-flare` (slugs `gi2p6sb` and `gi2p6fl`, matching KIE/WaveSpeed/Nunchux) price `$30/1M` image output tokens via OpenAI's documented token calculator formula (the 2.5 patch grid with `4.2` `low` and `3.3` `medium` multipliers rounded to integer tokens), with input-token floor warnings; `auto`, `gif`, and `svg` fail closed (`source.asOf: "2026-11-21"`). Also maps `openai` `v1.images.generations` and `v1.images.edits` on the four `GPT Image 2.6 Sunburst/Flare (max)` frontier t2i/i2i rows (ac-xbnboo).

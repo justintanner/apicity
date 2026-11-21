@@ -38,6 +38,7 @@ import {
   XaiImageGenerateRequestSchema,
   XaiVideoGenerateRequestSchema,
 } from "@apicity/xai/zod";
+import { AlibabaVideoSynthesisRequestSchema } from "@apicity/alibaba/zod";
 import { resolveEndpointFn } from "../../packages/cli/src/registry";
 import {
   zodToJsonSchema,
@@ -543,12 +544,66 @@ function liveRegistry() {
     alibabaZod,
     "WAN_VIDEO_SYNTHESIS_MODELS"
   );
-  const alibabaVideo = new Set(
-    alibabaModels.filter((model) => model.includes("i2v"))
-  );
-  const alibabaVideoEdit = new Set(
-    alibabaModels.filter((model) => model.includes("videoedit"))
-  );
+  const alibabaVideoByOp = {
+    t2v: new Set(
+      alibabaModels.filter(
+        (model) =>
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: { prompt: "frontier" },
+          }).success
+      )
+    ),
+    i2v: new Set(
+      alibabaModels.filter(
+        (model) =>
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: {
+              prompt: "frontier",
+              media: [
+                { type: "first_frame", url: "https://example.com/frame.png" },
+              ],
+            },
+          }).success
+      )
+    ),
+    r2v: new Set(
+      alibabaModels.filter(
+        (model) =>
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: {
+              prompt: "frontier",
+              media: [
+                {
+                  type: "reference_image",
+                  url: "https://example.com/reference.png",
+                },
+              ],
+            },
+          }).success
+      )
+    ),
+    v2v: new Set(
+      alibabaModels.filter(
+        (model) =>
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model,
+            input: {
+              prompt: "frontier",
+              media: [
+                {
+                  type:
+                    model === "wan2.7-videoedit" ? "video" : "reference_video",
+                  url: "https://example.com/clip.mp4",
+                },
+              ],
+            },
+          }).success
+      )
+    ),
+  };
   const xaiReferenceVideo = new Set(
     [XAI_GROK_IMAGINE_VIDEO, XAI_GROK_IMAGINE_VIDEO_1_5].filter(
       (model) =>
@@ -711,7 +766,7 @@ function liveRegistry() {
         entry.provider === "alibaba" &&
         entry.dotPath === ALIBABA_VIDEO_SYNTHESIS
       ) {
-        return type === "v2v" && alibabaVideoEdit.has(entry.modelId);
+        return alibabaVideoByOp[type].has(entry.modelId);
       }
       if (
         entry.provider === "xai" &&
@@ -738,7 +793,7 @@ function liveRegistry() {
       entry.provider === "alibaba" &&
       entry.dotPath === ALIBABA_VIDEO_SYNTHESIS
     ) {
-      return alibabaVideo.has(entry.modelId);
+      return alibabaVideoByOp.i2v.has(entry.modelId);
     }
     if (entry.provider === "xai" && entry.dotPath === "v1.videos.generations") {
       return xaiImageVideo.has(entry.modelId);

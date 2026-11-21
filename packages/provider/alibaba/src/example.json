@@ -58,22 +58,15 @@
     "runByDefault": false
   },
   "POST api.v1.services.aigc.videoGeneration.videoSynthesis": {
-    "source": "alibaba/wan-videoedit",
+    "source": "alibaba/wan-3-0-video",
     "payload": {
-      "model": "wan2.7-videoedit",
+      "model": "wan3.0-video",
       "input": {
-        "prompt": "Convert the entire scene to a claymation style",
-        "media": [
-          {
-            "type": "video",
-            "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260402/ldnfdf/wan2.7-videoedit-style-change.mp4"
-          }
-        ]
+        "prompt": "A red cube slowly rotates on a white table"
       },
       "parameters": {
-        "resolution": "720P",
-        "prompt_extend": true,
-        "watermark": true
+        "resolution": "480P",
+        "duration": 2
       }
     },
     "tier": "expensive",

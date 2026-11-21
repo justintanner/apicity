@@ -473,6 +473,7 @@ guarantee](#hash-and-otp-guarantee) below.
 | `fal`     | `bytedance/seedance-2.5/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
 | `fal`     | `xai/grok-imagine-video/extend-video`          | source `video_url` length, with `inputResolution`                                             |
 | `alibaba` | `wan2.7-videoedit`                             | source video length                                                                           |
+| `alibaba` | `wan3.0-video`, `wan3.0-video-prime`           | `reference_video` clip length (when passed)                                                   |
 
 `xai/grok-imagine-video/extend-video` bills the new `duration` seconds at 0.05
 USD/s (480p) or 0.07 USD/s (720p), plus 0.01 USD per source second. The output

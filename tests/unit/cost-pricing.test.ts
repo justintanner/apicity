@@ -226,6 +226,107 @@ describe("PRICING data", () => {
     }
   });
 
+  it("alibaba prices wan3.0-video and wan3.0-video-prime by resolution and input/output duration", () => {
+    expect(PRICING.alibaba["wan3.0-video"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "480P": 0.05, "720P": 0.1, "1080P": 0.2 },
+      source: { asOf: "2026-11-21" },
+    });
+    expect(PRICING.alibaba["wan3.0-video-prime"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "480P": 0.068, "720P": 0.14, "1080P": 0.28 },
+      source: { asOf: "2026-11-21" },
+    });
+
+    const intlBase = "https://dashscope-intl.aliyuncs.com/api/v1";
+    const t2vMinimal = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video",
+        input: { prompt: "A red cube rotates" },
+        parameters: { resolution: "480P", duration: 2 },
+      },
+    });
+    expect(t2vMinimal.usd).toBeCloseTo(0.1, 10);
+    expect(t2vMinimal.warnings).toEqual([]);
+
+    const defaultPrime = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video-prime",
+        input: { prompt: "A red cube rotates" },
+      },
+    });
+    // Default resolution is 1080P ($0.28/s) and default duration is 5 s.
+    expect(defaultPrime.usd).toBeCloseTo(1.4, 10);
+
+    const missingInputHint = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video",
+        input: {
+          prompt: "Extend Video 1",
+          media: [
+            { type: "reference_video", url: "https://example.com/v.mp4" },
+          ],
+        },
+        parameters: { resolution: "720P", duration: 5 },
+      },
+    });
+    expect(missingInputHint.usd).toBe(0);
+    expect(missingInputHint.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+
+    const withInputHint = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video",
+        input: {
+          prompt: "Extend Video 1",
+          media: [
+            { type: "reference_video", url: "https://example.com/v.mp4" },
+          ],
+        },
+        parameters: { resolution: "720P", duration: 5 },
+      },
+      costHints: { inputDurationSeconds: 4 },
+    });
+    expect(withInputHint.usd).toBeCloseTo(0.9, 10);
+
+    const missingDynamicDurationHint = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video",
+        input: { prompt: "hi" },
+        parameters: { resolution: "480P", duration: -1 },
+      },
+    });
+    expect(missingDynamicDurationHint.usd).toBe(0);
+    expect(missingDynamicDurationHint.warnings.join(" ")).toContain(
+      "costHints.durationSeconds"
+    );
+
+    const withDynamicDurationHint = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "wan3.0-video",
+        input: { prompt: "hi" },
+        parameters: { resolution: "480P", duration: -1 },
+      },
+      costHints: { durationSeconds: 6 },
+    });
+    expect(withDynamicDurationHint.usd).toBeCloseTo(0.3, 10);
+  });
+
   // apicity har cost reads a capture older than a rate's asOf as a price change,
   // so a row with no real date of its own would weaken that gate. RateSource makes
   // the field required, and this holds it to a date at runtime too, for any row the

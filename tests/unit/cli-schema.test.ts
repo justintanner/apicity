@@ -91,6 +91,10 @@ describe("Zod schema introspection helpers", () => {
       "first_clip",
       "video",
       "reference_image",
+      "reference_video",
+      "reference_audio",
+      "file",
+      "link",
     ]);
 
     // The Wan video model enum is open — `z.enum([...]).or(<alias>)` — so it is
@@ -99,6 +103,8 @@ describe("Zod schema introspection helpers", () => {
     // what a client's completion list is built from.
     expect(getZodEnumValues(AlibabaVideoSynthesisModelSchema)).toEqual([]);
     expect(enumBranchOf(AlibabaVideoSynthesisModelSchema)).toEqual([
+      "wan3.0-video",
+      "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
@@ -112,6 +118,8 @@ describe("Zod schema introspection helpers", () => {
       "parameters",
     ]);
     expect(enumBranchOf(objectShape?.model)).toEqual([
+      "wan3.0-video",
+      "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
@@ -119,6 +127,8 @@ describe("Zod schema introspection helpers", () => {
     const shape = getZodObjectShape(AlibabaVideoSynthesisRequestSchema);
     expect(Object.keys(shape ?? {})).toEqual(["model", "input", "parameters"]);
     expect(enumBranchOf(shape?.model)).toEqual([
+      "wan3.0-video",
+      "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
@@ -127,7 +137,15 @@ describe("Zod schema introspection helpers", () => {
     const properties = propertiesOf(json);
     expect(properties.model).toMatchObject({
       anyOf: [
-        { type: "string", enum: ["wan2.7-i2v", "wan2.7-videoedit"] },
+        {
+          type: "string",
+          enum: [
+            "wan3.0-video",
+            "wan3.0-video-prime",
+            "wan2.7-i2v",
+            "wan2.7-videoedit",
+          ],
+        },
         { type: "string" },
       ],
     });

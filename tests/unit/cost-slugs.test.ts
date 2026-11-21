@@ -428,12 +428,18 @@ describe("modelSlug", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
   });
 
-  it("shares Wan 2.7 image slugs across Alibaba and KIE", () => {
+  it("shares Wan 2.7 image and Wan 3.0 video slugs across Alibaba and KIE", () => {
     expect(modelSlug("alibaba", "wan2.7-image")).toBe(
       modelSlug("kie", "wan/2-7-image")
     );
     expect(modelSlug("alibaba", "wan2.7-image-pro")).toBe(
       modelSlug("kie", "wan/2-7-image-pro")
+    );
+    expect(modelSlug("alibaba", "wan3.0-video")).toBe(
+      modelSlug("kie", "wan/3-0-video")
+    );
+    expect(modelSlug("alibaba", "wan3.0-video-prime")).toBe(
+      modelSlug("kie", "wan/3-0-video-prime")
     );
   });
 
@@ -635,8 +641,10 @@ describe("modelDisplay", () => {
     expect(modelDisplay("kie", "veo3")).toBe("Veo 3");
   });
 
-  it("returns correct display for alibaba qwen3.6-plus", () => {
+  it("returns correct display for alibaba qwen3.6-plus and wan3.0 video", () => {
     expect(modelDisplay("alibaba", "qwen3.6-plus")).toBe("Qwen 3.6 Plus");
+    expect(modelDisplay("alibaba", "wan3.0-video")).toBe("Wan 3.0");
+    expect(modelDisplay("alibaba", "wan3.0-video-prime")).toBe("Wan 3.0 Prime");
   });
 
   it("returns correct display for fireworks deepseek-v4-pro", () => {

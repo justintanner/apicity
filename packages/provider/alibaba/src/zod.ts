@@ -93,6 +93,10 @@ export const AlibabaVideoMediaTypeSchema = z.enum([
   "first_clip",
   "video",
   "reference_image",
+  "reference_video",
+  "reference_audio",
+  "file",
+  "link",
 ]);
 
 export const AlibabaVideoMediaSchema = z.object({
@@ -119,36 +123,67 @@ const AlibabaWanModelAliasSchema = z
     "Expected a listed model or a versioned Wan alias (e.g. wan3.0-i2v)"
   );
 
-const WAN_VIDEO_SYNTHESIS_MODELS = ["wan2.7-i2v", "wan2.7-videoedit"] as const;
+const WAN_VIDEO_SYNTHESIS_MODELS = [
+  "wan3.0-video",
+  "wan3.0-video-prime",
+  "wan2.7-i2v",
+  "wan2.7-videoedit",
+] as const;
 
-const WAN_VIDEO_SYNTHESIS_MODEL_SET = new Set<string>(
-  WAN_VIDEO_SYNTHESIS_MODELS
-);
+const REPEATABLE_VIDEO_MEDIA_TYPES = new Set([
+  "reference_image",
+  "reference_video",
+  "reference_audio",
+]);
 
-// True only for ids this package lists and that are not wan2.7-videoedit. Ids
-// arriving through the alias hatch are deliberately excluded — see the `ratio`
-// and `audio_setting` refinements below.
-const isListedNonVideoEditWanModel = (model: string): boolean =>
-  WAN_VIDEO_SYNTHESIS_MODEL_SET.has(model) && model !== "wan2.7-videoedit";
+const WAN27_I2V_MEDIA_TYPES = new Set([
+  "first_frame",
+  "last_frame",
+  "driving_audio",
+  "first_clip",
+]);
+
+const WAN30_MEDIA_TYPES = new Set([
+  "first_frame",
+  "last_frame",
+  "reference_image",
+  "reference_video",
+  "reference_audio",
+  "file",
+  "link",
+]);
+
+const isWan27VideoModel = (model: string): boolean =>
+  model === "wan2.7-i2v" || model === "wan2.7-videoedit";
+
+const isWan30VideoModel = (model: string): boolean =>
+  model === "wan3.0-video" || model === "wan3.0-video-prime";
 
 export const AlibabaVideoSynthesisModelSchema = z
   .enum(WAN_VIDEO_SYNTHESIS_MODELS)
   .or(AlibabaWanModelAliasSchema);
 
 export const AlibabaVideoSynthesisInputSchema = z.object({
-  prompt: z.string().max(5000).optional(),
+  prompt: z.string().max(20000).optional(),
   negative_prompt: z.string().max(500).optional(),
-  media: z.array(AlibabaVideoMediaSchema).min(1).max(5),
+  media: z.array(AlibabaVideoMediaSchema).min(1).max(20).optional(),
 });
 
 export const AlibabaVideoSynthesisParametersSchema = z.object({
-  resolution: z.enum(["720P", "1080P"]).optional(),
-  ratio: z.enum(["16:9", "9:16", "1:1", "4:3", "3:4"]).optional(),
-  duration: z.union([z.literal(0), z.number().int().min(2).max(10)]).optional(),
+  resolution: z.enum(["480P", "720P", "1080P"]).optional(),
+  ratio: z
+    .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  duration: z
+    .union([z.literal(-1), z.literal(0), z.number().int().min(2).max(30)])
+    .optional(),
+  audio: z.boolean().optional(),
   audio_setting: z.enum(["auto", "origin"]).optional(),
   prompt_extend: z.boolean().optional(),
   watermark: z.boolean().optional(),
-  seed: z.number().int().min(0).max(2147483647).optional(),
+  seed: z
+    .union([z.literal(-1), z.number().int().min(0).max(2147483647)])
+    .optional(),
 });
 
 export const AlibabaVideoSynthesisRequestObjectSchema = z.object({
@@ -161,22 +196,81 @@ const VideoSynthesisRequest = AlibabaVideoSynthesisRequestObjectSchema;
 
 export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
   (v) => {
-    // reference_image may repeat (up to 4); all other types must be unique.
-    const nonRef = v.input.media
+    const media = v.input.media ?? [];
+    const nonRef = media
       .map((m) => m.type)
-      .filter((t) => t !== "reference_image");
+      .filter((t) => !REPEATABLE_VIDEO_MEDIA_TYPES.has(t));
     return new Set(nonRef).size === nonRef.length;
   },
   {
     message:
-      "media entries must have unique `type` values (except reference_image)",
+      "media entries must have unique `type` values (except reference_image, reference_video, and reference_audio)",
     path: ["input", "media"],
   }
 )
   .refine(
+    (v) => !isWan27VideoModel(v.model) || (v.input.media?.length ?? 0) >= 1,
+    {
+      message: "wan2.7 video models require a non-empty media array",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => !isWan27VideoModel(v.model) || (v.input.media?.length ?? 0) <= 5,
+    {
+      message: "wan2.7 video models accept at most 5 media entries",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isWan27VideoModel(v.model) ||
+      v.input.prompt === undefined ||
+      v.input.prompt.length <= 5000,
+    {
+      message: "wan2.7 video prompt must be at most 5000 characters",
+      path: ["input", "prompt"],
+    }
+  )
+  .refine(
+    (v) => !isWan27VideoModel(v.model) || v.parameters?.resolution !== "480P",
+    {
+      message: "480P resolution is not supported by wan2.7 video models",
+      path: ["parameters", "resolution"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isWan27VideoModel(v.model) ||
+      v.parameters?.duration === undefined ||
+      v.parameters.duration === 0 ||
+      (v.parameters.duration >= 2 && v.parameters.duration <= 10),
+    {
+      message: "wan2.7 video duration must be 0 or between 2 and 10 seconds",
+      path: ["parameters", "duration"],
+    }
+  )
+  .refine(
+    (v) => !isWan27VideoModel(v.model) || v.parameters?.audio === undefined,
+    {
+      message: "audio is only supported by wan3.0 video models",
+      path: ["parameters", "audio"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isWan27VideoModel(v.model) ||
+      v.parameters?.seed === undefined ||
+      v.parameters.seed >= 0,
+    {
+      message: "wan2.7 video seed must be at least 0",
+      path: ["parameters", "seed"],
+    }
+  )
+  .refine(
     (v) => {
       if (v.model !== "wan2.7-i2v") return true;
-      return v.input.media.some(
+      return (v.input.media ?? []).some(
         (m) =>
           m.type === "first_frame" ||
           m.type === "last_frame" ||
@@ -192,8 +286,9 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
   .refine(
     (v) => {
       if (v.model !== "wan2.7-i2v") return true;
-      const hasFirstClip = v.input.media.some((m) => m.type === "first_clip");
-      const hasFrame = v.input.media.some(
+      const media = v.input.media ?? [];
+      const hasFirstClip = media.some((m) => m.type === "first_clip");
+      const hasFrame = media.some(
         (m) => m.type === "first_frame" || m.type === "last_frame"
       );
       return !(hasFirstClip && hasFrame);
@@ -207,20 +302,22 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
   .refine(
     (v) => {
       if (v.model !== "wan2.7-i2v") return true;
-      return !v.input.media.some(
-        (m) => m.type === "video" || m.type === "reference_image"
+      return (v.input.media ?? []).every((m) =>
+        WAN27_I2V_MEDIA_TYPES.has(m.type)
       );
     },
     {
       message:
-        "wan2.7-i2v does not accept media of type video or reference_image",
+        "wan2.7-i2v only accepts media of type first_frame, last_frame, driving_audio, or first_clip",
       path: ["input", "media"],
     }
   )
   .refine(
     (v) => {
       if (v.model !== "wan2.7-videoedit") return true;
-      return v.input.media.filter((m) => m.type === "video").length === 1;
+      return (
+        (v.input.media ?? []).filter((m) => m.type === "video").length === 1
+      );
     },
     {
       message:
@@ -232,7 +329,8 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
     (v) => {
       if (v.model !== "wan2.7-videoedit") return true;
       return (
-        v.input.media.filter((m) => m.type === "reference_image").length <= 4
+        (v.input.media ?? []).filter((m) => m.type === "reference_image")
+          .length <= 4
       );
     },
     {
@@ -244,7 +342,7 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
   .refine(
     (v) => {
       if (v.model !== "wan2.7-videoedit") return true;
-      return v.input.media.every(
+      return (v.input.media ?? []).every(
         (m) => m.type === "video" || m.type === "reference_image"
       );
     },
@@ -254,35 +352,129 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
       path: ["input", "media"],
     }
   )
-
-  // The six refinements above skip for an id that arrives through the alias
-  // hatch, which is deliberate: the hatch asserts that an id is well-formed,
-  // not that upstream serves it, so upstream stays the authority on the media
-  // shapes a new model accepts.
-  //
-  // The two below deny a parameter rather than requiring one, so the same
-  // "unlisted ids fall through" reading has to be written explicitly. Keyed on
-  // `v.model === "wan2.7-videoedit"` they would deny `ratio` and
-  // `audio_setting` to every hatched id — blocking a future wan3.0-videoedit
-  // from the very fields it exists for. Keyed on the *listed* non-videoedit
-  // ids, listed models keep exactly today's behaviour and unlisted ids are
-  // left to upstream.
   .refine(
     (v) =>
-      !isListedNonVideoEditWanModel(v.model) ||
-      v.parameters?.ratio === undefined,
+      v.model !== "wan2.7-videoedit" ||
+      v.parameters?.ratio === undefined ||
+      (v.parameters.ratio !== "adaptive" && v.parameters.ratio !== "21:9"),
     {
-      message: "ratio is only supported by wan2.7-videoedit",
+      message: "wan2.7-videoedit does not support adaptive or 21:9 ratio",
+      path: ["parameters", "ratio"],
+    }
+  )
+
+  // The wan2.7 refinements above skip for an id that arrives through the alias
+  // hatch, leaving upstream as the authority on new models while preserving
+  // listed wan2.7 behaviour. Key the wan2.7-videoedit-only denials directly on
+  // the listed non-videoedit wan2.7 id (and deny audio_setting on listed wan3.0)
+  // so hatched ids like wan3.0-videoedit stay unblocked.
+  .refine(
+    (v) => v.model !== "wan2.7-i2v" || v.parameters?.ratio === undefined,
+    {
+      message: "ratio is not supported by wan2.7-i2v",
       path: ["parameters", "ratio"],
     }
   )
   .refine(
     (v) =>
-      !isListedNonVideoEditWanModel(v.model) ||
+      (v.model !== "wan2.7-i2v" && !isWan30VideoModel(v.model)) ||
       v.parameters?.audio_setting === undefined,
     {
       message: "audio_setting is only supported by wan2.7-videoedit",
       path: ["parameters", "audio_setting"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isWan30VideoModel(v.model) ||
+      (typeof v.input.prompt === "string" && v.input.prompt.length > 0) ||
+      (v.input.media?.length ?? 0) > 0,
+    {
+      message: "wan3.0 requires either prompt or media",
+      path: ["input"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isWan30VideoModel(v.model) ||
+      (v.input.media ?? []).every((m) => WAN30_MEDIA_TYPES.has(m.type)),
+    {
+      message:
+        "wan3.0 only accepts media types first_frame, last_frame, reference_image, reference_video, reference_audio, file, or link",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isWan30VideoModel(v.model)) return true;
+      const types = (v.input.media ?? []).map((m) => m.type);
+      const hasFrame =
+        types.includes("first_frame") || types.includes("last_frame");
+      const hasOther = types.some(
+        (t) => t !== "first_frame" && t !== "last_frame"
+      );
+      return !(hasFrame && hasOther);
+    },
+    {
+      message:
+        "wan3.0 cannot combine first_frame/last_frame with reference, file, or link media",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isWan30VideoModel(v.model)) return true;
+      const types = (v.input.media ?? []).map((m) => m.type);
+      return !types.includes("last_frame") || types.includes("first_frame");
+    },
+    {
+      message: "wan3.0 last_frame requires first_frame",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isWan30VideoModel(v.model)) return true;
+      const types = (v.input.media ?? []).map((m) => m.type);
+      return !(types.includes("file") && types.includes("link"));
+    },
+    {
+      message: "wan3.0 cannot combine file and link media",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isWan30VideoModel(v.model)) return true;
+      const media = v.input.media ?? [];
+      return (
+        media.filter((m) => m.type === "reference_image").length <= 10 &&
+        media.filter((m) => m.type === "reference_video").length <= 5 &&
+        media.filter((m) => m.type === "reference_audio").length <= 5
+      );
+    },
+    {
+      message:
+        "wan3.0 accepts at most 10 reference_image, 5 reference_video, and 5 reference_audio entries",
+      path: ["input", "media"],
+    }
+  )
+  .refine((v) => !isWan30VideoModel(v.model) || v.parameters?.duration !== 0, {
+    message: "wan3.0 duration must be -1 or between 2 and 30 seconds",
+    path: ["parameters", "duration"],
+  })
+  .refine(
+    (v) => {
+      if (!isWan30VideoModel(v.model)) return true;
+      const hasDocOrLink = (v.input.media ?? []).some(
+        (m) => m.type === "file" || m.type === "link"
+      );
+      return !hasDocOrLink || v.parameters?.prompt_extend !== false;
+    },
+    {
+      message:
+        "wan3.0 requires prompt_extend not to be false with file or link",
+      path: ["parameters", "prompt_extend"],
     }
   );
 
@@ -1017,6 +1209,7 @@ export const AlibabaTaskUsageSchema = z.object({
 });
 
 export const AlibabaTaskStatusResponseSchema = z.object({
+  model: z.string().optional(),
   output: AlibabaTaskOutputSchema,
   usage: AlibabaTaskUsageSchema.optional(),
   request_id: z.string(),

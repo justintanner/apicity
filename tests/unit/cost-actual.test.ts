@@ -1114,6 +1114,29 @@ describe("extractActual pins", () => {
       expect(mergeActuals(actuals(pin, "alibaba")).derivedUsd).toBeNull();
     });
 
+    it("derives an International Alibaba Wan 3.0 clip from its reported seconds", () => {
+      const pin = "alibaba_1329897167/wan-3-0-video_2937673442/recording.har";
+      const parts = entries(pin).map((entry) => {
+        const exchange = entryToProviderExchange(entry, {
+          provider: "alibaba",
+        });
+        return extractActual({
+          ...exchange,
+          url: exchange.url.replace(
+            "dashscope.aliyuncs.com",
+            "dashscope-intl.aliyuncs.com"
+          ),
+        });
+      });
+      const merged = mergeActuals(parts);
+      expect(merged.settled).toBe(true);
+      expect(merged.usage.seconds).toBe(2);
+      expect(merged.derivedUsd).toBeCloseTo(0.1, 10);
+      expect(merged.warnings).toEqual([]);
+
+      expect(mergeActuals(actuals(pin, "alibaba")).derivedUsd).toBeNull();
+    });
+
     it("reports no seconds when MachGen's length follows the source", () => {
       const parts = actuals(
         "machgen_3663587242/seedance-2-5-r2v-video-edit_2669245042/recording.har",

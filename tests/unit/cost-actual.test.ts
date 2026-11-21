@@ -1137,6 +1137,30 @@ describe("extractActual pins", () => {
       expect(mergeActuals(actuals(pin, "alibaba")).derivedUsd).toBeNull();
     });
 
+    it("derives an International Alibaba HappyHorse 1.0 edit from its reported seconds", () => {
+      const pin =
+        "alibaba_1329897167/happyhorse-1-0-video-edit_3156347330/recording.har";
+      const parts = entries(pin).map((entry) => {
+        const exchange = entryToProviderExchange(entry, {
+          provider: "alibaba",
+        });
+        return extractActual({
+          ...exchange,
+          url: exchange.url.replace(
+            "dashscope.aliyuncs.com",
+            "dashscope-intl.aliyuncs.com"
+          ),
+        });
+      });
+      const merged = mergeActuals(parts);
+      expect(merged.settled).toBe(true);
+      expect(merged.usage.seconds).toBe(6);
+      expect(merged.derivedUsd).toBeCloseTo(0.84, 10);
+      expect(merged.warnings).toEqual([]);
+
+      expect(mergeActuals(actuals(pin, "alibaba")).derivedUsd).toBeNull();
+    });
+
     it("reports no seconds when MachGen's length follows the source", () => {
       const parts = actuals(
         "machgen_3663587242/seedance-2-5-r2v-video-edit_2669245042/recording.har",

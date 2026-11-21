@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support `happyhorse-1.0-video-edit` on `@apicity/alibaba` (`api.v1.services.aigc.videoGeneration.videoSynthesis`) with `@apicity/cost` International pricing (`$0.14`/`$0.24` per s for `720P`/`1080P`, billing both input and output seconds), model slug `hh`, and frontier `v2v` `HappyHorse-1.0` mapping (ac-s5lhzh).
 - Support `wan3.0-video` and `wan3.0-video-prime` on `@apicity/alibaba` (`api.v1.services.aigc.videoGeneration.videoSynthesis`) with `@apicity/cost` International pricing (`$0.05`/`$0.10`/`$0.20` per s and `$0.068`/`$0.14`/`$0.28` per s for `480P`/`720P`/`1080P`), model slugs (`wan3p0`, `wan3p0p`), and frontier `t2v`/`r2v`/`v2v` `Wan 3.0` mappings.
 
 ### Added

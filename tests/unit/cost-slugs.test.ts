@@ -441,6 +441,10 @@ describe("modelSlug", () => {
     expect(modelSlug("alibaba", "wan3.0-video-prime")).toBe(
       modelSlug("kie", "wan/3-0-video-prime")
     );
+    expect(modelSlug("alibaba", "happyhorse-1.0-video-edit")).toBe("hh");
+    expect(modelSlug("alibaba", "happyhorse-1.0-video-edit")).toBe(
+      modelSlug("nunchux", "happyhorse-1.0-video-edit")
+    );
   });
 
   it("returns distinct slugs for xai grok imagine media models", () => {
@@ -645,6 +649,9 @@ describe("modelDisplay", () => {
     expect(modelDisplay("alibaba", "qwen3.6-plus")).toBe("Qwen 3.6 Plus");
     expect(modelDisplay("alibaba", "wan3.0-video")).toBe("Wan 3.0");
     expect(modelDisplay("alibaba", "wan3.0-video-prime")).toBe("Wan 3.0 Prime");
+    expect(modelDisplay("alibaba", "happyhorse-1.0-video-edit")).toBe(
+      "HappyHorse Edit"
+    );
   });
 
   it("returns correct display for fireworks deepseek-v4-pro", () => {

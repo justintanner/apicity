@@ -169,15 +169,18 @@ console.log(
   HTTP 200 with `task_status: "FAILED"`, not a 4xx — this is why the
   example above always reads `task_status` rather than relying on
   exception flow for content-related rejects.
-- The same `videoSynthesis` endpoint dispatches across the Wan 2.7 and
-  Wan 3.0 families by changing `model`: `wan3.0-video` /
+- The same `videoSynthesis` endpoint dispatches across the Wan 2.7,
+  Wan 3.0, and HappyHorse families by changing `model`: `wan3.0-video` /
   `wan3.0-video-prime` support prompt-only text→video (drop `media`),
   first/last frames, or multi-modal references (`reference_image`,
   `reference_video`, `reference_audio`, `file`, `link`) at 480P/720P/1080P
   for 2–30 s (`-1` for smart duration); `wan2.7-i2v` takes
-  `first_frame`/`last_frame`/`first_clip`; and `wan2.7-videoedit` takes
-  `media[].type: "video"`. The Zod schema enforces the per-model
-  media-type combinations and parameter bounds.
+  `first_frame`/`last_frame`/`first_clip`; `wan2.7-videoedit` takes
+  `media[].type: "video"`; and `happyhorse-1.0-video-edit` takes a required
+  `prompt`, one `media[].type: "video"`, and 0–5 `reference_image`s at
+  `720P`/`1080P` (`audio_setting`, `watermark`, non-negative `seed`). The
+  Zod schema enforces the per-model media-type combinations and parameter
+  bounds.
 - For payloads where the input frame exceeds DashScope's 10MB
   embedded-data-URL ceiling, swap the inline `data:` URL for an
   `oss://{key}` URI obtained via `uploadFile(provider, {...})` — the

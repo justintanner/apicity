@@ -104,30 +104,38 @@ export const AlibabaVideoMediaSchema = z.object({
   url: z.string().min(1),
 });
 
-// Upstream ships new Wan point releases and new task variants on its own
-// cadence, so the Wan enums are unioned with an alias escape hatch. DashScope's
-// Wan id grammar is `wan<version>` — a dot-separated numeric version attached
-// directly to the `wan` prefix — followed by one or more lowercase alphanumeric
-// task/tier segments, e.g. wan2.7-i2v, wan2.7-image-pro, wan3.0-videoedit.
-// Anchoring the version to the prefix is the load-bearing part: a looser
-// `/^wan.*-[a-z0-9-]+$/` would wrongly accept `wan-2.7-i2v` and `wanx-i2v`.
-// Anything that is not a versioned Wan id must be added to the enum explicitly.
-//
-// The video-synthesis enum below and the image-generation request further down
-// share this one alias: they are the same Wan family and differ only by task
-// segment (`wan2.7-i2v` vs `wan2.7-image-pro`).
+// Upstream ships new Wan and HappyHorse point releases and task variants on
+// their own cadence, so model enums are unioned with a narrow alias escape
+// hatch. DashScope's Wan id grammar is `wan<version>` — a dot-separated numeric
+// version attached directly to `wan` — followed by one or more lowercase
+// alphanumeric task/tier segments (e.g. wan2.7-i2v, wan2.7-image-pro).
+// HappyHorse video-synthesis ids follow `happyhorse-<version>-<segments>`
+// (e.g. happyhorse-1.0-video-edit). Anchoring the version to the prefix keeps
+// malformed strings like `wan-2.7-i2v`, `wanx-i2v`, and `happy-horse-1.0-edit`
+// rejected, while `AlibabaWanModelAliasSchema` keeps Wan-only image generation
+// isolated from HappyHorse video ids.
+const WAN_MODEL_ALIAS_REGEX = /^wan\d+(?:\.\d+)*-[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 const AlibabaWanModelAliasSchema = z
   .string()
   .regex(
-    /^wan\d+(?:\.\d+)*-[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    WAN_MODEL_ALIAS_REGEX,
     "Expected a listed model or a versioned Wan alias (e.g. wan3.0-i2v)"
   );
 
-const WAN_VIDEO_SYNTHESIS_MODELS = [
+const AlibabaVideoSynthesisModelAliasSchema = z
+  .string()
+  .regex(
+    /^(?:wan\d+(?:\.\d+)*|happyhorse-\d+(?:\.\d+)*)-[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Wan/HappyHorse alias (e.g. wan3.0-i2v, happyhorse-1.0-video-edit)"
+  );
+
+const VIDEO_SYNTHESIS_MODELS = [
   "wan3.0-video",
   "wan3.0-video-prime",
   "wan2.7-i2v",
   "wan2.7-videoedit",
+  "happyhorse-1.0-video-edit",
 ] as const;
 
 const REPEATABLE_VIDEO_MEDIA_TYPES = new Set([
@@ -159,9 +167,12 @@ const isWan27VideoModel = (model: string): boolean =>
 const isWan30VideoModel = (model: string): boolean =>
   model === "wan3.0-video" || model === "wan3.0-video-prime";
 
+const isHappyHorseVideoEditModel = (model: string): boolean =>
+  model === "happyhorse-1.0-video-edit";
+
 export const AlibabaVideoSynthesisModelSchema = z
-  .enum(WAN_VIDEO_SYNTHESIS_MODELS)
-  .or(AlibabaWanModelAliasSchema);
+  .enum(VIDEO_SYNTHESIS_MODELS)
+  .or(AlibabaVideoSynthesisModelAliasSchema);
 
 export const AlibabaVideoSynthesisInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
@@ -380,7 +391,8 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
       (v.model !== "wan2.7-i2v" && !isWan30VideoModel(v.model)) ||
       v.parameters?.audio_setting === undefined,
     {
-      message: "audio_setting is only supported by wan2.7-videoedit",
+      message:
+        "audio_setting is only supported by wan2.7-videoedit and happyhorse-1.0-video-edit",
       path: ["parameters", "audio_setting"],
     }
   )
@@ -476,6 +488,128 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
         "wan3.0 requires prompt_extend not to be false with file or link",
       path: ["parameters", "prompt_extend"],
     }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      (typeof v.input.prompt === "string" && v.input.prompt.length > 0),
+    {
+      message: "happyhorse-1.0-video-edit requires a non-empty prompt",
+      path: ["input", "prompt"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.input.prompt === undefined ||
+      v.input.prompt.length <= 5000,
+    {
+      message:
+        "happyhorse-1.0-video-edit prompt must be at most 5000 characters",
+      path: ["input", "prompt"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.input.negative_prompt === undefined,
+    {
+      message: "happyhorse-1.0-video-edit does not support negative_prompt",
+      path: ["input", "negative_prompt"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isHappyHorseVideoEditModel(v.model)) return true;
+      return (
+        (v.input.media ?? []).filter((m) => m.type === "video").length === 1
+      );
+    },
+    {
+      message:
+        "happyhorse-1.0-video-edit requires exactly one media entry of type video",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isHappyHorseVideoEditModel(v.model)) return true;
+      return (
+        (v.input.media ?? []).filter((m) => m.type === "reference_image")
+          .length <= 5
+      );
+    },
+    {
+      message:
+        "happyhorse-1.0-video-edit accepts at most 5 media entries of type reference_image",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (!isHappyHorseVideoEditModel(v.model)) return true;
+      return (v.input.media ?? []).every(
+        (m) => m.type === "video" || m.type === "reference_image"
+      );
+    },
+    {
+      message:
+        "happyhorse-1.0-video-edit only accepts media of type video or reference_image",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.parameters?.resolution !== "480P",
+    {
+      message: "480P resolution is not supported by happyhorse-1.0-video-edit",
+      path: ["parameters", "resolution"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) || v.parameters?.ratio === undefined,
+    {
+      message: "happyhorse-1.0-video-edit does not support ratio",
+      path: ["parameters", "ratio"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.parameters?.duration === undefined,
+    {
+      message: "happyhorse-1.0-video-edit does not support duration",
+      path: ["parameters", "duration"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) || v.parameters?.audio === undefined,
+    {
+      message: "happyhorse-1.0-video-edit does not support audio",
+      path: ["parameters", "audio"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.parameters?.prompt_extend === undefined,
+    {
+      message: "happyhorse-1.0-video-edit does not support prompt_extend",
+      path: ["parameters", "prompt_extend"],
+    }
+  )
+  .refine(
+    (v) =>
+      !isHappyHorseVideoEditModel(v.model) ||
+      v.parameters?.seed === undefined ||
+      v.parameters.seed >= 0,
+    {
+      message: "happyhorse-1.0-video-edit seed must be at least 0",
+      path: ["parameters", "seed"],
+    }
   );
 
 // ---------------------------------------------------------------------------
@@ -534,9 +668,8 @@ const WAN_IMAGE_GENERATION_MODELS = [
 ] as const;
 
 export const AlibabaImageGenerationRequestSchema = z.object({
-  // Same Wan family as AlibabaVideoSynthesisModelSchema, differing only by task
-  // segment, so it reuses that alias rather than defining an identical second
-  // one.
+  // Wan-only image endpoint, so it keeps AlibabaWanModelAliasSchema while
+  // AlibabaVideoSynthesisModelSchema adds the HappyHorse family.
   model: z.enum(WAN_IMAGE_GENERATION_MODELS).or(AlibabaWanModelAliasSchema),
   input: AlibabaImageGenerationInputSchema,
   parameters: AlibabaImageGenerationParametersSchema.optional(),
@@ -852,7 +985,7 @@ export type AlibabaVideoMedia = z.infer<typeof AlibabaVideoMediaSchema>;
 // the same values while the literals stay visible in editors. Same treatment
 // for the two Qwen image model aliases below.
 export type AlibabaVideoSynthesisModel =
-  | (typeof WAN_VIDEO_SYNTHESIS_MODELS)[number]
+  | (typeof VIDEO_SYNTHESIS_MODELS)[number]
   | (string & {});
 export type AlibabaVideoSynthesisInput = z.infer<
   typeof AlibabaVideoSynthesisInputSchema

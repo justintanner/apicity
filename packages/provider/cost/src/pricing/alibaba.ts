@@ -223,4 +223,43 @@ export const alibaba: Record<string, ModelPricing> = {
     "720P": 0.14,
     "1080P": 0.28,
   }),
+
+  // Video Edit — HappyHorse 1.0 (`happyhorse-1.0-video-edit`), International
+  // (Singapore) list rates per second: $0.14 at 720P, $0.24 at 1080P (default).
+  // Both input video seconds and output video seconds are billed at the output
+  // resolution rate, and output duration equals input duration for clips <= 15s.
+  // Clips > 15s are truncated to 15s output, and DashScope does not confirm
+  // whether seconds past 15 bill as input, so >15s sources fail closed.
+  "happyhorse-1.0-video-edit": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const input = hintInputSeconds(hints);
+      if (input === undefined || input > 15) return undefined;
+      return 2 * input;
+    },
+    warn: (_p, hints) => {
+      const input = hintInputSeconds(hints);
+      if (input === undefined) {
+        return [
+          "alibaba 'happyhorse-1.0-video-edit': bills both source and output video seconds, and the request carries no length for the source; pass costHints.inputDurationSeconds",
+        ];
+      }
+      if (input > 15) {
+        return [
+          `alibaba 'happyhorse-1.0-video-edit': a ${input} s source is truncated to its first 15 s, and DashScope does not confirm whether seconds past 15 bill as input`,
+        ];
+      }
+      return [];
+    },
+    select: [
+      {
+        name: "resolution",
+        required: true,
+        pick: (p) => asString(asObject(p.parameters)?.resolution) ?? "1080P",
+      },
+    ],
+    rates: { "720P": 0.14, "1080P": 0.24 },
+    source: { ...source, asOf: "2026-11-21" },
+  },
 };

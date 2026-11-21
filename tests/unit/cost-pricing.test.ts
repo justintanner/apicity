@@ -327,6 +327,107 @@ describe("PRICING data", () => {
     expect(withDynamicDurationHint.usd).toBeCloseTo(0.3, 10);
   });
 
+  it("alibaba prices happyhorse-1.0-video-edit on input + output seconds at International rates", () => {
+    expect(PRICING.alibaba["happyhorse-1.0-video-edit"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "720P": 0.14, "1080P": 0.24 },
+      source: { asOf: "2026-11-21" },
+    });
+
+    const intlBase = "https://dashscope-intl.aliyuncs.com/api/v1";
+    const missingHint = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "happyhorse-1.0-video-edit",
+        input: {
+          prompt: "Make the cat watercolor",
+          media: [{ type: "video", url: "https://example.com/clip.mp4" }],
+        },
+        parameters: { resolution: "720P" },
+      },
+    });
+    expect(missingHint.usd).toBe(0);
+    expect(missingHint.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+
+    const at720p = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "happyhorse-1.0-video-edit",
+        input: {
+          prompt: "Make the cat watercolor",
+          media: [{ type: "video", url: "https://example.com/clip.mp4" }],
+        },
+        parameters: { resolution: "720P" },
+      },
+      costHints: { inputDurationSeconds: 3 },
+    });
+    expect(at720p.usd).toBeCloseTo(0.84, 10);
+    expect(at720p.breakdown).toEqual({
+      units: 6,
+      unit: "seconds",
+      perUnitUsd: 0.14,
+    });
+    expect(at720p.warnings).toEqual([]);
+
+    // Omitting resolution defaults to 1080P ($0.24/s).
+    const default1080p = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "happyhorse-1.0-video-edit",
+        input: {
+          prompt: "Make the cat watercolor",
+          media: [{ type: "video", url: "https://example.com/clip.mp4" }],
+        },
+      },
+      costHints: { inputDurationSeconds: 5 },
+    });
+    expect(default1080p.usd).toBeCloseTo(2.4, 10);
+    expect(default1080p.breakdown).toEqual({
+      units: 10,
+      unit: "seconds",
+      perUnitUsd: 0.24,
+    });
+
+    // Rejects >15s sources fail-closed until DashScope documents post-15s billing.
+    const over15s = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "happyhorse-1.0-video-edit",
+        input: {
+          prompt: "Make the cat watercolor",
+          media: [{ type: "video", url: "https://example.com/long.mp4" }],
+        },
+        parameters: { resolution: "720P" },
+      },
+      costHints: { inputDurationSeconds: 20 },
+    });
+    expect(over15s.usd).toBe(0);
+    expect(over15s.warnings.join(" ")).toContain("truncated");
+
+    // 480P has no published rate and fails closed.
+    const invalid480p = computeEstimate({
+      provider: "alibaba",
+      baseURL: intlBase,
+      payload: {
+        model: "happyhorse-1.0-video-edit",
+        input: {
+          prompt: "Make the cat watercolor",
+          media: [{ type: "video", url: "https://example.com/clip.mp4" }],
+        },
+        parameters: { resolution: "480P" },
+      },
+      costHints: { inputDurationSeconds: 3 },
+    });
+    expect(invalid480p.usd).toBe(0);
+  });
+
   // apicity har cost reads a capture older than a rate's asOf as a price change,
   // so a row with no real date of its own would weaken that gate. RateSource makes
   // the field required, and this holds it to a date at runtime too, for any row the

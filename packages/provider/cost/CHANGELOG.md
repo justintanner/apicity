@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Price `@apicity/alibaba` `happyhorse-1.0-video-edit` at International rates (`$0.14`/`$0.24` per s for `720P`/`1080P`, defaulting to `1080P`) billing both source and output seconds via `costHints.inputDurationSeconds` (3–15 s; fails closed above 15 s), plus `MODEL_SLUGS.alibaba` / `MODEL_DISPLAY.alibaba` (`hh` / `"HappyHorse Edit"`), and map `alibaba` on the `HappyHorse-1.0` frontier `v2v` row (ac-s5lhzh).
 - Price `@apicity/alibaba` `wan3.0-video` (`$0.05`/`$0.10`/`$0.20` per s) and `wan3.0-video-prime` (`$0.068`/`$0.14`/`$0.28` per s) across `480P`/`720P`/`1080P` with `costHints.durationSeconds` (`-1` sentinel) and `costHints.inputDurationSeconds` (`reference_video` billing), plus `MODEL_SLUGS.alibaba` / `MODEL_DISPLAY.alibaba` entries (`wan3p0`, `wan3p0p`).
 
 ### Added

@@ -107,6 +107,7 @@ describe("Zod schema introspection helpers", () => {
       "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
+      "happyhorse-1.0-video-edit",
     ]);
 
     const objectShape = getZodObjectShape(
@@ -122,6 +123,7 @@ describe("Zod schema introspection helpers", () => {
       "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
+      "happyhorse-1.0-video-edit",
     ]);
 
     const shape = getZodObjectShape(AlibabaVideoSynthesisRequestSchema);
@@ -131,6 +133,7 @@ describe("Zod schema introspection helpers", () => {
       "wan3.0-video-prime",
       "wan2.7-i2v",
       "wan2.7-videoedit",
+      "happyhorse-1.0-video-edit",
     ]);
 
     const json = zodToJsonSchema(AlibabaVideoSynthesisRequestSchema);
@@ -144,6 +147,7 @@ describe("Zod schema introspection helpers", () => {
             "wan3.0-video-prime",
             "wan2.7-i2v",
             "wan2.7-videoedit",
+            "happyhorse-1.0-video-edit",
           ],
         },
         { type: "string" },

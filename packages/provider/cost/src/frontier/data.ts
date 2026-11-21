@@ -1303,6 +1303,11 @@ export const FRONTIER = {
             pricingKey: "alibaba/happyhorse-1.0/video-edit",
           },
           {
+            provider: "alibaba",
+            dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+            modelId: "happyhorse-1.0-video-edit",
+          },
+          {
             provider: "nunchux",
             dotPath: "v1.alibaba.services.aigc.videoGeneration.videoSynthesis",
             modelId: "happyhorse-1.0-video-edit",

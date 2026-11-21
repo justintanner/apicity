@@ -474,6 +474,7 @@ guarantee](#hash-and-otp-guarantee) below.
 | `fal`     | `xai/grok-imagine-video/extend-video`          | source `video_url` length, with `inputResolution`                                             |
 | `alibaba` | `wan2.7-videoedit`                             | source video length                                                                           |
 | `alibaba` | `wan3.0-video`, `wan3.0-video-prime`           | `reference_video` clip length (when passed)                                                   |
+| `alibaba` | `happyhorse-1.0-video-edit`                    | source `video` length (3–15 s; fails closed above 15 s)                                       |
 
 `xai/grok-imagine-video/extend-video` bills the new `duration` seconds at 0.05
 USD/s (480p) or 0.07 USD/s (720p), plus 0.01 USD per source second. The output
@@ -485,7 +486,11 @@ without them.
 `wan2.7-videoedit` bills its source's seconds beside its output's, at 0.10 USD/s
 (720P) or 0.15 USD/s (1080P, the default). The output keeps the source's length,
 and `parameters.duration` only truncates it, so an estimate fails closed without
-`inputDurationSeconds`, with or without a `duration`.
+`inputDurationSeconds`, with or without a `duration`. `happyhorse-1.0-video-edit`
+bills the same way at International rates of 0.14 USD/s (720P) or 0.24 USD/s
+(1080P, the default) for 3–15 s sources, and fails closed above 15 s because
+DashScope truncates outputs to 15 s without confirming whether input seconds
+past 15 bill.
 
 The fal Seedance entries bill the clips' frames (24 per declared second) at
 the output's size, then multiply the whole count by 0.6. A clip length under

@@ -732,6 +732,7 @@ export const MODEL_SLUGS = {
     "wan3.0-video-prime": "wan3p0p",
     "wan2.7-i2v": "wan2p7",
     "wan2.7-videoedit": "wan2p7",
+    "happyhorse-1.0-video-edit": "hh",
   },
 
   fireworks: {
@@ -1801,6 +1802,7 @@ export const MODEL_DISPLAY = {
     "wan3.0-video-prime": "Wan 3.0 Prime",
     "wan2.7-i2v": "Wan 2.7",
     "wan2.7-videoedit": "Wan 2.7 Edit",
+    "happyhorse-1.0-video-edit": "HappyHorse Edit",
   },
 
   fireworks: {

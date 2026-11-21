@@ -540,10 +540,7 @@ function liveRegistry() {
   );
   const googleflowModes = googleflowVideoModes();
   const googleflowImages = new Set(readGoogleFlowImageModels(googleflowZod));
-  const alibabaModels = readConstArray(
-    alibabaZod,
-    "WAN_VIDEO_SYNTHESIS_MODELS"
-  );
+  const alibabaModels = readConstArray(alibabaZod, "VIDEO_SYNTHESIS_MODELS");
   const alibabaVideoByOp = {
     t2v: new Set(
       alibabaModels.filter(
@@ -595,7 +592,10 @@ function liveRegistry() {
               media: [
                 {
                   type:
-                    model === "wan2.7-videoedit" ? "video" : "reference_video",
+                    model === "wan2.7-videoedit" ||
+                    model === "happyhorse-1.0-video-edit"
+                      ? "video"
+                      : "reference_video",
                   url: "https://example.com/clip.mp4",
                 },
               ],

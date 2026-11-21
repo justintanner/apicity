@@ -257,6 +257,7 @@ describe("Alibaba Zod schema validation", () => {
         "wan3.0-video-prime",
         "wan2.7-i2v",
         "wan2.7-videoedit",
+        "happyhorse-1.0-video-edit",
       ]);
       expect(enumBranchOf(PublicAlibabaVideoSynthesisModelSchema)).toEqual(
         enumBranchOf(AlibabaVideoSynthesisModelSchema)
@@ -839,6 +840,109 @@ describe("Alibaba Zod schema validation", () => {
             media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
           },
           parameters: { audio: true },
+        }).success
+      ).toBe(false);
+    });
+
+    it("should enforce happyhorse-1.0-video-edit input, media, and parameter rules", () => {
+      const validVideo = {
+        type: "video" as const,
+        url: "https://example.com/clip.mp4",
+      };
+      const validRef = {
+        type: "reference_image" as const,
+        url: "https://example.com/style.png",
+      };
+
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: {
+            prompt: "Make the cat wear the sweater from the reference image",
+            media: [validVideo, validRef],
+          },
+          parameters: {
+            resolution: "720P",
+            watermark: false,
+            audio_setting: "origin",
+            seed: 42,
+          },
+        }).success
+      ).toBe(true);
+
+      // Missing or empty prompt rejected
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: { media: [validVideo] },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: { prompt: "", media: [validVideo] },
+        }).success
+      ).toBe(false);
+
+      // Prompt > 5000 chars rejected
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: { prompt: "a".repeat(5001), media: [validVideo] },
+        }).success
+      ).toBe(false);
+
+      // Requires exactly 1 video and 0-5 reference_image entries
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: { prompt: "hi" },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: {
+            prompt: "hi",
+            media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+          },
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: {
+            prompt: "hi",
+            media: [validVideo, ...Array.from({ length: 6 }, () => validRef)],
+          },
+        }).success
+      ).toBe(false);
+
+      // Rejects 480P, ratio, duration, audio, prompt_extend, negative_prompt, and seed -1
+      for (const patch of [
+        { parameters: { resolution: "480P" as const } },
+        { parameters: { ratio: "16:9" as const } },
+        { parameters: { duration: 5 } },
+        { parameters: { audio: true } },
+        { parameters: { prompt_extend: true } },
+        { parameters: { seed: -1 as const } },
+      ]) {
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "happyhorse-1.0-video-edit",
+            input: { prompt: "hi", media: [validVideo] },
+            ...patch,
+          }).success
+        ).toBe(false);
+      }
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "happyhorse-1.0-video-edit",
+          input: {
+            prompt: "hi",
+            negative_prompt: "blurry",
+            media: [validVideo],
+          },
         }).success
       ).toBe(false);
     });
@@ -1483,8 +1587,20 @@ describe("Alibaba Zod schema validation", () => {
     };
 
     describe("AlibabaVideoSynthesisModelSchema", () => {
-      it.each(["wan2.7-i2v", "wan2.7-videoedit"])(
-        "accepts the listed id %j",
+      it.each([
+        "wan3.0-video",
+        "wan3.0-video-prime",
+        "wan2.7-i2v",
+        "wan2.7-videoedit",
+        "happyhorse-1.0-video-edit",
+      ])("accepts the listed id %j", (model) => {
+        expect(AlibabaVideoSynthesisModelSchema.safeParse(model).success).toBe(
+          true
+        );
+      });
+
+      it.each(["wan3.0-i2v", "wan2.8-image-pro", "happyhorse-1.1-video-edit"])(
+        "accepts the Wan or HappyHorse alias %j",
         (model) => {
           expect(
             AlibabaVideoSynthesisModelSchema.safeParse(model).success
@@ -1492,23 +1608,19 @@ describe("Alibaba Zod schema validation", () => {
         }
       );
 
-      it.each(["wan3.0-i2v", "wan2.8-image-pro"])(
-        "accepts the Wan alias %j",
-        (model) => {
-          expect(
-            AlibabaVideoSynthesisModelSchema.safeParse(model).success
-          ).toBe(true);
-        }
-      );
-
-      it.each(["wan2.7", "wan-2.7-i2v", "wan2.7-", "qwen-image-2.0"])(
-        "rejects %j",
-        (model) => {
-          expect(
-            AlibabaVideoSynthesisModelSchema.safeParse(model).success
-          ).toBe(false);
-        }
-      );
+      it.each([
+        "wan2.7",
+        "wan-2.7-i2v",
+        "wan2.7-",
+        "qwen-image-2.0",
+        "happyhorse-1.0",
+        "happyhorse-video-edit",
+        "happy-horse-1.0-video-edit",
+      ])("rejects %j", (model) => {
+        expect(AlibabaVideoSynthesisModelSchema.safeParse(model).success).toBe(
+          false
+        );
+      });
     });
 
     describe("AlibabaImageGenerationRequestSchema.model", () => {
@@ -1536,27 +1648,34 @@ describe("Alibaba Zod schema validation", () => {
         }
       );
 
-      it.each(["wan2.7", "wan-2.7-image", "wan2.7-", "qwen-image-2.0"])(
-        "rejects %j",
-        (model) => {
-          expect(
-            AlibabaImageGenerationRequestSchema.safeParse({
-              ...imageGenerationBase,
-              model,
-            }).success
-          ).toBe(false);
-        }
-      );
+      it.each([
+        "wan2.7",
+        "wan-2.7-image",
+        "wan2.7-",
+        "qwen-image-2.0",
+        "happyhorse-1.0-video-edit",
+        "happyhorse-2.0-image",
+      ])("rejects %j", (model) => {
+        expect(
+          AlibabaImageGenerationRequestSchema.safeParse({
+            ...imageGenerationBase,
+            model,
+          }).success
+        ).toBe(false);
+      });
 
-      // Video synthesis and image generation are the same Wan family — the ids
-      // differ only by task segment — so they deliberately share one alias
-      // const rather than defining two identical ones. This is the only shared
-      // alias in the provider; anything that widens it widens both endpoints,
-      // which is why the sharing is pinned rather than left implicit.
-      it("shares one Wan alias with the video synthesis enum", () => {
-        expect(hatchPatternOf(AlibabaVideoSynthesisModelSchema).source).toBe(
-          hatchPatternOf(AlibabaImageGenerationRequestSchema.shape.model).source
+      // Image generation must stay Wan-only while video synthesis accepts both
+      // Wan and HappyHorse aliases. Anything that widens the image-generation
+      // hatch to HappyHorse breaks that isolation, which is pinned explicitly.
+      it("keeps the image-generation alias Wan-only while video synthesis adds HappyHorse", () => {
+        const videoHatch = hatchPatternOf(AlibabaVideoSynthesisModelSchema);
+        const imageHatch = hatchPatternOf(
+          AlibabaImageGenerationRequestSchema.shape.model
         );
+        expect(videoHatch.test("wan3.0-i2v")).toBe(true);
+        expect(imageHatch.test("wan3.0-i2v")).toBe(true);
+        expect(videoHatch.test("happyhorse-1.0-video-edit")).toBe(true);
+        expect(imageHatch.test("happyhorse-1.0-video-edit")).toBe(false);
       });
     });
 

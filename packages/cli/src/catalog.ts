@@ -23,6 +23,9 @@ import { loadTsv, type EndpointTsvRow } from "./registry.js";
  * Placeholders the factory substitutes or derives appear in neither list —
  * a caller is never asked for a credential it already configured.
  */
+/** Where the pay gate is enforced for an endpoint on an armed host. */
+export type GateKind = "sdk" | "cli" | "none";
+
 export interface CatalogEntry {
   provider: string;
   dotPath: string;
@@ -36,14 +39,17 @@ export interface CatalogEntry {
   /**
    * Say so before calling: the call bills, starts a charge that accrues, has
    * a charge nobody has priced, or sits behind the operator's pay gate.
-   * `billing` and `gated` say which.
+   * `billing` and `gate` say which.
    */
   paid: boolean;
   /**
-   * In the pay-gate registry: once the operator arms the gate the call needs
-   * `--otp`. This, never `paid`, decides how a call binds its arguments.
+   * Once the operator arms the gate, calling this row requires an OTP.
+   * Derived as equal to `paid`; `gate`, never `paid` or `gated`, decides how a
+   * call binds its arguments.
    */
   gated: boolean;
+  /** Where the gate is enforced (`"sdk"`, `"cli"`, or `"none"`). */
+  gate: GateKind;
   /** The kind of the reviewed billing record `@apicity/cost` holds. */
   billing: string;
   configured: boolean;
@@ -124,8 +130,15 @@ export async function loadCatalog(
       configuredByProvider.set(row.provider, configured);
     }
     const shape = callShapeFor(row);
-    const gated = helpers.isPaidEndpoint(row.provider, row.method, row.dotPath);
+    const inRegistry = helpers.isPaidEndpoint(
+      row.provider,
+      row.method,
+      row.dotPath
+    );
     const billing = billingFor(row.provider, row.method, row.dotPath).kind;
+    const paid = inRegistry || isBilledKind(billing);
+    const gated = paid;
+    const gate: GateKind = inRegistry ? "sdk" : paid ? "cli" : "none";
     return {
       provider: row.provider,
       dotPath: row.dotPath,
@@ -134,8 +147,9 @@ export async function loadCatalog(
       docsUrl: row.docsUrl,
       pathParams: shape ? shape.positional.map((p) => p.param) : [],
       requestParams: shape ? shape.fields.map((f) => f.property) : [],
-      paid: gated || isBilledKind(billing),
+      paid,
       gated,
+      gate,
       billing,
       configured,
     };

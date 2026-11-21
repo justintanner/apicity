@@ -327,6 +327,7 @@ function describeText(description: EndpointDescription): string {
     `paid:          ${description.paid ? "yes" : "no"}`,
     `billing:       ${description.billing}`,
     `gated:         ${description.gated ? "yes" : "no"}`,
+    `gate:          ${description.gate}`,
   ];
   if (description.schema !== undefined) {
     lines.push("", "schema:", JSON.stringify(description.schema, null, 2));

@@ -1,10 +1,11 @@
 import { execFile } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { mintOtp, withPaidGate } from "@apicity/cost";
+import { canonicalHash, mintOtp, withPaidGate } from "@apicity/cost";
 
 import {
   loadCatalog,
@@ -12,6 +13,7 @@ import {
   selectEntry,
 } from "../../packages/cli/src/catalog";
 import { CALL_SHAPES, callShapeKey } from "../../packages/cli/src/call-shapes";
+import { providerEnvVars } from "../../packages/cli/src/credentials";
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { bindArguments } from "../../packages/cli/src/invoke";
 import {
@@ -194,11 +196,13 @@ describe("a paid endpoint with a secret but no approval", () => {
     expect(exit).toBe(4);
     expect(calls).toEqual([]);
     const envelope = errorOf(cap);
+    const requestHash = canonicalHash(REQUEST);
     expect(envelope.code).toBe("paygate");
+    expect(envelope.meta).toEqual({ requestHash });
     expect(envelope.hint).toBe(
       `otp-missing; mint with: apicity-paygate otp mint ` +
-        `--secret-file ${secret} --dot-path ${DOT_PATH} ` +
-        `--payload-file ${request}`
+        `--secret-file ${secret} --provider kie --method POST ` +
+        `--dot-path ${DOT_PATH} --request-hash ${requestHash}`
     );
     // The shared secret is read only to hand to the factory.
     expect([...cap.out, ...cap.err].join("\n")).not.toContain(SECRET);
@@ -372,13 +376,38 @@ describe("a billed endpoint outside the pay-gate registry", () => {
     };
   }
 
-  it("is paid, not gated, in the catalog", async () => {
+  function fakeEnv(provider: string): NodeJS.ProcessEnv {
+    return {
+      HOME: sandbox(),
+      ...Object.fromEntries(providerEnvVars(provider).map((k) => [k, "test"])),
+    };
+  }
+
+  function fakeProvider(
+    calls: unknown[][],
+    pathParts: string[]
+  ): ProviderInstantiator {
+    return () => {
+      const leaf = (...args: unknown[]): Promise<unknown> => {
+        calls.push(args);
+        return Promise.resolve({ ok: true });
+      };
+      let node: unknown = leaf;
+      for (let i = pathParts.length - 1; i >= 0; i--) {
+        node = { [pathParts[i]!]: node };
+      }
+      return Promise.resolve(node as InstantiatedProvider);
+    };
+  }
+
+  it("is paid, gated, and marked cli-gated in the catalog", async () => {
     const catalog = await loadCatalog({ env: {} });
     const entry = selectEntry(findEntries(catalog, "openai", EMBEDDINGS));
 
     expect(entry).toMatchObject({
       paid: true,
-      gated: false,
+      gated: true,
+      gate: "cli",
       billing: "metered",
     });
   });
@@ -404,7 +433,8 @@ describe("a billed endpoint outside the pay-gate registry", () => {
 
     expect(entry).toMatchObject({
       paid: true,
-      gated: false,
+      gated: true,
+      gate: "cli",
       billing: "metered",
     });
     expect(bindArguments({ entry, positional: {}, body })).toEqual([body]);
@@ -428,9 +458,52 @@ describe("a billed endpoint outside the pay-gate registry", () => {
     expect(calls).toEqual([[BODY]]);
   });
 
-  it("calls upstream with the body alone when the gate is armed", async () => {
+  it("refuses without an OTP when the gate is armed, with hint and meta.requestHash", async () => {
     const calls: unknown[][] = [];
     const cap = capture();
+    const secret = secretFile();
+
+    const exit = await runEndpoint(
+      "openai",
+      [EMBEDDINGS, "--data-file", bodyFile(), "--paygate-secret-file", secret],
+      cap.writer,
+      openAiOptions(calls)
+    );
+
+    expect(exit).toBe(4);
+    expect(calls).toEqual([]);
+    const envelope = errorOf(cap);
+    const expectedHash = canonicalHash(BODY);
+    expect(envelope.code).toBe("paygate");
+    expect(envelope.meta).toEqual({ requestHash: expectedHash });
+    expect(envelope.hint).toBe(
+      `otp-missing; mint with: apicity-paygate otp mint ` +
+        `--secret-file ${secret} --provider openai --method POST ` +
+        `--dot-path ${EMBEDDINGS} --request-hash ${expectedHash}`
+    );
+  });
+
+  it("passes with a token minted from meta.requestHash and keeps unchanged arguments", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+    const secret = secretFile();
+    const refusalCap = capture();
+
+    await runEndpoint(
+      "openai",
+      [EMBEDDINGS, "--data-file", bodyFile(), "--paygate-secret-file", secret],
+      refusalCap.writer,
+      openAiOptions([])
+    );
+    const { requestHash } = errorOf(refusalCap).meta as {
+      requestHash: `sha256:${string}`;
+    };
+    const otp = mintOtp(SECRET, {
+      provider: "openai",
+      method: "POST",
+      dotPath: EMBEDDINGS,
+      requestHash,
+    });
 
     const exit = await runEndpoint(
       "openai",
@@ -439,7 +512,9 @@ describe("a billed endpoint outside the pay-gate registry", () => {
         "--data-file",
         bodyFile(),
         "--paygate-secret-file",
-        secretFile(),
+        secret,
+        "--otp",
+        otp,
       ],
       cap.writer,
       openAiOptions(calls)
@@ -447,6 +522,250 @@ describe("a billed endpoint outside the pay-gate registry", () => {
 
     expect(exit).toBe(0);
     expect(calls).toEqual([[BODY]]);
+  });
+
+  it("refuses an OTP for a different request or endpoint", async () => {
+    const calls: unknown[][] = [];
+    const secret = secretFile();
+
+    const wrongBodyOtp = mintOtp(SECRET, {
+      provider: "openai",
+      method: "POST",
+      dotPath: EMBEDDINGS,
+      request: { ...BODY, input: "other" },
+    });
+    const cap1 = capture();
+    const exit1 = await runEndpoint(
+      "openai",
+      [
+        EMBEDDINGS,
+        "--data-file",
+        bodyFile(),
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        wrongBodyOtp,
+      ],
+      cap1.writer,
+      openAiOptions(calls)
+    );
+    expect(exit1).toBe(4);
+    expect(calls).toEqual([]);
+    expect(String(errorOf(cap1).hint)).toContain("otp-mismatched-request");
+
+    const wrongEndpointOtp = mintOtp(SECRET, {
+      provider: "openai",
+      method: "POST",
+      dotPath: "v1.chat.completions",
+      request: BODY,
+    });
+    const cap2 = capture();
+    const exit2 = await runEndpoint(
+      "openai",
+      [
+        EMBEDDINGS,
+        "--data-file",
+        bodyFile(),
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        wrongEndpointOtp,
+      ],
+      cap2.writer,
+      openAiOptions(calls)
+    );
+    expect(exit2).toBe(4);
+    expect(calls).toEqual([]);
+    expect(String(errorOf(cap2).hint)).toContain("otp-mismatched-request");
+  });
+
+  it("binds path parameters into the CLI request hash", async () => {
+    const calls: unknown[][] = [];
+    const secret = secretFile();
+    const ttsBody = { text: "hello" };
+    const ttsFile = join(sandbox(), "tts.json");
+    writeFileSync(ttsFile, JSON.stringify(ttsBody));
+    const opts: EndpointOptions = {
+      env: fakeEnv("elevenlabs"),
+      stdoutIsTTY: false,
+      instantiate: fakeProvider(calls, ["post", "v1", "textToSpeech"]),
+    };
+
+    const refusalCap = capture();
+    const refusedExit = await runEndpoint(
+      "elevenlabs",
+      [
+        "v1.textToSpeech",
+        "--voiceId",
+        "voice-a",
+        "--data-file",
+        ttsFile,
+        "--paygate-secret-file",
+        secret,
+      ],
+      refusalCap.writer,
+      opts
+    );
+    expect(refusedExit).toBe(4);
+    expect(calls).toEqual([]);
+    const refusedMeta = errorOf(refusalCap).meta as {
+      requestHash: `sha256:${string}`;
+    };
+    expect(refusedMeta.requestHash).toBe(
+      canonicalHash({ path: { voiceId: "voice-a" }, body: ttsBody })
+    );
+
+    const otp = mintOtp(SECRET, {
+      provider: "elevenlabs",
+      method: "POST",
+      dotPath: "v1.textToSpeech",
+      requestHash: refusedMeta.requestHash,
+    });
+
+    // Different path parameter is refused even with identical body.
+    const mismatchCap = capture();
+    const mismatchExit = await runEndpoint(
+      "elevenlabs",
+      [
+        "v1.textToSpeech",
+        "--voiceId",
+        "voice-b",
+        "--data-file",
+        ttsFile,
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        otp,
+      ],
+      mismatchCap.writer,
+      opts
+    );
+    expect(mismatchExit).toBe(4);
+    expect(calls).toEqual([]);
+    expect(String(errorOf(mismatchCap).hint)).toContain(
+      "otp-mismatched-request"
+    );
+
+    // Matching voiceId passes and keeps positional + body arguments unchanged.
+    const okCap = capture();
+    const okExit = await runEndpoint(
+      "elevenlabs",
+      [
+        "v1.textToSpeech",
+        "--voiceId",
+        "voice-a",
+        "--data-file",
+        ttsFile,
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        otp,
+      ],
+      okCap.writer,
+      opts
+    );
+    expect(okExit).toBe(0);
+    expect(calls).toEqual([["voice-a", ttsBody]]);
+  });
+
+  it("folds request-field flags into the hashed request", async () => {
+    const calls: unknown[][] = [];
+    const secret = secretFile();
+    const opts: EndpointOptions = {
+      env: fakeEnv("s3"),
+      stdoutIsTTY: false,
+      instantiate: fakeProvider(calls, ["get", "objects", "get"]),
+    };
+    const otp = mintOtp(SECRET, {
+      provider: "s3",
+      method: "GET",
+      dotPath: "objects.get",
+      request: { bucket: "b", key: "k" },
+    });
+
+    const okCap = capture();
+    const okExit = await runEndpoint(
+      "s3",
+      [
+        "objects.get",
+        "--method",
+        "GET",
+        "--bucket",
+        "b",
+        "--key",
+        "k",
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        otp,
+      ],
+      okCap.writer,
+      opts
+    );
+    expect(okExit).toBe(0);
+    expect(calls).toEqual([[{ bucket: "b", key: "k" }]]);
+
+    const badCap = capture();
+    const badExit = await runEndpoint(
+      "s3",
+      [
+        "objects.get",
+        "--method",
+        "GET",
+        "--bucket",
+        "other",
+        "--key",
+        "k",
+        "--paygate-secret-file",
+        secret,
+        "--otp",
+        otp,
+      ],
+      badCap.writer,
+      opts
+    );
+    expect(badExit).toBe(4);
+    expect(calls).toHaveLength(1);
+    expect(String(errorOf(badCap).hint)).toContain("otp-mismatched-request");
+  });
+
+  it("refuses --otp on a CLI-gated row when no secret is configured", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "openai",
+      [EMBEDDINGS, "--data-file", bodyFile(), "--otp", "not-a-token"],
+      cap.writer,
+      openAiOptions(calls)
+    );
+
+    expect(exit).toBe(4);
+    expect(calls).toEqual([]);
+    const envelope = errorOf(cap);
+    expect(envelope.code).toBe("paygate");
+    expect(String(envelope.hint)).toContain("paygate-not-configured");
+    expect(String(envelope.hint)).not.toContain("otp mint");
+  });
+
+  it("allows a free row without --otp even when the gate is armed", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "nunchux",
+      ["v1.credits", "--paygate-secret-file", secretFile()],
+      cap.writer,
+      {
+        env: fakeEnv("nunchux"),
+        stdoutIsTTY: false,
+        instantiate: fakeProvider(calls, ["get", "v1", "credits"]),
+      }
+    );
+
+    expect(exit).toBe(0);
+    expect(calls).toEqual([[]]);
+    expect(JSON.parse(cap.out[0])).toEqual({ ok: true, data: { ok: true } });
   });
 });
 
@@ -461,5 +780,30 @@ describe("the CLI is the code client, never the minter", () => {
     });
 
     expect(found.trim()).toBe("");
+  });
+
+  it("has a single callEndpoint( call site, inside dispatchThroughGate", async () => {
+    const found = await new Promise<string>((resolve) => {
+      execFile(
+        "grep",
+        ["-rn", "callEndpoint(", "packages/cli/src"],
+        (_error, stdout) => resolve(stdout)
+      );
+    });
+    const callSites = found
+      .trim()
+      .split("\n")
+      .filter(
+        (line) => line && !line.includes("export async function callEndpoint(")
+      );
+
+    expect(callSites).toHaveLength(1);
+    expect(callSites[0]).toMatch(/^packages\/cli\/src\/main\.ts:/);
+
+    const mainSource = readFileSync("packages/cli/src/main.ts", "utf8");
+    const gateCall = /dispatchThroughGate\(\{[\s\S]*?\}\);/.exec(
+      mainSource
+    )?.[0];
+    expect(gateCall).toContain("callEndpoint(");
   });
 });

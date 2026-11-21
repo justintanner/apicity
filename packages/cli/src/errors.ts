@@ -62,7 +62,10 @@ export class CliError extends Error {
 export interface ClassifyContext {
   paygateSecretFile?: string;
   dataFile?: string;
+  provider?: string;
+  method?: string;
   dotPath?: string;
+  requestHash?: `sha256:${string}`;
 }
 
 /** The transport-level `cause.code`s that mean "the request never landed". */
@@ -105,14 +108,20 @@ export function classifyError(
         cause: err,
       });
     }
+    const provider = err.provider || context.provider || "<provider>";
+    const method = err.method || context.method || "<method>";
     const dotPath = err.dotPath || context.dotPath || "<dotPath>";
     const secretFile = context.paygateSecretFile ?? "<path>";
-    const payloadFile = context.dataFile ?? "<file>";
+    const requestHash = context.requestHash ?? "<sha256:...>";
     return new CliError("paygate", err.message, {
       hint:
         `${err.code}; mint with: apicity-paygate otp mint ` +
-        `--secret-file ${secretFile} --dot-path ${dotPath} ` +
-        `--payload-file ${payloadFile}`,
+        `--secret-file ${secretFile} --provider ${provider} ` +
+        `--method ${method} --dot-path ${dotPath} ` +
+        `--request-hash ${requestHash}`,
+      ...(context.requestHash
+        ? { meta: { requestHash: context.requestHash } }
+        : {}),
       cause: err,
     });
   }

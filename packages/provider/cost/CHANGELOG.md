@@ -1006,6 +1006,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Pay gate: `dispatchGated` is extracted and exported alongside `dispatchWithPaidGate`, taking an `unknown` payload so `@apicity/cli` applies the exact same gate checks and `PayGateError` codes to every billed endpoint outside `PAID_ENDPOINTS` (584 rows on top of the 27 registry rows; 611 gated of 1,950 in total). `OtpCall.request` becomes optional next to `OtpCall.requestHash` (`sha256:<64 hex digits>`, pass one of the two, never both), and `apicity-paygate otp mint` accepts `--request-hash` alongside `--payload-file`. `PAID_ENDPOINTS`, `isPaidEndpoint`, `lookupPaidEndpoint`, `withPaidGate`, and direct SDK behavior are unchanged; `paid-endpoints.ts` header and JSDoc wording clarify that listed endpoints are enforced by the provider package (`gate: "sdk"`) while `@apicity/cli` enforces billed unlisted endpoints via `endpointBilling` (`gate: "cli"`) (ac-cbun15).
+
 - The frontier registry (`frontier()`, `docs/frontier.md`) follows the
   Artificial Analysis boards as read on 2026-11-19 (was 2026-11-16). New rows,
   unmapped for now: MAI-Image-2.7 (t2i #4, i2i #1), Kling Image 4.0 out of

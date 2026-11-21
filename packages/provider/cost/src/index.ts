@@ -95,6 +95,7 @@ export type {
 
 export {
   PayGateError,
+  dispatchGated,
   dispatchWithPaidGate,
   mintOtp,
   createReplayStore,

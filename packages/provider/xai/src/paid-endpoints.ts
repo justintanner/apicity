@@ -1,10 +1,13 @@
 // AUTO-GENERATED from packages/provider/cost/src/paid-endpoints.ts; do not edit.
 // Edit the canonical file and run `pnpm run gen:shared`.
 /**
- * Exact paid-endpoint registry.
+ * Exact paid-endpoint registry for SDK-enforced providers.
  *
- * Only endpoints listed here are considered paid. All unlisted endpoints
- * are assumed free and must preserve current behavior with no caller changes.
+ * A listed endpoint is one the provider package gates itself (`gate: "sdk"`):
+ * direct SDK callers and CLI callers both go through `withPaidGate`. An
+ * unlisted endpoint is not gated by the provider package; the CLI gates it
+ * (`gate: "cli"`) when its billing record bills. Whether an endpoint bills is
+ * `endpointBilling`'s business, not this registry's.
  *
  * Matching is exact: provider + method + dotPath. No regex, prefix,
  * wildcard, path-family, generated broad match, or fallback-by-method logic.
@@ -385,11 +388,12 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
 ];
 
 /**
- * Look up a paid endpoint by exact key match.
+ * Look up an SDK-gated endpoint by exact key match.
  *
  * Returns `PaidEndpointInfo` only when provider, method, and dotPath all match
  * an entry in `PAID_ENDPOINTS` exactly. Returns `undefined` for every
- * unlisted endpoint, which callers must treat as free.
+ * unlisted endpoint, which is not gated by the provider package; the CLI gates
+ * billed unlisted endpoints from `endpointBilling`.
  */
 export function lookupPaidEndpoint(
   provider: string,
@@ -409,9 +413,10 @@ export function lookupPaidEndpoint(
 }
 
 /**
- * Predicate: is this exact endpoint paid?
+ * Predicate: does the provider package gate this exact endpoint itself?
  *
- * Unlisted endpoints return `false` (assumed free).
+ * Unlisted endpoints return `false` (not gated by the provider package; check
+ * `endpointBilling` for whether the call bills).
  */
 export function isPaidEndpoint(
   provider: string,

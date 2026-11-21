@@ -54,7 +54,7 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    fine, printing its value never is.
 2. **Never mint an OTP and never ask for the pay-gate secret.** An operator can
    arm a pay gate on gated endpoints; a gated call then answers `paygate` until
-   it carries a one-time token the operator minted out of band. If a call
+   it carries a request-bound OTP the operator minted out of band. If a call
    answers `paygate`, report what the `hint` says the operator must do and
    stop. Do not read the secret file, do not run the minting command, do not
    retry.
@@ -73,8 +73,9 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    not retry, do not hunt for another key, do not switch providers to work
    around a credential you were not given.
 6. **Paid endpoints bill: say so before spending.** `apicity describe` shows
-   `paid: true` for every call that bills (`billing` says how), whether or not
-   a pay gate covers it (`gated`).
+   `paid: true` for every call that bills (`billing` says how), and on an armed
+   host every paid endpoint (`gated: true`, enforced at `gate`: `"sdk"` or
+   `"cli"`) needs an OTP.
    State the endpoint and that it bills, then call it without `--otp`. Pass
    `--otp` only with a token the operator gave you after a call answered
    `paygate` with `otp-missing` (see [Paid endpoints](#paid-endpoints)).
@@ -133,20 +134,20 @@ prints the `data` alone — with `--json` it is one compact line.
 **`code` is the contract, not the number.** Branch on `code`; the exit status
 is for shells, and several codes share one.
 
-| Exit | Code               | When                                                                                            |
-| ---- | ------------------ | ----------------------------------------------------------------------------------------------- |
-| 0    | —                  | success                                                                                         |
-| 1    | `usage`            | unknown flag, missing `--<param>`, invalid `--data`, missing `--data-file`, refused combination |
-| 1    | `skill_unmanaged`  | a skill directory or link apicity did not write occupies the install path                       |
-| 2    | `not_found`        | unknown provider or dotPath, or the upstream answered HTTP 404                                  |
-| 3    | `auth`             | no credential configured, a 1Password read failed, or the upstream answered HTTP 401            |
-| 4    | `forbidden`        | upstream HTTP 403                                                                               |
-| 4    | `paygate`          | the operator's pay gate refused a missing or bad `--otp`, or an `--otp` reached an unarmed host |
-| 5    | `rate_limit`       | upstream HTTP 429                                                                               |
-| 6    | `network`          | fetch failure, DNS failure, timeout                                                             |
-| 7    | `api`              | any other upstream failure, or a local operational failure such as an unwritable output dir     |
-| 7    | `setup_incomplete` | an agent was not detected or a setup step failed                                                |
-| 8    | `ambiguous`        | the dotPath carries more than one method and `--method` is absent                               |
+| Exit | Code               | When                                                                                                               |
+| ---- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 0    | —                  | success                                                                                                            |
+| 1    | `usage`            | unknown flag, missing `--<param>`, invalid `--data`, missing `--data-file`, refused combination                    |
+| 1    | `skill_unmanaged`  | a skill directory or link apicity did not write occupies the install path                                          |
+| 2    | `not_found`        | unknown provider or dotPath, or the upstream answered HTTP 404                                                     |
+| 3    | `auth`             | no credential configured, a 1Password read failed, or the upstream answered HTTP 401                               |
+| 4    | `forbidden`        | upstream HTTP 403                                                                                                  |
+| 4    | `paygate`          | the operator's pay gate refused a missing or bad `--otp` on a paid endpoint, or an `--otp` reached an unarmed host |
+| 5    | `rate_limit`       | upstream HTTP 429                                                                                                  |
+| 6    | `network`          | fetch failure, DNS failure, timeout                                                                                |
+| 7    | `api`              | any other upstream failure, or a local operational failure such as an unwritable output dir                        |
+| 7    | `setup_incomplete` | an agent was not detected or a setup step failed                                                                   |
+| 8    | `ambiguous`        | the dotPath carries more than one method and `--method` is absent                                                  |
 
 Media never comes back as bytes on stdout. A binary result is written to the
 output directory and reported as `{"savedTo": "<path>", "bytes": 12345}`; a JSON
@@ -192,7 +193,7 @@ The directory is `--output-dir`, else
    providers still describe; they just cannot be called.
 2. **Find the endpoint.** `apicity commands --provider <provider> --json`. Each
    row carries `method`, `dotPath`, `pathParams`, `requestParams`, `paid`,
-   `billing`, `gated` and `configured`. Search that list rather than guessing a name.
+   `billing`, `gated`, `gate` and `configured`. Search that list rather than guessing a name.
 3. **Describe it.** `apicity describe <provider> <dotPath> --json` adds the
    request JSON Schema, a recorded example payload when one exists, and the
    call shape. Read `pathParams` and `requestParams`: both are passed as
@@ -593,18 +594,19 @@ every kind that bills:
 - `followup`: a poll or read whose cost is billed on the submit it follows.
 - `subscription`: a flat plan with no charge per call.
 
-`gated: true` marks the few the operator's pay gate covers: media generation
-on `kie` and `xai`. They read paid too. The CLI reads all of this at runtime,
-so trust it rather than this list:
+Every endpoint marked `paid: true` is also `gated: true` on an armed host, with
+`gate` showing where the check runs (`"sdk"` for the `kie` and `xai` registry
+rows; `"cli"` for every other paid row; `"none"` for unbilled rows). The CLI
+derives all of this at runtime, so trust it rather than any static list:
 
 ```bash
-apicity describe kie api.v1.jobs.createTask --json   # "paid": true, "gated": true
-apicity describe openai v1.embeddings --json         # "paid": true, "gated": false
-apicity commands --provider xai --json               # each row carries "paid"
+apicity describe kie api.v1.jobs.createTask --json   # "paid": true, "gated": true, "gate": "sdk"
+apicity describe openai v1.embeddings --json         # "paid": true, "gated": true, "gate": "cli"
+apicity commands --provider xai --json               # each row carries "paid", "gated", "gate"
 ```
 
-`paid: true` means the call bills, whether or not a gate covers it. Say so
-first — name the endpoint and that it bills — then call it without a token:
+`paid: true` means the call bills, armed or not. Say so first — name the
+endpoint and that it bills — then call it without a token:
 
 ```bash
 apicity kie api.v1.jobs.createTask --data-file ./job.json
@@ -612,35 +614,40 @@ apicity kie api.v1.jobs.createTask --data-file ./job.json
 
 The pay gate is off unless the operator armed it by giving the CLI a secret
 file (`--paygate-secret-file` or `$APICITY_PAYGATE_SECRET_FILE`), so that call
-usually just runs. Two answers mean something else:
+usually runs directly. Two answers mean something else:
 
 - **`paygate`, with `otp-missing` in `hint`.** The operator armed the gate:
-  every gated call now needs a one-time token, single-use and bound to the exact
-  payload, and a missing or bad one fails closed. Report that the call is
-  blocked on an operator-minted OTP, and wait for one.
+  every paid call now needs an OTP bound to that endpoint and exact request
+  until it expires (10 minutes by default unless `--ttl` is passed; single-use
+  within one process), and a missing or bad one fails closed. Report the exact
+  `apicity-paygate otp mint ...` command from `hint` (and `meta.requestHash`),
+  and stop so the operator can mint it.
 - **`paygate`, with `paygate-not-configured` in `hint`, on a call where you
   passed an operator-supplied `--otp`.** This host has no gate armed, so the
   token cannot be checked. Report the unarmed host and stop. Never retry
   without the `--otp`: the operator meant that call to be gated.
 
-**The operator mints the token; you never do.** On a host whose operator armed
-the gate, they run, once, out of band:
+**The operator mints the token; you never do.** When an armed host refuses a
+call, `hint` prints the full `--request-hash` mint command and `meta.requestHash`
+carries the digest; `--payload-file` still mints for single-object requests
+with no path parameters, and running the caller's command without `--otp` lets
+the operator check what `requestHash` covers without calling upstream:
 
 ```bash
-apicity-paygate otp mint --secret-file <path> --dot-path <api.path> --payload-file <path>
+apicity-paygate otp mint --secret-file <path> --provider <provider> --method <M> --dot-path <api.path> --request-hash sha256:<hex>
 ```
 
-and hand you the token, which you pass unchanged. This is the one form that
-carries `--otp`, and only for a host whose operator armed the gate:
+They hand you the token, which you pass unchanged:
 
 ```bash
 apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json
 ```
 
-The token is bound to that exact payload file, so `--data-file` and `--otp`
-travel together: change the payload and the operator has to mint again. If you
-have no token, say the call is blocked on an operator-minted OTP and stop —
-do not read the secret file, and do not run the minting command yourself.
+The token is bound to the exact endpoint and request — `--data` / `--data-file`,
+path parameters (`--voiceId`), and request-field flags (`--bucket`, `--key`)
+included — so change any of them and the operator must mint again. If you have
+no token, report the block and stop — do not read the secret file, and do not
+run the minting command yourself.
 
 ## Troubleshooting
 

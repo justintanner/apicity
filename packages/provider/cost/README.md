@@ -1053,28 +1053,34 @@ what each endpoint's billing record (`endpointBilling`) says.
 
 The gate is **opt-in**. A provider constructed without a pay-gate secret
 dispatches its paid endpoints like any other endpoint. Constructing it with a
-shared **HMAC secret** arms the gate, and from then on every paid call needs a
-**single-use OTP** (one-time password) minted from that secret and bound to the
-exact request. An armed gate is fail-closed and does **no** cost estimation —
-pure authorization: a paid call cannot fire unless the caller presents a valid,
-request-bound OTP. The autonomous caller never holds the secret, so it cannot
-self-approve; only the human or code client that holds the secret can mint.
-There are **no environment variables and no key files** — the secret is passed
-in via factory options (or the CLI's `--paygate-secret-file` /
+shared **HMAC secret** arms the gate, and from then on every gated call needs an
+**OTP** minted from that secret and bound to the exact request (single-use
+within one `ReplayStore` instance; cross-process single-use requires a
+persistent `ReplayStore`). An armed gate is fail-closed and does **no** cost
+estimation — pure authorization: a gated call cannot fire unless the caller
+presents a valid, request-bound OTP. The autonomous caller never holds the
+secret, so it cannot self-approve; only the human or code client that holds the
+secret can mint. There are **no environment variables and no key files** — the
+secret is passed in via factory options (or the CLI's `--paygate-secret-file` /
 `APICITY_PAYGATE_SECRET_FILE`).
 
-An OTP presented to a provider built without a secret is refused with
+An OTP presented to a provider or CLI built without a secret is refused with
 `paygate-not-configured`, never silently dropped: whoever passes one believes a
-gate exists. Armed or not, a registry row is what `apicity describe` reports as
-`gated: true`, and it also reads `paid: true`. `paid` is true for every billed
-endpoint, gated or not, from its billing record.
+gate exists. Armed or not, `apicity describe` reports `paid: true` and
+`gated: true` for all 611 paid endpoints across `PAID_ENDPOINTS` (`gate: "sdk"`)
+and billed `endpointBilling` records (`gate: "cli"`). Unbilled endpoints
+(`free`, `followup`, `subscription`) stay ungated (`gate: "none"`).
 
 ### Registry model
 
-- `PAID_ENDPOINTS` is the canonical list: exact `(provider, method, dotPath)`
+- `PAID_ENDPOINTS` is the canonical list of endpoints that provider packages
+  enforce themselves (`gate: "sdk"`): exact `(provider, method, dotPath)`
   triples — no regex, prefix, wildcard, or inferred matching.
-- Unlisted endpoints pass through ungated, with no OTP or configuration
-  (their cost is whatever their billing record says).
+- Unlisted endpoints pass through `withPaidGate` / `dispatchWithPaidGate` in
+  direct SDK calls without an OTP or configuration. `@apicity/cli` checks
+  every other billed endpoint (`gate: "cli"`, determined from
+  `endpointBilling`) through `dispatchGated` before calling the provider
+  function.
 - Listed endpoints dispatch when the provider was built without a secret, and
   need a valid OTP once a secret arms the gate.
 
@@ -1154,8 +1160,21 @@ declare const payload: Record<string, unknown>; // the request body
 
 const otp = mintOtp(secret, {
   dotPath: "api.v1.jobs.createTask", // provider/method resolved from the registry
-  request: payload, // bound by canonical hash
+  request: payload, // pass either `request` or precomputed `requestHash`
   ttl: "10m", // seconds or "10m" / "1h" / "1d"; defaults to 10m
+});
+```
+
+You can also mint from a precomputed `sha256:<64 hex>` digest (for example
+`meta.requestHash` from a CLI refusal) by passing `requestHash` instead of
+`request` (provide one of the two, never both):
+
+```ts nocheck
+const hashOtp = mintOtp(secret, {
+  provider: "elevenlabs",
+  method: "POST",
+  dotPath: "v1.textToSpeech",
+  requestHash: "sha256:...",
 });
 ```
 
@@ -1168,10 +1187,11 @@ prefixed `sha256:`. Change any byte of the request and verification fails.
 
 ### Replay protection
 
-Each OTP `jti` is single-use. The default `ReplayStore` is an in-process Set
-scoped to one provider instance (no files, no `XDG_STATE_HOME`); pass a custom
-`replayStore` for cross-process or persistent protection. The `jti` is
-consumed **before** dispatch — see [Retry semantics](#retry-semantics).
+Each OTP `jti` is single-use within a `ReplayStore`. The default `ReplayStore` is
+an in-process `Set` scoped to one provider instance (no files, no
+`XDG_STATE_HOME`), so separate CLI processes each start with an empty store;
+pass a custom `replayStore` for cross-process or persistent protection. The
+`jti` is consumed **before** dispatch — see [Retry semantics](#retry-semantics).
 
 ### Public interface
 
@@ -1179,6 +1199,16 @@ consumed **before** dispatch — see [Retry semantics](#retry-semantics).
 interface PayGateApproval {
   otp: string;
 }
+
+async function dispatchGated<T>(
+  provider: string,
+  method: string,
+  dotPath: string,
+  payload: unknown,
+  approval: PayGateApproval | undefined,
+  dispatch: () => Promise<T>,
+  config?: PayGateConfig
+): Promise<T>;
 
 async function dispatchWithPaidGate<T>(
   provider: string,
@@ -1212,7 +1242,9 @@ const task = await provider.post.api.v1.jobs.createTask(
 
 Each failed check throws `PayGateError` with the code shown:
 
-1. **Preflight** — endpoints not in `PAID_ENDPOINTS` dispatch immediately.
+1. **Preflight** — `dispatchWithPaidGate` dispatches endpoints not in
+   `PAID_ENDPOINTS` immediately; `dispatchGated` skips this preflight and
+   applies steps 2–8 unconditionally.
 2. **Configuration** — a provider built without `paygate` has no gate: an OTP
    in `approval` → `paygate-not-configured`; with no OTP the call dispatches
    and no later step runs. A provider built with `paygate` whose `secret` is
@@ -1261,10 +1293,20 @@ try {
 
 ### CLI: minting OTPs
 
-The `apicity-paygate` binary mints OTPs. The secret is read from a **file**
-(never an env var); only the OTP is printed to stdout:
+The `apicity-paygate` binary mints OTPs from either `--payload-file` or a
+precomputed `--request-hash` (one of the two, never both). The secret is read
+from a **file** (never an env var); only the OTP is printed to stdout:
 
 ```bash
+apicity-paygate otp mint \
+  --secret-file ./paygate.secret \
+  --provider elevenlabs \
+  --method POST \
+  --dot-path v1.textToSpeech \
+  --request-hash sha256:<hex> \
+  --ttl 10m
+
+# --payload-file still works for single-object requests without path parameters:
 apicity-paygate otp mint \
   --secret-file ./paygate.secret \
   --dot-path api.v1.jobs.createTask \
@@ -1316,19 +1358,25 @@ not depend on `@apicity/cost` for runtime gating.
 The OTP `jti` is consumed **before** `dispatch()` runs: if dispatch later
 fails (network error, upstream 5xx, abort), it stays consumed and the caller
 must mint a fresh OTP to retry. This is intentional — otherwise a hostile
-caller could replay a single OTP on every transient failure. Each OTP is
-single-use authority for one network attempt.
+caller could replay a single OTP on every transient failure. Within one
+`ReplayStore` instance, each OTP `jti` is single-use authority for one network
+attempt.
 
 ### apicity CLI
 
 `@apicity/cli` is the code client. With no `--paygate-secret-file` and no
-`APICITY_PAYGATE_SECRET_FILE`, the gate is off and a paid call goes upstream
-directly; an `--otp` on such a host exits 4 `paygate` with
-`paygate-not-configured`. Naming a secret file arms the gate: the CLI holds
-the secret to **verify** OTPs (it never mints), a human mints an OTP
-out-of-band with the same secret, and the caller passes it as `--otp <token>`
-on the call — an AI driving the CLI cannot self-approve. A secret file that is
-empty is a `usage` error, never a disarmed gate.
+`APICITY_PAYGATE_SECRET_FILE`, calls without `--otp` go upstream directly on
+every row; an `--otp` on any paid row on such a host exits 4 `paygate` with
+`paygate-not-configured`. Naming a secret file arms the gate for every paid
+endpoint (`gated: true`, 611 of 1,950: 27 `gate: "sdk"` checked in `kie`/`xai`
+via `withPaidGate`, and 584 `gate: "cli"` checked in the CLI via
+`dispatchGated`). The CLI holds the secret to **verify** OTPs (it never mints);
+a refusal prints the full `--request-hash` mint command and `meta.requestHash`.
+To check what a `requestHash` covers, run the caller's command without `--otp`
+(no upstream call fires). Pass `--otp <token>` once minted; one OTP covers one
+endpoint and exact request until `--ttl` expires (`10m` default), single-use
+within one process. A secret file that is empty is a `usage` error, never a
+disarmed gate.
 
 ### Minimal operator workflow
 

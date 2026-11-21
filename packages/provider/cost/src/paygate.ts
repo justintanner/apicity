@@ -316,7 +316,10 @@ export interface OtpCall {
   provider?: string;
   method?: string;
   dotPath: string;
-  request: Record<string, unknown>;
+  /** Request payload to hash; pass either `request` or `requestHash`. */
+  request?: Record<string, unknown>;
+  /** Precomputed `sha256:<hex>` digest; pass either `request` or `requestHash`. */
+  requestHash?: `sha256:${string}`;
   /** Time-to-live as seconds or a string like "10m". Defaults to 10m. */
   ttl?: string | number;
 }
@@ -371,6 +374,22 @@ export function mintOtp(secret: string, call: OtpCall): string {
   if (!secret) {
     throw new Error("mintOtp requires a non-empty secret");
   }
+  const hasRequest = call.request !== undefined;
+  const hasRequestHash = call.requestHash !== undefined;
+  if (hasRequest === hasRequestHash) {
+    throw new Error("mintOtp requires exactly one of request or requestHash");
+  }
+  let requestHash: `sha256:${string}`;
+  if (hasRequestHash) {
+    if (!/^sha256:[0-9a-f]{64}$/i.test(call.requestHash!)) {
+      throw new Error(
+        `Invalid requestHash: expected "sha256:" followed by 64 hex digits`
+      );
+    }
+    requestHash = call.requestHash!.toLowerCase() as `sha256:${string}`;
+  } else {
+    requestHash = canonicalHash(call.request);
+  }
   const key = resolveCallKey(call);
   const ttlSeconds =
     call.ttl === undefined
@@ -385,7 +404,7 @@ export function mintOtp(secret: string, call: OtpCall): string {
     provider: key.provider,
     method: key.method,
     dotPath: key.dotPath,
-    requestHash: canonicalHash(call.request),
+    requestHash,
     iat,
     exp: iat + ttlSeconds,
   };
@@ -492,19 +511,22 @@ export function verifyOtp(input: VerifyOtpInput): VerifyResult {
  * retry. This is intentional — without it, a hostile caller could replay an
  * OTP on every transient failure.
  */
-export async function dispatchWithPaidGate<T>(
+/**
+ * Apply the OTP-based paid-endpoint gate unconditionally before `dispatch()`.
+ *
+ * `dispatchWithPaidGate` skips this check for endpoints outside
+ * `PAID_ENDPOINTS`; `@apicity/cli` calls `dispatchGated` directly for billed
+ * endpoints outside the registry.
+ */
+export async function dispatchGated<T>(
   provider: string,
   method: string,
   dotPath: string,
-  payload: Record<string, unknown>,
+  payload: unknown,
   approval: PayGateApproval | undefined,
   dispatch: () => Promise<T>,
   config?: PayGateConfig
 ): Promise<T> {
-  if (!isPaidEndpoint(provider, method, dotPath)) {
-    return dispatch();
-  }
-
   if (!config) {
     if (approval?.otp) {
       throw new PayGateError(
@@ -566,4 +588,28 @@ export async function dispatchWithPaidGate<T>(
   store.add(result.jti);
 
   return dispatch();
+}
+
+export async function dispatchWithPaidGate<T>(
+  provider: string,
+  method: string,
+  dotPath: string,
+  payload: Record<string, unknown>,
+  approval: PayGateApproval | undefined,
+  dispatch: () => Promise<T>,
+  config?: PayGateConfig
+): Promise<T> {
+  if (!isPaidEndpoint(provider, method, dotPath)) {
+    return dispatch();
+  }
+
+  return dispatchGated(
+    provider,
+    method,
+    dotPath,
+    payload,
+    approval,
+    dispatch,
+    config
+  );
 }

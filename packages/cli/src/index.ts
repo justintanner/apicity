@@ -59,6 +59,7 @@ export {
   loadCatalog,
   selectEntry,
   type CatalogEntry,
+  type GateKind,
   type LoadCatalogOptions,
 } from "./catalog.js";
 export {
@@ -225,6 +226,7 @@ export {
   mergeRequestFields,
   type BindArgumentsOptions,
 } from "./invoke.js";
+export { dispatchThroughGate, gateRequest, type GatedCall } from "./paygate.js";
 export {
   defaultEnvFilePath,
   describeEnvVars,

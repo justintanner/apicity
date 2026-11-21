@@ -16,7 +16,8 @@ interface MintArgs {
   provider?: string;
   method?: string;
   dotPath: string;
-  payloadFile: string;
+  payloadFile?: string;
+  requestHash?: `sha256:${string}`;
   secretFile: string;
   ttl?: string;
 }
@@ -33,6 +34,10 @@ function parseMintArgs(argv: string[]): MintArgs {
     else if (a.startsWith("--dot-path=")) out.dotPath = a.slice(11);
     else if (a === "--payload-file") out.payloadFile = argv[++i];
     else if (a.startsWith("--payload-file=")) out.payloadFile = a.slice(15);
+    else if (a === "--request-hash")
+      out.requestHash = argv[++i] as `sha256:${string}` | undefined;
+    else if (a.startsWith("--request-hash="))
+      out.requestHash = a.slice(15) as `sha256:${string}`;
     else if (a === "--secret-file") out.secretFile = argv[++i];
     else if (a.startsWith("--secret-file=")) out.secretFile = a.slice(14);
     else if (a === "--ttl") out.ttl = argv[++i];
@@ -42,13 +47,24 @@ function parseMintArgs(argv: string[]): MintArgs {
     }
   }
 
-  const required: (keyof MintArgs)[] = ["dotPath", "payloadFile", "secretFile"];
+  const required: (keyof MintArgs)[] = ["dotPath", "secretFile"];
   for (const key of required) {
     if (out[key] === undefined || out[key] === null) {
       throw new Error(
         `Missing required argument: --${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`
       );
     }
+  }
+
+  const hasPayload = out.payloadFile !== undefined;
+  const hasHash = out.requestHash !== undefined;
+  if (!hasPayload && !hasHash) {
+    throw new Error(
+      "Missing required argument: pass one of --payload-file or --request-hash"
+    );
+  }
+  if (hasPayload && hasHash) {
+    throw new Error("Pass either --payload-file or --request-hash, never both");
   }
 
   return out as MintArgs;
@@ -63,18 +79,19 @@ function printHelp(): void {
       "  apicity-paygate otp mint \\",
       "    --secret-file <path> \\",
       "    --dot-path <api.path> \\",
-      "    --payload-file <path> \\",
+      "    --payload-file <path> | --request-hash <sha256:...> \\",
       "    [--provider <provider>] \\",
       "    [--method <HTTP method>] \\",
       "    [--ttl <duration>]",
       "",
       "Options:",
-      "  --secret-file  Path to a file containing the shared HMAC secret",
-      "  --dot-path     API dot-path (e.g. api.v1.jobs.createTask)",
-      "  --payload-file Path to JSON request payload file",
-      "  --provider     Provider name (optional; resolved from the dot-path)",
-      "  --method       HTTP method (optional; resolved from the dot-path)",
-      "  --ttl          Time-to-live: 10m, 1h, 30s, 1d (default 10m)",
+      "  --secret-file   Path to a file containing the shared HMAC secret",
+      "  --dot-path      API dot-path (e.g. api.v1.jobs.createTask)",
+      "  --payload-file  Path to JSON request payload file",
+      "  --request-hash  Precomputed request hash (sha256:<64 hex chars>)",
+      "  --provider      Provider name (optional; resolved from the dot-path)",
+      "  --method        HTTP method (optional; resolved from the dot-path)",
+      "  --ttl           Time-to-live: 10m, 1h, 30s, 1d (default 10m)",
     ].join("\n")
   );
 }
@@ -93,17 +110,24 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
 
   const args = parseMintArgs(argv.slice(2));
   const secret = readFileSync(args.secretFile, "utf8").trim();
-  const request = JSON.parse(readFileSync(args.payloadFile, "utf8")) as Record<
-    string,
-    unknown
-  >;
-  const otp = mintOtp(secret, {
-    provider: args.provider,
-    method: args.method,
-    dotPath: args.dotPath,
-    request,
-    ttl: args.ttl,
-  });
+  const otp =
+    args.requestHash !== undefined
+      ? mintOtp(secret, {
+          provider: args.provider,
+          method: args.method,
+          dotPath: args.dotPath,
+          requestHash: args.requestHash,
+          ttl: args.ttl,
+        })
+      : mintOtp(secret, {
+          provider: args.provider,
+          method: args.method,
+          dotPath: args.dotPath,
+          request: JSON.parse(
+            readFileSync(args.payloadFile!, "utf8")
+          ) as Record<string, unknown>,
+          ttl: args.ttl,
+        });
   console.log(otp);
 }
 

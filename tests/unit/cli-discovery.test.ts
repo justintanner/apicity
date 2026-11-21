@@ -107,8 +107,19 @@ describe("apicity commands", () => {
       })
     ).resolves.toBe(0);
 
-    const { data } = JSON.parse(out.join("\n")) as { data: unknown[] };
+    const { data } = JSON.parse(out.join("\n")) as {
+      data: Array<{
+        paid: boolean;
+        gated: boolean;
+        gate: string;
+        billing: string;
+      }>;
+    };
     expect(data).toHaveLength(tsvRowCount("openligadb"));
+    for (const row of data) {
+      expect(["sdk", "cli", "none"]).toContain(row.gate);
+      expect(row.gated).toBe(row.paid);
+    }
   });
 
   it("prints a table with both parameter kinds in human mode", async () => {
@@ -176,6 +187,8 @@ describe("apicity describe", () => {
     );
 
     expect(description.paid).toBe(true);
+    expect(description.gated).toBe(true);
+    expect(description.gate).toBe("sdk");
     expect(description.method).toBe("POST");
     expect(description.callShape).toBeUndefined(); // no URL placeholder
     // createTask is a discriminated union: one variant per model, each pinning
@@ -783,6 +796,9 @@ for (const { command, argv, data, direct, human } of DISCOVERY) {
 
       expect(exit).toBe(0);
       expect(out.split("\n")[0]).toMatch(human);
+      if (command === "describe") {
+        expect(out).toContain("gated:         yes\ngate:          sdk");
+      }
     });
 
     it("prints from the exported function what the CLI prints", async () => {

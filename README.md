@@ -8,7 +8,7 @@
 One command and one function per upstream endpoint, for AI image and video
 generation, LLMs, social posting, storage and market data. TypeScript, ESM,
 providers that depend only on zod, a cost estimate for every call, and an
-opt-in pay gate for the costliest media generation.
+opt-in pay gate for paid endpoints.
 
 ## Install
 
@@ -44,9 +44,9 @@ apicity doctor                                           # the install, in twelv
 Every command explains itself with `--help`. At a terminal the output is made
 for reading. Piped, or with `--json`, a command writes one JSON envelope
 `{ok, data}`, plus `summary` when the command sets one; `--quiet` writes the
-data alone. A paid endpoint says so in `apicity describe` and bills when called; a gated
-one (`gated: true`) also needs an OTP once the operator arms the pay gate:
-[docs/paygate.md](docs/paygate.md).
+data alone. A paid endpoint says so in `apicity describe` and bills when called;
+on a host whose operator arms the pay gate, every paid endpoint (`gated: true`)
+needs an OTP minted for that request: [docs/paygate.md](docs/paygate.md).
 
 ## Frontier models
 

@@ -7,8 +7,10 @@ walkthrough. The spec, the shared OTP format and the rate tables live in
 ## Example
 
 Built without a pay-gate secret, a provider dispatches paid calls like any
-other. Built with one, every paid call needs an approved, single-use OTP, and
-an autonomous caller cannot bypass it.
+other. Built with one, every paid call needs an approved OTP bound to that
+exact endpoint and request (single-use within one process, or across processes
+when backed by a shared `ReplayStore`), and an autonomous caller cannot bypass
+it.
 
 ```ts
 import { createKie, type MediaGenerationRequest } from "@apicity/kie";
@@ -62,7 +64,10 @@ const task = await gated.post.api.v1.jobs.createTask(payload, { otp });
 Direct KIE VEO calls are gated separately from `createTask`: for
 `kie.veo.post.api.v1.veo.generate` mint with `dotPath: "api.v1.veo.generate"`,
 for `kie.veo.post.api.v1.veo.extend` use `dotPath: "api.v1.veo.extend"`.
-Upload, status, and helper endpoints are unlisted and stay ungated.
+Non-billing endpoints (`gate: "none"`, such as status polls and free helpers)
+stay ungated. Billed endpoints outside `PAID_ENDPOINTS` (`gate: "cli"`) have no
+SDK gate when called directly from a provider package, and are gated by the
+`apicity` CLI once armed.
 
 ## Rules
 
@@ -75,46 +80,99 @@ generation) are listed in `PAID_ENDPOINTS`. The pay gate in front of them is
   call like any other call: it goes upstream, and it bills.
 - **Armed by a secret.** `paygate: { secret }` at provider construction arms
   it; in the CLI, `--paygate-secret-file` or `APICITY_PAYGATE_SECRET_FILE`
-  does. Once armed, the gate is **fail-closed**: every paid call needs a valid
-  OTP minted from that same secret, single-use and bound to the exact request,
-  and a missing or bad one throws before anything is sent. The flow is the
-  [example above](#example). The autonomous caller never sees the secret, so
-  it cannot self-approve. A supplied but empty secret fails closed too, with
-  `paygate-not-configured`.
-- **An OTP needs an armed gate.** An OTP passed to a provider built without
-  `paygate` is refused with `paygate-not-configured`, never silently dropped:
-  whoever passes one believes a gate exists.
+  does. Once armed, the gate is **fail-closed**: every gated call needs a valid
+  OTP minted from that same secret, bound to the exact endpoint and request
+  until it expires (default `10m`, or `--ttl` with no upper limit; single-use
+  within one process), and a missing or bad one fails closed before anything is
+  sent. The flow is the [example above](#example). The autonomous caller never
+  sees the secret, so it cannot self-approve. A supplied but empty secret fails
+  closed too, with `paygate-not-configured`.
+- **An OTP needs an armed gate.** An OTP passed to a provider or CLI host
+  without a pay-gate secret is refused with `paygate-not-configured`, never
+  silently dropped: whoever passes one believes a gate exists.
 
 Armed or not, `paid: true` in `apicity describe` (and the `paid` column of
 `apicity commands`) is the cue to say that a call bills before making it.
-`paid` follows each endpoint's reviewed billing record (`billing`), so it is
-true for many endpoints outside `PAID_ENDPOINTS`; `gated: true` marks the rows
-of the registry. An unlisted endpoint is not gated, which does not make it
-free: read `billing`.
+`paid` follows each endpoint's reviewed billing record (`billing`), plus the
+`PAID_ENDPOINTS` registry, and in the CLI `gated` equals `paid` on every row
+(611 of 1,950). Unbilled rows (`free`, `followup`, and `subscription` outside
+the registry — 1,339 rows) stay ungated (`gate: "none"`). Five unpriced upload
+rows (`x v2.media.upload` and `machgen api.v0.upload`) remain gated because
+their billing records are `unpriced`, so the gate fails closed when a call may
+bill.
 
-The OTP is signed with a single shared **HMAC secret** — no key files, no
-environment variables, no cost coupling — and commits to the exact
-`(provider, method, dotPath, requestHash, exp)` tuple: change any byte of the
-payload and verification fails. The `jti` is consumed before dispatch, so a
-failed network call still burns the token — mint a fresh OTP for any retry.
+## The CLI gate vs. the SDK gate
 
-Operators (or the code client) mint OTPs with `mintOtp(secret, { dotPath,
-request, ttl })` or the CLI — the secret is read from a file, never an env
-var:
+Discovery exposes a `gate` field (`"sdk"`, `"cli"`, or `"none"`) showing which
+gate applies when a host is armed:
+
+- **`gate: "sdk"`** (the 27 rows in `PAID_ENDPOINTS` across `kie` and `xai`):
+  the provider package enforces the gate itself through `withPaidGate`, so both
+  CLI calls and direct SDK calls require an OTP.
+- **`gate: "cli"`** (all other 584 paid rows across billed kinds `metered`,
+  `accrual`, and `unpriced`): the CLI enforces the gate through `dispatchGated`
+  immediately before invoking the provider function, keeping provider function
+  signatures unchanged (`direct SDK` calls outside the CLI stay unaffected).
+- **`gate: "none"`** (1,339 unbilled rows): not gated on any host.
+
+What an OTP binds (one provider, method, `dotPath`, and request):
+
+- On `"sdk"` rows and `"cli"` rows without URL path parameters, the hashed
+  request is the JSON request body with any `--<field>` flags merged in.
+- On `"cli"` rows with URL path parameters (`pathParams`), the hashed request is
+  `{ "path": { <param>: <value> }, "body": <request> }`, keyed by `pathParams`
+  so distinct target IDs cannot share a token.
+
+Every pay-gate refusal prints a complete mint command and includes
+`meta.requestHash` on the error envelope:
 
 ```bash
 apicity-paygate otp mint \
   --secret-file ./paygate.secret \
+  --provider elevenlabs \
+  --method POST \
+  --dot-path v1.textToSpeech \
+  --request-hash sha256:<hex>
+```
+
+`--payload-file <path>` continues to work for registry rows and any row whose
+request is a single JSON object with no path parameters. To verify what a
+`requestHash` covers before minting, run the caller's exact command without
+`--otp`: the CLI refuses with `otp-missing`, prints the exact same `requestHash`
+in `hint` and `meta.requestHash`, and sends nothing upstream.
+
+One OTP covers one provider, method, and `dotPath`, one exact request, valid
+until expiration (`10m` by default or `--ttl <duration>` with no upper limit),
+and single-use within one process.
+
+The OTP is signed with a single shared **HMAC secret** — no key files, no
+environment variables, no cost coupling — and commits to the exact
+`(provider, method, dotPath, requestHash, exp)` tuple: change any byte of the
+request or any path parameter and verification fails. Inside one provider or
+`dispatchGated` replay store, the `jti` is consumed before dispatch, so a
+failed network call still burns the token there — mint a fresh OTP for any
+retry.
+
+Operators (or the code client) mint OTPs with `mintOtp(secret, { provider,
+method, dotPath, requestHash, ttl })`, `mintOtp(secret, { dotPath, request,
+ttl })`, or the CLI — the secret is read from a file, never an env var:
+
+```bash
+apicity-paygate otp mint \
+  --secret-file ./paygate.secret \
+  --provider kie \
+  --method POST \
   --dot-path api.v1.jobs.createTask \
-  --payload-file request.json \
+  --request-hash sha256:<hex> \
   --ttl 10m
 ```
 
-A blocked call throws `PayGateError` whose `.code` is one of
+A blocked call raises `PayGateError` whose `.code` is one of
 `paygate-not-configured`, `otp-missing`, `otp-malformed`,
 `otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`, or
 `otp-replayed`.
 
-The gate is generic: a provider joins it by adding `PAID_ENDPOINTS` entries,
-as `kie` and `xai` do. On a host whose operator armed the gate, pass
+The SDK gate covers every entry listed in `PAID_ENDPOINTS` (`kie` and `xai`),
+while `@apicity/cli` automatically gates every other endpoint whose billing
+record bills (`endpointBilling`). On a host whose operator armed the gate, pass
 `apicity … --otp <token>`.

@@ -120,7 +120,7 @@ on stderr.
 | `--method <M>`                  | Pick one method when a dotPath answers several.                                                                                                                                                 |
 | `--data <json>`                 | The request body; `-` reads stdin.                                                                                                                                                              |
 | `--data-file <path>`            | The request body, read from a file; `-` reads stdin.                                                                                                                                            |
-| `--otp <token>`                 | A gated endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).                                               |
+| `--otp <token>`                 | A gated endpoint's OTP approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).                                                      |
 | `--output-dir <path>`           | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                                                                      |
 | `--env-file <path>`             | Load provider settings from a dotenv file. Set env vars win; `op://` references resolve (see [1Password](#1password)).                                                                          |
 | `--op-vault <vault>`            | The vault convention: fill missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                                                 |
@@ -143,22 +143,22 @@ each call actually requested, which is how to check rather than guess.
 
 ## Built-in commands
 
-| Command                          | What it does                                                                                                                                                 |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `apicity commands`               | Every endpoint, or one provider's with `--provider`. `--json` for a catalog.                                                                                 |
-| `apicity describe <p> <dotPath>` | One endpoint: method, URL, docs URL, path parameters, request parameters, whether it is paid, its billing kind, whether it is gated, and the request schema. |
-| `apicity providers`              | Every provider, the env vars it reads (names only) and whether it is configured.                                                                             |
-| `apicity frontier [type]`        | Ranked image and video models for a task type. `--provider` filters. `--json` for the rows.                                                                  |
-| `apicity skill`                  | Print the agent skill this package ships, byte for byte.                                                                                                     |
-| `apicity skill install`          | Install that skill into `~/.agents/skills/apicity`. `--remove` undoes it.                                                                                    |
-| `apicity setup claude`           | Install the skill and the Claude Code plugin.                                                                                                                |
-| `apicity setup codex`            | Install the skill Codex reads.                                                                                                                               |
-| `apicity setup agents`           | Install the skill; connect an agent when exactly one is unambiguous.                                                                                         |
-| `apicity setup 1password`        | Save `--op-vault` and `--op-token` to the env file and check them once; `--no-verify`, `--remove`.                                                           |
-| `apicity setup`                  | `setup agents`. `--remove` removes the plugin and everything this CLI wrote.                                                                                 |
-| `apicity doctor`                 | Twelve rows about this host's install, always exit 0.                                                                                                        |
-| `apicity help [topic]`           | Usage, or one of the topics `output`, `exit-codes`, `environment`, `agents`.                                                                                 |
-| `apicity version`                | The package version.                                                                                                                                         |
+| Command                          | What it does                                                                                                                                                                             |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apicity commands`               | Every endpoint, or one provider's with `--provider`. `--json` for a catalog.                                                                                                             |
+| `apicity describe <p> <dotPath>` | One endpoint: method, URL, docs URL, path parameters, request parameters, whether it is paid, its billing kind, whether and where it is gated (`gated`, `gate`), and the request schema. |
+| `apicity providers`              | Every provider, the env vars it reads (names only) and whether it is configured.                                                                                                         |
+| `apicity frontier [type]`        | Ranked image and video models for a task type. `--provider` filters. `--json` for the rows.                                                                                              |
+| `apicity skill`                  | Print the agent skill this package ships, byte for byte.                                                                                                                                 |
+| `apicity skill install`          | Install that skill into `~/.agents/skills/apicity`. `--remove` undoes it.                                                                                                                |
+| `apicity setup claude`           | Install the skill and the Claude Code plugin.                                                                                                                                            |
+| `apicity setup codex`            | Install the skill Codex reads.                                                                                                                                                           |
+| `apicity setup agents`           | Install the skill; connect an agent when exactly one is unambiguous.                                                                                                                     |
+| `apicity setup 1password`        | Save `--op-vault` and `--op-token` to the env file and check them once; `--no-verify`, `--remove`.                                                                                       |
+| `apicity setup`                  | `setup agents`. `--remove` removes the plugin and everything this CLI wrote.                                                                                                             |
+| `apicity doctor`                 | Twelve rows about this host's install, always exit 0.                                                                                                                                    |
+| `apicity help [topic]`           | Usage, or one of the topics `output`, `exit-codes`, `environment`, `agents`.                                                                                                             |
+| `apicity version`                | The package version.                                                                                                                                                                     |
 
 ## Frontier models
 
@@ -413,43 +413,57 @@ kind added later) read as paid; `free`, `followup` (a poll billed on its
 submit) and `subscription` do not. Whether or not this host gates them, `paid`
 is the cue to say a call bills before making it.
 
-The pay gate covers only the rows marked `gated` (`gated: yes`, or
-`"gated": true`): the pay-gate registry, media generation on `kie` and `xai`.
-Those always read paid too. `select(.gated)` lists them, the set
-`select(.paid)` gave before `paid` followed the billing record. Every other
-billed endpoint runs when called, and `--otp` plays no part in it.
+Once the gate is armed, the CLI requires an OTP for **every** paid endpoint
+(`gated` equals `paid` on every row: 611 of 1,950). Unbilled rows (`gate:
+"none"`, 1,339 rows) stay ungated. The `gate` field tells where the gate runs:
 
-The pay gate in front of the gated rows is **opt-in**. With no
-`--paygate-secret-file` and no `APICITY_PAYGATE_SECRET_FILE`, the gate is off
-and a gated call goes upstream directly, with no `--otp`. An `--otp` given on such a host exits 4
-`paygate`, with `paygate-not-configured` repeated in `hint`: it is refused
-rather than silently dropped, because whoever passes one believes a gate
-exists. A secret file that reads as empty is exit 1 `usage`
-(`<path> is empty`), raised before any provider is built, never a disarmed
-gate.
+- `"sdk"` (27 rows in `PAID_ENDPOINTS` across `kie` and `xai`): checked by the
+  provider package itself in both direct SDK and CLI calls (`select(.gate ==
+"sdk")` lists this set).
+- `"cli"` (the other 584 paid rows): checked by the CLI before calling the
+  provider function, leaving direct SDK use outside the CLI unchanged.
+- `"none"` (1,339 rows): unbilled and ungated.
 
-Naming a secret file arms the gate, and its guarantees are unchanged. The CLI
-is then the **code client**: it holds the shared HMAC secret to _verify_ an
-OTP, every gated call needs one, and each OTP is single-use and bound to the
-exact request. The CLI never mints one, and
-`grep -rn mintOtp packages/cli/src` finds nothing. On a host whose operator
-armed the gate, a human mints the OTP out-of-band from the same secret, and
-the caller passes it unchanged:
+The pay gate is **opt-in**. With no `--paygate-secret-file` and no
+`APICITY_PAYGATE_SECRET_FILE`, calls without `--otp` go upstream directly on
+every row. An `--otp` given on any paid row on such a host exits 4 `paygate`,
+with `paygate-not-configured` repeated in `hint`: it is refused rather than
+silently dropped, because whoever passes one believes a gate exists. A secret
+file that reads as empty is exit 1 `usage` (`<path> is empty`), raised before
+any provider is built, never a disarmed gate.
+
+Naming a secret file arms the gate: the CLI holds the shared HMAC secret to
+_verify_ an OTP (it never mints, and `grep -rn mintOtp packages/cli/src` finds
+nothing). A missing or bad OTP fails closed with exit 4 (`otp-missing`,
+`otp-expired`, `otp-mismatched-request`, …) repeated in `hint` along with the
+exact mint command and `meta.requestHash`. A human mints an OTP out-of-band
+from that secret:
 
 ```bash
 apicity-paygate otp mint \
   --secret-file ./paygate.secret \
-  --dot-path api.v1.jobs.createTask \
-  --payload-file request.json \
-  --ttl 10m
+  --provider openai \
+  --method POST \
+  --dot-path v1.embeddings \
+  --request-hash sha256:<hex>
 
-apicity kie api.v1.jobs.createTask --data-file request.json --otp <token>
+apicity openai v1.embeddings --data-file request.json --otp <token>
 ```
 
-On an armed host a missing or bad OTP fails closed with exit 4 and the gate's
-own code (`otp-missing`, `otp-expired`, `otp-replayed`, …) repeated in `hint`.
-The agent driving the CLI never sees the secret, so it cannot self-approve.
-See [@apicity/cost](../provider/cost) for the full spec.
+For rows with no URL path parameters (including all `"sdk"` registry rows), the
+hashed request is the merged JSON body (`--bucket b` and `--data '{"bucket":"b"}'`
+produce the same hash), so `--payload-file request.json` still mints for those
+single-object requests. For `"cli"` rows with URL path parameters (`pathParams`),
+the CLI hashes `{ "path": { <param>: <value> }, "body": <request> }` keyed by
+`pathParams`. To check what a `requestHash` covers before minting, run the
+caller's command without `--otp`: the refusal prints the exact same
+`requestHash` without touching the provider.
+
+Each OTP covers one provider, method, and `dotPath`, one exact request, is valid
+until expiration (`10m` by default or `--ttl <duration>` with no upper limit),
+and is single-use within one process. The agent driving the CLI never sees the
+secret, so it cannot self-approve. See [@apicity/cost](../provider/cost) and
+[docs/paygate.md](../../docs/paygate.md) for the full spec.
 
 ## The skill and the Claude Code plugin
 

@@ -11,6 +11,7 @@ import {
   parseOtp,
   mintOtp,
   createReplayStore,
+  dispatchGated,
   dispatchWithPaidGate,
 } from "../../packages/provider/cost/src/paygate";
 
@@ -688,5 +689,145 @@ describe("dispatchWithPaidGate", () => {
         makeConfig()
       )
     ).rejects.toThrow("network failure");
+  });
+});
+
+describe("mintOtp with requestHash", () => {
+  it("mints a valid OTP from a precomputed sha256 requestHash", async () => {
+    const request = { path: { voiceId: "v1" }, body: { text: "hello" } };
+    const requestHash = canonicalHash(request);
+    const otp = mintOtp(SECRET, {
+      provider: "elevenlabs",
+      method: "POST",
+      dotPath: "v1.textToSpeech",
+      requestHash,
+    });
+    const parsed = parseOtp(otp);
+    expect(parsed.payload.requestHash).toBe(requestHash);
+
+    const result = await dispatchGated(
+      "elevenlabs",
+      "POST",
+      "v1.textToSpeech",
+      request,
+      { otp },
+      async () => "ok",
+      { secret: SECRET, replayStore: createReplayStore() }
+    );
+    expect(result).toBe("ok");
+  });
+
+  it("requires exactly one of request or requestHash and validates hash format", () => {
+    const hash = canonicalHash({ a: 1 });
+    expect(() =>
+      mintOtp(SECRET, {
+        provider: "openai",
+        method: "POST",
+        dotPath: "v1.embeddings",
+        request: { a: 1 },
+        requestHash: hash,
+      })
+    ).toThrow(/exactly one/i);
+    expect(() =>
+      mintOtp(SECRET, {
+        provider: "openai",
+        method: "POST",
+        dotPath: "v1.embeddings",
+      })
+    ).toThrow(/exactly one/i);
+    expect(() =>
+      mintOtp(SECRET, {
+        provider: "openai",
+        method: "POST",
+        dotPath: "v1.embeddings",
+        requestHash: "sha256:short" as `sha256:${string}`,
+      })
+    ).toThrow(/Invalid requestHash/);
+  });
+});
+
+describe("dispatchGated", () => {
+  const payload = { model: "text-embedding-3-small", input: "hi" };
+
+  it("gates unlisted endpoints identically to dispatchWithPaidGate", async () => {
+    let called = 0;
+    const dispatch = async () => {
+      called++;
+      return "done";
+    };
+
+    // Unarmed without OTP dispatches
+    await expect(
+      dispatchGated(
+        "openai",
+        "POST",
+        "v1.embeddings",
+        payload,
+        undefined,
+        dispatch
+      )
+    ).resolves.toBe("done");
+    expect(called).toBe(1);
+
+    // Unarmed with OTP fails closed
+    await expect(
+      dispatchGated(
+        "openai",
+        "POST",
+        "v1.embeddings",
+        payload,
+        { otp: "tok" },
+        dispatch
+      )
+    ).rejects.toMatchObject({
+      name: "PayGateError",
+      code: "paygate-not-configured",
+    });
+
+    // Armed without OTP throws otp-missing
+    const store = createReplayStore();
+    await expect(
+      dispatchGated(
+        "openai",
+        "POST",
+        "v1.embeddings",
+        payload,
+        undefined,
+        dispatch,
+        { secret: SECRET, replayStore: store }
+      )
+    ).rejects.toMatchObject({ name: "PayGateError", code: "otp-missing" });
+
+    // Armed with matching OTP dispatches and consumes jti
+    const otp = mintOtp(SECRET, {
+      provider: "openai",
+      method: "POST",
+      dotPath: "v1.embeddings",
+      request: payload,
+    });
+    await expect(
+      dispatchGated(
+        "openai",
+        "POST",
+        "v1.embeddings",
+        payload,
+        { otp },
+        dispatch,
+        { secret: SECRET, replayStore: store }
+      )
+    ).resolves.toBe("done");
+    expect(called).toBe(2);
+
+    await expect(
+      dispatchGated(
+        "openai",
+        "POST",
+        "v1.embeddings",
+        payload,
+        { otp },
+        dispatch,
+        { secret: SECRET, replayStore: store }
+      )
+    ).rejects.toMatchObject({ name: "PayGateError", code: "otp-replayed" });
   });
 });

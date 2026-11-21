@@ -229,6 +229,7 @@ describe("catalog resolution", () => {
           requestParams: [],
           paid: false,
           gated: false,
+          gate: "none",
           billing: "free",
           configured: true,
         },
@@ -295,23 +296,23 @@ describe("paid-gate invariants through the resolver (no network)", () => {
     }
   });
 
-  it("marks exactly the registry rows gated in the CLI catalog", async () => {
+  it("marks exactly the registry rows sdk-gated and every paid row gated in the CLI catalog", async () => {
     const homeDir = mkdtempSync(join(tmpdir(), "apicity-resolution-home-"));
     const catalog = await loadCatalog({ env: { HOME: homeDir } }).finally(() =>
       rmSync(homeDir, { recursive: true, force: true })
     );
     const mismatched = catalog.filter(
       (entry) =>
-        entry.gated !==
+        (entry.gate === "sdk") !==
         isPaidEndpoint(entry.provider, entry.method, entry.dotPath)
     );
     expect(mismatched).toEqual([]);
-    // A gated row is always shown as paid, whatever its billing record says.
-    expect(catalog.filter((entry) => entry.gated && !entry.paid)).toEqual([]);
-    const gatedRows = catalog
-      .filter((entry) => entry.gated)
+    // A gated row is always shown as paid, and vice versa.
+    expect(catalog.filter((entry) => entry.gated !== entry.paid)).toEqual([]);
+    const sdkGatedRows = catalog
+      .filter((entry) => entry.gate === "sdk")
       .map((e) => `${e.provider} ${e.method} ${e.dotPath}`);
-    expect(gatedRows.sort()).toEqual(
+    expect(sdkGatedRows.sort()).toEqual(
       PAID_ENDPOINTS.map(
         ({ key }) => `${key.provider} ${key.method} ${key.dotPath}`
       ).sort()

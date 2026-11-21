@@ -178,11 +178,12 @@ describe("apicity catalog", () => {
     ).toBe(true);
   });
 
-  // ac-e65yyk: `paid` is disclosure and comes from the reviewed billing
-  // record; `gated` is the pay-gate registry and is the only thing that
-  // changes how a call binds. Derived per row, so a new endpoint is covered
-  // the moment its tsv row and billing record land.
-  it("derives billing, gated and paid for every row", async () => {
+  // ac-e65yyk + ac-cbun15: `paid` is disclosure and comes from the reviewed
+  // billing record (plus the registry); on an armed host every paid row is
+  // `gated`; `gate` says whether the provider package ("sdk") or the CLI
+  // ("cli") enforces it, or "none". Derived per row, so a new endpoint is
+  // covered the moment its tsv row and billing record land.
+  it("derives billing, paid, gated and gate for every row", async () => {
     const catalog = await loadCatalog({ env: fullEnv() });
     const unbilled = new Set(["free", "followup", "subscription"]);
     const wrong: string[] = [];
@@ -190,11 +191,15 @@ describe("apicity catalog", () => {
     for (const entry of catalog) {
       const { provider, method, dotPath } = entry;
       const billing = endpointBilling(provider, method, dotPath).kind;
-      const gated = isPaidEndpoint(provider, method, dotPath);
+      const inRegistry = isPaidEndpoint(provider, method, dotPath);
+      const paid = inRegistry || !unbilled.has(billing);
+      const gated = paid;
+      const gate = inRegistry ? "sdk" : paid ? "cli" : "none";
       if (
         entry.billing !== billing ||
+        entry.paid !== paid ||
         entry.gated !== gated ||
-        entry.paid !== (gated || !unbilled.has(billing))
+        entry.gate !== gate
       ) {
         wrong.push(`${provider} ${method} ${dotPath}`);
       }
@@ -204,48 +209,59 @@ describe("apicity catalog", () => {
   });
 
   it.each([
-    // gated and billed: the pay-gate registry
-    ["kie", "POST", "api.v1.jobs.createTask", true, true, "metered"],
-    // gated, documented free (ruling ac-qky8c5): still shown as paid
-    ["kie", "POST", "api.v1.voice.generate", true, true, "free"],
-    // billed with no gate: the rows that read `paid: no` before ac-e65yyk
-    ["openai", "POST", "v1.embeddings", true, false, "metered"],
-    ["fal", "POST", "veo3p1.textToVideo", true, false, "metered"],
-    ["s3", "PUT", "objects.put", true, false, "metered"],
+    // sdk-gated and billed: the pay-gate registry
+    ["kie", "POST", "api.v1.jobs.createTask", true, true, "sdk", "metered"],
+    // sdk-gated, documented free (ruling ac-qky8c5): still shown as paid
+    ["kie", "POST", "api.v1.voice.generate", true, true, "sdk", "free"],
+    // billed outside the registry: cli-gated
+    ["openai", "POST", "v1.embeddings", true, true, "cli", "metered"],
+    ["fal", "POST", "veo3p1.textToVideo", true, true, "cli", "metered"],
+    ["s3", "PUT", "objects.put", true, true, "cli", "metered"],
     [
       "fireworks",
       "POST",
       "inference.v1.accounts.deployments.create",
       true,
-      false,
+      true,
+      "cli",
       "accrual",
     ],
-    ["telegram", "POST", "sendGift", true, false, "unpriced"],
+    ["telegram", "POST", "sendGift", true, true, "cli", "unpriced"],
     // the first billed Nunchux submit (N04), metered per image
     [
       "nunchux",
       "POST",
       "v1.google.v1beta.interactions",
       true,
-      false,
+      true,
+      "cli",
       "metered",
     ],
     // no charge at the call
-    ["kie", "GET", "api.v1.jobs.recordInfo", false, false, "followup"],
-    ["kimicoding", "POST", "coding.v1.messages", false, false, "subscription"],
-    ["nunchux", "GET", "v1.credits", false, false, "free"],
-    ["nunchux", "GET", "v1.alibaba.tasks", false, false, "free"],
+    ["kie", "GET", "api.v1.jobs.recordInfo", false, false, "none", "followup"],
+    [
+      "kimicoding",
+      "POST",
+      "coding.v1.messages",
+      false,
+      false,
+      "none",
+      "subscription",
+    ],
+    ["nunchux", "GET", "v1.credits", false, false, "none", "free"],
+    ["nunchux", "GET", "v1.alibaba.tasks", false, false, "none", "free"],
     [
       "nunchux",
       "GET",
       "v1.bytedance.contents.generations.tasks.retrieve",
       false,
       false,
+      "none",
       "free",
     ],
   ] as const)(
-    "%s %s %s reads paid=%s gated=%s billing=%s",
-    async (provider, method, dotPath, paid, gated, billing) => {
+    "%s %s %s reads paid=%s gated=%s gate=%s billing=%s",
+    async (provider, method, dotPath, paid, gated, gate, billing) => {
       const catalog = await loadCatalog({ env: fullEnv() });
       const entry = catalog.find(
         (e) =>
@@ -254,7 +270,7 @@ describe("apicity catalog", () => {
           e.dotPath === dotPath
       );
 
-      expect(entry).toMatchObject({ paid, gated, billing });
+      expect(entry).toMatchObject({ paid, gated, gate, billing });
     }
   );
 

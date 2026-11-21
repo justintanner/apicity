@@ -24,10 +24,10 @@ export interface BindArgumentsOptions {
  * `files(idOrOpts?, signal?)`, so `apicity openai v1.files --method GET
  * --data '{"purpose":"…"}'` must call `files(body)` (plan F-7).
  *
- * A gated row always ends with the approval argument, present or not. The gate
- * checks it only when the operator armed it with a secret: an armed gate
- * answers `otp-missing` for an absent one, and an unarmed gate refuses a
- * present one with `paygate-not-configured` rather than dropping it.
+ * An SDK-gated row (`gate: "sdk"`) always ends with the approval argument,
+ * present or not. Its provider package checks it when armed; `gate: "cli"`
+ * rows are checked by the CLI before calling the provider function with its
+ * ordinary arguments.
  */
 export function bindArguments(options: BindArgumentsOptions): unknown[] {
   const args: unknown[] = [];
@@ -38,7 +38,7 @@ export function bindArguments(options: BindArgumentsOptions): unknown[] {
     args.push(value);
   }
 
-  if (options.entry.gated) {
+  if (options.entry.gate === "sdk") {
     args.push(options.body ?? {});
     args.push(options.otp === undefined ? undefined : { otp: options.otp });
     return args;

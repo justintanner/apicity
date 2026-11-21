@@ -181,6 +181,20 @@ export interface CostHelpers {
     method: string,
     dotPath: string
   ) => boolean;
+  dispatchGated: <T>(
+    provider: string,
+    method: string,
+    dotPath: string,
+    payload: unknown,
+    approval: { otp: string } | undefined,
+    dispatch: () => Promise<T>,
+    config?: {
+      secret: string;
+      replayStore?: { has(jti: string): boolean; add(jti: string): void };
+      now?: () => number;
+    }
+  ) => Promise<T>;
+  canonicalHash: (value: unknown) => `sha256:${string}`;
   ENDPOINT_BILLING: readonly CostHelperBillingPolicy[];
   endpointBilling: (
     provider: string,
@@ -234,6 +248,8 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     const exports = mod as Record<string, unknown>;
     const paidEndpoints = exports.PAID_ENDPOINTS;
     const isPaidEndpoint = exports.isPaidEndpoint;
+    const dispatchGated = exports.dispatchGated;
+    const canonicalHash = exports.canonicalHash;
     const billingPolicies = exports.ENDPOINT_BILLING;
     const endpointBilling = exports.endpointBilling;
     const frontier = exports.frontier;
@@ -249,6 +265,16 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     if (typeof isPaidEndpoint !== "function") {
       throw new Error(
         "Expected @apicity/cost to export isPaidEndpoint as a function"
+      );
+    }
+    if (typeof dispatchGated !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export dispatchGated as a function"
+      );
+    }
+    if (typeof canonicalHash !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export canonicalHash as a function"
       );
     }
     if (!Array.isArray(billingPolicies)) {
@@ -287,6 +313,8 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     return {
       PAID_ENDPOINTS: paidEndpoints as CostPaidEndpointEntry[],
       isPaidEndpoint: isPaidEndpoint as CostHelpers["isPaidEndpoint"],
+      dispatchGated: dispatchGated as CostHelpers["dispatchGated"],
+      canonicalHash: canonicalHash as CostHelpers["canonicalHash"],
       ENDPOINT_BILLING: billingPolicies as CostHelpers["ENDPOINT_BILLING"],
       endpointBilling: endpointBilling as CostHelpers["endpointBilling"],
       frontier: frontier as CostHelpers["frontier"],

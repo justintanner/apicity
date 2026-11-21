@@ -12,12 +12,14 @@ import {
 import { CALL_SHAPES, callShapeKey } from "./call-shapes.js";
 import { findEntries, loadCatalog, selectEntry } from "./catalog.js";
 import type { CatalogEntry } from "./catalog.js";
+import { loadCostHelpers } from "./cost.js";
 import {
   isProviderConfigured,
   describeEnvVars,
   resolveCredentials,
   type CredentialFlags,
 } from "./credentials.js";
+import { dispatchThroughGate, gateRequest } from "./paygate.js";
 import {
   createWriter,
   defaultWriter,
@@ -419,6 +421,8 @@ export async function runEndpoint(
     }
 
     const entry = selectEntry(entries, flags.method);
+    context.provider = entry.provider;
+    context.method = entry.method;
     const shape = CALL_SHAPES[callShapeKey(provider, entry.method, dotPath)];
     const bound = parseEndpointFlags(endpointArgv, shape);
     const body = await resolveRequestBody(flags, options.readStdin);
@@ -460,11 +464,12 @@ export async function runEndpoint(
 
     const invoke = async () => {
       try {
+        const paygateSecret = readPaygateSecret(paygateSecretFile);
         const instantiate = options.instantiate ?? instantiateProvider;
         const instance = await instantiate(
           provider,
           PROVIDERS[provider],
-          readPaygateSecret(paygateSecretFile),
+          paygateSecret,
           {
             ...factoryOverrides(flags),
             ...(capture ? { fetch: capture.runtime.fetch } : {}),
@@ -480,17 +485,30 @@ export async function runEndpoint(
           );
         }
 
-        return await callEndpoint(
-          instance,
+        const gatedRequest = gateRequest(entry, bound.positional, request);
+        if (paygateSecret !== undefined && entry.gated) {
+          const helpers = await loadCostHelpers();
+          context.requestHash = helpers.canonicalHash(gatedRequest);
+        }
+
+        return await dispatchThroughGate({
           entry,
-          bindArguments({
-            entry,
-            shape,
-            positional: bound.positional,
-            body: request,
-            otp: flags.otp,
-          })
-        );
+          request: gatedRequest,
+          otp: flags.otp,
+          secret: paygateSecret,
+          dispatch: () =>
+            callEndpoint(
+              instance,
+              entry,
+              bindArguments({
+                entry,
+                shape,
+                positional: bound.positional,
+                body: request,
+                otp: flags.otp,
+              })
+            ),
+        });
       } catch (err) {
         const classified = classifyError(err, context);
         // The runtime records the same classified code/message as the envelope.

@@ -351,4 +351,63 @@ describe("CLI subprocess", () => {
       ),
     });
   });
+
+  it("mints an OTP from --request-hash without --payload-file", async () => {
+    const request = { path: { voiceId: "v1" }, body: { text: "hi" } };
+    const hash = canonicalHash(request);
+    const result = await runCli([
+      "otp",
+      "mint",
+      "--provider",
+      "elevenlabs",
+      "--method",
+      "POST",
+      "--dot-path",
+      "v1.textToSpeech",
+      "--request-hash",
+      hash,
+      "--secret-file",
+      secretFile,
+    ]);
+
+    const otp = result.stdout.trim();
+    const parsed = parseOtp(otp);
+    expect(parsed.payload.provider).toBe("elevenlabs");
+    expect(parsed.payload.method).toBe("POST");
+    expect(parsed.payload.dotPath).toBe("v1.textToSpeech");
+    expect(parsed.payload.requestHash).toBe(hash);
+  });
+
+  it("requires one of --payload-file or --request-hash, never both", async () => {
+    const hash = canonicalHash({ ok: true });
+    await expect(
+      runCli([
+        "otp",
+        "mint",
+        "--dot-path",
+        "api.v1.jobs.createTask",
+        "--secret-file",
+        secretFile,
+      ])
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining("--payload-file or --request-hash"),
+    });
+
+    await expect(
+      runCli([
+        "otp",
+        "mint",
+        "--dot-path",
+        "api.v1.jobs.createTask",
+        "--payload-file",
+        payloadFile,
+        "--request-hash",
+        hash,
+        "--secret-file",
+        secretFile,
+      ])
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining("never both"),
+    });
+  });
 });

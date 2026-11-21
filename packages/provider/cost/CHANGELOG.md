@@ -1230,6 +1230,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** MachGen `MiniMax-H3-Omni` leaves `PRICING.machgen`,
+  `MODEL_SLUGS.machgen` (`mmh3o`), and `MODEL_DISPLAY.machgen`
+  (`MiniMax H3 Omni`). MachGen has kept it private since 2026-11-11 (absent from
+  public and keyed pricebooks and `GET /api/v0/models`, HTTP 404 model page, and
+  HTTP 403 `not available for your account` on `POST /api/v0/generate` as of
+  2026-11-21). `modelSlug("machgen", "MiniMax-H3-Omni")` and
+  `modelDisplay("machgen", "MiniMax-H3-Omni")` are type errors and throw on an
+  untyped id, and `computeEstimate` fails closed where it used to quote 0.02
+  USD/s at 768p R2V. `MiniMax-H3-Lite` was not added (ac-2igfqa).
+
 - **Breaking:** the KIE `api.v1.mj.generate` entry of `PAID_ENDPOINTS`, and the
   `api.v1.mj.generate` and `api.v1.mj.recordInfo` billing rows, because KIE
   withdrew Midjourney and `@apicity/kie` no longer exposes those routes.

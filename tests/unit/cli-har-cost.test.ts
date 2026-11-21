@@ -630,7 +630,7 @@ describe("apicity har cost", () => {
     it.each([
       "machgen_3663587242/seedance-2-0-mini-r2v-video_417671346",
       "machgen_3663587242/seedance-2-0-fast-r2v-video_2859529951",
-      "machgen_3663587242/minimax-h3-omni-r2v-video_116263929",
+      "machgen_3663587242/minimax-h3-r2v-video-from1s-2s_2249814522",
       // Hand-written: example.com results, and a poll in the submit's millisecond.
       // 18 and 22.5 credits a second are the published rates.
       "kie_2079838932/kling-v3-turbo-text-to-video_1058703467",

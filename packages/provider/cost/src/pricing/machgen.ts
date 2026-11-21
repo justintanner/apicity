@@ -43,7 +43,6 @@ const PRICED_TASKS: Record<string, readonly string[]> = {
   "Vidu-Q3-Turbo": ALL,
   "Vidu-Q3-Pro": ALL,
   "MiniMax-H3-Turbo": ALL,
-  "MiniMax-H3-Omni": ["R2V"],
   "Seedance-2.0-Fast": ALL,
   "Seedance-2.0-Mini": ALL,
   "Kling-v3": T2V_I2V,
@@ -401,13 +400,6 @@ export const machgen: Record<string, ModelPricing> = {
     },
     [videoInput, height],
     { ...pricebookSource, asOf: "2026-11-19" }
-  ),
-  // First priced from the 2026-11-01 pricebook
-  // (machgen-omni-2026-11-01.json); R2V at 768p only.
-  "MiniMax-H3-Omni": flat(
-    { "no-video|768": 0.02, "video|768": 0.02 },
-    [videoInput, height],
-    { ...pricebookSource, asOf: "2026-11-01" }
   ),
   "Seedance-2.0-Fast": flat(
     {

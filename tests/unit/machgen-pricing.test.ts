@@ -68,13 +68,6 @@ const turboRow = (
       r.height === height &&
       r.has_input_video === video
   )!;
-// MiniMax-H3-Omni's pricebook rows and grid, read on 2026-11-01.
-const omniEvidence = JSON.parse(
-  readFileSync(
-    "tests/fixtures/machgen-evidence/machgen-omni-2026-11-01.json",
-    "utf8"
-  )
-) as { pricebook: { prices: PricebookRow[] } };
 // Models priced from the public pricebook after the 2026-10-25 snapshot.
 const pricebookAsOf: Record<string, string> = {
   "GPT-Image-2.6-Sunburst": "2026-11-18",
@@ -82,11 +75,9 @@ const pricebookAsOf: Record<string, string> = {
   "Seedance-2.5": "2026-10-29",
   "Seedance-2.0": "2026-10-29",
   "MiniMax-H3-Turbo": "2026-11-19",
-  "MiniMax-H3-Omni": "2026-11-01",
   "Gemini-Omni-1.2-Flash": "2026-11-19",
 };
-// Those re-read after their receipts were recorded; MiniMax-H3-Omni was
-// first priced and recorded on 2026-11-01.
+// Those re-read after their receipts were recorded.
 const repriced = new Set(["Seedance-2.5", "Seedance-2.0", "MiniMax-H3-Turbo"]);
 // A receipt recorded after its model's re-read bills the forward rate. The
 // 1 s MiniMax-H3-Turbo T2V (2026-11-11) is the one so far.
@@ -374,67 +365,11 @@ describe("MachGen pricing", () => {
       "Seedream-5.5",
     ])
       priced.add(model);
-    // Priced from the 2026-11-01 pricebook (the next test).
-    priced.add("MiniMax-H3-Omni");
     // Priced from the 2026-11-19 pricebook (the Gemini Omni test).
     priced.add("Gemini-Omni-1.2-Flash");
     expect(Object.keys(PRICING.machgen).sort()).toEqual([...priced].sort());
     for (const row of evidence.rows.filter((r) => r.unpriced))
       expect(row.unpriced!.length, row.apiModel).toBeGreaterThan(0);
-  });
-  it("prices MiniMax-H3-Omni at its 2026-11-01 pricebook rows", () => {
-    const rows = omniEvidence.pricebook.prices;
-    expect(rows).toHaveLength(2);
-    const r2v = (extra: Record<string, unknown>, hints?: CostHints) =>
-      computeEstimate({
-        provider: "machgen",
-        payload: {
-          model: "MiniMax-H3-Omni",
-          task_type: "R2V",
-          prompt: "x",
-          video_config: { height: 768, duration_secs: 4 },
-          ...extra,
-        },
-        costHints: hints,
-      });
-    for (const row of rows) {
-      expect(row.height).toBe(768);
-      expect(row.discounted_unit_price_micros).toBeNull();
-      const usdPerSecond = row.unit_price_micros / 1e6;
-      // An input-video row bills the 4 s read on top of the 4 s out.
-      const result = row.has_input_video
-        ? r2v(
-            { src_video_urls: ["https://example.com/ref.mp4"] },
-            { inputDurationSeconds: 4 }
-          )
-        : r2v({ src_image_urls: ["https://example.com/cat.jpg"] });
-      expect(result.usd).toBeCloseTo(
-        (row.has_input_video ? 8 : 4) * usdPerSecond,
-        8
-      );
-      expect(result.warnings).toEqual([]);
-      expect(result.rateAsOf).toBe("2026-11-01");
-    }
-    // R2V at 768p only.
-    const sd = r2v({
-      src_image_urls: ["a"],
-      video_config: { height: 480, duration_secs: 4 },
-    });
-    expect(sd.usd).toBe(0);
-    expect(sd.warnings.length).toBeGreaterThan(0);
-    const t2v = computeEstimate({
-      provider: "machgen",
-      payload: {
-        model: "MiniMax-H3-Omni",
-        task_type: "T2V",
-        prompt: "x",
-        video_config: { height: 768, duration_secs: 4 },
-      },
-    });
-    expect(t2v.usd).toBe(0);
-    expect(t2v.warnings).toEqual([
-      "@apicity/cost prices MachGen MiniMax-H3-Omni for R2V only.",
-    ]);
   });
   it("applies H3 graduated pricing, frame snapping and its I2V frame rates", () => {
     expect(
@@ -819,7 +754,6 @@ describe("MachGen pricing", () => {
       "Vidu-Q3-Turbo": "viduq3t",
       "Vidu-Q3-Pro": "viduq3p",
       "MiniMax-H3-Turbo": "mmh3t",
-      "MiniMax-H3-Omni": "mmh3o",
       "Seedance-2.0-Fast": "sd2f",
       "Seedance-2.0-Mini": "sd2m",
       "Kling-v3": "kling3",
@@ -846,7 +780,6 @@ describe("MachGen pricing", () => {
       "viduq3t",
       "viduq3p",
       "mmh3t",
-      "mmh3o",
       "viduq3pf",
       "pixc1",
       "viduq3",

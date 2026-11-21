@@ -126,16 +126,29 @@ export function alibabaTokenEntry(
   };
 }
 
+function isAllowedGoogleImagePart(key: string, value: unknown): boolean {
+  if (key !== "inlineData" && key !== "fileData") return false;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const mimeType = (value as Record<string, unknown>).mimeType;
+  return (
+    typeof mimeType === "string" &&
+    mimeType.trim().toLowerCase().startsWith("image/")
+  );
+}
+
 export function scopedPayloadProblem(
   provider: "alibaba" | "google",
   payload: Record<string, unknown>,
-  hints?: CostHints
+  hints?: CostHints,
+  allowImageModality = false
 ): string | undefined {
+  const allowImages = provider === "google" && allowImageModality;
   const textOnly = (value: unknown): boolean => {
     if (Array.isArray(value)) return value.every(textOnly);
     if (!value || typeof value !== "object") return true;
-    return Object.entries(value).every(
-      ([key, child]) =>
+    return Object.entries(value).every(([key, child]) => {
+      if (allowImages && isAllowedGoogleImagePart(key, child)) return true;
+      return (
         ![
           "inlineData",
           "fileData",
@@ -149,15 +162,17 @@ export function scopedPayloadProblem(
           "video",
           "image",
         ].includes(key) && textOnly(child)
-    );
+      );
+    });
   };
   if (
     !textOnly(payload) ||
     [
       hints?.audioInputTokens,
       hints?.audioOutputTokens,
-      hints?.imageInputTokens,
-      hints?.imageOutputTokens,
+      ...(allowImages
+        ? []
+        : [hints?.imageInputTokens, hints?.imageOutputTokens]),
     ].some((v) => v !== undefined && v !== 0)
   )
     return `${provider}: non-text modality pricing is not bundled for this route`;
@@ -168,7 +183,12 @@ export function scopedPayloadProblem(
   if (
     modalities !== undefined &&
     (!Array.isArray(modalities) ||
-      modalities.some((v) => v !== "TEXT" && v !== "text"))
+      modalities.some(
+        (v) =>
+          v !== "TEXT" &&
+          v !== "text" &&
+          !(allowImages && (v === "IMAGE" || v === "image"))
+      ))
   )
     return `${provider}: response modalities other than text are not bundled`;
   if (hints?.serviceTier === "batch")

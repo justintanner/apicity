@@ -1479,11 +1479,14 @@ identities can remain in the catalog without an available current scoped rate.
 
 Google reads the model from `endpoint`, matching the generateContent path
 parameter, and requires declared token counts (including `cacheReadInputTokens`
-for models with a cache rate). The payload is never modified. Rates are dated
-Standard global text snapshots; regional hosts, unsupported modalities and
-tiers fail closed. Actuals use `usageMetadata`, adding thoughts to candidate
-output tokens. Alibaba's retired `qwen3-max` recording remains usage-only
-because the current price card has no row.
+for models with a cache rate, and `imageInputTokens`/`imageOutputTokens`/
+`cacheReadImageInputTokens` for `gemini-nano-banana-2.1`, which bills
+$1.50/1M input tokens, $0.15/1M cached input tokens, $7.50/1M text/reasoning
+output tokens, and $30/1M image output tokens). The payload is never modified.
+Rates are dated Standard global snapshots; regional hosts, unsupported
+modalities and tiers fail closed. Actuals use `usageMetadata`, adding thoughts
+to candidate output tokens. Alibaba's retired `qwen3-max` recording remains
+usage-only because the current price card has no row.
 
 ### Coding plan comparisons and remaining endpoint rates
 

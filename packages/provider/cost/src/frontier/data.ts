@@ -325,6 +325,12 @@ export const FRONTIER = {
             modelId: "gemini-nano-banana-2.1",
           },
           {
+            provider: "google",
+            dotPath:
+              "v1.projects.locations.global.publishers.google.models.generateContent",
+            modelId: "gemini-nano-banana-2.1",
+          },
+          {
             provider: "googleflow",
             dotPath: "v1.images",
             modelId: "nano-banana-2",
@@ -636,6 +642,12 @@ export const FRONTIER = {
           {
             provider: "nunchux",
             dotPath: "v1.google.v1beta.interactions",
+            modelId: "gemini-nano-banana-2.1",
+          },
+          {
+            provider: "google",
+            dotPath:
+              "v1.projects.locations.global.publishers.google.models.generateContent",
             modelId: "gemini-nano-banana-2.1",
           },
           {

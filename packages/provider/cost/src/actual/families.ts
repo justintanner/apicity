@@ -487,28 +487,70 @@ const fireworks: Extractor = (exchange) => {
   return out;
 };
 
+function sumGoogleModalityTokens(
+  lists: unknown[],
+  targetModality: string
+): { seenModality: boolean; tokens: number; unsupported: boolean } {
+  let seenModality = false;
+  let tokens = 0;
+  let unsupported = false;
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const item of list) {
+      if (typeof item !== "object" || item === null || !("modality" in item)) {
+        continue;
+      }
+      const modality = (item as { modality?: unknown }).modality;
+      if (modality === "TEXT") continue;
+      if (modality !== targetModality) {
+        unsupported = true;
+        continue;
+      }
+      seenModality = true;
+      const count = (item as { tokenCount?: unknown }).tokenCount;
+      if (typeof count === "number" && Number.isFinite(count) && count >= 0) {
+        tokens += count;
+      }
+    }
+  }
+  return { seenModality, tokens, unsupported };
+}
+
 const google: Extractor = (exchange) => {
   const out = blank(exchange);
   readUsageMetadata(exchange.responseBody, out);
-  const details = framesOf(exchange.responseBody).flatMap((frame) => [
-    get(frame, "usageMetadata.promptTokensDetails"),
-    get(frame, "usageMetadata.candidatesTokensDetails"),
-  ]);
+  const frames = framesOf(exchange.responseBody);
+  const promptLists = frames.map((frame) =>
+    get(frame, "usageMetadata.promptTokensDetails")
+  );
+  const candidateLists = frames.map((frame) =>
+    get(frame, "usageMetadata.candidatesTokensDetails")
+  );
+  const cacheLists = frames.map((frame) =>
+    get(frame, "usageMetadata.cacheTokensDetails")
+  );
+  const promptImg = sumGoogleModalityTokens(promptLists, "IMAGE");
+  const candidateImg = sumGoogleModalityTokens(candidateLists, "IMAGE");
+  const cacheImg = sumGoogleModalityTokens(cacheLists, "IMAGE");
   if (
-    details.some(
-      (value) =>
-        Array.isArray(value) &&
-        value.some(
-          (item) =>
-            typeof item === "object" &&
-            item !== null &&
-            "modality" in item &&
-            item.modality !== "TEXT"
-        )
-    )
+    promptImg.unsupported ||
+    candidateImg.unsupported ||
+    cacheImg.unsupported
   ) {
     out.uncoveredCharge =
       "google: non-text usageMetadata modality rates are not bundled";
+  } else if (
+    promptImg.seenModality ||
+    candidateImg.seenModality ||
+    cacheImg.seenModality
+  ) {
+    out.usage.imageInputTokens = promptImg.tokens;
+    out.usage.imageOutputTokens = candidateImg.tokens;
+    if (cacheImg.seenModality) {
+      out.usage.cacheReadImageInputTokens = cacheImg.tokens;
+    } else if ((out.usage.cacheReadInputTokens ?? 0) === 0) {
+      out.usage.cacheReadImageInputTokens = 0;
+    }
   }
   setNumber(
     out,

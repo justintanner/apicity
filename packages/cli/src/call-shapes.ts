@@ -5850,6 +5850,20 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "google\tPOST\tv1.projects.locations.global.publishers.google.models.generateContent":
+    {
+      provider: "google",
+      method: "POST",
+      dotPath:
+        "v1.projects.locations.global.publishers.google.models.generateContent",
+      positional: [
+        { placeholder: "project", param: "project", optional: false },
+        { placeholder: "model", param: "model", optional: false },
+      ],
+      fields: [],
+      injected: [],
+      derived: [],
+    },
   "google\tPOST\tv1.publishers.google.models.countTokens": {
     provider: "google",
     method: "POST",

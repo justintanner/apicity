@@ -42,6 +42,87 @@ export const GoogleFunctionResponseSchema = z.object({
   response: z.record(z.string(), z.unknown()),
 });
 
+export const GoogleModalitySchema = z.enum([
+  "MODALITY_UNSPECIFIED",
+  "TEXT",
+  "IMAGE",
+  "AUDIO",
+  "VIDEO",
+]);
+
+export const GoogleImageAspectRatioSchema = z
+  .enum([
+    "1:1",
+    "2:3",
+    "3:2",
+    "3:4",
+    "4:3",
+    "1:4",
+    "4:1",
+    "4:5",
+    "5:4",
+    "1:8",
+    "8:1",
+    "9:16",
+    "16:9",
+    "21:9",
+  ])
+  .describe(
+    "Output aspect ratio for generated images. Nano Banana 2.1 supports all 14 ratios."
+  );
+
+export const GoogleImageSizeSchema = z
+  .enum(["1K", "2K", "4K"])
+  .describe(
+    "Output resolution tier for Vertex ImageConfig (1K default, 2K, or 4K)."
+  );
+
+export const GooglePersonGenerationSchema = z.enum([
+  "PERSON_GENERATION_UNSPECIFIED",
+  "ALLOW_ALL",
+  "ALLOW_ADULT",
+  "ALLOW_NONE",
+]);
+
+export const GoogleProminentPeopleSchema = z.enum([
+  "PROMINENT_PEOPLE_UNSPECIFIED",
+  "ALLOW_PROMINENT_PEOPLE",
+  "BLOCK_PROMINENT_PEOPLE",
+]);
+
+export const GoogleImageOutputOptionsSchema = z
+  .object({
+    mimeType: z.string().optional(),
+    compressionQuality: z.number().int().min(0).max(100).optional(),
+  })
+  .passthrough();
+
+export const GoogleImageConfigSchema = z
+  .object({
+    aspectRatio: GoogleImageAspectRatioSchema.optional(),
+    imageSize: GoogleImageSizeSchema.optional(),
+    personGeneration: GooglePersonGenerationSchema.optional(),
+    prominentPeople: GoogleProminentPeopleSchema.optional(),
+    imageOutputOptions: GoogleImageOutputOptionsSchema.optional(),
+  })
+  .passthrough();
+
+export const GoogleThinkingLevelSchema = z.enum([
+  "THINKING_LEVEL_UNSPECIFIED",
+  "MINIMAL",
+  "LOW",
+  "MEDIUM",
+  "HIGH",
+]);
+
+export const GoogleThinkingConfigSchema = z
+  .object({
+    includeThoughts: z.boolean().optional(),
+    thinkingBudget: z.number().int().optional(),
+    thinkingLevel: GoogleThinkingLevelSchema.optional(),
+  })
+  .passthrough();
+
 export const GooglePartSchema = z
   .object({
     text: z.string().optional(),
@@ -49,6 +130,8 @@ export const GooglePartSchema = z
     fileData: GoogleFileDataSchema.optional(),
     functionCall: GoogleFunctionCallSchema.optional(),
     functionResponse: GoogleFunctionResponseSchema.optional(),
+    thought: z.boolean().optional(),
+    thoughtSignature: z.string().optional(),
   })
   .passthrough();
 
@@ -74,7 +157,9 @@ export const GoogleGenerationConfigSchema = z
     stopSequences: z.array(z.string()).optional(),
     responseMimeType: z.string().optional(),
     responseSchema: z.unknown().optional(),
-    thinkingConfig: z.record(z.string(), z.unknown()).optional(),
+    responseModalities: z.array(GoogleModalitySchema).optional(),
+    imageConfig: GoogleImageConfigSchema.optional(),
+    thinkingConfig: GoogleThinkingConfigSchema.optional(),
     seed: z.number().int().optional(),
   })
   .passthrough();
@@ -137,6 +222,21 @@ export type GoogleFunctionResponse = z.infer<
 export type GooglePart = z.infer<typeof GooglePartSchema>;
 export type GoogleContent = z.infer<typeof GoogleContentSchema>;
 export type GoogleSafetySetting = z.infer<typeof GoogleSafetySettingSchema>;
+export type GoogleModality = z.infer<typeof GoogleModalitySchema>;
+export type GoogleImageAspectRatio = z.infer<
+  typeof GoogleImageAspectRatioSchema
+>;
+export type GoogleImageSize = z.infer<typeof GoogleImageSizeSchema>;
+export type GooglePersonGeneration = z.infer<
+  typeof GooglePersonGenerationSchema
+>;
+export type GoogleProminentPeople = z.infer<typeof GoogleProminentPeopleSchema>;
+export type GoogleImageOutputOptions = z.infer<
+  typeof GoogleImageOutputOptionsSchema
+>;
+export type GoogleImageConfig = z.infer<typeof GoogleImageConfigSchema>;
+export type GoogleThinkingLevel = z.infer<typeof GoogleThinkingLevelSchema>;
+export type GoogleThinkingConfig = z.infer<typeof GoogleThinkingConfigSchema>;
 export type GoogleGenerationConfig = z.infer<
   typeof GoogleGenerationConfigSchema
 >;

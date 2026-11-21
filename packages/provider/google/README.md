@@ -29,7 +29,38 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 ## API Reference
 
-4 endpoints across 2 groups. Each method mirrors an upstream URL path.
+5 endpoints across 3 groups. Each method mirrors an upstream URL path.
+
+### projects
+
+<details>
+<summary><code>POST</code> <b><code>google.v1.projects.locations.global.publishers.google.models.generateContent</code></b></summary>
+
+<code>POST https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/publishers/google/models/{model}:generateContent</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/rest/v1/projects.locations.publishers.models/generateContent)
+
+Project-scoped global Vertex AI route, required by global-only models such as `gemini-nano-banana-2.1` (express mode routes to `europe-west1` and returns 404). Nano Banana 2.1 supports 1K/2K/4K image outputs across 14 aspect ratios and up to 14 input images, and bills $1.50/1M input tokens ($0.15 cached), $7.50/1M text/reasoning output tokens, and $30/1M image output tokens (`usageMetadata`).
+
+```typescript
+const res = await google.v1.projects.locations.global.publishers.google.models.generateContent(
+  "your-project-id",
+  "gemini-nano-banana-2.1",
+  {
+    contents: [{ role: "user", parts: [{ text: "A red origami crane" }] }],
+    generationConfig: {
+      responseModalities: ["IMAGE"],
+      imageConfig: { aspectRatio: "1:1", imageSize: "1K" },
+    },
+  }
+);
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
 
 ### publishers
 

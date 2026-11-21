@@ -1090,6 +1090,10 @@ describe("fal display-only names (ac-j3d6ki.6)", () => {
     expect(modelDisplay("fal", "google/nano-banana-2.1")).toBe(
       "Nano Banana 2.1"
     );
+    expect(modelSlug("google", "gemini-nano-banana-2.1")).toBe("nb21");
+    expect(modelDisplay("google", "gemini-nano-banana-2.1")).toBe(
+      "Nano Banana 2.1"
+    );
     // @ts-expect-error a dynamic id has no slug, so modelSlug rejects it
     expect(() => modelSlug("fal", "google/nano-banana-2.1")).toThrow(
       "No slug registered for fal/google/nano-banana-2.1"

@@ -18,6 +18,15 @@ export type {
   GoogleContent,
   GoogleSafetySetting,
   GoogleGenerationConfig,
+  GoogleModality,
+  GoogleImageAspectRatio,
+  GoogleImageSize,
+  GooglePersonGeneration,
+  GoogleProminentPeople,
+  GoogleImageOutputOptions,
+  GoogleImageConfig,
+  GoogleThinkingLevel,
+  GoogleThinkingConfig,
   GoogleFunctionDeclaration,
   GoogleTool,
   GoogleToolConfig,
@@ -109,6 +118,16 @@ export interface GoogleCountTokensMethod {
   schema: z.ZodType<GoogleCountTokensRequest>;
 }
 
+export interface GoogleProjectGenerateContentMethod {
+  (
+    project: string,
+    model: string,
+    req: GoogleGenerateContentRequest,
+    signal?: AbortSignal
+  ): Promise<GoogleGenerateContentResponse>;
+  schema: z.ZodType<GoogleGenerateContentRequest>;
+}
+
 export interface GooglePostV1PublishersGoogleModelsNamespace {
   countTokens: GoogleCountTokensMethod;
   generateContent: GoogleGenerateContentMethod;
@@ -122,8 +141,33 @@ export interface GooglePostV1PublishersNamespace {
   google: GooglePostV1PublishersGoogleNamespace;
 }
 
+export interface GooglePostV1ProjectsLocationsGlobalPublishersGoogleModelsNamespace {
+  generateContent: GoogleProjectGenerateContentMethod;
+}
+
+export interface GooglePostV1ProjectsLocationsGlobalPublishersGoogleNamespace {
+  models: GooglePostV1ProjectsLocationsGlobalPublishersGoogleModelsNamespace;
+}
+
+export interface GooglePostV1ProjectsLocationsGlobalPublishersNamespace {
+  google: GooglePostV1ProjectsLocationsGlobalPublishersGoogleNamespace;
+}
+
+export interface GooglePostV1ProjectsLocationsGlobalNamespace {
+  publishers: GooglePostV1ProjectsLocationsGlobalPublishersNamespace;
+}
+
+export interface GooglePostV1ProjectsLocationsNamespace {
+  global: GooglePostV1ProjectsLocationsGlobalNamespace;
+}
+
+export interface GooglePostV1ProjectsNamespace {
+  locations: GooglePostV1ProjectsLocationsNamespace;
+}
+
 export interface GooglePostV1Namespace {
   publishers: GooglePostV1PublishersNamespace;
+  projects: GooglePostV1ProjectsNamespace;
 }
 
 export interface GooglePostNamespace {

@@ -46,4 +46,15 @@ export const google: Record<string, ModelPricing> = {
   "gemini-2.0-flash-lite": tokens(0.075, 0.3),
   "gemini-omni-flash": tokens(1.5, 9),
   "gemini-omni-1.1-flash": tokens(1.5, 9),
+  "gemini-nano-banana-2.1": {
+    kind: "tokens",
+    rate: { input: 1.5, output: 7.5, cacheRead: 0.15 },
+    modalityRates: {
+      image: { input: 1.5, cacheRead: 0.15, output: 30 },
+    },
+    source: {
+      url: source.url,
+      asOf: "2026-11-21",
+    },
+  },
 };

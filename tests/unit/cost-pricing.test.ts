@@ -368,7 +368,8 @@ describe("PRICING data", () => {
         if (
           (provider === "openai" &&
             ["gpt-image-1-mini", "chatgpt-image-latest"].includes(model)) ||
-          (provider === "kie" && model.startsWith("gpt-image-2-6/"))
+          (provider === "kie" && model.startsWith("gpt-image-2-6/")) ||
+          (provider === "google" && model === "gemini-nano-banana-2.1")
         ) {
           expect(entry.modalityRates.image?.output, label).toBeGreaterThan(0);
         } else expect(entry.modalityRates.image?.output, label).toBeUndefined();

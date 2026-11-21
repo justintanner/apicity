@@ -1128,10 +1128,15 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
           ]);
       }
       const model = req.endpoint ?? "";
+      const googleEntry = PRICING.google[model];
+      const allowImageModality =
+        googleEntry?.kind === "tokens" &&
+        googleEntry.modalityRates?.image !== undefined;
       const problem = scopedPayloadProblem(
         "google",
         req.payload,
-        req.costHints
+        req.costHints,
+        allowImageModality
       );
       if (problem) return failed("declared-tokens+table", [problem]);
       const result = evaluateDeclaredUsage(
@@ -1144,7 +1149,9 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         ...result,
         notes: [
           ...(result.notes ?? []),
-          "Google Standard global text rates, snapshot 2026-11-04; introductory prices have dated expiry in the bundled table.",
+          allowImageModality
+            ? "Google Standard global multimodal image/text rates, snapshot 2026-11-21."
+            : "Google Standard global text rates, snapshot 2026-11-04; introductory prices have dated expiry in the bundled table.",
         ],
       };
     }

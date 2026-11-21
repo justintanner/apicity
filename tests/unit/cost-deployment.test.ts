@@ -297,6 +297,73 @@ describe("deployment-aware pricing", () => {
     expect(actual.derivedUsd).toBeNull();
     expect(actual.uncoveredCharge).toContain("modality");
   });
+  it("prices Google Nano Banana 2.1 text, reasoning, and image tokens", () => {
+    const req = {
+      provider: "google" as const,
+      endpoint: "gemini-nano-banana-2.1",
+      baseURL:
+        "https://aiplatform.googleapis.com/v1/projects/my-project/locations/global",
+      payload: {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: "Edit this" },
+              { inlineData: { mimeType: "image/png", data: "AAAA" } },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseModalities: ["IMAGE"],
+          imageConfig: { imageSize: "1K", aspectRatio: "1:1" },
+        },
+      },
+    };
+    // Without declared token usage, estimate fails closed rather than guessing.
+    expect(computeEstimate(req).warnings.join()).toContain(
+      "costHints.imageOutputTokens"
+    );
+    const est = computeEstimate({
+      ...req,
+      costHints: {
+        inputTokens: 1130,
+        outputTokens: 1140,
+        cacheReadInputTokens: 0,
+        imageInputTokens: 1120,
+        imageOutputTokens: 1120,
+        cacheReadImageInputTokens: 0,
+      },
+    });
+    expect(est.warnings).toEqual([]);
+    // (10 text-in + 1120 image-in) * 1.5 + 20 text/thinking-out * 7.5 + 1120 image-out * 30
+    expect(est.usd).toBeCloseTo((1130 * 1.5 + 20 * 7.5 + 1120 * 30) / 1e6, 12);
+
+    const actual = extractActual({
+      provider: "google",
+      method: "POST",
+      url: "https://aiplatform.googleapis.com/v1/projects/477314613503/locations/global/publishers/google/models/gemini-nano-banana-2.1:generateContent",
+      status: 200,
+      requestBody: req.payload,
+      responseHeaders: {},
+      responseBody: {
+        usageMetadata: {
+          promptTokenCount: 1130,
+          candidatesTokenCount: 1120,
+          thoughtsTokenCount: 20,
+          promptTokensDetails: [
+            { modality: "TEXT", tokenCount: 10 },
+            { modality: "IMAGE", tokenCount: 1120 },
+          ],
+          candidatesTokensDetails: [{ modality: "IMAGE", tokenCount: 1120 }],
+        },
+      },
+    });
+    expect(actual.warnings).toEqual([]);
+    expect(actual.basis).toBe("derived");
+    expect(actual.derivedUsd).toBeCloseTo(est.usd, 12);
+    expect(actual.usage.imageInputTokens).toBe(1120);
+    expect(actual.usage.imageOutputTokens).toBe(1120);
+  });
   it("does not collapse conflicting regional prices into a scope rate", () => {
     expect(
       alibaba(
@@ -326,5 +393,29 @@ describe("deployment-aware pricing", () => {
         expect(actual.warnings.join()).toContain("no bundled rate");
       }
     }
+    const nbHar = JSON.parse(
+      readFileSync(
+        path.resolve(
+          __dirname,
+          "../recordings/google_2644829574/nano-banana-2-1_1752383898/recording.har"
+        ),
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const nbActual = extractActual(
+      entryToProviderExchange(nbHar.log.entries[0], { provider: "google" })
+    );
+    expect(nbActual.model).toBe("gemini-nano-banana-2.1");
+    expect(nbActual.basis).toBe("derived");
+    expect(nbActual.warnings).toEqual([]);
+    expect(nbActual.usage).toMatchObject({
+      inputTokens: 11,
+      outputTokens: 1886,
+      reasoningTokens: 766,
+      imageInputTokens: 0,
+      imageOutputTokens: 1120,
+      cacheReadImageInputTokens: 0,
+    });
+    expect(nbActual.derivedUsd).toBeCloseTo(0.0393615, 12);
   });
 });

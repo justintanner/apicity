@@ -126,6 +126,20 @@ function deriveFromTokens(
     hints.regionalProcessing = true;
   }
   if (provider === "google" || provider === "alibaba") {
+    const entry = provider === "google" ? PRICING.google[key] : undefined;
+    const googleImageDefaults =
+      entry?.kind === "tokens" && entry.modalityRates?.image !== undefined
+        ? {
+            imageInputTokens: hints.imageInputTokens ?? 0,
+            imageOutputTokens: hints.imageOutputTokens ?? 0,
+            ...((hints.cacheReadInputTokens ?? 0) === 0
+              ? {
+                  cacheReadImageInputTokens:
+                    hints.cacheReadImageInputTokens ?? 0,
+                }
+              : {}),
+          }
+        : {};
     return fromEstimate(
       computeEstimate({
         provider,
@@ -135,7 +149,7 @@ function deriveFromTokens(
         },
         endpoint: provider === "google" ? key : undefined,
         baseURL: exchange.url,
-        costHints: hints,
+        costHints: { ...hints, ...googleImageDefaults },
       })
     );
   }

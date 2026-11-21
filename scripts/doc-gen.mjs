@@ -266,6 +266,25 @@ function formatUsageSnippet(
       ");",
     ].join("\n");
   }
+  if (
+    providerName === "google" &&
+    dotPath ===
+      "v1.projects.locations.global.publishers.google.models.generateContent"
+  ) {
+    return [
+      `const res = await ${call}(`,
+      '  "your-project-id",',
+      '  "gemini-nano-banana-2.1",',
+      "  {",
+      '    contents: [{ role: "user", parts: [{ text: "A red origami crane" }] }],',
+      "    generationConfig: {",
+      '      responseModalities: ["IMAGE"],',
+      '      imageConfig: { aspectRatio: "1:1", imageSize: "1K" },',
+      "    },",
+      "  }",
+      ");",
+    ].join("\n");
+  }
   if (providerName === "openligadb" && dotPath === "getavailablesports") {
     return `const sports = await ${call}();`;
   }
@@ -625,6 +644,17 @@ const FIREWORKS_AUDIO_BATCH_STATE = [
  * run (`assertEndpointNotesMatch`) instead of dropping its note.
  */
 export const ENDPOINT_NOTES = new Map([
+  [
+    "google\tv1.projects.locations.global.publishers.google.models.generateContent\tPOST",
+    [
+      "Project-scoped global Vertex AI route, required by global-only models",
+      "such as `gemini-nano-banana-2.1` (express mode routes to `europe-west1`",
+      "and returns 404). Nano Banana 2.1 supports 1K/2K/4K image outputs across",
+      "14 aspect ratios and up to 14 input images, and bills $1.50/1M input",
+      "tokens ($0.15 cached), $7.50/1M text/reasoning output tokens, and $30/1M",
+      "image output tokens (`usageMetadata`).",
+    ].join(" "),
+  ],
   [
     "openai\tv1.images.generations\tPOST",
     [

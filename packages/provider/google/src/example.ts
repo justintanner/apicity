@@ -15,6 +15,32 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.projects.locations.global.publishers.google.models.generateContent": {
+    "source": "google/nano-banana-2-1",
+    "payload": {
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "A single red origami crane centered on plain white paper."
+            }
+          ]
+        }
+      ],
+      "generationConfig": {
+        "responseModalities": [
+          "IMAGE"
+        ],
+        "imageConfig": {
+          "aspectRatio": "1:1",
+          "imageSize": "1K"
+        }
+      }
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST v1.publishers.google.models.countTokens": {
     "source": "google/count-tokens",
     "payload": {

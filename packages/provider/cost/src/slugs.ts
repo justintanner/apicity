@@ -638,6 +638,7 @@ export const MODEL_SLUGS = {
     "gemini-2.0-flash-lite": "gemini2p0flashlite",
     "gemini-omni-flash": "geminiomniflash",
     "gemini-omni-1.1-flash": "geminiomni1p1flash",
+    "gemini-nano-banana-2.1": "nb21",
   },
 
   alibaba: {
@@ -1709,6 +1710,7 @@ export const MODEL_DISPLAY = {
     "gemini-2.0-flash-lite": "Gemini 2.0 Flash Lite",
     "gemini-omni-flash": "Gemini Omni Flash",
     "gemini-omni-1.1-flash": "Gemini Omni 1.1 Flash",
+    "gemini-nano-banana-2.1": "Nano Banana 2.1",
   },
 
   alibaba: {

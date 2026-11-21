@@ -293,6 +293,15 @@ const FREE_STRING_IMAGE_MODELS: ReadonlyArray<{
     dotPath: "v1.publishers.google.models.generateContent",
     modelId: "gemini-3.1-flash-image",
   },
+  // https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/nano-banana-2-1
+  // documents global Vertex generateContent image generation and editing.
+  ...(["t2i", "i2i"] as const).map((type) => ({
+    type,
+    provider: "google" as const,
+    dotPath:
+      "v1.projects.locations.global.publishers.google.models.generateContent",
+    modelId: "gemini-nano-banana-2.1",
+  })),
   // Each https://developers.openai.com/api/docs/models/<id> page (read
   // 2026-10-31 and 2026-11-21) marks v1/images/generations and
   // v1/images/edits supported.
@@ -1398,6 +1407,20 @@ describe("frontier image snapshots", () => {
     expect(refused("t2i", { ...google, modelId: "gemini-3-pro-image" })).toBe(
       true
     );
+    const googleGlobal = {
+      provider: "google",
+      dotPath:
+        "v1.projects.locations.global.publishers.google.models.generateContent",
+    };
+    expect(
+      refused("t2i", { ...googleGlobal, modelId: "gemini-nano-banana-2.1" })
+    ).toBe(false);
+    expect(
+      refused("i2i", { ...googleGlobal, modelId: "gemini-nano-banana-2.1" })
+    ).toBe(false);
+    expect(
+      refused("t2i", { ...googleGlobal, modelId: "gemini-3-pro-image" })
+    ).toBe(true);
     // The schema takes any model string, so the pin is the only list.
     expect(
       XaiImageGenerateRequestSchema.safeParse({

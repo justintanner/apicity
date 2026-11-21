@@ -2851,6 +2851,22 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "google",
     {
+      kind: "metered",
+      unit: "tokens",
+      reason:
+        "Standard global rates (including multimodal image tokens); usageMetadata reports actual token counts",
+      source: {
+        url: "https://cloud.google.com/vertex-ai/generative-ai/pricing",
+        asOf: "2026-11-21",
+      },
+    },
+    [
+      "POST v1.projects.locations.global.publishers.google.models.generateContent",
+    ]
+  ),
+  ...rows(
+    "google",
+    {
       kind: "free",
       reason: "Code Assist quota read; no charge",
       source: {

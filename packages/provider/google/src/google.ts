@@ -84,6 +84,46 @@ function parseWithSchema<TReq>(schema: z.ZodType<TReq>, req: TReq): TReq {
   });
 }
 
+const GOOGLE_NANO_BANANA_2_1_MODEL_ID = "gemini-nano-banana-2.1";
+const GOOGLE_NANO_BANANA_2_1_MAX_IMAGES = 14;
+
+function isImagePart(part: {
+  inlineData?: { mimeType: string };
+  fileData?: { mimeType?: string };
+}): boolean {
+  if (part.inlineData?.mimeType.toLowerCase().startsWith("image/")) {
+    return true;
+  }
+  return Boolean(part.fileData?.mimeType?.toLowerCase().startsWith("image/"));
+}
+
+function assertValidProjectGenerateContentRequest(
+  project: string,
+  model: string,
+  req: GoogleGenerateContentRequest
+): void {
+  if (!project.trim()) {
+    throw new GoogleError("Google Vertex project ID must not be empty", 400);
+  }
+  if (!model.trim()) {
+    throw new GoogleError("Google Vertex model ID must not be empty", 400);
+  }
+  if (model === GOOGLE_NANO_BANANA_2_1_MODEL_ID) {
+    let imageCount = 0;
+    for (const content of req.contents) {
+      for (const part of content.parts) {
+        if (isImagePart(part)) imageCount++;
+      }
+    }
+    if (imageCount > GOOGLE_NANO_BANANA_2_1_MAX_IMAGES) {
+      throw new GoogleError(
+        `${GOOGLE_NANO_BANANA_2_1_MODEL_ID} accepts at most ${GOOGLE_NANO_BANANA_2_1_MAX_IMAGES} input images per prompt (received ${imageCount})`,
+        400
+      );
+    }
+  }
+}
+
 export function createGoogle(opts: GoogleOptions): GoogleProvider {
   const baseURL = opts.baseURL ?? "https://aiplatform.googleapis.com/v1";
   const normalizedBaseURL = baseURL.replace(/\/+$/, "");
@@ -174,6 +214,47 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
               schema: GoogleGenerateContentRequestSchema,
             }
           ),
+        },
+      },
+    },
+    projects: {
+      locations: {
+        global: {
+          publishers: {
+            google: {
+              models: {
+                // sig-ok: aiplatform service host omitted from provider namespace
+                // POST https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/publishers/google/models/{model}:generateContent
+                // Docs: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/rest/v1/projects.locations.publishers.models/generateContent
+                generateContent: Object.assign(
+                  async (
+                    project: string,
+                    model: string,
+                    req: GoogleGenerateContentRequest,
+                    signal?: AbortSignal
+                  ): Promise<GoogleGenerateContentResponse> => {
+                    const parsed = parseWithSchema(
+                      GoogleGenerateContentRequestSchema,
+                      req
+                    );
+                    assertValidProjectGenerateContentRequest(
+                      project,
+                      model,
+                      parsed
+                    );
+                    return makeRequest<GoogleGenerateContentResponse>(
+                      `/projects/${encodeURIComponent(project)}/locations/global/publishers/google/models/${encodeURIComponent(model)}:generateContent`,
+                      parsed,
+                      signal
+                    );
+                  },
+                  {
+                    schema: GoogleGenerateContentRequestSchema,
+                  }
+                ),
+              },
+            },
+          },
         },
       },
     },

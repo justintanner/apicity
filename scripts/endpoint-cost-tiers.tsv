@@ -901,6 +901,7 @@ free-media-upload	tempsh.upload	POST	cheap	Free file-hosting upload endpoints; n
 free-media-upload	tflink.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
 free-media-upload	tmpfiles.api.v1.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
 free-media-upload	uguu.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+google	v1.projects.locations.global.publishers.google.models.generateContent	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
 google	v1.publishers.google.models.countTokens	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
 google	v1.publishers.google.models.generateContent	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
 google	v1internal.retrieveUserQuota	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money

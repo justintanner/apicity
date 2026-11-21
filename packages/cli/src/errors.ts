@@ -110,6 +110,14 @@ export function classifyError(
         cause: err,
       });
     }
+    if (err.code === "paygate-ledger-unwritable") {
+      return new CliError("paygate", err.message, {
+        hint:
+          "paygate-ledger-unwritable; ensure the pay-gate ledger directory " +
+          "is writable (or set APICITY_PAYGATE_LEDGER_DIR)",
+        cause: err,
+      });
+    }
     const provider = err.provider || context.provider || "<provider>";
     const method = err.method || context.method || "<method>";
     const dotPath = err.dotPath || context.dotPath || "<dotPath>";

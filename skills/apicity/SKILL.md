@@ -545,6 +545,7 @@ Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 (where media lands), `$APICITY_PAYGATE_SECRET_FILE` (the operator's pay-gate
 secret — never read it yourself), `$APICITY_PAYGATE_GRANT_DIR` (the operator's
 provider grant directory — never read or print files inside it),
+`$APICITY_PAYGATE_LEDGER_DIR` (the consumed-OTP ledger directory),
 `$APICITY_SETUP_AGENT` (which agent `apicity setup agents` connects).
 `apicity help environment` lists them.
 
@@ -660,11 +661,14 @@ apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json
 
 An OTP token is bound to the exact endpoint and request — `--data` / `--data-file`,
 path parameters (`--voiceId`), and request-field flags (`--bucket`, `--key`)
-included — valid until expiry (10 minutes default; single-use within one
-process), so change any field and the operator must mint again. If you have
-no token (and no valid grant applies), report the block and `hint` and stop —
-never read the secret file or grant directory, and never run `apicity-paygate`
-yourself.
+included — valid until expiry (`10m` default), and an OTP is spent across runs
+by the first invocation that presents it (recorded under
+`$APICITY_PAYGATE_LEDGER_DIR` or `~/.config/apicity/paygate-consumed/`; failed
+calls still spend their OTP, and provider grants are never recorded or spent in
+this ledger). Change any field — or retry after spending — and the operator must
+mint again. If you have no token (and no valid grant applies), report the block
+and `hint` and stop — never read the secret file or grant directory, and never
+run `apicity-paygate` yourself.
 
 ## Troubleshooting
 

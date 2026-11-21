@@ -6,6 +6,7 @@
 // crash the server — that provider just gets skipped.
 
 import { loadCostHelpers } from "./cost.js";
+import type { PayGateReplayStore } from "./paygate-ledger.js";
 
 export interface ProviderSpec {
   envVar: string;
@@ -344,6 +345,7 @@ export interface ProviderOverrides {
   baseURL?: string;
   timeout?: number;
   fetch?: typeof globalThis.fetch;
+  replayStore?: PayGateReplayStore;
 }
 
 /**
@@ -448,7 +450,9 @@ export async function instantiateProvider(
   // out-of-band and the caller passes it as `--otp <token>`, so the AI cannot
   // self-approve.
   if (paygateSecret && (await providerHasPaidEndpoint(name))) {
-    opts.paygate = { secret: paygateSecret };
+    opts.paygate = overrides?.replayStore
+      ? { secret: paygateSecret, replayStore: overrides.replayStore }
+      : { secret: paygateSecret };
   }
   return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
     withOverrides(name, opts, overrides)

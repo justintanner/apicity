@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 import type { CatalogEntry } from "./catalog.js";
 import { loadCostHelpers, type CostHelpers } from "./cost.js";
+import type { PayGateReplayStore } from "./paygate-ledger.js";
 
 export const GRANT_USES_FILE = "uses.jsonl";
 
@@ -58,6 +59,7 @@ export interface GatedCall {
   grantDir?: string;
   requestHash?: `sha256:${string}`;
   cwd?: string;
+  replayStore?: PayGateReplayStore;
   dispatch: () => Promise<unknown>;
   now?: () => number;
 }
@@ -201,7 +203,11 @@ export async function dispatchThroughGate(
     call.otp === undefined ? undefined : { otp: call.otp },
     call.dispatch,
     call.secret !== undefined
-      ? { secret: call.secret, ...(call.now ? { now: call.now } : {}) }
+      ? {
+          secret: call.secret,
+          ...(call.replayStore ? { replayStore: call.replayStore } : {}),
+          ...(call.now ? { now: call.now } : {}),
+        }
       : undefined
   );
 }

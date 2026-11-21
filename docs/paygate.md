@@ -8,8 +8,8 @@ walkthrough. The spec, the shared OTP format and the rate tables live in
 
 Built without a pay-gate secret, a provider dispatches paid calls like any
 other. Built with one, every paid call needs an approved OTP bound to that
-exact endpoint and request (single-use within one process, or across processes
-when backed by a shared `ReplayStore`), and an autonomous caller cannot bypass
+exact endpoint and request (spent by the first run in `@apicity/cli`, or within
+one `ReplayStore` in direct SDK calls), and an autonomous caller cannot bypass
 it.
 
 ```ts
@@ -82,11 +82,12 @@ generation) are listed in `PAID_ENDPOINTS`. The pay gate in front of them is
   it; in the CLI, `--paygate-secret-file` or `APICITY_PAYGATE_SECRET_FILE`
   does. Once armed, the gate is **fail-closed**: every gated call needs a valid
   OTP minted from that same secret, bound to the exact endpoint and request
-  until it expires (default `10m`, or `--ttl` with no upper limit; single-use
-  within one process), and a missing or bad one fails closed before anything is
-  sent. The flow is the [example above](#example). The autonomous caller never
-  sees the secret, so it cannot self-approve. A supplied but empty secret fails
-  closed too, with `paygate-not-configured`.
+  until it expires (default `10m`, or `--ttl` with no upper limit; in the CLI
+  an OTP is spent by the first run that presents it), and a missing or bad one
+  fails closed before anything is sent. The flow is the
+  [example above](#example). The autonomous caller never sees the secret, so it
+  cannot self-approve. A supplied but empty secret fails closed too, with
+  `paygate-not-configured`.
 - **An OTP needs an armed gate.** An OTP passed to a provider or CLI host
   without a pay-gate secret is refused with `paygate-not-configured`, never
   silently dropped: whoever passes one believes a gate exists.
@@ -143,15 +144,25 @@ in `hint` and `meta.requestHash`, and sends nothing upstream.
 
 One OTP covers one provider, method, and `dotPath`, one exact request, valid
 until expiration (`10m` by default or `--ttl <duration>` with no upper limit),
-and single-use within one process.
+and in `@apicity/cli` an OTP is **single-use across runs** — spent on the
+first CLI run that presents it (including a call whose upstream HTTP request
+later fails). Consumed-token markers live on disk in
+`$APICITY_PAYGATE_LEDGER_DIR`, defaulting to
+`~/.config/apicity/paygate-consumed/` (mode `0700`, named by a hash of the
+`jti`, pruned once past the token's `exp`). Limits: the ledger is per OS user
+and per host (two hosts sharing a secret do not share consumed tokens), and the
+ledger is as tamper-proof as the secret file (a caller running as the same OS
+user who could delete ledger files could also read the secret, so this closes
+accidental or careless replay rather than a hostile same-user attacker). A
+provider grant is **not** spent or recorded in this ledger (`uses.jsonl` is
+separate audit logging only).
 
 The OTP is signed with a single shared **HMAC secret** — no key files, no
 environment variables, no cost coupling — and commits to the exact
 `(provider, method, dotPath, requestHash, exp)` tuple: change any byte of the
-request or any path parameter and verification fails. Inside one provider or
-`dispatchGated` replay store, the `jti` is consumed before dispatch, so a
-failed network call still burns the token there — mint a fresh OTP for any
-retry.
+request or any path parameter and verification fails. Both the SDK provider
+instance store and the CLI's on-disk ledger consume the `jti` before dispatch,
+so a failed network call still burns an OTP — mint a fresh OTP for any retry.
 
 Operators (or the code client) mint OTPs with `mintOtp(secret, { provider,
 method, dotPath, requestHash, ttl })`, `mintOtp(secret, { dotPath, request,
@@ -232,7 +243,7 @@ A blocked call raises `PayGateError` (or `GrantRefusal` in `@apicity/cli`) whose
 `otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`,
 `otp-replayed`, `grant-malformed`, `grant-invalid-signature`,
 `grant-not-yet-valid`, `grant-expired`, `grant-mismatched-provider`,
-`grant-unreadable`, or `grant-unrecorded`.
+`grant-unreadable`, `grant-unrecorded`, or `paygate-ledger-unwritable`.
 
 The SDK gate covers every entry listed in `PAID_ENDPOINTS` (`kie` and `xai`),
 while `@apicity/cli` automatically gates every other endpoint whose billing

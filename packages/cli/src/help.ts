@@ -155,6 +155,7 @@ const TOPIC_TEXT: Record<HelpTopic, () => string> = {
       "  CLAUDE_PROJECT_DIR            where media lands when neither is set",
       "  APICITY_PAYGATE_SECRET_FILE   arms the pay gate, as --paygate-secret-file",
       "  APICITY_PAYGATE_GRANT_DIR     where provider grants live (default ~/.config/apicity/paygate-grants)",
+      "  APICITY_PAYGATE_LEDGER_DIR    consumed-OTP ledger dir (default ~/.config/apicity/paygate-consumed)",
       "  APICITY_SETUP_AGENT           which agent `apicity setup agents` connects",
     ].join("\n"),
 

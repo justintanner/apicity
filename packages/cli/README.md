@@ -173,6 +173,7 @@ each call actually requested, which is how to check rather than guess.
 | `APICITY_OP_SERVICE_TOKEN`    | The 1Password token, as `--op-token`; `apicity setup 1password` saves it.                                          |
 | `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.                                           |
 | `APICITY_PAYGATE_GRANT_DIR`   | Provider grant directory; defaults to `~/.config/apicity/paygate-grants` (`--env-file` moves it for the CLI only). |
+| `APICITY_PAYGATE_LEDGER_DIR`  | Consumed-OTP ledger directory; defaults to `~/.config/apicity/paygate-consumed`.                                   |
 | `APICITY_HAR_CAPTURE`         | `all`, `failures` or `off` (default). Endpoint flag wins.                                                          |
 | `APICITY_HAR_DIR`             | Capture directory; defaults to `$HOME/.config/apicity/har`.                                                        |
 | `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                                                             |
@@ -462,11 +463,18 @@ caller's command without `--otp`: the refusal prints the exact same
 
 Each OTP covers one provider, method, and `dotPath`, one exact request, is valid
 until expiration (`10m` by default or `--ttl <duration>` with no upper limit),
-and is single-use within one process. Because `@apicity/cli` must read the
-secret file and grant directory when armed, same-user processes have filesystem
-access to both under OS permissions; the gate relies on agent rule adherence.
-See [@apicity/cost](../provider/cost) and [docs/paygate.md](../../docs/paygate.md)
-for the full spec.
+and is spent on disk by the first run that presents it (a failed upstream call
+still consumes its OTP). Consumed markers live under
+`$APICITY_PAYGATE_LEDGER_DIR` (else `~/.config/apicity/paygate-consumed/`,
+created `0700`, named by a SHA-256 hash of `jti` and pruned strictly past the
+token's `exp`). This ledger is per host and per OS user (two hosts sharing one
+secret do not share consumed tokens), and it is as tamper-proof as the secret
+file: a caller running as the same OS user who could delete ledger files could
+also read the secret, so the ledger closes accidental or careless replay rather
+than hostile same-user tampering. Because `@apicity/cli` must read the secret
+file, grant directory, and ledger when armed, the gate relies on agent rule
+adherence. See [@apicity/cost](../provider/cost) and
+[docs/paygate.md](../../docs/paygate.md) for the full spec.
 
 ### Grants
 
@@ -651,7 +659,9 @@ console.log(endpoints.filter((e) => e.provider === "openai").length);
 
 `runMain()`, `zodToJsonSchema()`, `loadEnvFile()`, the pay-gate helpers
 (`GateKind`, `gateRequest()`, `dispatchThroughGate()`, `GatedCall`,
-`GrantRefusal`, `GrantRefusalCode`, `GRANT_USES_FILE`), and the 1Password helpers
+`GrantRefusal`, `GrantRefusalCode`, `GRANT_USES_FILE`, `LedgerRefusal`,
+`createPaygateLedgerStore()`, `ledgerDirectory()`, `ledgerMarkerName()`,
+`readOtpExpirySeconds()`), and the 1Password helpers
 are exported too. For diagnostics and bulk checks, `buildRegistry()` resolves
 the tsv in one pass against every provider it can instantiate, skipping any
 whose required credential is unset; `loadCatalog()` above is the cheap path.

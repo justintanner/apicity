@@ -21,6 +21,11 @@ import {
 } from "./credentials.js";
 import { dispatchThroughGate, gateRequest } from "./paygate.js";
 import {
+  createPaygateLedgerStore,
+  ledgerDirectory,
+  readOtpExpirySeconds,
+} from "./paygate-ledger.js";
+import {
   createWriter,
   defaultWriter,
   printUsage,
@@ -465,6 +470,16 @@ export async function runEndpoint(
     const invoke = async () => {
       try {
         const paygateSecret = readPaygateSecret(paygateSecretFile);
+        const replayStore =
+          paygateSecret !== undefined && entry.gated
+            ? createPaygateLedgerStore({
+                ledgerDir: ledgerDirectory(env),
+                provider: entry.provider,
+                method: entry.method,
+                dotPath: entry.dotPath,
+                tokenExpSeconds: readOtpExpirySeconds(flags.otp),
+              })
+            : undefined;
         const instantiate = options.instantiate ?? instantiateProvider;
         const instance = await instantiate(
           provider,
@@ -473,6 +488,7 @@ export async function runEndpoint(
           {
             ...factoryOverrides(flags),
             ...(capture ? { fetch: capture.runtime.fetch } : {}),
+            ...(replayStore ? { replayStore } : {}),
           }
         );
         if (!instance) {
@@ -505,6 +521,7 @@ export async function runEndpoint(
           grantDir,
           requestHash,
           cwd: options.cwd ?? process.cwd(),
+          replayStore,
           dispatch: () =>
             callEndpoint(
               instance,

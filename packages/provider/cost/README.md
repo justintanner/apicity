@@ -1190,10 +1190,11 @@ prefixed `sha256:`. Change any byte of the request and verification fails.
 ### Replay protection
 
 Each OTP `jti` is single-use within a `ReplayStore`. The default `ReplayStore` is
-an in-process `Set` scoped to one provider instance (no files, no
-`XDG_STATE_HOME`), so separate CLI processes each start with an empty store;
-pass a custom `replayStore` for cross-process or persistent protection. The
-`jti` is consumed **before** dispatch — see [Retry semantics](#retry-semantics).
+an in-process `Set` scoped to one provider instance (`createReplayStore()`); pass
+a custom `replayStore` for cross-process or persistent protection (`@apicity/cli`
+supplies its on-disk ledger at `$APICITY_PAYGATE_LEDGER_DIR` or
+`~/.config/apicity/paygate-consumed/`, per OS user and per host). The `jti` is
+consumed **before** dispatch — see [Retry semantics](#retry-semantics).
 
 ### Public interface
 
@@ -1410,8 +1411,11 @@ via `withPaidGate`, and 584 `gate: "cli"` checked in the CLI via
 a refusal prints the full `--request-hash` mint command and `meta.requestHash`.
 To check what a `requestHash` covers, run the caller's command without `--otp`
 (no upstream call fires). Pass `--otp <token>` once minted; one OTP covers one
-endpoint and exact request until `--ttl` expires (`10m` default), single-use
-within one process. A secret file that is empty is a `usage` error, never a
+endpoint and exact request until `--ttl` expires (`10m` default), and in the CLI
+an OTP is spent by the first run that presents it via the on-disk ledger at
+`$APICITY_PAYGATE_LEDGER_DIR` (else `~/.config/apicity/paygate-consumed/`, per
+host and OS user, as tamper-proof as the secret file; a provider grant is not
+spent in this ledger). A secret file that is empty is a `usage` error, never a
 disarmed gate.
 
 ### Minimal operator workflow

@@ -235,6 +235,15 @@ export {
   type GrantRefusalCode,
 } from "./paygate.js";
 export {
+  LedgerRefusal,
+  createPaygateLedgerStore,
+  ledgerDirectory,
+  ledgerMarkerName,
+  readOtpExpirySeconds,
+  type PayGateReplayStore,
+  type PaygateLedgerOptions,
+} from "./paygate-ledger.js";
+export {
   defaultEnvFilePath,
   describeEnvVars,
   resolveCredentials,

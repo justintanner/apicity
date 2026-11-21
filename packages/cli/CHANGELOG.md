@@ -91,6 +91,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Armed OTPs are now single-use across separate CLI runs via an on-disk consumed-token ledger (`$APICITY_PAYGATE_LEDGER_DIR`, else `~/.config/apicity/paygate-consumed/` at mode `0700`). Marker filenames hash `jti` with SHA-256 and store the token's `exp` so markers prune only after expiry; exclusive file creation (`O_EXCL`) stops concurrent races with `otp-replayed`, and an unwritable ledger refuses calls before dispatch (`paygate-ledger-unwritable`, naming the directory). Passed to both `gate: "sdk"` (`instantiateProvider` -> `kie`/`xai` factories) and `gate: "cli"` (`dispatchThroughGate` -> `dispatchGated`); unarmed hosts, un-gated calls, bad OTPs, and provider grants never touch or create the ledger (ac-ykn4bs).
+
 - An upload ticket, an object carrying `upload_url` or `uploadUrl` such as
   the answer of fal's `storage.upload.initiate` and `initiateMultipart`, is
   returned as sent instead of having its `file_url` downloaded. Nothing exists

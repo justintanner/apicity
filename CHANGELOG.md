@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/cli`: Armed OTPs are now single-use across separate CLI runs via an on-disk consumed-token ledger (`$APICITY_PAYGATE_LEDGER_DIR`, else `~/.config/apicity/paygate-consumed/` at mode `0700`, named by a SHA-256 digest of `jti`, pruned strictly past each token's `exp`). Passed to both `gate: "sdk"` (`kie`/`xai` factories via `instantiateProvider`) and `gate: "cli"` (`dispatchThroughGate` / `dispatchGated`); exclusive file creation (`O_EXCL`) rejects concurrent races with `otp-replayed`, and an unwritable ledger fails closed (`paygate-ledger-unwritable`, naming the directory) before dispatch. Unarmed hosts, un-gated calls, bad/mismatched OTPs, and provider grants never touch the ledger; the ledger is per OS user and per host and as tamper-proof as the secret file (ac-ykn4bs).
+
 - KIE `grok-imagine-image-2-0/segment-edit` accepts mask index 0. `mask_indexs` takes the `index` values of the segment-map result, which count from 0, and index 0 is usually the main subject. Its docs, read on 2026-11-19, give `minimum: 0` ("0-based"), where the 2026-08-28 page gave 1. A recorded edit that sent `[0]` recolored segment 0, the "white cat". `GrokImagineImage2SegmentEditRequestSchema`, its descriptor and the README now count the indexes from 0, as does the Breaking migration note below (ac-4asuok).
 
 - The frontier registry lists Google Flow Nano Banana 2.1 for text-to-image and image-to-image, and lists WaveSpeed Gemini Omni Flash 1.2 and MachGen Seedance 2.5 for video editing (ac-757evu).

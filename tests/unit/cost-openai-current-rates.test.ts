@@ -129,6 +129,182 @@ describe("OpenAI Standard rates read 2026-11-04 (P1)", () => {
     }
   );
 
+  it("guards Responses prompt_cache_options.ttl and prompt_cache_breakpoint.ttl in strict, forecast, and actuals", () => {
+    const bp = (text: string, ttl?: "30m" | "12h") => ({
+      role: "developer",
+      content: [
+        {
+          type: "input_text",
+          text,
+          prompt_cache_breakpoint:
+            ttl === undefined
+              ? { mode: "explicit" }
+              : { mode: "explicit", ttl },
+        },
+      ],
+    });
+    const userTurn = {
+      role: "user",
+      content: [{ type: "input_text", text: "Current question" }],
+    };
+
+    const default30m = {
+      model: "gpt-5.6-sol",
+      prompt_cache_options: { mode: "explicit", ttl: "30m" },
+      input: [bp("Shared prefix", "30m"), userTurn],
+      max_output_tokens: 100,
+    };
+    const explicitAll30mOverride = {
+      model: "gpt-5.6-sol",
+      prompt_cache_options: { mode: "explicit", ttl: "12h" },
+      input: [bp("Shared prefix", "30m"), userTurn],
+      max_output_tokens: 100,
+    };
+    const request12h = {
+      model: "gpt-5.6-sol",
+      prompt_cache_options: { ttl: "12h" },
+      input: [bp("Shared prefix", "30m"), userTurn],
+      max_output_tokens: 100,
+    };
+    const mixed30mDefaultWith12hBp = {
+      model: "gpt-5.6-sol",
+      prompt_cache_options: { mode: "explicit", ttl: "30m" },
+      input: [
+        bp("Shared instructions", "12h"),
+        bp("Session context"),
+        userTurn,
+      ],
+      max_output_tokens: 100,
+    };
+    const mixed12hDefaultWithInheritedBp = {
+      model: "gpt-5.6-sol",
+      prompt_cache_options: { mode: "explicit", ttl: "12h" },
+      input: [
+        bp("Short context", "30m"),
+        bp("Inherited 12h context"),
+        userTurn,
+      ],
+      max_output_tokens: 100,
+    };
+    const defaultOptionsWith12hBp = {
+      model: "gpt-5.6-sol",
+      input: [bp("Shared instructions", "12h"), userTurn],
+      max_output_tokens: 100,
+    };
+
+    const solHints = {
+      inputTokens: 2000,
+      cacheWriteInputTokens: 2000,
+      cacheReadInputTokens: 0,
+      outputTokens: 0,
+    };
+
+    for (const okPayload of [default30m, explicitAll30mOverride]) {
+      const strict = estimateEndpoint({
+        ...request,
+        payload: okPayload,
+        costHints: solHints,
+      });
+      expect(strict.status).toBe("priced");
+      expect(strict.usd).toBeCloseTo(0.01, 10);
+
+      const forecast = estimateEndpoint({
+        ...request,
+        payload: okPayload,
+        mode: "forecast",
+      });
+      expect(forecast.status).toBe("priced");
+      expect(forecast.usd).toBeGreaterThan(0);
+    }
+
+    for (const badPayload of [
+      request12h,
+      mixed30mDefaultWith12hBp,
+      mixed12hDefaultWithInheritedBp,
+      defaultOptionsWith12hBp,
+      { ...explicitAll30mOverride, previous_response_id: "resp_prev" },
+      { ...explicitAll30mOverride, conversation: "conv_prev" },
+    ]) {
+      for (const mode of ["strict", "forecast"] as const) {
+        const res = estimateEndpoint({
+          ...request,
+          payload: badPayload,
+          mode,
+          ...(mode === "strict" ? { costHints: solHints } : {}),
+        });
+        expect(res.status).toBe("unavailable");
+        expect(res.warnings.join(" ")).toContain("extended cache writes");
+      }
+
+      const ex = exchange("gpt-5.6-sol", {
+        input_tokens: 2000,
+        output_tokens: 0,
+        input_tokens_details: { cached_tokens: 0, cache_write_tokens: 2000 },
+      });
+      ex.requestBody = badPayload;
+      const actual = extractActual(ex);
+      expect(actual.derivedUsd).toBeNull();
+      expect(actual.warnings.join(" ")).toContain("extended cache writes");
+    }
+
+    // Response-side cache_write_tokens_details.ttl_12h_tokens fails closed even
+    // when no requestBody is present (e.g. GET /v1/responses/{id}).
+    const poll12h = extractActual({
+      provider: "openai",
+      method: "GET",
+      dotPath: "v1.responses.retrieve",
+      url: "https://api.openai.com/v1/responses/resp_12h",
+      status: 200,
+      requestBody: null,
+      responseHeaders: {},
+      responseBody: {
+        model: "gpt-5.6-sol",
+        usage: {
+          input_tokens: 12000,
+          output_tokens: 0,
+          input_tokens_details: {
+            cached_tokens: 4000,
+            cache_write_tokens: 7000,
+            cache_write_tokens_details: {
+              ttl_30m_tokens: 3000,
+              ttl_12h_tokens: 4000,
+            },
+          },
+        },
+      },
+    });
+    expect(poll12h.derivedUsd).toBeNull();
+    expect(poll12h.warnings.join(" ")).toContain("extended cache writes");
+
+    // Zero ttl_12h_tokens stays on the 30m rate.
+    const poll30m = extractActual({
+      provider: "openai",
+      method: "GET",
+      dotPath: "v1.responses.retrieve",
+      url: "https://api.openai.com/v1/responses/resp_30m",
+      status: 200,
+      requestBody: null,
+      responseHeaders: {},
+      responseBody: {
+        model: "gpt-5.6-sol",
+        usage: {
+          input_tokens: 2000,
+          output_tokens: 0,
+          input_tokens_details: {
+            cached_tokens: 0,
+            cache_write_tokens: 2000,
+            cache_write_tokens_details: {
+              ttl_30m_tokens: 2000,
+              ttl_12h_tokens: 0,
+            },
+          },
+        },
+      },
+    });
+    expect(poll30m.derivedUsd).toBeCloseTo(0.01, 10);
+    expect(poll30m.warnings).toEqual([]);
+  });
+
   it("selects long-context rates only above 272K total input", () => {
     for (const [inputTokens, expected] of [
       [272000, 2.72525],

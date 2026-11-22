@@ -25,7 +25,12 @@ export function flattenMessages(messages: unknown): string {
       for (const p of c) {
         if (p === null || typeof p !== "object") continue;
         const part = p as MessagePart;
-        if (part.type === "text" && typeof part.text === "string") {
+        if (
+          (part.type === "text" ||
+            part.type === "input_text" ||
+            part.type === "output_text") &&
+          typeof part.text === "string"
+        ) {
           parts.push(part.text);
         }
       }

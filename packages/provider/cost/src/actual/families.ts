@@ -85,6 +85,32 @@ function uncoveredChargeOf(
     if (usage.speed === "fast") {
       return "fast mode bills rates that are not bundled";
     }
+    for (const detailsPath of [
+      "input_tokens_details.cache_write_tokens_details",
+      "prompt_tokens_details.cache_write_tokens_details",
+    ]) {
+      const details = get(usage, detailsPath);
+      if (details !== undefined && details !== null) {
+        if (typeof details !== "object" || Array.isArray(details)) {
+          return "openai: invalid cache_write_tokens_details; no figure is derived";
+        }
+        for (const [key, value] of Object.entries(
+          details as Record<string, unknown>
+        )) {
+          if (value === undefined || value === null) continue;
+          if (
+            typeof value !== "number" ||
+            !Number.isSafeInteger(value) ||
+            value < 0
+          ) {
+            return "openai: invalid cache_write_tokens_details; no figure is derived";
+          }
+          if (key !== "ttl_30m_tokens" && value > 0) {
+            return "openai: extended cache writes (12h/24h) are not bundled; the table stores the 30m write rate";
+          }
+        }
+      }
+    }
   }
   if (exchange.requestBody?.speed === "fast") {
     return "fast mode bills rates that are not bundled";

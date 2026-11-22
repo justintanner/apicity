@@ -4,6 +4,7 @@ import {
   scopedPayloadProblem,
 } from "./deployment";
 import { anthropicCacheTtl } from "./anthropic-cache";
+import { openaiCacheProblem } from "./openai-cache";
 import {
   FIREWORKS_EMBEDDING_RATES,
   FIREWORKS_MODEL_SIZES,
@@ -470,12 +471,7 @@ function openaiPricingProblem(
     hints.regionalProcessing !== false
   )
     return "openai: regional processing (data residency) and FedRAMP uplift is not bundled";
-  if (
-    payload.prompt_cache_retention === "12h" ||
-    payload.prompt_cache_retention === "24h"
-  )
-    return "openai: extended cache writes (12h/24h) are not bundled; the table stores the 30m write rate";
-  return undefined;
+  return openaiCacheProblem(payload);
 }
 
 function xaiPricingProblem(

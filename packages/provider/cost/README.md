@@ -718,6 +718,13 @@ Every gap returns `usd: 0` with one warning and no rate in the breakdown, so
   `"auto"` requests on Fast.
 - `regionalProcessing: true`: data-residency (regional processing) and FedRAMP
   endpoints bill a 10% uplift that is not bundled.
+- Extended cache writes (`prompt_cache_retention` `"12h"`/`"24h"`, Responses
+  request-level `prompt_cache_options.ttl: "12h"`, per-breakpoint
+  `prompt_cache_breakpoint.ttl: "12h"`, mixed-retention requests, or response
+  `cache_write_tokens_details.ttl_12h_tokens > 0`): only the default 30-minute
+  write rate is bundled. Explicit-mode requests whose visible `input`
+  breakpoints all override to `"30m"` (with no `previous_response_id` or
+  `conversation`) still price at the 30-minute rate.
 
 #### Realtime (gpt-realtime-2.1)
 

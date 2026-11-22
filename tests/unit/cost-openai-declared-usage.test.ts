@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import { createCost } from "../../packages/provider/cost/src/cost";
+import {
+  computeEstimate,
+  evaluateDeclaredUsage,
+} from "../../packages/provider/cost/src/compute";
 import {
   classifyEstimate,
   isCostPolicyKnown,
@@ -282,6 +286,215 @@ describe("openai gpt-5.6-sol fails closed", () => {
         costHints: usage(10, 0, 0, 1),
       });
       expectUnknown(est, `model '${model}' not found`);
+    }
+  });
+
+  it("guards Responses prompt_cache_options.ttl and prompt_cache_breakpoint.ttl across estimator entry points", () => {
+    const cost = createCost();
+    const twoThousandWrite = usage(2_000, 0, 2_000, 0);
+
+    // Default and explicit 30m quote $0.01 (2000 * $5 / 1M).
+    for (const payload of [
+      { model: SOL },
+      { model: SOL, prompt_cache_options: {} },
+      { model: SOL, prompt_cache_options: { ttl: "30m" } },
+      { model: SOL, prompt_cache_options: { mode: "implicit", ttl: "30m" } },
+      { model: SOL, prompt_cache_options: { mode: "explicit", ttl: "30m" } },
+    ]) {
+      const est = cost.estimate({
+        provider: "openai",
+        payload,
+        costHints: twoThousandWrite,
+      });
+      expect(est.usd).toBeCloseTo(0.01, 10);
+      expect(est.warnings).toEqual([]);
+      expect(
+        evaluateDeclaredUsage("openai", SOL, payload, twoThousandWrite).usd
+      ).toBeCloseTo(0.01, 10);
+    }
+
+    // Exact ac-k0mwj9 reproduction: request-level prompt_cache_options.ttl "12h"
+    // must fail closed rather than returning $0.01 at the 30m rate.
+    const request12h = {
+      model: SOL,
+      prompt_cache_options: { ttl: "12h" },
+    };
+    expectUnknown(
+      cost.estimate({
+        provider: "openai",
+        payload: request12h,
+        costHints: twoThousandWrite,
+      }),
+      "extended cache writes"
+    );
+    expectUnknown(
+      evaluateDeclaredUsage("openai", SOL, request12h, twoThousandWrite),
+      "extended cache writes"
+    );
+
+    // Implicit mode with 12h default still places a 12h implicit breakpoint
+    // even when every explicit breakpoint overrides to 30m.
+    expectUnknown(
+      sol(twoThousandWrite, {
+        prompt_cache_options: { mode: "implicit", ttl: "12h" },
+        input: [
+          {
+            role: "developer",
+            content: [
+              {
+                type: "input_text",
+                text: "Shared instructions",
+                prompt_cache_breakpoint: { mode: "explicit", ttl: "30m" },
+              },
+            ],
+          },
+        ],
+      }),
+      "extended cache writes"
+    );
+
+    // Explicit mode with 12h default fails closed when no visible input
+    // breakpoints override it, or when any breakpoint omits ttl (mixed).
+    expectUnknown(
+      sol(twoThousandWrite, {
+        prompt_cache_options: { mode: "explicit", ttl: "12h" },
+      }),
+      "extended cache writes"
+    );
+    expectUnknown(
+      sol(twoThousandWrite, {
+        prompt_cache_options: { mode: "explicit", ttl: "12h" },
+        input: [
+          {
+            role: "developer",
+            content: [
+              {
+                type: "input_text",
+                text: "Short block",
+                prompt_cache_breakpoint: { mode: "explicit", ttl: "30m" },
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: "Inherits 12h",
+                prompt_cache_breakpoint: { mode: "explicit" },
+              },
+            ],
+          },
+        ],
+      }),
+      "extended cache writes"
+    );
+
+    // Explicit mode with 12h default prices at 30m when every visible input
+    // breakpoint explicitly overrides to 30m and no prior history is attached.
+    const allOverriddenTo30m = {
+      model: SOL,
+      prompt_cache_options: { mode: "explicit", ttl: "12h" },
+      input: [
+        {
+          role: "developer",
+          content: [
+            {
+              type: "input_text",
+              text: "Shared instructions",
+              prompt_cache_breakpoint: { mode: "explicit", ttl: "30m" },
+            },
+          ],
+        },
+      ],
+    };
+    expect(
+      cost.estimate({
+        provider: "openai",
+        payload: allOverriddenTo30m,
+        costHints: twoThousandWrite,
+      }).usd
+    ).toBeCloseTo(0.01, 10);
+
+    // Default or 30m request with a 12h breakpoint override (including mixed
+    // 12h + 30m breakpoints) fails closed.
+    for (const options of [
+      undefined,
+      { mode: "explicit", ttl: "30m" },
+      { mode: "implicit", ttl: "30m" },
+    ]) {
+      expectUnknown(
+        sol(twoThousandWrite, {
+          ...(options ? { prompt_cache_options: options } : {}),
+          input: [
+            {
+              role: "developer",
+              content: [
+                {
+                  type: "input_text",
+                  text: "Stable prefix",
+                  prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" },
+                },
+              ],
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: "Session context",
+                  prompt_cache_breakpoint: { mode: "explicit" },
+                },
+              ],
+            },
+          ],
+        }),
+        "extended cache writes"
+      );
+    }
+
+    // Invalid TTL, mode, or malformed option/breakpoint values fail closed.
+    for (const [patch, phrase] of [
+      [{ prompt_cache_options: "12h" }, "prompt_cache_options must be"],
+      [{ prompt_cache_options: { ttl: "1h" } }, "prompt_cache_options.ttl"],
+      [{ prompt_cache_options: { mode: "auto" } }, "prompt_cache_options.mode"],
+      [{ prompt_cache_retention: "48h" }, "prompt_cache_retention"],
+      [
+        {
+          input: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: "x",
+                  prompt_cache_breakpoint: { mode: "explicit", ttl: "1h" },
+                },
+              ],
+            },
+          ],
+        },
+        "prompt_cache_breakpoint.ttl",
+      ],
+      [
+        {
+          input: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: "x",
+                  prompt_cache_breakpoint: "explicit",
+                },
+              ],
+            },
+          ],
+        },
+        "prompt_cache_breakpoint must be",
+      ],
+    ] as const) {
+      expectUnknown(sol(twoThousandWrite, patch), phrase);
     }
   });
 });

@@ -587,7 +587,9 @@ describe("KIE feed drift", () => {
       expect(result.notCompared.map(({ description }) => description)).toEqual([
         CACHED,
       ]);
+      expect(result.notCompared[0].reason).toContain("ac-o8ihgj");
       expect(result.notCompared[0].reason).toContain("ac-pillso");
+      expect(result.notCompared[0].reason).toContain("no discount");
       expect(result.notices).toEqual([]);
     });
 
@@ -622,7 +624,7 @@ describe("KIE feed drift", () => {
       expect(result.notices).toEqual([
         {
           family: "gemini-4-argon-cached-input",
-          notice: expect.stringContaining("ac-pillso"),
+          notice: expect.stringContaining("ac-o8ihgj"),
         },
       ]);
     });

@@ -4567,12 +4567,17 @@ export const kie: Record<string, ModelPricing> = {
     rate: { input: 0.3, output: 1.5, cacheRead: 0.015, cacheWrite: 0.375 },
     source: pricePage("https://kie.ai/gpt-6-1-terra", "2026-11-04"),
   },
-  // Gemini 4 Argon is the exception to "missing cache rates": KIE has
-  // published a cached-input rate for it since 2026-11-19 (8 credits, $0.04
-  // per million tokens). It is not applied, because KIE's response reports
-  // no cached-token count. Every input token is quoted at the input rate, an
-  // upper bound while cached input is discounted; a declared cached count
-  // still gets no quote. Follow-up: ac-pillso. Both keys read this page.
+  // Gemini 4 Argon is the permanent exception to "missing cache rates": KIE
+  // has published a cached-input rate for it since 2026-11-19 (8 credits,
+  // $0.04 per million tokens), but paired cold+warm probes on 2026-11-22
+  // (ac-o8ihgj / ac-pillso, tests/fixtures/kie-pricing-evidence/
+  // gemini-4-argon-cache-probe-2026-11-22.json; ~5.7k-token static prefix,
+  // 3 s gap on both OpenAI-compat and native Gemini endpoints) returned no
+  // cached-token count in either wire shape and billed credits_consumed at the
+  // full uncached 160 credits/1M ($0.80/1M) input rate (0.92/1.19 and
+  // 0.92/0.92 credits; no cache discount). Every input token stays quoted at
+  // the $0.80 input rate and a declared cached count still gets no quote.
+  // Both keys read this page.
   "gemini-4-argon": {
     kind: "tokens",
     rate: { input: 0.8, output: 4.0 },

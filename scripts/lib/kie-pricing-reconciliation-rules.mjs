@@ -1909,20 +1909,23 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
   },
   {
     // The 2026-11-19 feed added a Cached Input row for Gemini 4 Argon. The
-    // table does not apply it (mayor ruling, ac-on0k4o): KIE's response
-    // reports no cached-token count, and a cacheRead rate would make every
-    // caller declare one. Not liveComparable, so the live comparison skips
-    // this one cell too. It is matched by key and component rather than by
-    // today's words, so a reworded row ("Cache Read") cannot stop a release.
-    // Input and Output stay compared.
+    // table does not apply it (mayor ruling ac-on0k4o; confirmed permanently
+    // by paired cache-hit probes on 2026-11-22 in ac-o8ihgj / ac-pillso):
+    // neither the OpenAI-compat nor native Gemini endpoint reports any cached
+    // token count on repeated ~5.7k-token prefixes 3 s apart, and
+    // credits_consumed billed all four probe calls at the full uncached
+    // 160 credits/1M ($0.80/1M) input rate with no cache discount. Not
+    // liveComparable, so the live comparison skips this one cell too. It is
+    // matched by key and component rather than by today's words, so a reworded
+    // row ("Cache Read") cannot stop a release. Input and Output stay compared.
     family: "gemini-4-argon-cached-input",
     matches: (description, key) =>
       key === "gemini-4-argon" &&
       CACHED_INPUT_CLAUSE.test(description.split(",").at(-1) ?? ""),
     message:
-      "KIE has published a cached-input rate for Gemini 4 Argon since 2026-11-19 (8 credits, 0.04 USD per million tokens). It is not applied, because KIE's response reports no cached-token count; every input token is quoted at the 0.80 USD input rate. Follow-up: ac-pillso.",
+      "KIE has published a cached-input rate for Gemini 4 Argon since 2026-11-19 (8 credits, 0.04 USD per million tokens). Permanently unapplied (ac-o8ihgj / ac-pillso): 2026-11-22 paired cache-hit probes (~5.7k-token prefix, 3 s gap) on both OpenAI-compat and native Gemini routes reported no cached token count and billed credits_consumed at the full uncached 0.80 USD/1M input rate with no discount.",
     unmatchedNotice:
-      "gemini-4-argon-cached-input matched no row of this pull: KIE has dropped or renamed the Gemini 4 Argon Cached Input row. Review the rule with follow-up ac-pillso.",
+      "gemini-4-argon-cached-input matched no row of this pull: KIE has dropped or renamed the Gemini 4 Argon Cached Input row. Review the permanent disposition recorded in ac-o8ihgj / ac-pillso.",
   },
 ]);
 

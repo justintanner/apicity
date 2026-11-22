@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `@apicity/cost`: Guard OpenAI Responses `prompt_cache_options.ttl`, per-breakpoint `prompt_cache_breakpoint.ttl`, mixed-retention requests, and response `cache_write_tokens_details.ttl_12h_tokens` so 12-hour cache writes fail closed instead of pricing at the 30-minute write rate (ac-k0mwj9).
 
+### Changed
+
+- `@apicity/cost`: Keep KIE Gemini 4 Argon (`gemini-4-argon`, `gemini-4-argon-openai`) permanently without `cacheRead: 0.04` (non-breaking) after 2026-11-22 paired cache-hit probes on both OpenAI-compat and native Gemini routes confirmed neither endpoint reports cached token counts or discounts `credits_consumed` below the `$0.80/1M` input rate (`tests/fixtures/kie-pricing-evidence/gemini-4-argon-cache-probe-2026-11-22.json`, ac-o8ihgj).
+
 ### Added
 
 - Support `happyhorse-1.0-video-edit` on `@apicity/alibaba` (`api.v1.services.aigc.videoGeneration.videoSynthesis`) with `@apicity/cost` International pricing (`$0.14`/`$0.24` per s for `720P`/`1080P`, billing both input and output seconds), model slug `hh`, and frontier `v2v` `HappyHorse-1.0` mapping (ac-s5lhzh).

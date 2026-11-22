@@ -1,0 +1,86 @@
+{
+  "bead": "ac-o8ihgj",
+  "follows": "ac-pillso",
+  "probedAt": "2026-11-22T02:07:57.737Z",
+  "outcome": "branch-b-permanent-disposition",
+  "videobookMatches": {
+    "repo": "justintanner/videobook",
+    "query": "gemini-4-argon",
+    "checkedAt": "2026-11-22",
+    "count": 0
+  },
+  "credits": {
+    "before": 46958.23,
+    "after": 46954.28,
+    "spent": 3.95,
+    "usd": 0.01975
+  },
+  "summary": "Paired cold+warm calls (3 s apart, ~5,700-token deterministic static prefix above Gemini's 2,048-token cache threshold) on both KIE Gemini 4 Argon endpoints returned no cached token count in either response shape and billed all four calls at the full uncached 160 credits/1M ($0.80/1M) input rate (no cache discount). The gemini-4-argon-cached-input disposition stays permanent without cacheRead: 0.04.",
+  "calls": [
+    {
+      "pair": 1,
+      "call": 1,
+      "endpoint": "POST https://api.kie.ai/gemini-4-argon-openai/v1/chat/completions",
+      "status": 200,
+      "id": "chatcmpl-d14df898b73b48f7b6158c80038ca47a",
+      "model": "gemini-4-argon",
+      "usage": {
+        "prompt_tokens": 5734,
+        "completion_tokens": 1,
+        "completion_tokens_details": { "reasoning_tokens": 0 },
+        "total_tokens": 5735
+      },
+      "cachedTokenField": null,
+      "credits_consumed": 0.92,
+      "expectedUncachedCredits": 0.91824
+    },
+    {
+      "pair": 1,
+      "call": 2,
+      "endpoint": "POST https://api.kie.ai/gemini-4-argon-openai/v1/chat/completions",
+      "status": 200,
+      "id": "chatcmpl-9f6ed81ae8e84ee3969f6abe9180895d",
+      "usage": {
+        "prompt_tokens": 7402,
+        "completion_tokens": 5,
+        "completion_tokens_details": { "reasoning_tokens": 0 },
+        "total_tokens": 7407
+      },
+      "cachedTokenField": null,
+      "credits_consumed": 1.19,
+      "expectedUncachedCredits": 1.18832
+    },
+    {
+      "pair": 2,
+      "call": 1,
+      "endpoint": "POST https://api.kie.ai/gemini/v1/models/gemini-4-argon:streamGenerateContent",
+      "status": 200,
+      "modelVersion": "gemini-4-argon",
+      "usageMetadata": {
+        "promptTokenCount": 5727,
+        "candidatesTokenCount": 1,
+        "totalTokenCount": 5728,
+        "promptTokensDetails": [{ "modality": "TEXT", "tokenCount": 5727 }]
+      },
+      "cachedTokenField": null,
+      "credits_consumed": 0.92,
+      "expectedUncachedCredits": 0.91712
+    },
+    {
+      "pair": 2,
+      "call": 2,
+      "endpoint": "POST https://api.kie.ai/gemini/v1/models/gemini-4-argon:streamGenerateContent",
+      "status": 200,
+      "modelVersion": "gemini-4-argon",
+      "usageMetadata": {
+        "promptTokenCount": 5727,
+        "candidatesTokenCount": 1,
+        "totalTokenCount": 5728,
+        "promptTokensDetails": [{ "modality": "TEXT", "tokenCount": 5727 }]
+      },
+      "cachedTokenField": null,
+      "credits_consumed": 0.92,
+      "expectedUncachedCredits": 0.91712
+    }
+  ]
+}

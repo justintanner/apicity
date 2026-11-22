@@ -1,6 +1,6 @@
 {
   "name": "@apicity/dropbox",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "description": "Dropbox HTTP API provider for users, files, content upload/download, and sharing endpoints.",
   "license": "MIT",
   "repository": {

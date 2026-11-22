@@ -98,12 +98,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST v1.videos": {
-    "source": "google-flow/i2v",
+    "source": "google-flow/omni-1-2-t2v",
     "payload": {
-      "prompt": "The cat gently swats at a floating dust particle",
-      "model": "veo-3.1-quality",
-      "aspectRatio": "16:9",
-      "startImage": "test-asset-123"
+      "prompt": "A red paper boat drifts slowly across a still pond.",
+      "model": "omni-flash-1.2",
+      "duration": 3,
+      "resolution": "360p"
     },
     "tier": "prohibitive",
     "runByDefault": false

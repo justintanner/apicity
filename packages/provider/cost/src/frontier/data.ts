@@ -850,6 +850,11 @@ export const FRONTIER = {
             dotPath: "api.v0.generate",
             modelId: "Gemini-Omni-1.2-Flash",
           },
+          {
+            provider: "googleflow",
+            dotPath: "v1.videos",
+            modelId: "omni-flash-1.2",
+          },
         ],
       },
       {
@@ -1189,6 +1194,11 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "Gemini-Omni-1.2-Flash",
+          },
+          {
+            provider: "googleflow",
+            dotPath: "v1.videos",
+            modelId: "omni-flash-1.2",
           },
         ],
       },
@@ -1538,6 +1548,11 @@ export const FRONTIER = {
             provider: "machgen",
             dotPath: "api.v0.generate",
             modelId: "Gemini-Omni-1.2-Flash",
+          },
+          {
+            provider: "googleflow",
+            dotPath: "v1.videos",
+            modelId: "omni-flash-1.2",
           },
         ],
       },

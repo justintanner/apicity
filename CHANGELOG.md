@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support `omni-flash-1.2` (Gemini Omni 1.2 Flash) on `@apicity/googleflow` (`POST v1.videos`) with 3–15 s durations (3–10 s in `I2V-FL`), `360p`/`720p` resolution, up to 10 `referenceImage_*`/`character_*` slots, 15 s (360-frame) V2V trim window, and `returnSilentVideos`; `@apicity/cost` prices it across all four Google AI plans (`3`/`1` credits/s for 1–10 s and `6`/`2` credits/s for 11–15 s at `720p`/`360p`, V2V billed by edited slice length), shares slug `geminiomni1p2f`, and maps `googleflow` on the `Gemini Omni Flash 1.2` frontier `v2v` (#2), `r2v` (#4), and `t2v` (#7) rows (ac-5kldja).
 - Support `happyhorse-1.0-video-edit` on `@apicity/alibaba` (`api.v1.services.aigc.videoGeneration.videoSynthesis`) with `@apicity/cost` International pricing (`$0.14`/`$0.24` per s for `720P`/`1080P`, billing both input and output seconds), model slug `hh`, and frontier `v2v` `HappyHorse-1.0` mapping (ac-s5lhzh).
 - Support `wan3.0-video` and `wan3.0-video-prime` on `@apicity/alibaba` (`api.v1.services.aigc.videoGeneration.videoSynthesis`) with `@apicity/cost` International pricing (`$0.05`/`$0.10`/`$0.20` per s and `$0.068`/`$0.14`/`$0.28` per s for `480P`/`720P`/`1080P`), model slugs (`wan3p0`, `wan3p0p`), and frontier `t2v`/`r2v`/`v2v` `Wan 3.0` mappings.
 

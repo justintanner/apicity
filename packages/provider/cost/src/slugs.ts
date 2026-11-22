@@ -1035,6 +1035,8 @@ export const MODEL_SLUGS = {
     // Same underlying model as kie's "gemini-omni-video" — slug intentionally
     // matches, as with alibaba's qwen/wan image entries.
     "omni-flash": "geminiomni",
+    // Same model kie, fal, wavespeed, and machgen sell as geminiomni1p2f.
+    "omni-flash-1.2": "geminiomni1p2f",
     // Image models share kie's slugs for the same models. Flow's
     // "nano-banana-2" runs Nano Banana 2.1, and the deprecated aliases take
     // the slug of the model they run: nano-banana -> nano-banana-2,
@@ -2205,6 +2207,7 @@ export const MODEL_DISPLAY = {
     "veo-3.1-lite": "Veo 3.1 Lite",
     "veo-3.1-lite-low-priority": "Veo 3.1 Lite Low Priority",
     "omni-flash": "Gemini Omni Flash",
+    "omni-flash-1.2": "Gemini Omni 1.2 Flash",
     // Named for the model each id runs, aliases included.
     "nano-banana-2-lite": "Nano Banana 2 Lite",
     "nano-banana-2": "Nano Banana 2.1",

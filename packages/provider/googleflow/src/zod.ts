@@ -312,7 +312,7 @@ export const GoogleFlowImagesUpscaleRequestSchema = z
 // non-validating on the wire.
 // [videos] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
 
-// The five model ids that own a dedicated branch. The alias fallback refines
+// The six model ids that own a dedicated branch. The alias fallback refines
 // its `model` to EXCLUDE these so a request such as
 // `{ model: "veo-3.1-fast", duration: 10 }` cannot fail the fast branch and
 // then launder through the permissive fallback (the exclusion refine is
@@ -323,6 +323,7 @@ const VIDEOS_ENUMERATED_MODELS = [
   "veo-3.1-lite",
   "veo-3.1-lite-low-priority",
   "omni-flash",
+  "omni-flash-1.2",
 ] as const;
 
 // Model-agnostic fields shared by every branch; only model, aspectRatio,
@@ -409,6 +410,20 @@ const videosOmniReferenceFields = {
   character_5: z.string().optional(),
   character_6: z.string().optional(),
   character_7: z.string().optional(),
+};
+
+// omni-flash-1.2 reference slots: referenceImage_1..10 / character_1..10.
+// Same passthrough caveat — the 1..10 budget is enforced by the branch
+// superRefine, not by these declarations.
+// [videos §References] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const videosOmni12ReferenceFields = {
+  ...videosOmniReferenceFields,
+  referenceImage_8: z.string().optional(),
+  referenceImage_9: z.string().optional(),
+  referenceImage_10: z.string().optional(),
+  character_8: z.string().optional(),
+  character_9: z.string().optional(),
+  character_10: z.string().optional(),
 };
 
 // aspectRatio for the Veo branches: documented named/numeric ratios plus a
@@ -555,21 +570,33 @@ function veoFastFamilyIssues(
   return issues;
 }
 
-// omni-flash video-to-video (referenceVideo_1) constraints: no explicit
+// Omni Flash video-to-video (referenceVideo_1) constraints: no explicit
 // duration alongside a source video (upstream derives it from the trim window);
+// referenceVideo_1 cannot be combined with startImage/endImage keyframes;
 // the frame-index window is valid only alongside referenceVideo_1, with end
-// strictly after start (field-level min/max already bound 0-239 / 1-240).
+// strictly after start (field-level min/max bound 0-239 / 1-240 on omni-flash
+// and 0-359 / 1-360 on omni-flash-1.2).
 // [videos §Video-to-Video] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
 function omniV2VIssues(
-  value: Record<string, unknown>
+  value: Record<string, unknown>,
+  modelName: "omni-flash" | "omni-flash-1.2" = "omni-flash"
 ): VideosRefinementIssue[] {
   const issues: VideosRefinementIssue[] = [];
   const hasSourceVideo = value.referenceVideo_1 !== undefined;
   if (hasSourceVideo && value.duration !== undefined) {
     issues.push({
       path: ["duration"],
+      message: `${modelName} video-to-video (referenceVideo_1) does not accept an explicit duration`,
+    });
+  }
+  if (
+    hasSourceVideo &&
+    (value.startImage !== undefined || value.endImage !== undefined)
+  ) {
+    issues.push({
+      path: ["referenceVideo_1"],
       message:
-        "omni-flash video-to-video (referenceVideo_1) does not accept an explicit duration",
+        "referenceVideo_1 cannot be combined with startImage/endImage keyframes",
     });
   }
   const hasStartFrame = value.startFrameIndex_1 !== undefined;
@@ -753,9 +780,81 @@ const omniFlashVideosSchema = z
     }
   });
 
-// Branch 6 (alias fallback): forward-compatible for unlisted Veo point
+// Branch 6: omni-flash-1.2 (Omni 1.2 Flash). CLOSED aspectRatio enum (no
+// numeric hatch), any whole number duration from 3 to 15 s (default 8; 11-15 s
+// paid plans only — plan gating is comment-only, REQ-010; 3-10 s in I2V-FL
+// startImage+endImage mode), resolution 360p|720p (default 720p, 360p costs a
+// third of 720p), referenceImage_1..10 / character_1..10, referenceAudio_1..5,
+// V2V trim window up to 360 frames (15 s at 24 fps), and returnSilentVideos.
+// [videos] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const omniFlash12VideosSchema = z
+  .object({
+    ...videosHeadFields,
+    model: z.literal("omni-flash-1.2"),
+    // omni-flash-1.2: closed aspect-ratio enum, no numeric hatch.
+    // [videos §Aspect Ratio]
+    aspectRatio: z.enum(["landscape", "portrait"]).optional(),
+    // Any integer from 3 to 15 s (default 8). 11-15 s require a paid Google
+    // plan (not schema-enforced, REQ-010); startImage+endImage (I2V-FL) caps
+    // at 10 s (enforced in superRefine); not accepted in V2V edit mode.
+    // [videos §Duration]
+    duration: z.number().int().min(3).max(15).optional(),
+    // Omni models only; Veo models reject 360p (veoResolutionIssues).
+    // [videos §resolution]
+    resolution: z
+      .enum(["360p", "720p"])
+      .describe(
+        "Output resolution, 360p or 720p (default 720p). 360p costs a third of the credits of 720p."
+      )
+      .optional(),
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosOmni12ReferenceFields,
+    ...videosReferenceAudioFields,
+    referenceVideo_1: z.string().optional(),
+    // Omni 1.2 Flash V2V trim window on a 24 fps virtual timeline (max 360 = 15 s).
+    // [videos §Video-to-Video]
+    startFrameIndex_1: z.number().int().min(0).max(359).optional(),
+    endFrameIndex_1: z.number().int().min(1).max(360).optional(),
+    returnSilentVideos: z.boolean().optional(),
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    const record = value as Record<string, unknown>;
+    const issues: VideosRefinementIssue[] = [
+      ...overBudgetReferenceSlotIssues(
+        record,
+        10,
+        "omni-flash-1.2 accepts at most referenceImage_1..10 / character_1..10"
+      ),
+      ...omniV2VIssues(record, "omni-flash-1.2"),
+      ...videosKeyframeIssues(record),
+    ];
+    if (
+      record.startImage !== undefined &&
+      record.endImage !== undefined &&
+      typeof record.duration === "number" &&
+      record.duration > 10
+    ) {
+      issues.push({
+        path: ["duration"],
+        message:
+          "omni-flash-1.2 start+end frame (I2V-FL) supports duration 3 to 10 seconds",
+      });
+    }
+    for (const issue of issues) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 7 (alias fallback): forward-compatible for unlisted Veo point
 // releases. `model` is REQUIRED (routing invariant 1) and must be a well-formed
-// Veo alias that is NOT one of the five enumerated ids (routing invariant 2).
+// Veo alias that is NOT one of the six enumerated ids (routing invariant 2).
 // Otherwise permissive — today's domain: 4/6/8/10 duration, string aspectRatio,
 // passthrough everything.
 const videosAliasFallbackSchema = z
@@ -787,6 +886,7 @@ export const GoogleFlowVideosRequestSchema = z.union([
   veoLiteVideosSchema,
   veoLiteLowPriorityVideosSchema,
   omniFlashVideosSchema,
+  omniFlash12VideosSchema,
   videosAliasFallbackSchema,
 ]);
 

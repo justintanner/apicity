@@ -1086,11 +1086,13 @@ describe("PRICING data", () => {
     ]);
     for (const [model, entry] of Object.entries(PRICING.googleflow)) {
       expect(entry.source.asOf, model).toBe(
-        model === "videos/upscale"
-          ? "2026-11-04"
-          : readOn20261017.has(model)
-            ? "2026-10-17"
-            : "2026-07-20"
+        model === "omni-flash-1.2"
+          ? "2026-11-22"
+          : model === "videos/upscale"
+            ? "2026-11-04"
+            : readOn20261017.has(model)
+              ? "2026-10-17"
+              : "2026-07-20"
       );
       expect(Date.parse(entry.source.asOf as string), model).toBeGreaterThan(
         Date.parse(PRICING_AS_OF)

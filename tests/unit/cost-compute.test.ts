@@ -1781,6 +1781,106 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
+    it("prices omni-flash-1.2 per second (3-10s base, 11-15s double) at 720p and 360p", () => {
+      const at = (
+        payload: Record<string, unknown>,
+        costHints?: {
+          googleFlowPlan?: string;
+          durationSeconds?: number;
+          inputDurationSeconds?: number;
+        }
+      ) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: { model: "omni-flash-1.2", prompt: "a cat", ...payload },
+          ...(costHints ? { costHints } : {}),
+        });
+      // 720p (default): 3 cr/s for 1..10s, +6 cr/s above 10s, * $0.02 on Pro
+      expect(at({ duration: 3 }).usd).toBeCloseTo(0.18, 10); // 9 cr
+      expect(at({}).usd).toBeCloseTo(0.48, 10); // default 8s = 24 cr
+      expect(at({ duration: 8, resolution: "720p" }).usd).toBeCloseTo(0.48, 10);
+      expect(at({ duration: 10 }).usd).toBeCloseTo(0.6, 10); // 30 cr
+      expect(at({ duration: 11 }).usd).toBeCloseTo(0.72, 10); // 36 cr
+      expect(at({ duration: 15 }).usd).toBeCloseTo(1.2, 10); // 60 cr
+      // 360p: 1 cr/s for 1..10s, +2 cr/s above 10s, * $0.02 on Pro
+      expect(at({ duration: 3, resolution: "360p" }).usd).toBeCloseTo(0.06, 10); // 3 cr
+      expect(at({ duration: 8, resolution: "360p" }).usd).toBeCloseTo(0.16, 10); // 8 cr
+      expect(at({ duration: 10, resolution: "360p" }).usd).toBeCloseTo(0.2, 10); // 10 cr
+      expect(at({ duration: 11, resolution: "360p" }).usd).toBeCloseTo(
+        0.24,
+        10
+      ); // 12 cr
+      expect(at({ duration: 15, resolution: "360p" }).usd).toBeCloseTo(0.4, 10); // 20 cr
+      expect(at({ duration: 3, resolution: "360p" }).rateAsOf).toBe(
+        "2026-11-22"
+      );
+      expect(at({ duration: 3, resolution: "360p" }).warnings).toEqual([]);
+      // Plan tiers on 3s 360p (3 credits) and 15s 720p (60 credits)
+      expect(
+        at({ duration: 3, resolution: "360p" }, { googleFlowPlan: "plus" }).usd
+      ).toBeCloseTo(0.12, 10);
+      expect(
+        at({ duration: 3, resolution: "360p" }, { googleFlowPlan: "ultra-99" })
+          .usd
+      ).toBeCloseTo(0.03, 10);
+      expect(
+        at({ duration: 3, resolution: "360p" }, { googleFlowPlan: "ultra" }).usd
+      ).toBeCloseTo(0.024, 10);
+      expect(at({ duration: 15 }, { googleFlowPlan: "ultra" }).usd).toBeCloseTo(
+        0.48,
+        10
+      );
+      // Count multiplies generations
+      expect(at({ duration: 3, resolution: "360p", count: 2 }).usd).toBeCloseTo(
+        0.12,
+        10
+      );
+      // V2V edit derives length from trim window (24 fps) or costHints
+      expect(
+        at({
+          referenceVideo_1: "video-media-1",
+          resolution: "360p",
+          endFrameIndex_1: 72,
+        }).usd
+      ).toBeCloseTo(0.06, 10); // 3s slice = 3 cr
+      expect(
+        at({
+          referenceVideo_1: "video-media-1",
+          startFrameIndex_1: 24,
+          endFrameIndex_1: 96,
+        }).usd
+      ).toBeCloseTo(0.18, 10); // 3s slice at 720p = 9 cr
+      expect(
+        at(
+          { referenceVideo_1: "video-media-1", resolution: "360p" },
+          { durationSeconds: 5 }
+        ).usd
+      ).toBeCloseTo(0.1, 10); // 5 cr
+      expect(
+        at(
+          { referenceVideo_1: "video-media-1", resolution: "360p" },
+          { inputDurationSeconds: 20 }
+        ).usd
+      ).toBeCloseTo(0.4, 10); // capped to 15s = 20 cr
+      // V2V edit fails closed without slice length or with explicit duration
+      const missingSlice = at({ referenceVideo_1: "video-media-1" });
+      expect(missingSlice.usd).toBe(0);
+      expect(missingSlice.warnings[0]).toContain("endFrameIndex_1");
+      const v2vWithDuration = at({
+        referenceVideo_1: "video-media-1",
+        duration: 5,
+      });
+      expect(v2vWithDuration.usd).toBe(0);
+      expect(v2vWithDuration.warnings[0]).toContain("explicit duration");
+      // Invalid duration / I2V-FL > 10s / invalid resolution fail closed
+      expect(at({ duration: 2 }).warnings.length).toBeGreaterThan(0);
+      expect(at({ duration: 16 }).warnings.length).toBeGreaterThan(0);
+      expect(
+        at({ startImage: "s", endImage: "e", duration: 11 }).warnings.length
+      ).toBeGreaterThan(0);
+      expect(at({ resolution: "1080p" }).warnings.length).toBeGreaterThan(0);
+    });
+
     it("warns for a model outside the registered set", () => {
       const result = computeEstimate({
         provider: "googleflow" as const,

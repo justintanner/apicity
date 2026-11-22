@@ -11,13 +11,18 @@ import { asNumber, asString } from "./helpers";
 //   Veo 3.1 Lite Lower Priority  0 (Google AI Ultra $199 only)
 //   Veo 3.1 Fast                 non-Ultra 20 / Ultra 10
 //   Veo 3.1 Quality              100 (flat; 8s max)
+//   Omni 1.2 Flash, 720p         3-10s: 3 cr/s (9..30), 11-15s: +6 cr/s (36..60)
+//   Omni 1.2 Flash, 360p         3-10s: 1 cr/s (3..10), 11-15s: +2 cr/s (12..20)
+//   Omni 1.2 Flash + V2V         same as generation of the edited slice length
 //   Omni 1.1 Flash, 720p         4s 7 / 6s 10 / 8s 12 / 10s 15
 //   Omni 1.1 Flash, 360p         4s 4 / 6s 5 / 8s 6 / 10s 7
 //   Omni 1.1 Flash + V2V         720p 20 / 360p 10
-// The Omni figures are from the 2026-10-17 re-read of the endpoint page and
+// The Omni 1.1 figures are from the 2026-10-17 re-read of the endpoint page and
 // the overview's per-plan table, which lists the same Omni credits on every
 // plan. They replaced the 2026-07-20 figures (4s 15 / 6s 20 / 8s 25 / 10s 30,
-// V2V 40), which upstream had cut by about half.
+// V2V 40), which upstream had cut by about half. The Omni 1.2 Flash figures are
+// from the 2026-11-22 read of the endpoint page and confirmed against the live
+// GET /accounts/{email} videoModels catalog (macaron_cookie_*).
 //
 // Image generation draws no credits on any plan. The Google Flow overview
 // lists Nano Banana Pro, Nano Banana 2.1 and Nano Banana 2 Lite as
@@ -118,6 +123,13 @@ const omniFlashSource = {
   asOf: "2026-10-17",
 };
 
+// Omni 1.2 Flash credit schedule read 2026-11-22 from the endpoint page and
+// confirmed against the live Google Flow account videoModels catalog.
+const omniFlash12Source = {
+  url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos",
+  asOf: "2026-11-22",
+};
+
 // The image rates' provenance: the overview's pricing table, which is where
 // the "included" entries are published, read when the image entries landed.
 const imageSource = {
@@ -205,14 +217,145 @@ const omniFlashVariant = (p: Record<string, unknown>): string =>
     : `duration-${asNumber(p.duration) ?? 8}`;
 
 // `resolution` is omni-flash only: 720p (the default) or 360p, which roughly
-// halves the credits. 720p stays out of the variant key, so the default keys
-// read as they always have. Any other value lands on a key with no rate and
-// the estimate fails closed, as upstream rejects the request.
+// halves the credits on omni-flash and cuts them to a third on omni-flash-1.2.
+// 720p stays out of the variant key, so the default keys read as they always
+// have. Any other value lands on a key with no rate and the estimate fails
+// closed, as upstream rejects the request.
 const omniFlashResolution = (
   p: Record<string, unknown>
 ): string | undefined => {
   const resolution = asString(p.resolution);
   return resolution === "720p" ? undefined : resolution;
+};
+
+// Omni 1.2 Flash supports whole seconds 3..15 at 3 cr/s (720p) or 1 cr/s (360p)
+// for the first 10 s, and twice that per second past 10 s.
+const OMNI_12_DURATIONS = [
+  3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+] as const;
+
+const omni12Credits = (
+  seconds: number,
+  resolution: "360p" | "720p"
+): number => {
+  const base = resolution === "360p" ? 1 : 3;
+  return seconds <= 10 ? seconds * base : (10 + (seconds - 10) * 2) * base;
+};
+
+const omni12Rates = (): Record<string, number> => {
+  const rates: Record<string, number> = {};
+  for (const seconds of OMNI_12_DURATIONS) {
+    Object.assign(
+      rates,
+      everyPlan(`duration-${seconds}`, omni12Credits(seconds, "720p")),
+      everyPlan(`duration-${seconds}|360p`, omni12Credits(seconds, "360p"))
+    );
+  }
+  return rates;
+};
+
+// On omni-flash-1.2, V2V edit (referenceVideo_1) rejects an explicit duration
+// and bills the same credits as a generation of the edited slice length on a
+// 24 fps virtual timeline (max 15 s = 360 frames). When endFrameIndex_1 is
+// omitted, the slice runs to the end of the source clip (capped at 15 s), so
+// callers declare it via costHints.durationSeconds or inputDurationSeconds.
+const omniFlash12SliceSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  if (p.duration !== undefined) return undefined;
+  const rawStart =
+    p.startFrameIndex_1 === undefined ? 0 : asNumber(p.startFrameIndex_1);
+  if (
+    rawStart === undefined ||
+    !Number.isInteger(rawStart) ||
+    rawStart < 0 ||
+    rawStart > 359
+  ) {
+    return undefined;
+  }
+  if (p.endFrameIndex_1 !== undefined) {
+    const rawEnd = asNumber(p.endFrameIndex_1);
+    if (
+      rawEnd === undefined ||
+      !Number.isInteger(rawEnd) ||
+      rawEnd < 1 ||
+      rawEnd > 360 ||
+      rawEnd <= rawStart
+    ) {
+      return undefined;
+    }
+    return Math.ceil((rawEnd - rawStart) / 24);
+  }
+  const declared = hints?.durationSeconds;
+  if (
+    typeof declared === "number" &&
+    Number.isFinite(declared) &&
+    declared > 0
+  ) {
+    return Math.ceil(declared);
+  }
+  const inputSeconds = hints?.inputDurationSeconds;
+  if (
+    typeof inputSeconds === "number" &&
+    Number.isFinite(inputSeconds) &&
+    inputSeconds > 0
+  ) {
+    const slice = Math.min(15, inputSeconds) - rawStart / 24;
+    return slice > 0 ? Math.ceil(slice) : undefined;
+  }
+  return undefined;
+};
+
+const omniFlash12Units = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  if (
+    asString(p.referenceVideo_1) &&
+    omniFlash12SliceSeconds(p, hints) === undefined
+  ) {
+    return undefined;
+  }
+  return generations(p);
+};
+
+const omniFlash12Variant = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): string => {
+  if (asString(p.referenceVideo_1)) {
+    const seconds = omniFlash12SliceSeconds(p, hints);
+    return seconds === undefined
+      ? "reference-video-unknown"
+      : `duration-${seconds}`;
+  }
+  const raw = p.duration === undefined ? 8 : asNumber(p.duration);
+  if (raw === undefined) return `duration-${String(p.duration)}`;
+  if (asString(p.startImage) && asString(p.endImage) && raw > 10) {
+    return `i2v-fl-duration-${raw}`;
+  }
+  return `duration-${raw}`;
+};
+
+const omniFlash12Warn = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): string[] => {
+  const warnings: string[] = [];
+  if (asString(p.referenceVideo_1)) {
+    if (p.duration !== undefined) {
+      warnings.push(
+        "googleflow 'omni-flash-1.2': V2V edit (referenceVideo_1) does not accept an explicit duration"
+      );
+    } else if (omniFlash12SliceSeconds(p, hints) === undefined) {
+      warnings.push(
+        "googleflow 'omni-flash-1.2': V2V edit bills the edited slice length (3-15 s); pass endFrameIndex_1 or costHints.durationSeconds (or costHints.inputDurationSeconds)"
+      );
+    }
+  }
+  warnings.push(...planWarn(p, hints));
+  return warnings;
 };
 
 export const googleflow: Record<string, ModelPricing> = {
@@ -272,6 +415,22 @@ export const googleflow: Record<string, ModelPricing> = {
     },
     warn: planWarn,
     source: omniFlashSource,
+  },
+
+  "omni-flash-1.2": {
+    kind: "perUnit",
+    unit: "generations",
+    units: omniFlash12Units,
+    // Selector order matches omni-flash: [variant, resolution, plan], e.g.
+    // "duration-3|360p|pro" or "duration-15|ultra".
+    select: [
+      { name: "variant", pick: omniFlash12Variant },
+      { name: "resolution", pick: omniFlashResolution },
+      { name: "plan", pick: planPick },
+    ],
+    rates: omni12Rates(),
+    warn: omniFlash12Warn,
+    source: omniFlash12Source,
   },
 
   // POST /images models: included in every plan, so zero credits per image

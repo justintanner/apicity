@@ -79,6 +79,8 @@ export const OP_ENV_POLICY = Object.freeze({
   FIREWORKS_API_KEY: credential(),
   FIREWORKS_ACCOUNT_ID: sensitiveMetadata(),
   GOOGLE_API_KEY: credential(),
+  GOOGLE_SERVICE_ACCOUNT_JSON: credential(),
+  GOOGLE_FLOW_API_KEY: credential(),
   GEMINI_API_KEY: credential(),
   ANTHROPIC_API_KEY: credential(),
   DASHSCOPE_API_KEY: credential(),

@@ -2059,7 +2059,13 @@ describe("frontier generated registry", () => {
     expect(frontier("video-editing")).toEqual(frontier("v2v"));
     expect(
       frontier("v2v", { provider: "googleflow" }).map((row) => row.model)
-    ).toEqual(["Gemini Omni Flash 1.1"]);
+    ).toEqual(["Gemini Omni Flash 1.2", "Gemini Omni Flash 1.1"]);
+    expect(
+      frontier("r2v", { provider: "googleflow" }).map((row) => row.model)
+    ).toEqual(["Gemini Omni Flash 1.2"]);
+    expect(
+      frontier("t2v", { provider: "googleflow" }).map((row) => row.model)
+    ).toEqual(["Gemini Omni Flash 1.2"]);
     expect([...new Set(frontier("r2v").map((row) => row.model))]).toEqual(
       R2V_SEED.map((row) => row[1])
     );

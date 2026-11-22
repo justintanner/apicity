@@ -697,6 +697,7 @@ describe("googleflow slugs", () => {
     "veo-3.1-lite",
     "veo-3.1-lite-low-priority",
     "omni-flash",
+    "omni-flash-1.2",
     "nano-banana-2-lite",
     "nano-banana-2",
     "nano-banana-pro",
@@ -719,6 +720,12 @@ describe("googleflow slugs", () => {
   it("shares the gemini omni slug with kie's gemini-omni-video", () => {
     expect(modelSlug("googleflow", "omni-flash")).toBe(
       modelSlug("kie", "gemini-omni-video")
+    );
+    expect(modelSlug("googleflow", "omni-flash-1.2")).toBe(
+      modelSlug("kie", "google/gemini-omni-flash-1-2")
+    );
+    expect(modelDisplay("googleflow", "omni-flash-1.2")).toBe(
+      "Gemini Omni 1.2 Flash"
     );
   });
 

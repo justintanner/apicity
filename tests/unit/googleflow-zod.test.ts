@@ -29,6 +29,7 @@ const videosModels = [
   "veo-3.1-lite",
   "veo-3.1-lite-low-priority",
   "omni-flash",
+  "omni-flash-1.2",
 ];
 
 const extendModels = [
@@ -248,6 +249,87 @@ const videosMatrix: Array<[Record<string, unknown>, boolean]> = [
   [{ model: "veo-3.1-lite-low-priority", resolution: "360p" }, false],
   [{ model: "veo-3.1-fast", resolution: "720p" }, true],
   [{ model: "veo-3.2-fast", resolution: "360p" }, true],
+  // omni-flash-1.2 (ac-5kldja): 3..15 s whole seconds (3..10 s in I2V-FL),
+  // closed landscape/portrait enum, resolution 360p|720p, up to 10 references,
+  // V2V trim window 0-359 / 1-360 (15 s at 24 fps), returnSilentVideos.
+  [{ model: "omni-flash-1.2", duration: 3 }, true],
+  [{ model: "omni-flash-1.2", duration: 5 }, true],
+  [{ model: "omni-flash-1.2", duration: 8 }, true],
+  [{ model: "omni-flash-1.2", duration: 10 }, true],
+  [{ model: "omni-flash-1.2", duration: 15 }, true],
+  [{ model: "omni-flash-1.2", duration: 2 }, false],
+  [{ model: "omni-flash-1.2", duration: 16 }, false],
+  [{ model: "omni-flash-1.2", duration: 7.5 }, false],
+  [
+    {
+      model: "omni-flash-1.2",
+      startImage: "s",
+      endImage: "e",
+      duration: 10,
+    },
+    true,
+  ],
+  [
+    {
+      model: "omni-flash-1.2",
+      startImage: "s",
+      endImage: "e",
+      duration: 11,
+    },
+    false,
+  ],
+  [{ model: "omni-flash-1.2", aspectRatio: "landscape" }, true],
+  [{ model: "omni-flash-1.2", aspectRatio: "portrait" }, true],
+  [{ model: "omni-flash-1.2", aspectRatio: "1:1" }, false],
+  [{ model: "omni-flash-1.2", resolution: "360p" }, true],
+  [{ model: "omni-flash-1.2", resolution: "720p" }, true],
+  [{ model: "omni-flash-1.2", resolution: "1080p" }, false],
+  [{ model: "omni-flash-1.2", referenceImage_10: "x" }, true],
+  [{ model: "omni-flash-1.2", character_10: "c" }, true],
+  [{ model: "omni-flash-1.2", referenceImage_11: "x" }, false],
+  [{ model: "omni-flash-1.2", character_11: "c" }, false],
+  [{ model: "omni-flash-1.2", referenceVideo_1: "v" }, true],
+  [{ model: "omni-flash-1.2", referenceVideo_1: "v", duration: 8 }, false],
+  [
+    {
+      model: "omni-flash-1.2",
+      referenceVideo_1: "v",
+      startImage: "s",
+    },
+    false,
+  ],
+  [
+    {
+      model: "omni-flash-1.2",
+      referenceVideo_1: "v",
+      startFrameIndex_1: 0,
+      endFrameIndex_1: 360,
+    },
+    true,
+  ],
+  [
+    {
+      model: "omni-flash-1.2",
+      referenceVideo_1: "v",
+      startFrameIndex_1: 0,
+      endFrameIndex_1: 361,
+    },
+    false,
+  ],
+  [
+    {
+      model: "omni-flash-1.2",
+      referenceVideo_1: "v",
+      startFrameIndex_1: 120,
+      endFrameIndex_1: 120,
+    },
+    false,
+  ],
+  [
+    { model: "omni-flash-1.2", startFrameIndex_1: 0, endFrameIndex_1: 72 },
+    false,
+  ],
+  [{ model: "omni-flash-1.2", returnSilentVideos: true }, true],
 ];
 
 // Both committed POST /videos recordings must still parse unchanged (REQ-012).
@@ -311,13 +393,14 @@ describe("GoogleFlowVideosRequestSchema per-model union (GF-S3)", () => {
         "veo-3.1-lite",
         "veo-3.1-lite-low-priority",
         "omni-flash",
+        "omni-flash-1.2",
       ])
     );
   });
 
-  // ac-benilg: `apicity describe` shows resolution on the omni-flash branch
-  // only, with its values and the documented default and cost note.
-  it("describes resolution on the omni-flash branch only", () => {
+  // ac-benilg / ac-5kldja: `apicity describe` shows resolution on the Omni
+  // branches only, with its values and each model's documented cost note.
+  it("describes resolution on the omni-flash and omni-flash-1.2 branches only", () => {
     const json = zodToJsonSchema(GoogleFlowVideosRequestSchema);
     const branches = (json.anyOf as JsonSchema[] | undefined) ?? [];
     const byModel = new Map(
@@ -330,6 +413,10 @@ describe("GoogleFlowVideosRequestSchema per-model union (GF-S3)", () => {
     expect(omni?.resolution?.enum).toEqual(["360p", "720p"]);
     expect(omni?.resolution?.description).toContain("default 720p");
     expect(omni?.resolution?.description).toContain("about half the credits");
+    const omni12 = byModel.get("omni-flash-1.2");
+    expect(omni12?.resolution?.enum).toEqual(["360p", "720p"]);
+    expect(omni12?.resolution?.description).toContain("default 720p");
+    expect(omni12?.resolution?.description).toContain("a third of the credits");
     for (const model of [
       "veo-3.1-fast",
       "veo-3.1-quality",

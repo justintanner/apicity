@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Price `@apicity/googleflow` `omni-flash-1.2` (`MODEL_SLUGS.googleflow` `geminiomni1p2f`, `MODEL_DISPLAY.googleflow` `"Gemini Omni 1.2 Flash"`, `source.asOf: "2026-11-22"`) at `3` credits/s (`720p`) or `1` credit/s (`360p`) for seconds 1–10 and double past 10 s (`3–15 s`: `9..60` credits at `720p`, `3..20` credits at `360p`) across all four Google AI plan tiers, pricing V2V edits (`referenceVideo_1`) by edited slice length (`endFrameIndex_1` or `costHints.durationSeconds` / `inputDurationSeconds`, fail-closed when unknown), and map `googleflow` on the `Gemini Omni Flash 1.2` frontier `v2v` (#2), `r2v` (#4), and `t2v` (#7) rows (ac-5kldja).
 - Price `@apicity/alibaba` `happyhorse-1.0-video-edit` at International rates (`$0.14`/`$0.24` per s for `720P`/`1080P`, defaulting to `1080P`) billing both source and output seconds via `costHints.inputDurationSeconds` (3–15 s; fails closed above 15 s), plus `MODEL_SLUGS.alibaba` / `MODEL_DISPLAY.alibaba` (`hh` / `"HappyHorse Edit"`), and map `alibaba` on the `HappyHorse-1.0` frontier `v2v` row (ac-s5lhzh).
 - Price `@apicity/alibaba` `wan3.0-video` (`$0.05`/`$0.10`/`$0.20` per s) and `wan3.0-video-prime` (`$0.068`/`$0.14`/`$0.28` per s) across `480P`/`720P`/`1080P` with `costHints.durationSeconds` (`-1` sentinel) and `costHints.inputDurationSeconds` (`reference_video` billing), plus `MODEL_SLUGS.alibaba` / `MODEL_DISPLAY.alibaba` entries (`wan3p0`, `wan3p0p`).
 

@@ -774,6 +774,15 @@ function liveRegistry() {
       ) {
         return type === "r2v" && xaiReferenceVideo.has(entry.modelId);
       }
+      if (
+        entry.provider === "google" &&
+        entry.dotPath === "v1.projects.locations.global.interactions"
+      ) {
+        return (
+          entry.modelId === "gemini-omni-1.2-flash" ||
+          entry.modelId === "gemini-omni-1.1-flash-preview"
+        );
+      }
       return false;
     }
     if (type !== "i2v" || entry.modelId === undefined) return false;
@@ -2065,6 +2074,15 @@ describe("frontier generated registry", () => {
     ).toEqual(["Gemini Omni Flash 1.2"]);
     expect(
       frontier("t2v", { provider: "googleflow" }).map((row) => row.model)
+    ).toEqual(["Gemini Omni Flash 1.2"]);
+    expect(
+      frontier("v2v", { provider: "google" }).map((row) => row.model)
+    ).toEqual(["Gemini Omni Flash 1.2", "Gemini Omni Flash 1.1"]);
+    expect(
+      frontier("r2v", { provider: "google" }).map((row) => row.model)
+    ).toEqual(["Gemini Omni Flash 1.2"]);
+    expect(
+      frontier("t2v", { provider: "google" }).map((row) => row.model)
     ).toEqual(["Gemini Omni Flash 1.2"]);
     expect([...new Set(frontier("r2v").map((row) => row.model))]).toEqual(
       R2V_SEED.map((row) => row[1])

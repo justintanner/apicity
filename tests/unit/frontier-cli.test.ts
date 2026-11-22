@@ -249,6 +249,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("geminiOmniFlash.v1p1.edit");
     expect(table).toContain("geminiOmniFlash.v1p2.edit");
     expect(table).toContain("omni-flash-1.2");
+    expect(table).toContain("gemini-omni-1.2-flash");
+    expect(table).toContain("gemini-omni-1.1-flash-preview");
     expect(table).toContain("api.v3.google.geminiOmni1p2Flash.videoEdit");
     expect(table).toContain("wan.v2p7.editVideo");
     expect(table).toContain("wan2.7-videoedit");

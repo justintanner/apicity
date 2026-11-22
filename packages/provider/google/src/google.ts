@@ -5,6 +5,8 @@ import type {
   GoogleCountTokensResponse,
   GoogleGenerateContentRequest,
   GoogleGenerateContentResponse,
+  GoogleInteractionCreateRequest,
+  GoogleInteractionResponse,
   GoogleOptions,
   GoogleProvider,
   GoogleRetrieveUserQuotaRequest,
@@ -14,6 +16,7 @@ import type {
 } from "./types";
 import {
   GoogleCountTokensRequestSchema,
+  GoogleInteractionCreateRequestSchema,
   GoogleRetrieveUserQuotaRequestSchema,
   GoogleRetrieveUserQuotaSummaryRequestSchema,
   GoogleGenerateContentRequestSchema,
@@ -24,7 +27,7 @@ import { createTransport } from "./transport";
 interface GoogleErrorBody {
   error?:
     | {
-        code?: number;
+        code?: number | string;
         message?: string;
         status?: string;
       }
@@ -56,7 +59,9 @@ function formatErrorMessage(status: number, body: unknown): string {
 }
 
 // Google surfaces a machine-readable status string (e.g. RESOURCE_EXHAUSTED)
-// under `error.status`; carry it through as the error code when present.
+// under `error.status` on generateContent, or a string `error.code` (e.g.
+// "not_found", "invalid_request") on the Vertex Interactions API; carry it
+// through as the error code when present.
 function parseGoogleErrorBody(
   status: number,
   body: unknown
@@ -65,7 +70,8 @@ function parseGoogleErrorBody(
     isGoogleErrorBody(body) &&
     typeof body.error === "object" &&
     body.error !== null
-      ? body.error.status
+      ? (body.error.status ??
+        (typeof body.error.code === "string" ? body.error.code : undefined))
       : undefined;
   return { message: formatErrorMessage(status, body), code };
 }
@@ -140,6 +146,17 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     timeoutMs: timeout,
     fetchImpl: opts.fetch,
     defaultHeaders: () => ({ "x-goog-api-key": opts.apiKey }),
+    parseErrorBody: parseGoogleErrorBody,
+    errorClass: GoogleError,
+  });
+
+  // OAuth2 bearer surface on the aiplatform host (required by the Vertex AI
+  // Interactions API, which rejects API keys with 401 UNAUTHENTICATED).
+  const oauthTransport = createTransport({
+    baseUrl: normalizedBaseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${oauthToken}` }),
     parseErrorBody: parseGoogleErrorBody,
     errorClass: GoogleError,
   });
@@ -255,6 +272,69 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
               },
             },
           },
+          // sig-ok: aiplatform service host omitted from provider namespace
+          // POST https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/interactions
+          // Docs: https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/models/interactions-api
+          interactions: Object.assign(
+            async (
+              project: string,
+              req: GoogleInteractionCreateRequest,
+              signal?: AbortSignal
+            ): Promise<GoogleInteractionResponse> => {
+              if (!project.trim()) {
+                throw new GoogleError(
+                  "Google Vertex project ID must not be empty",
+                  400
+                );
+              }
+              const parsed = parseWithSchema(
+                GoogleInteractionCreateRequestSchema,
+                req
+              );
+              return oauthTransport.postJson<GoogleInteractionResponse>(
+                `/projects/${encodeURIComponent(project)}/locations/global/interactions`,
+                parsed,
+                { signal }
+              );
+            },
+            {
+              schema: GoogleInteractionCreateRequestSchema,
+            }
+          ),
+        },
+      },
+    },
+  };
+
+  const getV1 = {
+    projects: {
+      locations: {
+        global: {
+          // sig-ok: aiplatform service host omitted from provider namespace
+          // GET https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/interactions/{id}
+          // Docs: https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/models/interactions-api
+          interactions: async (
+            project: string,
+            id: string,
+            signal?: AbortSignal
+          ): Promise<GoogleInteractionResponse> => {
+            if (!project.trim()) {
+              throw new GoogleError(
+                "Google Vertex project ID must not be empty",
+                400
+              );
+            }
+            if (!id.trim()) {
+              throw new GoogleError(
+                "Google Vertex interaction ID must not be empty",
+                400
+              );
+            }
+            return oauthTransport.getJson<GoogleInteractionResponse>(
+              `/projects/${encodeURIComponent(project)}/locations/global/interactions/${encodeURIComponent(id)}`,
+              { signal }
+            );
+          },
         },
       },
     },
@@ -308,6 +388,9 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     v1internal,
     post: {
       v1: postV1,
+    },
+    get: {
+      v1: getV1,
     },
   });
 }

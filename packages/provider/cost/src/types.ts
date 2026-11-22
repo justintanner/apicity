@@ -69,6 +69,7 @@ export interface CostBreakdown {
     text: CostModalityBreakdown;
     audio?: CostModalityBreakdown;
     image?: CostModalityBreakdown;
+    video?: CostModalityBreakdown;
   };
 }
 
@@ -254,6 +255,10 @@ export interface CostHints {
   audioOutputTokens?: number;
   // Image output is a subset of outputTokens, like audio output.
   imageOutputTokens?: number;
+  // Video input/output subsets (Google Gemini Omni 1.2 / 1.1 Flash).
+  videoInputTokens?: number;
+  cacheReadVideoInputTokens?: number;
+  videoOutputTokens?: number;
   // The processing tier that billed the request, as the response's
   // `service_tier` reports it ("default" is Standard). It overrides the
   // request's `service_tier`, which can say "auto" or nothing and still run on
@@ -365,6 +370,9 @@ export interface ActualUsage {
   cacheReadImageInputTokens?: number;
   audioOutputTokens?: number;
   imageOutputTokens?: number;
+  videoInputTokens?: number;
+  cacheReadVideoInputTokens?: number;
+  videoOutputTokens?: number;
   characters?: number;
   seconds?: number;
   images?: number;

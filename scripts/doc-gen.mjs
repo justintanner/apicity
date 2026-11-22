@@ -268,6 +268,35 @@ function formatUsageSnippet(
   }
   if (
     providerName === "google" &&
+    dotPath === "v1.projects.locations.global.interactions"
+  ) {
+    if (callPath.startsWith("get.")) {
+      return `const res = await ${call}("your-project-id", "interaction-id");`;
+    }
+    return [
+      `const res = await ${call}("your-project-id", {`,
+      '  model: "gemini-omni-1.2-flash",',
+      "  store: false,",
+      "  input: [",
+      "    {",
+      '      type: "user_input",',
+      '      content: [{ type: "text", text: "A red paper boat drifts across a pond." }],',
+      "    },",
+      "  ],",
+      "  response_format: [",
+      "    {",
+      '      type: "video",',
+      '      delivery: "inline",',
+      '      aspect_ratio: "16:9",',
+      '      resolution: "360p",',
+      '      duration: "3s",',
+      "    },",
+      "  ],",
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "google" &&
     dotPath ===
       "v1.projects.locations.global.publishers.google.models.generateContent"
   ) {
@@ -644,6 +673,18 @@ const FIREWORKS_AUDIO_BATCH_STATE = [
  * run (`assertEndpointNotesMatch`) instead of dropping its note.
  */
 export const ENDPOINT_NOTES = new Map([
+  [
+    "google\tv1.projects.locations.global.interactions\tPOST",
+    [
+      "Project-scoped global Vertex AI Interactions API route (requires OAuth2",
+      "Bearer auth via `oauthToken`, not `x-goog-api-key`). Serves global-only",
+      "video models `gemini-omni-1.2-flash` (3-15 s, $12/1M video-out tokens)",
+      "and `gemini-omni-1.1-flash-preview` (3-10 s, $17.50/1M video-out tokens)",
+      "at `360p`, `720p`, `1080p`, or `4k` across `16:9`/`9:16` with inline or",
+      "GCS URI delivery, alongside $1.50/1M input and $9.00/1M text/reasoning",
+      "output tokens.",
+    ].join(" "),
+  ],
   [
     "google\tv1.projects.locations.global.publishers.google.models.generateContent\tPOST",
     [

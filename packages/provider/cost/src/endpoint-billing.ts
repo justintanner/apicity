@@ -2867,6 +2867,33 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
     "google",
     {
+      kind: "metered",
+      unit: "tokens",
+      reason:
+        "Vertex Interactions API (global, OAuth2); bills per token by modality (including Gemini Omni 1.2/1.1 video output tokens)",
+      source: {
+        url: "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+        asOf: "2026-11-22",
+      },
+    },
+    ["POST v1.projects.locations.global.interactions"]
+  ),
+  ...rows(
+    "google",
+    {
+      kind: "followup",
+      reason:
+        "Interaction status/result retrieval; billed on the create interaction call it follows",
+      source: {
+        url: "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+        asOf: "2026-11-22",
+      },
+    },
+    ["GET v1.projects.locations.global.interactions"]
+  ),
+  ...rows(
+    "google",
+    {
       kind: "free",
       reason: "Code Assist quota read; no charge",
       source: {

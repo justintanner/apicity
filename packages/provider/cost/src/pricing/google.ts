@@ -46,6 +46,36 @@ export const google: Record<string, ModelPricing> = {
   "gemini-2.0-flash-lite": tokens(0.075, 0.3),
   "gemini-omni-flash": tokens(1.5, 9),
   "gemini-omni-1.1-flash": tokens(1.5, 9),
+  // Vertex Interactions API (global-only): $1.50/1M input (text, image, video,
+  // audio), $9.00/1M text/reasoning output, and $12.00/1M (1.2) or $17.50/1M
+  // (1.1 preview) video output (1,931 / 5,792 / 8,688 / 17,376 video tokens/s
+  // at 360p / 720p / 1080p / 4k). Read 2026-11-22.
+  "gemini-omni-1.2-flash": {
+    kind: "tokens",
+    rate: { input: 1.5, output: 9 },
+    modalityRates: {
+      image: { input: 1.5 },
+      audio: { input: 1.5 },
+      video: { input: 1.5, output: 12 },
+    },
+    source: {
+      url: "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      asOf: "2026-11-22",
+    },
+  },
+  "gemini-omni-1.1-flash-preview": {
+    kind: "tokens",
+    rate: { input: 1.5, output: 9 },
+    modalityRates: {
+      image: { input: 1.5 },
+      audio: { input: 1.5 },
+      video: { input: 1.5, output: 17.5 },
+    },
+    source: {
+      url: "https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing",
+      asOf: "2026-11-22",
+    },
+  },
   "gemini-nano-banana-2.1": {
     kind: "tokens",
     rate: { input: 1.5, output: 7.5, cacheRead: 0.15 },

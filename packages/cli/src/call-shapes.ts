@@ -5850,6 +5850,27 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "google\tGET\tv1.projects.locations.global.interactions": {
+    provider: "google",
+    method: "GET",
+    dotPath: "v1.projects.locations.global.interactions",
+    positional: [
+      { placeholder: "project", param: "project", optional: false },
+      { placeholder: "id", param: "id", optional: false },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
+  "google\tPOST\tv1.projects.locations.global.interactions": {
+    provider: "google",
+    method: "POST",
+    dotPath: "v1.projects.locations.global.interactions",
+    positional: [{ placeholder: "project", param: "project", optional: false }],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "google\tPOST\tv1.projects.locations.global.publishers.google.models.generateContent":
     {
       provider: "google",

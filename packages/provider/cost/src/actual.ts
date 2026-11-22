@@ -66,6 +66,15 @@ function tokenHints(usage: ActualUsage, serviceTier?: string): CostHints {
     ...(usage.imageOutputTokens !== undefined
       ? { imageOutputTokens: usage.imageOutputTokens }
       : {}),
+    ...(usage.videoInputTokens !== undefined
+      ? { videoInputTokens: usage.videoInputTokens }
+      : {}),
+    ...(usage.cacheReadVideoInputTokens !== undefined
+      ? { cacheReadVideoInputTokens: usage.cacheReadVideoInputTokens }
+      : {}),
+    ...(usage.videoOutputTokens !== undefined
+      ? { videoOutputTokens: usage.videoOutputTokens }
+      : {}),
     ...(serviceTier !== undefined ? { serviceTier } : {}),
   };
 }

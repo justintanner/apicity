@@ -351,10 +351,13 @@ const DECLARED_USAGE_FIELDS = [
   "cacheWriteInputTokens",
   "audioInputTokens",
   "imageInputTokens",
+  "videoInputTokens",
   "cacheReadAudioInputTokens",
   "cacheReadImageInputTokens",
+  "cacheReadVideoInputTokens",
   "audioOutputTokens",
   "imageOutputTokens",
+  "videoOutputTokens",
 ] as const;
 
 type DeclaredUsageField = (typeof DECLARED_USAGE_FIELDS)[number];
@@ -384,24 +387,27 @@ function requiresDeclaredUsage(entry: TokenPricing): boolean {
   );
 }
 
-// The audio and image counts partition the totals; text is what remains of
-// inputTokens, cacheReadInputTokens and outputTokens (ac-ow167y). Returns the
-// first violated bound, or undefined.
+// The audio, image and video counts partition the totals; text is what remains
+// of inputTokens, cacheReadInputTokens and outputTokens (ac-ow167y). Returns
+// the first violated bound, or undefined.
 function modalityPartitionProblem(c: {
   input: number;
   cacheRead: number;
   output: number;
   audioIn: number;
   imageIn: number;
+  videoIn: number;
   audioCached: number;
   imageCached: number;
+  videoCached: number;
   audioOut: number;
   imageOut: number;
+  videoOut: number;
 }): string | undefined {
-  if (c.audioIn + c.imageIn > c.input) {
+  if (c.audioIn + c.imageIn + c.videoIn > c.input) {
     return (
-      "costHints.audioInputTokens + costHints.imageInputTokens " +
-      `(${c.audioIn + c.imageIn}) exceed costHints.inputTokens (${c.input})`
+      "costHints.audioInputTokens + costHints.imageInputTokens + costHints.videoInputTokens " +
+      `(${c.audioIn + c.imageIn + c.videoIn}) exceed costHints.inputTokens (${c.input})`
     );
   }
   if (c.audioCached > c.audioIn) {
@@ -416,15 +422,23 @@ function modalityPartitionProblem(c: {
       `costHints.imageInputTokens (${c.imageIn})`
     );
   }
-  if (c.audioCached + c.imageCached > c.cacheRead) {
+  if (c.videoCached > c.videoIn) {
+    return (
+      `costHints.cacheReadVideoInputTokens (${c.videoCached}) exceeds ` +
+      `costHints.videoInputTokens (${c.videoIn})`
+    );
+  }
+  if (c.audioCached + c.imageCached + c.videoCached > c.cacheRead) {
     return (
       "costHints.cacheReadAudioInputTokens + " +
-      `costHints.cacheReadImageInputTokens (${c.audioCached + c.imageCached}) ` +
+      "costHints.cacheReadImageInputTokens + " +
+      `costHints.cacheReadVideoInputTokens (${c.audioCached + c.imageCached + c.videoCached}) ` +
       `exceed costHints.cacheReadInputTokens (${c.cacheRead})`
     );
   }
-  const textCached = c.cacheRead - c.audioCached - c.imageCached;
-  const textIn = c.input - c.audioIn - c.imageIn;
+  const textCached =
+    c.cacheRead - c.audioCached - c.imageCached - c.videoCached;
+  const textIn = c.input - c.audioIn - c.imageIn - c.videoIn;
   if (textCached > textIn) {
     return (
       `the cached text tokens (${textCached}) exceed the text input tokens ` +
@@ -433,9 +447,9 @@ function modalityPartitionProblem(c: {
   }
   if (c.audioOut > c.output)
     return `costHints.audioOutputTokens (${c.audioOut}) exceeds costHints.outputTokens (${c.output})`;
-  if (c.audioOut + c.imageOut > c.output) {
+  if (c.audioOut + c.imageOut + c.videoOut > c.output) {
     return (
-      `costHints.audioOutputTokens + costHints.imageOutputTokens (${c.audioOut + c.imageOut}) exceeds ` +
+      `costHints.audioOutputTokens + costHints.imageOutputTokens + costHints.videoOutputTokens (${c.audioOut + c.imageOut + c.videoOut}) exceeds ` +
       `costHints.outputTokens (${c.output})`
     );
   }
@@ -589,6 +603,7 @@ export function evaluateDeclaredUsage(
   }
   const audioRate = entry.modalityRates?.audio;
   const imageRate = entry.modalityRates?.image;
+  const videoRate = entry.modalityRates?.video;
   if (audioRate) {
     required.push("audioInputTokens");
     if (audioRate.cacheRead !== undefined) {
@@ -601,6 +616,13 @@ export function evaluateDeclaredUsage(
     if (imageRate.output !== undefined) required.push("imageOutputTokens");
     if (imageRate.cacheRead !== undefined) {
       required.push("cacheReadImageInputTokens");
+    }
+  }
+  if (videoRate) {
+    required.push("videoInputTokens");
+    if (videoRate.output !== undefined) required.push("videoOutputTokens");
+    if (videoRate.cacheRead !== undefined) {
+      required.push("cacheReadVideoInputTokens");
     }
   }
   const named = (fields: readonly DeclaredUsageField[]): string =>
@@ -677,24 +699,30 @@ export function evaluateDeclaredUsage(
 
   const audioIn = hints?.audioInputTokens ?? 0;
   const imageIn = hints?.imageInputTokens ?? 0;
+  const videoIn = hints?.videoInputTokens ?? 0;
   const audioCached = hints?.cacheReadAudioInputTokens ?? 0;
   const imageCached = hints?.cacheReadImageInputTokens ?? 0;
+  const videoCached = hints?.cacheReadVideoInputTokens ?? 0;
   const audioOut = hints?.audioOutputTokens ?? 0;
   const imageOut = hints?.imageOutputTokens ?? 0;
+  const videoOut = hints?.videoOutputTokens ?? 0;
   const modalityProblem = modalityPartitionProblem({
     input: inputTokens,
     cacheRead,
     output: outputTokens,
     audioIn,
     imageIn,
+    videoIn,
     audioCached,
     imageCached,
+    videoCached,
     audioOut,
     imageOut,
+    videoOut,
   });
   if (modalityProblem) {
     return unknown(
-      `${provider} '${model}': ${modalityProblem}. The audio and image ` +
+      `${provider} '${model}': ${modalityProblem}. The audio, image and video ` +
         "counts are subsets of the totals and text is what remains. No " +
         "estimate is quoted."
     );
@@ -770,22 +798,30 @@ export function evaluateDeclaredUsage(
         "costHints.imageInputTokens and costHints.imageOutputTokens must be 0. No estimate is quoted."
     );
   }
+  if ((videoIn > 0 || videoOut > 0) && !videoRate) {
+    return unknown(
+      `${provider} '${model}' has no bundled video-token rate, so ` +
+        "costHints.videoInputTokens and costHints.videoOutputTokens must be 0. No estimate is quoted."
+    );
+  }
   if (
     (audioCached > 0 && audioRate?.cacheRead === undefined) ||
     (imageCached > 0 && imageRate?.cacheRead === undefined) ||
+    (videoCached > 0 && videoRate?.cacheRead === undefined) ||
     (audioOut > 0 && audioRate?.output === undefined) ||
-    (imageOut > 0 && imageRate?.output === undefined)
+    (imageOut > 0 && imageRate?.output === undefined) ||
+    (videoOut > 0 && videoRate?.output === undefined)
   ) {
     return unknown(
       `${provider} '${model}' has no bundled rate for a declared modality ` +
         "count. No estimate is quoted."
     );
   }
-  // Text is what remains of each total once audio and image are taken out;
-  // without modality rates every count stays text.
-  const textIn = inputTokens - audioIn - imageIn;
-  const textCached = cacheRead - audioCached - imageCached;
-  const textOut = outputTokens - audioOut - imageOut;
+  // Text is what remains of each total once audio, image and video are taken
+  // out; without modality rates every count stays text.
+  const textIn = inputTokens - audioIn - imageIn - videoIn;
+  const textCached = cacheRead - audioCached - imageCached - videoCached;
+  const textOut = outputTokens - audioOut - imageOut - videoOut;
   const uncached = textIn - textCached - cacheWrite;
   const usd =
     (uncached * rate.input +
@@ -798,7 +834,10 @@ export function evaluateDeclaredUsage(
       audioOut * (audioRate?.output ?? 0) +
       (imageIn - imageCached) * (imageRate?.input ?? 0) +
       imageCached * (imageRate?.cacheRead ?? 0) +
-      imageOut * (imageRate?.output ?? 0)) /
+      imageOut * (imageRate?.output ?? 0) +
+      (videoIn - videoCached) * (videoRate?.input ?? 0) +
+      videoCached * (videoRate?.cacheRead ?? 0) +
+      videoOut * (videoRate?.output ?? 0)) /
     1_000_000;
   const modality = (
     inputCount: number,
@@ -860,6 +899,9 @@ export function evaluateDeclaredUsage(
                 : {}),
               ...(imageRate
                 ? { image: modality(imageIn, imageCached, imageRate, imageOut) }
+                : {}),
+              ...(videoRate
+                ? { video: modality(videoIn, videoCached, videoRate, videoOut) }
                 : {}),
             },
           }
@@ -1123,16 +1165,20 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
             "google: baseURL region is not bundled; only global express mode is priced",
           ]);
       }
-      const model = req.endpoint ?? "";
+      const model = req.endpoint ?? asString(req.payload.model) ?? "";
       const googleEntry = PRICING.google[model];
-      const allowImageModality =
-        googleEntry?.kind === "tokens" &&
-        googleEntry.modalityRates?.image !== undefined;
+      const modalityRates =
+        googleEntry?.kind === "tokens" ? googleEntry.modalityRates : undefined;
+      const allowedModalities = {
+        image: modalityRates?.image !== undefined,
+        audio: modalityRates?.audio !== undefined,
+        video: modalityRates?.video !== undefined,
+      };
       const problem = scopedPayloadProblem(
         "google",
         req.payload,
         req.costHints,
-        allowImageModality
+        allowedModalities
       );
       if (problem) return failed("declared-tokens+table", [problem]);
       const result = evaluateDeclaredUsage(
@@ -1145,9 +1191,11 @@ function computeEstimateBase(req: EstimateRequest): CostEstimate {
         ...result,
         notes: [
           ...(result.notes ?? []),
-          allowImageModality
-            ? "Google Standard global multimodal image/text rates, snapshot 2026-11-21."
-            : "Google Standard global text rates, snapshot 2026-11-04; introductory prices have dated expiry in the bundled table.",
+          allowedModalities.video
+            ? "Google Standard global multimodal video/image/text rates, snapshot 2026-11-22."
+            : allowedModalities.image
+              ? "Google Standard global multimodal image/text rates, snapshot 2026-11-21."
+              : "Google Standard global text rates, snapshot 2026-11-04; introductory prices have dated expiry in the bundled table.",
         ],
       };
     }

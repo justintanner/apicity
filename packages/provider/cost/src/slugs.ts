@@ -638,6 +638,8 @@ export const MODEL_SLUGS = {
     "gemini-2.0-flash-lite": "gemini2p0flashlite",
     "gemini-omni-flash": "geminiomniflash",
     "gemini-omni-1.1-flash": "geminiomni1p1flash",
+    "gemini-omni-1.1-flash-preview": "geminiomni1p1f",
+    "gemini-omni-1.2-flash": "geminiomni1p2f",
     "gemini-nano-banana-2.1": "nb21",
   },
 
@@ -1715,6 +1717,8 @@ export const MODEL_DISPLAY = {
     "gemini-2.0-flash-lite": "Gemini 2.0 Flash Lite",
     "gemini-omni-flash": "Gemini Omni Flash",
     "gemini-omni-1.1-flash": "Gemini Omni 1.1 Flash",
+    "gemini-omni-1.1-flash-preview": "Gemini Omni 1.1 Flash",
+    "gemini-omni-1.2-flash": "Gemini Omni 1.2 Flash",
     "gemini-nano-banana-2.1": "Nano Banana 2.1",
   },
 

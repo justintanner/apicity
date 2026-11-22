@@ -542,40 +542,163 @@ function sumGoogleModalityTokens(
   return { seenModality, tokens, unsupported };
 }
 
+function sumInteractionModalities(list: unknown): {
+  text: number;
+  image: number;
+  audio: number;
+  video: number;
+  unsupported: boolean;
+  present: boolean;
+} {
+  let text = 0;
+  let image = 0;
+  let audio = 0;
+  let video = 0;
+  let unsupported = false;
+  let present = false;
+  if (!Array.isArray(list)) {
+    return { text, image, audio, video, unsupported, present };
+  }
+  for (const item of list) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+    const rec = item as Record<string, unknown>;
+    const count = asFiniteNumber(rec.tokens);
+    if (count === undefined || count === 0) continue;
+    present = true;
+    const mod =
+      typeof rec.modality === "string" ? rec.modality.toLowerCase() : "";
+    if (mod === "text") text += count;
+    else if (mod === "image") image += count;
+    else if (mod === "audio") audio += count;
+    else if (mod === "video") video += count;
+    else unsupported = true;
+  }
+  return { text, image, audio, video, unsupported, present };
+}
+
+function readGoogleInteractionUsage(
+  exchange: ProviderExchange,
+  out: Extracted
+): boolean {
+  const found = findUsage(exchange.responseBody);
+  if (!found) return false;
+  const { usage } = found;
+  const totalIn = asFiniteNumber(usage.total_input_tokens);
+  const totalOut = asFiniteNumber(usage.total_output_tokens);
+  const totalCached = asFiniteNumber(usage.total_cached_tokens);
+  const totalThought = asFiniteNumber(usage.total_thought_tokens);
+  const totalAll = asFiniteNumber(usage.total_tokens);
+  if (
+    totalIn === undefined &&
+    totalOut === undefined &&
+    totalThought === undefined
+  ) {
+    return false;
+  }
+  setNumber(
+    out,
+    "inputTokens",
+    totalIn,
+    usageEvidence(found, "total_input_tokens")
+  );
+  setNumber(
+    out,
+    "cacheReadInputTokens",
+    totalCached,
+    usageEvidence(found, "total_cached_tokens")
+  );
+  setNumber(
+    out,
+    "reasoningTokens",
+    totalThought,
+    usageEvidence(found, "total_thought_tokens")
+  );
+  const inMods = sumInteractionModalities(usage.input_tokens_by_modality);
+  const outMods = sumInteractionModalities(usage.output_tokens_by_modality);
+  const cachedMods = sumInteractionModalities(usage.cached_tokens_by_modality);
+  if (inMods.unsupported || outMods.unsupported || cachedMods.unsupported) {
+    out.uncoveredCharge =
+      "google: unsupported Interactions usage modality is not bundled";
+  }
+  const outModSum =
+    outMods.text + outMods.image + outMods.audio + outMods.video;
+  const thoughtAdd =
+    totalThought !== undefined &&
+    totalOut !== undefined &&
+    (outMods.present
+      ? totalOut === outModSum
+      : totalAll !== undefined &&
+        totalIn !== undefined &&
+        totalIn + totalOut + totalThought <= totalAll)
+      ? totalThought
+      : 0;
+  if (totalOut !== undefined || totalThought !== undefined) {
+    setNumber(
+      out,
+      "outputTokens",
+      (totalOut ?? 0) + thoughtAdd,
+      usageEvidence(found, "total_output_tokens")
+    );
+  }
+  if (
+    inMods.image > 0 ||
+    inMods.audio > 0 ||
+    inMods.video > 0 ||
+    outMods.image > 0 ||
+    outMods.audio > 0 ||
+    outMods.video > 0 ||
+    inMods.present ||
+    outMods.present
+  ) {
+    out.usage.imageInputTokens = inMods.image;
+    out.usage.audioInputTokens = inMods.audio;
+    out.usage.videoInputTokens = inMods.video;
+    if (outMods.image > 0) out.usage.imageOutputTokens = outMods.image;
+    if (outMods.audio > 0) out.usage.audioOutputTokens = outMods.audio;
+    out.usage.videoOutputTokens = outMods.video;
+  }
+  return true;
+}
+
 const google: Extractor = (exchange) => {
   const out = blank(exchange);
-  readUsageMetadata(exchange.responseBody, out);
-  const frames = framesOf(exchange.responseBody);
-  const promptLists = frames.map((frame) =>
-    get(frame, "usageMetadata.promptTokensDetails")
-  );
-  const candidateLists = frames.map((frame) =>
-    get(frame, "usageMetadata.candidatesTokensDetails")
-  );
-  const cacheLists = frames.map((frame) =>
-    get(frame, "usageMetadata.cacheTokensDetails")
-  );
-  const promptImg = sumGoogleModalityTokens(promptLists, "IMAGE");
-  const candidateImg = sumGoogleModalityTokens(candidateLists, "IMAGE");
-  const cacheImg = sumGoogleModalityTokens(cacheLists, "IMAGE");
-  if (
-    promptImg.unsupported ||
-    candidateImg.unsupported ||
-    cacheImg.unsupported
-  ) {
-    out.uncoveredCharge =
-      "google: non-text usageMetadata modality rates are not bundled";
-  } else if (
-    promptImg.seenModality ||
-    candidateImg.seenModality ||
-    cacheImg.seenModality
-  ) {
-    out.usage.imageInputTokens = promptImg.tokens;
-    out.usage.imageOutputTokens = candidateImg.tokens;
-    if (cacheImg.seenModality) {
-      out.usage.cacheReadImageInputTokens = cacheImg.tokens;
-    } else if ((out.usage.cacheReadInputTokens ?? 0) === 0) {
-      out.usage.cacheReadImageInputTokens = 0;
+  const hasMetadata = readUsageMetadata(exchange.responseBody, out);
+  if (!hasMetadata) {
+    settleBackgroundResponse(exchange, out);
+    readGoogleInteractionUsage(exchange, out);
+  } else {
+    const frames = framesOf(exchange.responseBody);
+    const promptLists = frames.map((frame) =>
+      get(frame, "usageMetadata.promptTokensDetails")
+    );
+    const candidateLists = frames.map((frame) =>
+      get(frame, "usageMetadata.candidatesTokensDetails")
+    );
+    const cacheLists = frames.map((frame) =>
+      get(frame, "usageMetadata.cacheTokensDetails")
+    );
+    const promptImg = sumGoogleModalityTokens(promptLists, "IMAGE");
+    const candidateImg = sumGoogleModalityTokens(candidateLists, "IMAGE");
+    const cacheImg = sumGoogleModalityTokens(cacheLists, "IMAGE");
+    if (
+      promptImg.unsupported ||
+      candidateImg.unsupported ||
+      cacheImg.unsupported
+    ) {
+      out.uncoveredCharge =
+        "google: non-text usageMetadata modality rates are not bundled";
+    } else if (
+      promptImg.seenModality ||
+      candidateImg.seenModality ||
+      cacheImg.seenModality
+    ) {
+      out.usage.imageInputTokens = promptImg.tokens;
+      out.usage.imageOutputTokens = candidateImg.tokens;
+      if (cacheImg.seenModality) {
+        out.usage.cacheReadImageInputTokens = cacheImg.tokens;
+      } else if ((out.usage.cacheReadInputTokens ?? 0) === 0) {
+        out.usage.cacheReadImageInputTokens = 0;
+      }
     }
   }
   setNumber(

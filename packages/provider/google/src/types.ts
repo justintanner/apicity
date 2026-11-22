@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type {
   GoogleCountTokensRequest,
   GoogleGenerateContentRequest,
+  GoogleInteractionCreateRequest,
   GoogleRetrieveUserQuotaRequest,
   GoogleRetrieveUserQuotaSummaryRequest,
 } from "./zod";
@@ -36,6 +37,21 @@ export type {
   GoogleCountTokensRequest,
   GoogleCountTokensRequestInput,
   GoogleCountTokensParsedRequest,
+  GoogleInteractionModel,
+  GoogleInteractionResponseModality,
+  GoogleInteractionVideoAspectRatio,
+  GoogleInteractionVideoDelivery,
+  GoogleInteractionVideoResolution,
+  GoogleInteractionVideoDuration,
+  GoogleInteractionVideoResponseFormat,
+  GoogleInteractionResponseFormat,
+  GoogleInteractionContent,
+  GoogleInteractionStep,
+  GoogleInteractionVideoConfig,
+  GoogleInteractionGenerationConfig,
+  GoogleInteractionCreateRequest,
+  GoogleInteractionCreateRequestInput,
+  GoogleInteractionCreateParsedRequest,
 } from "./zod";
 
 export class GoogleError extends Error {
@@ -128,6 +144,57 @@ export interface GoogleProjectGenerateContentMethod {
   schema: z.ZodType<GoogleGenerateContentRequest>;
 }
 
+export interface GoogleInteractionModalityTokens {
+  modality?: string;
+  tokens?: number;
+  [key: string]: unknown;
+}
+
+export interface GoogleInteractionUsage {
+  total_input_tokens?: number;
+  input_tokens_by_modality?: GoogleInteractionModalityTokens[];
+  total_cached_tokens?: number;
+  cached_tokens_by_modality?: GoogleInteractionModalityTokens[];
+  total_output_tokens?: number;
+  output_tokens_by_modality?: GoogleInteractionModalityTokens[];
+  total_tool_use_tokens?: number;
+  tool_use_tokens_by_modality?: GoogleInteractionModalityTokens[];
+  total_thought_tokens?: number;
+  total_tokens?: number;
+  [key: string]: unknown;
+}
+
+export interface GoogleInteractionResponse {
+  id?: string;
+  model?: string;
+  agent?: string;
+  status?: string;
+  object?: string;
+  created?: string;
+  updated?: string;
+  steps?: Array<Record<string, unknown>>;
+  usage?: GoogleInteractionUsage;
+  errors?: Array<{ code?: string; message?: string; [key: string]: unknown }>;
+  [key: string]: unknown;
+}
+
+export interface GoogleProjectInteractionsCreateMethod {
+  (
+    project: string,
+    req: GoogleInteractionCreateRequest,
+    signal?: AbortSignal
+  ): Promise<GoogleInteractionResponse>;
+  schema: z.ZodType<GoogleInteractionCreateRequest>;
+}
+
+export interface GoogleProjectInteractionsGetMethod {
+  (
+    project: string,
+    id: string,
+    signal?: AbortSignal
+  ): Promise<GoogleInteractionResponse>;
+}
+
 export interface GooglePostV1PublishersGoogleModelsNamespace {
   countTokens: GoogleCountTokensMethod;
   generateContent: GoogleGenerateContentMethod;
@@ -155,6 +222,7 @@ export interface GooglePostV1ProjectsLocationsGlobalPublishersNamespace {
 
 export interface GooglePostV1ProjectsLocationsGlobalNamespace {
   publishers: GooglePostV1ProjectsLocationsGlobalPublishersNamespace;
+  interactions: GoogleProjectInteractionsCreateMethod;
 }
 
 export interface GooglePostV1ProjectsLocationsNamespace {
@@ -172,6 +240,26 @@ export interface GooglePostV1Namespace {
 
 export interface GooglePostNamespace {
   v1: GooglePostV1Namespace;
+}
+
+export interface GoogleGetV1ProjectsLocationsGlobalNamespace {
+  interactions: GoogleProjectInteractionsGetMethod;
+}
+
+export interface GoogleGetV1ProjectsLocationsNamespace {
+  global: GoogleGetV1ProjectsLocationsGlobalNamespace;
+}
+
+export interface GoogleGetV1ProjectsNamespace {
+  locations: GoogleGetV1ProjectsLocationsNamespace;
+}
+
+export interface GoogleGetV1Namespace {
+  projects: GoogleGetV1ProjectsNamespace;
+}
+
+export interface GoogleGetNamespace {
+  v1: GoogleGetV1Namespace;
 }
 
 // ---------- Antigravity / Cloud Code usage (rate-limit utilization) ----------
@@ -248,4 +336,5 @@ export interface GoogleProvider {
   v1: GooglePostV1Namespace;
   v1internal: GoogleV1InternalNamespace;
   post: GooglePostNamespace;
+  get: GoogleGetNamespace;
 }

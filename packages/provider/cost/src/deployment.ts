@@ -126,28 +126,54 @@ export function alibabaTokenEntry(
   };
 }
 
-function isAllowedGoogleImagePart(key: string, value: unknown): boolean {
+export interface AllowedScopedModalities {
+  image?: boolean;
+  audio?: boolean;
+  video?: boolean;
+}
+
+function isAllowedGoogleMediaPart(
+  key: string,
+  value: unknown,
+  allowed: AllowedScopedModalities
+): boolean {
   if (key !== "inlineData" && key !== "fileData") return false;
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const mimeType = (value as Record<string, unknown>).mimeType;
-  return (
-    typeof mimeType === "string" &&
-    mimeType.trim().toLowerCase().startsWith("image/")
-  );
+  if (typeof mimeType !== "string") return false;
+  const lower = mimeType.trim().toLowerCase();
+  if (allowed.image && lower.startsWith("image/")) return true;
+  if (allowed.audio && lower.startsWith("audio/")) return true;
+  if (allowed.video && lower.startsWith("video/")) return true;
+  return false;
 }
 
 export function scopedPayloadProblem(
   provider: "alibaba" | "google",
   payload: Record<string, unknown>,
   hints?: CostHints,
-  allowImageModality = false
+  allowedModalities: boolean | AllowedScopedModalities = false
 ): string | undefined {
-  const allowImages = provider === "google" && allowImageModality;
+  const allowed: AllowedScopedModalities =
+    provider !== "google"
+      ? {}
+      : typeof allowedModalities === "boolean"
+        ? { image: allowedModalities }
+        : allowedModalities;
   const textOnly = (value: unknown): boolean => {
     if (Array.isArray(value)) return value.every(textOnly);
     if (!value || typeof value !== "object") return true;
-    return Object.entries(value).every(([key, child]) => {
-      if (allowImages && isAllowedGoogleImagePart(key, child)) return true;
+    const obj = value as Record<string, unknown>;
+    if (
+      provider === "google" &&
+      ((obj.type === "image" && !allowed.image) ||
+        (obj.type === "video" && !allowed.video) ||
+        (obj.type === "audio" && !allowed.audio))
+    ) {
+      return false;
+    }
+    return Object.entries(obj).every(([key, child]) => {
+      if (isAllowedGoogleMediaPart(key, child, allowed)) return true;
       return (
         ![
           "inlineData",
@@ -168,18 +194,25 @@ export function scopedPayloadProblem(
   if (
     !textOnly(payload) ||
     [
-      hints?.audioInputTokens,
-      hints?.audioOutputTokens,
-      ...(allowImages
+      ...(allowed.audio
+        ? []
+        : [hints?.audioInputTokens, hints?.audioOutputTokens]),
+      ...(allowed.image
         ? []
         : [hints?.imageInputTokens, hints?.imageOutputTokens]),
+      ...(allowed.video
+        ? []
+        : [hints?.videoInputTokens, hints?.videoOutputTokens]),
     ].some((v) => v !== undefined && v !== 0)
   )
     return `${provider}: non-text modality pricing is not bundled for this route`;
   const config = payload.generationConfig as
     | Record<string, unknown>
     | undefined;
-  const modalities = config?.responseModalities ?? payload.modalities;
+  const modalities =
+    config?.responseModalities ??
+    payload.response_modalities ??
+    payload.modalities;
   if (
     modalities !== undefined &&
     (!Array.isArray(modalities) ||
@@ -187,11 +220,13 @@ export function scopedPayloadProblem(
         (v) =>
           v !== "TEXT" &&
           v !== "text" &&
-          !(allowImages && (v === "IMAGE" || v === "image"))
+          !(allowed.image && (v === "IMAGE" || v === "image")) &&
+          !(allowed.audio && (v === "AUDIO" || v === "audio")) &&
+          !(allowed.video && (v === "VIDEO" || v === "video"))
       ))
   )
     return `${provider}: response modalities other than text are not bundled`;
-  if (hints?.serviceTier === "batch")
+  if (hints?.serviceTier === "batch" || payload.service_tier === "deferred")
     return `${provider}: batch pricing is not bundled for this route`;
   return undefined;
 }

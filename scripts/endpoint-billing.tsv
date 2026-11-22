@@ -901,6 +901,8 @@ free-media-upload	tempsh.upload	POST	free		Free file host; no account, no price	
 free-media-upload	tflink.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 free-media-upload	tmpfiles.api.v1.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
 free-media-upload	uguu.upload	POST	free		Free file host; no account, no price	https://catbox.moe/faq.php	2026-11-04
+google	v1.projects.locations.global.interactions	GET	followup		Interaction status/result retrieval; billed on the create interaction call it follows	https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing	2026-11-22
+google	v1.projects.locations.global.interactions	POST	metered	tokens	Vertex Interactions API (global, OAuth2); bills per token by modality (including Gemini Omni 1.2/1.1 video output tokens)	https://cloud.google.com/gemini-enterprise-agent-platform/generative-ai/pricing	2026-11-22
 google	v1.projects.locations.global.publishers.google.models.generateContent	POST	metered	tokens	Standard global rates (including multimodal image tokens); usageMetadata reports actual token counts	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-21
 google	v1.publishers.google.models.countTokens	POST	free		Docs: no charge or quota restriction for CountTokens	https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/get-token-count	2026-11-04
 google	v1.publishers.google.models.generateContent	POST	metered	tokens	Standard global text rates; usageMetadata reports actual token counts	https://cloud.google.com/vertex-ai/generative-ai/pricing	2026-11-04

@@ -30,10 +30,13 @@ const everyKey: Required<Record<keyof ActualUsage, number>> = {
   reasoningTokens: 0,
   audioInputTokens: 0,
   imageInputTokens: 0,
+  videoInputTokens: 0,
   cacheReadAudioInputTokens: 0,
   cacheReadImageInputTokens: 0,
+  cacheReadVideoInputTokens: 0,
   audioOutputTokens: 0,
   imageOutputTokens: 0,
+  videoOutputTokens: 0,
   characters: 0,
   seconds: 0,
   images: 0,
@@ -98,7 +101,7 @@ describe("the cost contract", () => {
     expect(bases).toContain(comparison.basis);
     expect(verdicts).toContain(comparison.verdict);
     expect(kinds).toContain(billing.kind);
-    expect(Object.keys(everyKey)).toHaveLength(17);
+    expect(Object.keys(everyKey)).toHaveLength(20);
   });
 
   it("takes the HAR adapter's return as an exchange, with neither importing the other", () => {

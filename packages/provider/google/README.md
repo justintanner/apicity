@@ -29,9 +29,63 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 ## API Reference
 
-5 endpoints across 3 groups. Each method mirrors an upstream URL path.
+7 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### projects
+
+<details>
+<summary><code>GET</code> <b><code>google.v1.projects.locations.global.interactions</code></b></summary>
+
+<code>GET https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/interactions/{id}</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/models/interactions-api)
+
+```typescript
+const res = await google.get.v1.projects.locations.global.interactions("your-project-id", "interaction-id");
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>google.v1.projects.locations.global.interactions</code></b></summary>
+
+<code>POST https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/interactions</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/models/interactions-api)
+
+Project-scoped global Vertex AI Interactions API route (requires OAuth2 Bearer auth via `oauthToken`, not `x-goog-api-key`). Serves global-only video models `gemini-omni-1.2-flash` (3-15 s, $12/1M video-out tokens) and `gemini-omni-1.1-flash-preview` (3-10 s, $17.50/1M video-out tokens) at `360p`, `720p`, `1080p`, or `4k` across `16:9`/`9:16` with inline or GCS URI delivery, alongside $1.50/1M input and $9.00/1M text/reasoning output tokens.
+
+```typescript
+const res = await google.post.v1.projects.locations.global.interactions("your-project-id", {
+  model: "gemini-omni-1.2-flash",
+  store: false,
+  input: [
+    {
+      type: "user_input",
+      content: [{ type: "text", text: "A red paper boat drifts across a pond." }],
+    },
+  ],
+  response_format: [
+    {
+      type: "video",
+      delivery: "inline",
+      aspect_ratio: "16:9",
+      resolution: "360p",
+      duration: "3s",
+    },
+  ],
+});
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>google.v1.projects.locations.global.publishers.google.models.generateContent</code></b></summary>

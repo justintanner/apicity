@@ -15,6 +15,35 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.projects.locations.global.interactions": {
+    "source": "google/omni-1-2-flash-t2v",
+    "payload": {
+      "model": "gemini-omni-1.2-flash",
+      "input": [
+        {
+          "type": "user_input",
+          "content": [
+            {
+              "type": "text",
+              "text": "A red paper boat drifts slowly across a still pond."
+            }
+          ]
+        }
+      ],
+      "response_format": [
+        {
+          "type": "video",
+          "aspect_ratio": "16:9",
+          "delivery": "inline",
+          "duration": "3s",
+          "resolution": "360p"
+        }
+      ],
+      "store": false
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST v1.projects.locations.global.publishers.google.models.generateContent": {
     "source": "google/nano-banana-2-1",
     "payload": {

@@ -855,6 +855,11 @@ export const FRONTIER = {
             dotPath: "v1.videos",
             modelId: "omni-flash-1.2",
           },
+          {
+            provider: "google",
+            dotPath: "v1.projects.locations.global.interactions",
+            modelId: "gemini-omni-1.2-flash",
+          },
         ],
       },
       {
@@ -1200,6 +1205,11 @@ export const FRONTIER = {
             dotPath: "v1.videos",
             modelId: "omni-flash-1.2",
           },
+          {
+            provider: "google",
+            dotPath: "v1.projects.locations.global.interactions",
+            modelId: "gemini-omni-1.2-flash",
+          },
         ],
       },
       {
@@ -1275,6 +1285,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "google/gemini-omni-flash-1-1",
+          },
+          {
+            provider: "google",
+            dotPath: "v1.projects.locations.global.interactions",
+            modelId: "gemini-omni-1.1-flash-preview",
           },
         ],
       },
@@ -1553,6 +1568,11 @@ export const FRONTIER = {
             provider: "googleflow",
             dotPath: "v1.videos",
             modelId: "omni-flash-1.2",
+          },
+          {
+            provider: "google",
+            dotPath: "v1.projects.locations.global.interactions",
+            modelId: "gemini-omni-1.2-flash",
           },
         ],
       },

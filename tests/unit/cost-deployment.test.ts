@@ -364,6 +364,105 @@ describe("deployment-aware pricing", () => {
     expect(actual.usage.imageInputTokens).toBe(1120);
     expect(actual.usage.imageOutputTokens).toBe(1120);
   });
+  it("prices Google Gemini Omni 1.2 and 1.1 Flash multimodal video/text tokens", () => {
+    const req12 = {
+      provider: "google" as const,
+      payload: {
+        model: "gemini-omni-1.2-flash",
+        store: false,
+        input: [
+          {
+            type: "user_input",
+            content: [{ type: "text", text: "A red paper boat." }],
+          },
+        ],
+        response_format: [
+          {
+            type: "video",
+            delivery: "inline",
+            resolution: "360p",
+            duration: "3s",
+          },
+        ],
+      },
+    };
+    // Without declared token usage, estimate fails closed rather than guessing.
+    expect(computeEstimate(req12).warnings.join()).toContain(
+      "costHints.videoOutputTokens"
+    );
+    const est12 = computeEstimate({
+      ...req12,
+      costHints: {
+        inputTokens: 10,
+        outputTokens: 6000,
+        imageInputTokens: 0,
+        audioInputTokens: 0,
+        videoInputTokens: 0,
+        videoOutputTokens: 5793,
+      },
+    });
+    expect(est12.warnings).toEqual([]);
+    // 10 * 1.5 + 207 * 9 + 5793 * 12
+    expect(est12.usd).toBeCloseTo((10 * 1.5 + 207 * 9 + 5793 * 12) / 1e6, 12);
+
+    const actual12 = extractActual({
+      provider: "google",
+      method: "POST",
+      url: "https://aiplatform.googleapis.com/v1/projects/apicity-youtube/locations/global/interactions",
+      status: 200,
+      requestBody: req12.payload,
+      responseHeaders: {},
+      responseBody: {
+        id: "int-12",
+        model: "gemini-omni-1.2-flash",
+        status: "completed",
+        usage: {
+          total_input_tokens: 10,
+          input_tokens_by_modality: [{ modality: "text", tokens: 10 }],
+          total_output_tokens: 5793,
+          output_tokens_by_modality: [{ modality: "video", tokens: 5793 }],
+          total_thought_tokens: 207,
+          total_tokens: 6010,
+        },
+      },
+    });
+    expect(actual12.warnings).toEqual([]);
+    expect(actual12.basis).toBe("derived");
+    expect(actual12.derivedUsd).toBeCloseTo(est12.usd, 12);
+    expect(actual12.usage.videoOutputTokens).toBe(5793);
+
+    // Gemini Omni 1.1 Flash preview bills $17.50/1M video output tokens
+    const actual11 = extractActual({
+      provider: "google",
+      method: "POST",
+      url: "https://aiplatform.googleapis.com/v1/projects/apicity-youtube/locations/global/interactions",
+      status: 200,
+      requestBody: { model: "gemini-omni-1.1-flash-preview" },
+      responseHeaders: {},
+      responseBody: {
+        id: "int-11",
+        model: "gemini-omni-1.1-flash-preview",
+        status: "completed",
+        usage: {
+          total_input_tokens: 17386,
+          input_tokens_by_modality: [
+            { modality: "text", tokens: 10 },
+            { modality: "video", tokens: 17376 },
+          ],
+          total_output_tokens: 5793,
+          output_tokens_by_modality: [{ modality: "video", tokens: 5793 }],
+          total_thought_tokens: 100,
+          total_tokens: 23279,
+        },
+      },
+    });
+    expect(actual11.warnings).toEqual([]);
+    expect(actual11.basis).toBe("derived");
+    expect(actual11.derivedUsd).toBeCloseTo(
+      (17386 * 1.5 + 100 * 9 + 5793 * 17.5) / 1e6,
+      12
+    );
+  });
   it("does not collapse conflicting regional prices into a scope rate", () => {
     expect(
       alibaba(
@@ -417,5 +516,53 @@ describe("deployment-aware pricing", () => {
       cacheReadImageInputTokens: 0,
     });
     expect(nbActual.derivedUsd).toBeCloseTo(0.0393615, 12);
+
+    const omni12Har = JSON.parse(
+      readFileSync(
+        path.resolve(
+          __dirname,
+          "../recordings/google_2644829574/omni-1-2-flash-t2v_3332731059/recording.har"
+        ),
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const omni12Actual = extractActual(
+      entryToProviderExchange(omni12Har.log.entries[0], { provider: "google" })
+    );
+    expect(omni12Actual.model).toBe("gemini-omni-1.2-flash");
+    expect(omni12Actual.basis).toBe("derived");
+    expect(omni12Actual.warnings).toEqual([]);
+    expect(omni12Actual.usage).toMatchObject({
+      inputTokens: 28,
+      outputTokens: 6557,
+      reasoningTokens: 764,
+      videoInputTokens: 0,
+      videoOutputTokens: 5793,
+    });
+    expect(omni12Actual.derivedUsd).toBeCloseTo(0.076434, 12);
+
+    const omni11Har = JSON.parse(
+      readFileSync(
+        path.resolve(
+          __dirname,
+          "../recordings/google_2644829574/omni-1-1-flash-edit_518642090/recording.har"
+        ),
+        "utf8"
+      )
+    ) as { log: { entries: HarEntry[] } };
+    const omni11Actual = extractActual(
+      entryToProviderExchange(omni11Har.log.entries[0], { provider: "google" })
+    );
+    expect(omni11Actual.model).toBe("gemini-omni-1.1-flash-preview");
+    expect(omni11Actual.basis).toBe("derived");
+    expect(omni11Actual.warnings).toEqual([]);
+    expect(omni11Actual.usage).toMatchObject({
+      inputTokens: 17406,
+      outputTokens: 6043,
+      reasoningTokens: 250,
+      videoInputTokens: 17376,
+      videoOutputTokens: 5793,
+    });
+    expect(omni11Actual.derivedUsd).toBeCloseTo(0.1297365, 12);
   });
 });

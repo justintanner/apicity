@@ -81,6 +81,7 @@ export interface TokenPricing {
   modalityRates?: {
     audio?: ModalityRate;
     image?: ModalityRate;
+    video?: ModalityRate;
   };
   source: RateSource;
 }

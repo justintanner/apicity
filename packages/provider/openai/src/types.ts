@@ -205,9 +205,35 @@ export interface OpenAiToolCall extends ChatToolCall {}
 // Usage info (raw API shape)
 export interface OpenAiUsage extends ChatUsage {}
 
+// Transcription usage. Token-billed models report tokens; models billed by
+// audio length report the billed seconds. Both shapes are on the wire: the
+// committed transcribe recordings carry `tokens`, and every gpt-transcribe
+// call in the 2026-11-25 videobook capture corpus (12 of 12) carried
+// `duration` (HAR learning pass 2, ac-11lqw3).
+export interface OpenAiTranscriptionTokenUsage {
+  type: "tokens";
+  input_tokens: number;
+  input_token_details?: {
+    text_tokens?: number;
+    audio_tokens?: number;
+  };
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export interface OpenAiTranscriptionDurationUsage {
+  type: "duration";
+  seconds: number;
+}
+
+export type OpenAiTranscriptionUsage =
+  | OpenAiTranscriptionTokenUsage
+  | OpenAiTranscriptionDurationUsage;
+
 // Transcription response
 export interface OpenAiTranscribeResponse {
   text: string;
+  usage?: OpenAiTranscriptionUsage;
 }
 
 // Translation response

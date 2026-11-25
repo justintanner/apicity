@@ -128,6 +128,7 @@ describe("resolveProviderScope", () => {
         `${integrationDir}/free-media-upload-tmpfiles.test.ts`,
         `${integrationDir}/free-media-upload-uguu.test.ts`,
         `${unitDir}/free-media-upload-helpers.test.ts`,
+        `${unitDir}/free-media-upload-tflink-response.test.ts`,
       ],
     });
 

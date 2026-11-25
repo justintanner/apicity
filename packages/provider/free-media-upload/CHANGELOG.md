@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `storageBackend?: string` to `TflinkUploadResponse` (`tflink.upload`): all 4 uploads in the videobook capture corpus returned it, as `"r2"` (capture `2026-10-29T16-18-19.578Z-816c696d-903b-4b66-a6f7-b20f31d92866`, HAR learning pass 2, ac-11lqw3).
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

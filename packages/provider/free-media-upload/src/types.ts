@@ -123,6 +123,10 @@ export interface TflinkUploadResponse {
   size: number;
   type: string;
   uploadedTo: string;
+  // Absent from the committed recordings; every upload in the 2026-11-25
+  // videobook capture corpus (4 of 4) returned it, as "r2" (HAR learning
+  // pass 2, ac-11lqw3).
+  storageBackend?: string;
 }
 
 // -- Error ------------------------------------------------------------------

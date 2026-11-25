@@ -236,6 +236,7 @@ const MACHGEN_IDS: Readonly<Record<string, string>> = {
   "Dreamina Seedance 2.5": "Seedance-2.5",
   "Dreamina Seedance 2.0": "Seedance-2.0",
   "Gemini Omni Flash 1.2": "Gemini-Omni-1.2-Flash",
+  "Dreamina Seedance 2.5 Flash (720p)": "Seedance-2.5-Flash",
 };
 
 /** The MachGen image ids per frontier model, on the same generate call. */
@@ -1938,6 +1939,7 @@ describe("frontier video snapshots", () => {
         "Dreamina Seedance 2.5",
         "Dreamina Seedance 2.0",
         "MiniMax H3 (768p)",
+        "Dreamina Seedance 2.5 Flash (720p)",
       ]),
       "Hyperflow H3": [hyperflow],
     });
@@ -2004,6 +2006,10 @@ describe("frontier video snapshots", () => {
     expect(refused("t2v", "Gemini-Omni-1.2-Flash")).toBe(false);
     expect(refused("i2v", "Gemini-Omni-1.2-Flash")).toBe(false);
     expect(refused("r2v", "Gemini-Omni-1.2-Flash")).toBe(false);
+    expect(refused("i2v", "Seedance-2.5-Flash")).toBe(false);
+    expect(refused("r2v", "Seedance-2.5-Flash")).toBe(false);
+    // No edit operation on its R2V surface.
+    expect(refused("v2v", "Seedance-2.5-Flash")).toBe(true);
     expect(refused("v2v", "Seedance-2.0")).toBe(true);
     expect(refused("v2v", "Alibaba-Wan-3.0")).toBe(true);
     expect(refused("t2i", "MiniMax-H3")).toBe(true);

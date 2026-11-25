@@ -52,6 +52,7 @@ const PRICED_TASKS: Record<string, readonly string[]> = {
   "Veo-3.1-Fast": ["T2V"],
   "Grok-Imagine-Video": ["T2V"],
   "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V"],
+  "Seedance-2.5-Flash": ALL,
   "Vidu-Q4-Preview": ["I2V", "R2V"],
   "Vidu-Q3-Pro-Fast": ["I2V"],
   "Pixverse-V6": ALL,
@@ -368,6 +369,19 @@ export const machgen: Record<string, ModelPricing> = {
     },
     [height],
     { ...pricebookSource, asOf: "2026-11-19" }
+  ),
+  // Public pricebook, read 2026-11-25: 67253 / 151200 micros per second at
+  // 480p / 720p, and 41312 / 92880 with an input video, which adds its own
+  // seconds. Those rows carry no discount and generation_credit_percent 0.
+  "Seedance-2.5-Flash": flat(
+    {
+      "no-video|480": 0.067253,
+      "no-video|720": 0.1512,
+      "video|480": 0.041312,
+      "video|720": 0.09288,
+    },
+    [videoInput, height],
+    { ...pricebookSource, asOf: "2026-11-25" }
   ),
   "Wan2.2-A14B": flat({ "480": 0.018, "720": 0.036 }),
   // The pricebook's 540p and 720p rows are not requestable: MachGen's API

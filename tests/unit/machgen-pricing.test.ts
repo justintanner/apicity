@@ -76,6 +76,7 @@ const pricebookAsOf: Record<string, string> = {
   "Seedance-2.0": "2026-10-29",
   "MiniMax-H3-Turbo": "2026-11-19",
   "Gemini-Omni-1.2-Flash": "2026-11-19",
+  "Seedance-2.5-Flash": "2026-11-25",
 };
 // Those re-read after their receipts were recorded.
 const repriced = new Set(["Seedance-2.5", "Seedance-2.0", "MiniMax-H3-Turbo"]);
@@ -139,7 +140,86 @@ function shapePayload(
   };
 }
 
+// Seedance-2.5-Flash's public pricebook rows, read 2026-11-25.
+const seedanceFlash = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-seedance-2-5-flash-2026-11-25.json",
+    { encoding: "utf8" }
+  )
+) as {
+  pricebook: Array<{
+    height: number;
+    has_input_video: boolean;
+    task_type: string | null;
+    unit: string;
+    unit_price_micros: number;
+    discount_percent: number;
+    generation_credit_percent: number;
+  }>;
+};
+
 describe("MachGen pricing", () => {
+  it("prices Seedance 2.5 Flash from the 2026-11-25 pricebook", () => {
+    const flash = (overrides: Record<string, unknown>, hints?: CostHints) =>
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model: "Seedance-2.5-Flash",
+          prompt: "The cat slowly blinks.",
+          ...overrides,
+        },
+        costHints: hints,
+      });
+    expect(seedanceFlash.pricebook).toHaveLength(4);
+    for (const row of seedanceFlash.pricebook) {
+      expect(row).toMatchObject({
+        task_type: null,
+        unit: "PER_SECOND",
+        discount_percent: 0,
+        generation_credit_percent: 0,
+      });
+      // A reference video's 4 s bill on top of the 4 s output.
+      const result = row.has_input_video
+        ? flash(
+            {
+              task_type: "R2V",
+              src_video_urls: ["https://example.com/clip.mp4"],
+              video_config: { height: row.height, duration_secs: 4 },
+            },
+            { inputDurationSeconds: 4 }
+          )
+        : flash({
+            task_type: "I2V",
+            src_image_urls: ["https://example.com/cat.jpg"],
+            video_config: {
+              height: row.height,
+              duration_secs: 8,
+              aspect_ratio: "adaptive",
+            },
+          });
+      expect(Math.round(result.usd * 1e6), JSON.stringify(row)).toBe(
+        8 * row.unit_price_micros
+      );
+      expect(result.warnings).toEqual([]);
+      expect(result.rateAsOf).toBe("2026-11-25");
+    }
+    // The recorded shape: 4 s at 480p, 4 * 67253 micros.
+    expect(
+      Math.round(
+        flash({
+          task_type: "I2V",
+          src_image_urls: ["https://example.com/cat.jpg"],
+          video_config: { height: 480, duration_secs: 4 },
+        }).usd * 1e6
+      )
+    ).toBe(269012);
+    expect(
+      flash({
+        task_type: "T2V",
+        video_config: { height: 1080, duration_secs: 4 },
+      }).usd
+    ).toBe(0);
+  });
   it("prices Gemini Omni Flash 1.2 from the 2026-11-19 pricebook", () => {
     const result = computeEstimate({
       provider: "machgen",
@@ -367,6 +447,8 @@ describe("MachGen pricing", () => {
       priced.add(model);
     // Priced from the 2026-11-19 pricebook (the Gemini Omni test).
     priced.add("Gemini-Omni-1.2-Flash");
+    // Priced from the 2026-11-25 pricebook (the Seedance 2.5 Flash test).
+    priced.add("Seedance-2.5-Flash");
     expect(Object.keys(PRICING.machgen).sort()).toEqual([...priced].sort());
     for (const row of evidence.rows.filter((r) => r.unpriced))
       expect(row.unpriced!.length, row.apiModel).toBeGreaterThan(0);
@@ -768,6 +850,7 @@ describe("MachGen pricing", () => {
       "Veo-3.1-Fast": "veo3p1f",
       "Grok-Imagine-Video": "grokimgv",
       "Gemini-Omni-1.2-Flash": "geminiomni1p2f",
+      "Seedance-2.5-Flash": "sd2p5flash",
     });
     // A model another provider also sells shares its slug; the rest are new.
     const elsewhere = new Set(

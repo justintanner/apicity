@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Price fal Seedance 2.5 Flash reference-to-video at $0.014 per 1,000 tokens. Video references apply a 0.614 multiplier to input and output tokens. Add the endpoint to the reference-to-video frontier (ac-d76dip).
 - Keep fal Seedance 2.5 Flash image-to-video dynamic (the output follows the input image), with the display name "Seedance 2.5 Flash" and the billed unit 1000 tokens at $0.014 in its warning. The fal endpoint now appears beside KIE on the image-to-video frontier board (ac-706s29).
 - Price WaveSpeed MAI-Image-2.7-Flash edit at 0.0103 USD per output image plus 0.0026 USD per input image (1-5 inputs). The WaveSpeed endpoint now appears beside fal on the image-editing frontier board (ac-3ql6fp).
 - Price WaveSpeed MAI-Image-2.7 text-to-image at $0.07 per 1k image and $0.14 per 2k image. The WaveSpeed endpoint now appears on the text-to-image frontier board (ac-8f0kj2).

@@ -574,6 +574,7 @@ fal	bytedance.seedance2p0.us.referenceToVideo	POST	metered	1000 tokens		https://
 fal	bytedance.seedance2p0.us.textToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.draft.complete	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.flash.imageToVideo	POST	metered	1000 tokens	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	bytedance.seedance2p5.flash.referenceToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-25
 fal	bytedance.seedance2p5.imageToVideo	POST	metered	1000 tokens	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.referenceToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.textToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04

@@ -113,8 +113,11 @@ export type {
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5FlashImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequest,
   FalBytedanceSeedance2p5FlashImageToVideoRequestInput,
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequestInput,
   FalBytedanceSeedance2p5FlashImageToVideoParsedRequest,
+  FalBytedanceSeedance2p5FlashReferenceToVideoParsedRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestInput,
   FalBytedanceSeedance2p5UsImageToVideoRequestInput,
@@ -978,6 +981,7 @@ import type {
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5FlashImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
@@ -7616,12 +7620,20 @@ export interface FalBytedanceSeedance2p5FlashImageToVideoResponse {
   /** Present on the shared Output schema; Flash has no draft mode. */
   draft_id?: string | null;
 }
+export type FalBytedanceSeedance2p5FlashReferenceToVideoResponse =
+  FalBytedanceSeedance2p5FlashImageToVideoResponse;
 export interface FalRunBytedanceSeedance2p5FlashNamespace {
   imageToVideo: ((
     params: FalBytedanceSeedance2p5FlashImageToVideoRequest,
     signal?: AbortSignal
   ) => Promise<FalBytedanceSeedance2p5FlashImageToVideoResponse>) & {
     schema: ApicitySchema<FalBytedanceSeedance2p5FlashImageToVideoRequest>;
+  };
+  referenceToVideo: ((
+    params: FalBytedanceSeedance2p5FlashReferenceToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p5FlashReferenceToVideoResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p5FlashReferenceToVideoRequest>;
   };
 }
 export interface FalRunBytedanceSeedance2p5Namespace {

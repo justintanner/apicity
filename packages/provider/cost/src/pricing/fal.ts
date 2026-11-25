@@ -633,7 +633,8 @@ const perSecondTiered = (
 //
 // Reference clips: with video_urls, fal also bills the clips' frames, 24 x
 // their summed length in costHints.inputDurationSeconds, at the OUTPUT size,
-// and multiplies the whole count by 0.6. Clips under 4 s fail closed:
+// and multiplies the whole count by the endpoint's video multiplier
+// (0.614 for 2.5 Flash, 0.6 for the others). Clips under 4 s fail closed:
 // ByteDance bills them at the 4 s price and fal's handling is unrecorded.
 // Image- or audio-only references bill the output alone, without the 0.6.
 // bytedance/seedance-2.0/us/reference-to-video divides by 1000, not the
@@ -682,6 +683,8 @@ interface SeedanceSpec {
   // 2.5 reference-to-video's task: with editing or extension, fal coerces
   // aspect_ratio (and, for editing, duration) to auto.
   taskField?: boolean;
+  // Applied to both input and output when video references are supplied.
+  videoMultiplier?: number;
   // Set only on 2.0 US reference-to-video, whose one recording (with
   // video_urls) divided by 1000. Its divisor without video is unrecorded, so
   // such a request fails closed.
@@ -874,8 +877,7 @@ function falSeedanceTokens(
     video ? input : 0,
     spec.videoOnlyDivisor
   );
-  // fal applies its 0.6 video-input multiplier to the whole token count.
-  return { tokens: video ? (tokens * 3) / 5 : tokens };
+  return { tokens: video ? tokens * (spec.videoMultiplier ?? 0.6) : tokens };
 }
 
 const seedance = (spec: SeedanceSpec): ModelPricing => ({
@@ -1485,8 +1487,8 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// Five Seedance ids stay dynamic. The other twelve bill output tokens that an
-// explicit request fixes (seedanceTokens above; ac-j3d6ki.3).
+// Five Seedance ids stay dynamic. The priced endpoints bill output tokens that
+// an explicit request fixes (see seedanceTokens above; ac-j3d6ki.3).
 // - bytedance/seedance-2.0/reference-to-video and
 //   bytedance/seedance-2.0/fast/reference-to-video: no call is recorded, and
 //   the one 2.0-series reference recording (2.0 US) divided by 1000 where the
@@ -3811,6 +3813,16 @@ export const fal: Record<string, ModelPricing> = {
       "1080p": 0.0234116 / 1000,
     },
     draftFlag: true,
+  }),
+  "bytedance/seedance-2.5/flash/reference-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/flash/reference-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: { "480p": 0.014 / 1000, "720p": 0.014 / 1000 },
+    operation: "reference",
+    taskField: true,
+    videoMultiplier: 0.614,
+    asOf: "2026-11-25",
   }),
   "bytedance/seedance-2.5/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/reference-to-video",

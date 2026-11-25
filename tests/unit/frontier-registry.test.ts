@@ -1607,6 +1607,13 @@ describe("frontier video snapshots", () => {
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
     expect(mappedCount(r2v.endpointMap)).toBe(8);
+    expect(
+      r2v.endpointMap["Dreamina Seedance 2.5 Flash (720p)"]
+    ).toContainEqual({
+      provider: "fal",
+      dotPath: "bytedance.seedance2p5.flash.referenceToVideo",
+      pricingKey: "bytedance/seedance-2.5/flash/reference-to-video",
+    });
 
     const ranked = [
       ...new Set([

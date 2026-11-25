@@ -987,6 +987,7 @@ export const MODEL_SLUGS = {
     // Video — Seedance 2.5, US twins and the draft completion included (2.5
     // and 2.5 US image-to-video are dynamic and carry no slug).
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
+    "bytedance/seedance-2.5/flash/reference-to-video": "sd2p5flash",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
     "bytedance/seedance-2.5/us/text-to-video": "sd2p5",
     "bytedance/seedance-2.5/us/reference-to-video": "sd2p5",
@@ -2066,6 +2067,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.0/us/reference-to-video": "Seedance 2 US",
 
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/flash/reference-to-video": "Seedance 2.5 Flash",
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
     "bytedance/seedance-2.5/us/text-to-video": "Seedance 2.5 US",
     "bytedance/seedance-2.5/us/reference-to-video": "Seedance 2.5 US",

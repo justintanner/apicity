@@ -46,6 +46,33 @@
       "modelId": "wan3.0-video-prime"
     }
   ],
+  "MiniMax H3 (768p)": [
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3.referenceToVideo",
+      "pricingKey": "minimax/h3/reference-to-video"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "minimax-h3/reference-to-video"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "MiniMax-H3"
+    },
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.minimax.h3.referenceToVideo",
+      "pricingKey": "minimax/h3/reference-to-video"
+    },
+    {
+      "provider": "nunchux",
+      "dotPath": "v1.minimax.v2.videoGeneration",
+      "modelId": "MiniMax-H3"
+    }
+  ],
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
@@ -76,33 +103,6 @@
       "provider": "nunchux",
       "dotPath": "v1.bytedance.contents.generations.tasks",
       "modelId": "dreamina-seedance-2-5-260628"
-    }
-  ],
-  "MiniMax H3 (768p)": [
-    {
-      "provider": "fal",
-      "dotPath": "minimax.h3.referenceToVideo",
-      "pricingKey": "minimax/h3/reference-to-video"
-    },
-    {
-      "provider": "kie",
-      "dotPath": "api.v1.jobs.createTask",
-      "modelId": "minimax-h3/reference-to-video"
-    },
-    {
-      "provider": "machgen",
-      "dotPath": "api.v0.generate",
-      "modelId": "MiniMax-H3"
-    },
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.minimax.h3.referenceToVideo",
-      "pricingKey": "minimax/h3/reference-to-video"
-    },
-    {
-      "provider": "nunchux",
-      "dotPath": "v1.minimax.v2.videoGeneration",
-      "modelId": "MiniMax-H3"
     }
   ],
   "Gemini Omni Flash 1.2": [
@@ -186,6 +186,13 @@
       "provider": "wavespeed",
       "dotPath": "api.v3.bytedance.seedance2p0.referenceToVideo",
       "pricingKey": "bytedance/seedance-2.0/reference-to-video"
+    }
+  ],
+  "Dreamina Seedance 2.5 Flash (720p)": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2-5-flash"
     }
   ]
 }

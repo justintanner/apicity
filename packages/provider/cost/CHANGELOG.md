@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refresh the frontier registry (`FRONTIER`, `docs/frontier.md`) to the 2026-11-25 Artificial Analysis boards (was 2026-11-19): `i2v` adds `Boreal-H3` (#3, unmapped) and `Dreamina Seedance 2.5 Flash (720p)` (#6, mapped to KIE `bytedance/seedance-2-5-flash`) while `P-Video-2-Pro` and `Pika H3 Flex` leave; derived `r2v` grows to 8 entries with `Dreamina Seedance 2.5 Flash (720p)` (#8, KIE) and moves `MiniMax H3 (768p)` (#2) ahead of `Dreamina Seedance 2.5` (#3); `t2v` swaps `Gemini Omni Flash 1.2` (#6) ahead of `FLUX 3 Max` (#7); `t2i`, `i2i`, and `v2v` hold their top 10 with refreshed Elos (ac-9v29g5).
 - KIE Gemini 4 Argon (`gemini-4-argon`, `gemini-4-argon-openai`) permanently keeps its `gemini-4-argon-cached-input` disposition without `cacheRead: 0.04` (non-breaking): 2026-11-22 paired cache-hit probes on both OpenAI-compat and native Gemini endpoints (`tests/fixtures/kie-pricing-evidence/gemini-4-argon-cache-probe-2026-11-22.json`) returned no cached token count and billed all 4 calls at the full uncached `160 credits/1M` (`$0.80/1M`) input rate with no cache discount (ac-o8ihgj / ac-pillso).
 
 ### Added

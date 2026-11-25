@@ -115,13 +115,6 @@
       "note": "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference."
     }
   ],
-  "FLUX 3 Max": [
-    {
-      "provider": "fal",
-      "dotPath": "blackforestlabs.flux3Max.textToVideo",
-      "pricingKey": "blackforestlabs/flux-3-max/text-to-video"
-    }
-  ],
   "Gemini Omni Flash 1.2": [
     {
       "provider": "fal",
@@ -152,6 +145,13 @@
       "provider": "google",
       "dotPath": "v1.projects.locations.global.interactions",
       "modelId": "gemini-omni-1.2-flash"
+    }
+  ],
+  "FLUX 3 Max": [
+    {
+      "provider": "fal",
+      "dotPath": "blackforestlabs.flux3Max.textToVideo",
+      "pricingKey": "blackforestlabs/flux-3-max/text-to-video"
     }
   ],
   "HeyGen Video 1": [

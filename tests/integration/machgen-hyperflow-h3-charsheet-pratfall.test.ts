@@ -10,12 +10,12 @@ import { recordingExists, setupPolly, teardownPolly } from "../harness";
 // Charsheet umbrella-pratfall bake-off (ac-gupjgo), R04 = ac-az1538:
 // Hyperflow H3 is the MiniMax-H3-Turbo `hyperflow` adapter. The derived r2v
 // board left it out (it maps it now, ac-46ojeh), so free 400s settled R2V
-// first on 2026-11-25: with a
-// made-up adapter and duration_secs 999, MachGen answered "MiniMax-H3-MultiMax
-// R2V does not support adapter=...; allowed: (... 'hyperflow' ...)", and with
-// `hyperflow` it moved on to the duration check, so R2V takes the adapter at
-// height 768 and 9:16 (the wallet did not move). The web capability contract
-// agrees: the MultiMax r2v mode lists `hyperflow` among its adapters.
+// first on 2026-11-25: with a made-up adapter and duration_secs 999, MachGen
+// answered "MiniMax-H3-MultiMax R2V does not support adapter=...; allowed:
+// (... 'hyperflow' ...)", and with `hyperflow` it moved on to the duration
+// check, so R2V takes the adapter at height 768 and 9:16 (the wallet did not
+// move). The web capability contract agrees: the MultiMax r2v mode lists
+// `hyperflow` among its adapters.
 // Public pricebook re-read 2026-11-19: MiniMax-H3-MultiMax (the Turbo wire
 // id) is 15000 micros/s at 480 and 768 with no generation credit, so five
 // seconds is 75000 micros. The silence switch is video_config.audio.

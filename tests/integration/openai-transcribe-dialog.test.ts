@@ -34,5 +34,16 @@ describe("openai transcribe dialog", () => {
 
     const lower = result.text.toLowerCase();
     expect(lower).toMatch(/meeting|project|timeline|deliverables/);
+
+    // gpt-4o-mini-transcribe bills tokens, so usage takes the token shape.
+    expect(result.usage?.type).toBe("tokens");
+    if (result.usage?.type !== "tokens") return;
+    expect(result.usage.input_tokens).toBe(60);
+    expect(result.usage.input_token_details).toEqual({
+      text_tokens: 1,
+      audio_tokens: 59,
+    });
+    expect(result.usage.output_tokens).toBe(21);
+    expect(result.usage.total_tokens).toBe(81);
   });
 });

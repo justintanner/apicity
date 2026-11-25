@@ -1848,6 +1848,7 @@ wavespeed	api.v3.bytedance.seedance2p5.referenceToVideo	POST	metered	seconds		ht
 wavespeed	api.v3.bytedance.seedance2p5.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.5/text-to-video	2026-11-04
 wavespeed	api.v3.bytedance.seedance2p5.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.5/video-edit	2026-11-04
 wavespeed	api.v3.bytedance.seedance2p5Flash.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.5-flash/image-to-video	2026-11-25
+wavespeed	api.v3.bytedance.seedance2p5Flash.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/bytedance/seedance-2.5-flash/reference-to-video	2026-11-25
 wavespeed	api.v3.bytedance.seedreamV5p5.edit	POST	metered	images		https://wavespeed.ai/models/bytedance/seedream-v5.5/edit	2026-11-16
 wavespeed	api.v3.google.geminiOmni1p1Flash.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/google/gemini-omni-1.1-flash/image-to-video	2026-11-04
 wavespeed	api.v3.google.geminiOmni1p1Flash.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/google/gemini-omni-1.1-flash/reference-to-video	2026-11-06

@@ -1614,6 +1614,13 @@ describe("frontier video snapshots", () => {
       dotPath: "bytedance.seedance2p5.flash.referenceToVideo",
       pricingKey: "bytedance/seedance-2.5/flash/reference-to-video",
     });
+    expect(
+      r2v.endpointMap["Dreamina Seedance 2.5 Flash (720p)"]
+    ).toContainEqual({
+      provider: "wavespeed",
+      dotPath: "api.v3.bytedance.seedance2p5Flash.referenceToVideo",
+      pricingKey: "bytedance/seedance-2.5-flash/reference-to-video",
+    });
 
     const ranked = [
       ...new Set([

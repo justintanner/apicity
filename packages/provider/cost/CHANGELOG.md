@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Price WaveSpeed Seedance 2.5 Flash reference-to-video (`bytedance/seedance-2.5-flash/reference-to-video`) at 0.12 / 0.24 / 0.60 / 1.20 USD per output second for 480p / 720p / 1080p / 4k. With reference videos, the reference seconds plus the output seconds bill at 0.075 / 0.15 / 0.375 / 0.75 USD per second; pass `costHints.inputDurationSeconds`. Slug `sd2p5flash`, display "Seedance 2.5 Flash". The WaveSpeed endpoint now appears beside fal and KIE on the reference-to-video frontier board (ac-ifaxto).
 - Price WaveSpeed Seedance 2.5 Flash image-to-video (`bytedance/seedance-2.5-flash/image-to-video`) at 0.12 / 0.24 / 0.60 / 1.20 USD per second for 480p / 720p / 1080p / 4k (slug `sd2p5flash`, display "Seedance 2.5 Flash"). The WaveSpeed endpoint now appears beside KIE and fal on the image-to-video frontier board (ac-nrpv6b).
 - Price fal Seedance 2.5 Flash reference-to-video at $0.014 per 1,000 tokens. Video references apply a 0.614 multiplier to input and output tokens. Add the endpoint to the reference-to-video frontier (ac-d76dip).
 - Keep fal Seedance 2.5 Flash image-to-video dynamic (the output follows the input image), with the display name "Seedance 2.5 Flash" and the billed unit 1000 tokens at $0.014 in its warning. The fal endpoint now appears beside KIE on the image-to-video frontier board (ac-706s29).

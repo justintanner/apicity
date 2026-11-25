@@ -439,6 +439,70 @@ export const WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema =
       ),
   });
 
+// bytedance/seedance-2.5-flash/reference-to-video, from WaveSpeed's model
+// catalog (GET /api/v3/models) and llms.txt, both read 2026-11-25.
+export const WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Describe the scene, action, camera movement, and mood for the video. Refer to the references as @Image 1, @Video 1, @Audio 1, in upload order."
+      ),
+    reference_images: z
+      .array(z.string())
+      .max(10)
+      .optional()
+      .describe(
+        "Public URLs of up to 10 images that keep characters, products, or scenes consistent. Provide at least one reference; with none, the request runs as text-to-video."
+      ),
+    reference_videos: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe(
+        "Public URLs of up to 5 reference videos, at most 30 s in all. They bill by their length."
+      ),
+    reference_audios: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe(
+        "Public URLs of up to 5 reference audio clips, at most 30 s in all."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "4:3", "3:4", "1:1", "21:9"])
+      .optional()
+      .describe("Aspect ratio of the video. WaveSpeed default: `16:9`."),
+    resolution: z
+      .enum(["480p", "720p", "1080p", "4k"])
+      .optional()
+      .describe(
+        "Output video resolution. 1080p and 4k are generated at 720p and upscaled. WaveSpeed default: `720p`."
+      ),
+    duration: z
+      .number()
+      .int()
+      .min(4)
+      .max(30)
+      .optional()
+      .describe("Length of the video in seconds, 4-30. WaveSpeed default: 5."),
+    generate_audio: z
+      .boolean()
+      .optional()
+      .describe(
+        "Generate native audio synchronized with the video. WaveSpeed default: true."
+      ),
+    // mov at 1080p or 4k is refused upstream. This stays a ZodObject:
+    // a superRefine would become ZodEffects and apicity describe would
+    // drop the object shape.
+    output_format: z
+      .enum(["mp4", "mov"])
+      .optional()
+      .describe(
+        "Container of the output video. `mov` is QuickTime H.264 4:4:4 with uncompressed audio and is not available at 1080p or 4k. WaveSpeed default: `mp4`."
+      ),
+  });
+
 // google/gemini-omni-1.1-flash/image-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02).
 export const WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema =

@@ -1380,4 +1380,36 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-25",
     },
   },
+  // Live catalog and model page read 2026-11-25: base_price 240000 micros,
+  // discount_rate 90, no published formula string. Free quotes the same day
+  // (POST /api/v3/model/price) give list USD per second. Without reference
+  // videos the output bills at 480p 0.12, 720p 0.24, 1080p 0.60, 4k 1.20.
+  // With reference videos the reference seconds plus the output seconds bill
+  // at 0.075, 0.15, 0.375, 0.75; each clip counts at least 2 s, and the clips
+  // and their total cap at 30 s, rounded up. Reference images, reference
+  // audio, generate_audio and output_format do not change the price. An
+  // omitted duration is 5 s and an omitted resolution is 720p.
+  "bytedance/seedance-2.5-flash/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seedanceUnits(30),
+    select: seedanceSelect,
+    rates: {
+      "no-video|480p": 0.12,
+      "no-video|720p": 0.24,
+      "no-video|1080p": 0.6,
+      "no-video|4k": 1.2,
+      "video|480p": 0.075,
+      "video|720p": 0.15,
+      "video|1080p": 0.375,
+      "video|4k": 0.75,
+    },
+    warn: referenceVideosWarn(
+      "bytedance/seedance-2.5-flash/reference-to-video"
+    ),
+    source: {
+      url: "https://wavespeed.ai/models/bytedance/seedance-2.5-flash/reference-to-video",
+      asOf: "2026-11-25",
+    },
+  },
 };

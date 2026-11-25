@@ -3010,6 +3010,123 @@ describe("wavespeed bytedance/seedance-2.5-flash/image-to-video", () => {
   });
 });
 
+describe("wavespeed bytedance/seedance-2.5-flash/reference-to-video", () => {
+  const model = "bytedance/seedance-2.5-flash/reference-to-video";
+  const image = "https://example.com/cat.jpg";
+  const video = "https://example.com/ref.mp4";
+
+  it("prices the recorded payload at the 0.48 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_images: [image],
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills 5 s at 720p by default", () => {
+    expect(
+      estimate(model, { prompt: PROMPT, reference_images: [image] }).usd
+    ).toBeCloseTo(1.2, 9);
+  });
+
+  it("matches the free quotes at every resolution without a video", () => {
+    const clip = { prompt: PROMPT, reference_images: [image], duration: 4 };
+    for (const [resolution, usd] of [
+      ["720p", 0.96],
+      ["1080p", 2.4],
+      ["4k", 4.8],
+    ] as const) {
+      expect(estimate(model, { ...clip, resolution }).usd).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("ignores reference images, audio, generate_audio and output format", () => {
+    expect(
+      estimate(model, {
+        prompt: PROMPT,
+        reference_images: [image, image, image],
+        reference_audios: ["https://example.com/a.mp3"],
+        resolution: "480p",
+        duration: 4,
+        generate_audio: true,
+        output_format: "mov",
+      }).usd
+    ).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills reference video seconds plus output seconds", () => {
+    const clip = { prompt: PROMPT, reference_videos: [video] };
+    // 3 s reference + 4 s output at 0.075 USD/s.
+    expect(
+      estimate(
+        model,
+        { ...clip, resolution: "480p", duration: 4 },
+        { inputDurationSeconds: 3 }
+      ).usd
+    ).toBeCloseTo(0.525, 9);
+    // 4 s reference + 5 s output at 0.15 USD/s.
+    expect(
+      estimate(
+        model,
+        { ...clip, resolution: "720p", duration: 5 },
+        { inputDurationSeconds: 4 }
+      ).usd
+    ).toBeCloseTo(1.35, 9);
+    // 3 s + 4 s references + 4 s output at 0.075 USD/s.
+    expect(
+      estimate(
+        model,
+        {
+          ...clip,
+          reference_videos: [video, video],
+          resolution: "480p",
+          duration: 4,
+        },
+        { inputDurationSeconds: 7 }
+      ).usd
+    ).toBeCloseTo(0.825, 9);
+    // An omitted duration is 5 s: 3 s + 5 s at 0.075 USD/s.
+    expect(
+      estimate(
+        model,
+        { ...clip, resolution: "480p" },
+        { inputDurationSeconds: 3 }
+      ).usd
+    ).toBeCloseTo(0.6, 9);
+  });
+
+  it("fails closed on a reference video without its length", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_videos: [video],
+      resolution: "480p",
+      duration: 4,
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
+    );
+  });
+
+  it("fails closed on a resolution WaveSpeed does not price", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      reference_images: [image],
+      resolution: "2k",
+      duration: 4,
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
+
 describe("wavespeed microsoft/mai-image-2.7-flash/edit", () => {
   const model = "microsoft/mai-image-2.7-flash/edit";
   const IMAGE = "https://example.com/cat1.jpg";

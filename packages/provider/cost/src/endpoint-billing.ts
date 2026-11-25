@@ -5087,6 +5087,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "seconds",
       source: {
+        url: "https://wavespeed.ai/models/bytedance/seedance-2.5-flash/reference-to-video",
+        asOf: "2026-11-25",
+      },
+    },
+    ["POST api.v3.bytedance.seedance2p5Flash.referenceToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
         url: "https://wavespeed.ai/models/bytedance/seedance-2.5/reference-to-video",
         asOf: "2026-11-04",
       },

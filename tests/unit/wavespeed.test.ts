@@ -17,6 +17,7 @@ import {
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema,
   WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema,
+  WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
@@ -3637,6 +3638,7 @@ describe("wavespeed bytedance/seedance-2.5-flash/image-to-video", () => {
     ]);
     expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5Flash)).toEqual([
       "imageToVideo",
+      "referenceToVideo",
     ]);
     expect(
       wavespeed.api.v3.bytedance.seedance2p5Flash.imageToVideo.schema
@@ -3702,5 +3704,119 @@ describe("wavespeed bytedance/seedance-2.5-flash/image-to-video", () => {
         `${field} ${String(value)}`
       ).toBe(false);
     }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.5-flash/reference-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-bytedance-seedance-2-5-flash-reference-to-video.test.ts
+  // records (the cat photo at its pinned raw URL as the one reference).
+  const RECORDED = {
+    prompt: "The cat from @Image 1 slowly blinks and turns its head.",
+    reference_images: [
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    ],
+    resolution: "480p" as const,
+    duration: 4,
+    generate_audio: false,
+  };
+
+  it("adds a leaf to bytedance.seedance2p5Flash and attaches the schema", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(
+      wavespeed.api.v3.bytedance.seedance2p5Flash.referenceToVideo.schema
+    ).toBe(WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema);
+    expect(
+      Object.keys(
+        WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema.shape
+      )
+    ).toEqual([
+      "prompt",
+      "reference_images",
+      "reference_videos",
+      "reference_audios",
+      "aspect_ratio",
+      "resolution",
+      "duration",
+      "generate_audio",
+      "output_format",
+    ]);
+    expect(
+      WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+    // Only the prompt is required; with no reference it runs as text-to-video.
+    expect(
+      WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema.safeParse(
+        {
+          prompt: RECORDED.prompt,
+        }
+      ).success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "bytedance/seedance-2.5-flash/reference-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.bytedance.seedance2p5Flash.referenceToVideo(
+      RECORDED
+    );
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5-flash/reference-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    const urls = (count: number) =>
+      Array.from({ length: count }, (_, i) => `https://example.com/${i}`);
+    for (const [field, value] of [
+      ["resolution", "2k"],
+      ["duration", 3],
+      ["duration", 31],
+      ["duration", 4.5],
+      ["aspect_ratio", "2:1"],
+      ["output_format", "webm"],
+      ["prompt", undefined],
+      ["reference_images", urls(11)],
+      ["reference_videos", urls(6)],
+      ["reference_audios", urls(6)],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema.safeParse(
+          {
+            ...RECORDED,
+            [field]: value,
+          }
+        ).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+    expect(
+      WaveSpeedBytedanceSeedance2p5FlashReferenceToVideoRequestSchema.safeParse(
+        {
+          ...RECORDED,
+          reference_images: urls(10),
+          reference_videos: urls(5),
+          reference_audios: urls(5),
+        }
+      ).success
+    ).toBe(true);
   });
 });

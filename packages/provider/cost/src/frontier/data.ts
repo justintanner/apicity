@@ -1664,6 +1664,11 @@ export const FRONTIER = {
         elo: 1136,
         endpoints: [
           {
+            provider: "fal",
+            dotPath: "bytedance.seedance2p5.flash.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5/flash/reference-to-video",
+          },
+          {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5-flash",

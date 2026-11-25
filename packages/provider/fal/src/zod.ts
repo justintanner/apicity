@@ -15692,6 +15692,73 @@ export type FalBytedanceSeedance2p5FlashImageToVideoParsedRequest = z.output<
   typeof FalBytedanceSeedance2p5FlashImageToVideoRequestSchema
 >;
 
+// fal queue OpenAPI, Seedance25FlashReferenceToVideoInput (2026-11-25).
+// The reference limits are published in the individual field descriptions.
+export const FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .nullable()
+      .optional()
+      .describe("Describe the video to generate."),
+    task: z
+      .enum(["auto", "reference", "editing", "extension"])
+      .default("reference")
+      .describe(
+        "Reference uses the supplied media as guidance. Editing modifies a reference video and sets aspect ratio and duration to auto. Extension continues a video and sets its aspect ratio to auto. Auto lets the model choose the task."
+      ),
+    image_urls: z
+      .array(z.string())
+      .max(10)
+      .optional()
+      .describe(
+        "Up to 10 reference images, 30 MB each. Refer to them as @Image1, @Image2, etc."
+      ),
+    video_urls: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe(
+        "Up to 5 reference videos, totaling up to 30.2 seconds. A single extension video may be up to 120 seconds, of which the last 30.2 seconds are used. Refer to them as @Video1, @Video2, etc."
+      ),
+    audio_urls: z
+      .array(z.string())
+      .max(5)
+      .optional()
+      .describe(
+        "Up to 5 audio references, totaling up to 30.2 seconds. Refer to them as @Audio1, @Audio2, etc."
+      ),
+    resolution:
+      FalBytedanceSeedance2p5FlashImageToVideoRequestSchema.shape.resolution,
+    duration:
+      FalBytedanceSeedance2p5FlashImageToVideoRequestSchema.shape.duration,
+    aspect_ratio: Seedance2p5AspectRatioSchema.default("auto").describe(
+      "Output aspect ratio. Auto lets the model choose."
+    ),
+    ...FalBytedanceSeedance2p5FlashImageToVideoRequestSchema.pick({
+      generate_audio: true,
+      bitrate_mode: true,
+      codec: true,
+      output_format: true,
+      return_last_frame: true,
+    }).shape,
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed for generation."),
+    end_user_id:
+      FalBytedanceSeedance2p5FlashImageToVideoRequestSchema.shape.end_user_id,
+  });
+export type FalBytedanceSeedance2p5FlashReferenceToVideoRequest = z.input<
+  typeof FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema
+>;
+export type FalBytedanceSeedance2p5FlashReferenceToVideoRequestInput =
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequest;
+export type FalBytedanceSeedance2p5FlashReferenceToVideoParsedRequest =
+  z.output<typeof FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema>;
+
 // Bytedance Seedance 2.5 US reference-to-video. The per-modality caps are
 // documented in the field descriptions only (fal's 422 validator does not
 // report them); together they also bound the documented 50-file total.
@@ -19383,6 +19450,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
   "bytedance/seedance-2.5/flash/image-to-video":
     FalBytedanceSeedance2p5FlashImageToVideoRequestSchema,
+  "bytedance/seedance-2.5/flash/reference-to-video":
+    FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema,
   "bytedance/seedance-2.5/us/text-to-video":
     FalBytedanceSeedance2p5UsTextToVideoRequestSchema,
   "bytedance/seedance-2.0/us/reference-to-video":

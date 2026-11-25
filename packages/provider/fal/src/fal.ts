@@ -56,10 +56,12 @@ import {
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5FlashImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoResponse,
   FalBytedanceSeedance2p5UsImageToVideoResponse,
   FalBytedanceSeedance2p5FlashImageToVideoResponse,
+  FalBytedanceSeedance2p5FlashReferenceToVideoResponse,
   FalBytedanceSeedance2p5UsTextToVideoResponse,
   FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
@@ -608,6 +610,7 @@ import {
   FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
   FalBytedanceSeedance2p5FlashImageToVideoRequestSchema,
+  FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p5UsTextToVideoRequestSchema,
   FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p0UsImageToVideoRequestSchema,
@@ -4527,6 +4530,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.5/flash/reference-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.5/flash/reference-to-video/api
+  const bytedanceSeedance2p5FlashReferenceToVideo = jsonBody<
+    FalBytedanceSeedance2p5FlashReferenceToVideoRequest,
+    FalBytedanceSeedance2p5FlashReferenceToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.5/flash/reference-to-video",
+    FalBytedanceSeedance2p5FlashReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/bytedance/seedance-2.5/us/reference-to-video
   // Docs: https://fal.ai/models/bytedance/seedance-2.5/us/reference-to-video/api
   const bytedanceSeedance2p5UsReferenceToVideo = jsonBody<
@@ -5475,6 +5490,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.5/flash/image-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.5/flash/image-to-video/api
           imageToVideo: bytedanceSeedance2p5FlashImageToVideo,
+          // POST https://fal.run/bytedance/seedance-2.5/flash/reference-to-video
+          // Docs: https://fal.ai/models/bytedance/seedance-2.5/flash/reference-to-video/api
+          referenceToVideo: bytedanceSeedance2p5FlashReferenceToVideo,
         },
         imageToVideo: bytedanceSeedance2p5ImageToVideo,
         referenceToVideo: bytedanceSeedance2p5ReferenceToVideo,

@@ -913,7 +913,7 @@ describe("fal video pricing estimates", () => {
     );
   });
 
-  it("keeps five Seedance ids dynamic and slugs the thirteen priced ones", () => {
+  it("keeps dynamic Seedance ids display-only and slugs priced endpoints", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
     const slugs = MODEL_SLUGS.fal as Record<string, string>;
     const names = MODEL_DISPLAY.fal as Record<string, string>;

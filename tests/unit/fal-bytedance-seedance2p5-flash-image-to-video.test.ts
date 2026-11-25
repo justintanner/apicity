@@ -41,7 +41,7 @@ describe("Seedance 2.5 Flash image-to-video contract", () => {
   it("owns the bytedance.seedance2p5.flash object", () => {
     const provider = createFal({ apiKey: "test-key" });
     const flash = provider.run.bytedance.seedance2p5.flash;
-    expect(Object.keys(flash)).toEqual(["imageToVideo"]);
+    expect(Object.keys(flash)).toEqual(["imageToVideo", "referenceToVideo"]);
     expect(flash.imageToVideo).toBe(
       provider.post.run.bytedance.seedance2p5.flash.imageToVideo
     );

@@ -21,6 +21,18 @@ function rows(
 
 export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
   ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "1000 tokens",
+      source: {
+        url: "https://api.fal.ai/v1/models/pricing",
+        asOf: "2026-11-25",
+      },
+    },
+    ["POST bytedance.seedance2p5.flash.referenceToVideo"]
+  ),
+  ...rows(
     "nunchux",
     {
       kind: "metered",

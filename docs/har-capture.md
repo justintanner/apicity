@@ -21,7 +21,12 @@ const kie = createKie({
 try {
   const input = { taskId: "task-123" };
   const result = await capture.call(
-    { provider: "kie", endpoint: "api.v1.jobs.recordInfo", input },
+    {
+      provider: "kie",
+      endpoint: "api.v1.jobs.recordInfo",
+      method: "GET",
+      input,
+    },
     () => kie.get.api.v1.jobs.recordInfo(input.taskId)
   );
   console.log(result);
@@ -95,8 +100,13 @@ Unsafe path characters are escaped. The index contains one JSON line per file:
 `{ts, callId, provider, endpoint, outcome, status, file, context}`, plus
 `estimateUsd` when the call passed an estimate. `file` is relative to `dir`.
 `log.creator` identifies apicity and its package version. `log._apicity` carries
-call ID, provider, endpoint, input, outcome, optional error, optional estimate,
-context, runtime, version, start time and duration. Entry `_apicity` identifies
+call ID, provider, endpoint, the endpoint's HTTP `method` when the call passed one
+(upper-cased), input, outcome, optional error, optional estimate, context,
+runtime, version, start time and duration. A call that fails before sending
+anything gets one local entry, and that entry takes the passed `method`. Without
+one it says GET, so `apicity har report` cannot pick between the rows of a dot
+path that has several methods (such as OpenAI `v1.responses`) and lists the call
+as `method-ambiguous`. The `apicity` CLI passes the method. Entry `_apicity` identifies
 HTTP or local entries, stream/truncation/`responseCut` flags and `pollRepeat` (the number of
 additional consecutive identical GET responses collapsed into that entry).
 Submissions are never collapsed. Timings measure fetch response-header latency;

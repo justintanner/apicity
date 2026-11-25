@@ -102,6 +102,51 @@ it("uses sole-entry fallback and reports method ambiguity", async () => {
     reason: "method-ambiguous",
   });
 });
+// ac-nq4uuw: an aborted POST v1.responses call sends nothing, so its only
+// entry is local. The recorded method picks the row among GET, POST and
+// DELETE; a capture without one stays method-ambiguous.
+it("resolves a local-only call by its recorded method", async () => {
+  const h = fixture();
+  const [entry] = h.log.entries;
+  h.log._apicity = {
+    ...h.log._apicity!,
+    provider: "openai",
+    endpoint: "v1.responses",
+    method: "POST",
+    input: { model: "gpt-5.6-sol", input: "hi" },
+    outcome: "local_error",
+    error: { name: "OpenAiError", message: "aborted", status: 500 },
+  };
+  h.log.entries = [
+    {
+      ...entry,
+      request: {
+        ...entry.request,
+        method: "POST",
+        url: "https://local.invalid/v1.responses",
+        postData: undefined,
+      },
+      response: { ...entry.response, status: 0, statusText: "" },
+      _apicity: {
+        kind: "local",
+        error: { name: "OpenAiError", message: "aborted", status: 500 },
+      },
+    },
+  ];
+  let r = (await run([save(h), "--no-baseline"])).data!;
+  expect(r.unresolvedCalls).toEqual([]);
+  const row = r.endpoints.find((e) => e.dotPath === "v1.responses");
+  expect(row).toMatchObject({ provider: "openai", method: "POST" });
+  expect(row!.volume.outcomes.local_error).toBe(1);
+
+  delete h.log._apicity!.method;
+  r = (await run([save(h), "--no-baseline"])).data!;
+  expect(r.unresolvedCalls[0]).toMatchObject({
+    provider: "openai",
+    endpoint: "v1.responses",
+    reason: "method-ambiguous",
+  });
+});
 it("counts malformed/local entries and unreadable files, deduplicates real paths, ignores hidden files and directory symlinks", async () => {
   const h = fixture();
   h.log.entries.push(null as unknown as Har["log"]["entries"][number]);

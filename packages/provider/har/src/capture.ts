@@ -33,6 +33,12 @@ export interface HarCaptureOptions {
 export interface HarCallMeta {
   provider: string;
   endpoint: string;
+  /**
+   * The endpoint's HTTP method. A local failure sends nothing, so its entry
+   * takes this method; without it the entry says GET, and `har report` cannot
+   * tell apart a dot path that has more than one method.
+   */
+  method?: string;
   input: unknown;
   /** Merged shallowly over the capture's `context` for this call only. */
   context?: Record<string, unknown>;
@@ -55,6 +61,21 @@ interface CallScope {
   networkError: boolean;
   finished: boolean;
   requests: unknown[];
+}
+
+// A local failure sent nothing, so its entry takes the endpoint's method when
+// the caller named one. Request refuses a method fetch forbids (CONNECT,
+// TRACE, TRACK) or a malformed token; those keep the default GET rather than
+// disabling the capture.
+function localRequest(url: string, method: string | undefined): Request {
+  if (method) {
+    try {
+      return new Request(url, { method });
+    } catch {
+      // Fall through to GET.
+    }
+  }
+  return new Request(url);
 }
 
 function version(): string {
@@ -237,11 +258,14 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     let started: number;
     try {
       started = clock();
-      const { context, estimate, ...fields } = meta;
+      const { context, estimate, method, ...fields } = meta;
       const quoted = estimate ? estimateFields(estimate) : undefined;
       scope = {
         metadata: {
           ...fields,
+          ...(typeof method === "string" && method
+            ? { method: method.toUpperCase() }
+            : {}),
           ...(quoted ? { estimate: quoted } : {}),
           callId: idFactory(),
           outcome: "ok",
@@ -283,8 +307,9 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
           if (scope.exchanges.length === 0) {
             scope.exchanges.push(
               exchangeToEntry(
-                new Request(
-                  `https://local.invalid/${encodeURIComponent(meta.endpoint)}`
+                localRequest(
+                  `https://local.invalid/${encodeURIComponent(meta.endpoint)}`,
+                  scope.metadata.method
                 ),
                 new Error(details.message),
                 { startedAt: scope.metadata.startedAt, durationMs: 0 }

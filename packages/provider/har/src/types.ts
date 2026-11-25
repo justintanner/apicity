@@ -85,6 +85,8 @@ export interface ApicityCallMetadata {
   callId: string;
   provider: string;
   endpoint: string;
+  /** The endpoint's HTTP method, upper-cased, when the caller named it. */
+  method?: string;
   input: unknown;
   estimate?: HarCallEstimate;
   outcome: "ok" | "provider_error" | "local_error" | "network_error";

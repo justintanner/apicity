@@ -543,7 +543,7 @@ export async function runEndpoint(
     };
     const result = capture
       ? await capture.runtime.call(
-          { provider, endpoint: dotPath, input: request },
+          { provider, endpoint: dotPath, method: entry.method, input: request },
           invoke
         )
       : await invoke();

@@ -206,6 +206,47 @@ describe("HAR capture runtime", () => {
     });
     expect(hars[0].log.entries[0].request.url).toContain(meta.endpoint);
   });
+  // ac-nq4uuw: two aborted POST v1.responses calls in the videobook corpus
+  // were written as GET, so har report could not pick a row.
+  it("gives a local failure entry the caller's method", async () => {
+    const base = vi.fn();
+    vi.stubGlobal("fetch", base);
+    const { dir, capture } = await setup();
+    const failure = new KieError("aborted", 500);
+    await expect(
+      capture.call({ ...meta, method: "post" }, () => {
+        throw failure;
+      })
+    ).rejects.toBe(failure);
+    await capture.flush();
+    const { hars } = await read(dir);
+    expect(base).not.toHaveBeenCalled();
+    expect(hars[0].log._apicity?.method).toBe("POST");
+    expect(hars[0].log.entries[0].request.method).toBe("POST");
+    expect(hars[0].log.entries[0]._apicity?.kind).toBe("local");
+  });
+  it("keeps GET for a local failure without a usable method", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+    const errors: unknown[] = [];
+    const { dir, capture } = await setup({ onError: (e) => errors.push(e) });
+    const failure = new KieError("missing prompt", 400);
+    for (const method of [undefined, "CONNECT"]) {
+      await expect(
+        capture.call({ ...meta, method }, () => {
+          throw failure;
+        })
+      ).rejects.toBe(failure);
+    }
+    await capture.flush();
+    const { hars } = await read(dir);
+    expect(hars).toHaveLength(2);
+    expect(hars[0].log._apicity).not.toHaveProperty("method");
+    expect(hars[0].log.entries[0].request.method).toBe("GET");
+    // A method Request refuses falls back to GET without disabling capture.
+    expect(hars[1].log._apicity?.method).toBe("CONNECT");
+    expect(hars[1].log.entries[0].request.method).toBe("GET");
+    expect(errors).toEqual([]);
+  });
   it("records network rejection and preserves the original thrown value", async () => {
     const error = new TypeError("offline");
     vi.stubGlobal("fetch", async () => {

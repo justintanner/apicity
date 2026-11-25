@@ -149,6 +149,8 @@ describe("CLI HAR capture", () => {
       );
       const document = har();
       expect(document.log._apicity?.outcome).toBe(outcome);
+      // The registry's method, so a local-only call still resolves its row.
+      expect(document.log._apicity?.method).toBe("GET");
       expect(document.log._apicity?.context?.cwd).toBeUndefined();
       expect(index()).toHaveLength(1);
       expect(document.log.entries).toHaveLength(1);

@@ -16682,11 +16682,15 @@ export type FalHeygenHeygenVideoTextToVideoParsedRequest = z.output<
 // (sha256 2b872b7c7eb6bae233b43ad3ccaeb18f372ff6465154e563aca1896ac9068c21).
 // Field order follows x-fal-order-properties; additionalProperties is false.
 // The OpenAPI describes only image_url and enable_safety_checker.
+// The queue OpenAPI re-read on 2026-11-25
+// (sha256 55aeeab43497bc6467b7c18276853832d35a7bd609c1568551f737fcfe335d61)
+// raised duration's maximum from 15 to 30 seconds; every other field rule is
+// unchanged.
 // Docs: https://fal.ai/models/heygen/heygen-video/image-to-video/api
 export const FalHeygenHeygenVideoImageToVideoRequestSchema = z
   .object({
     prompt: z.string().min(1).max(32000),
-    duration: z.number().int().min(5).max(15).default(5),
+    duration: z.number().int().min(5).max(30).default(5),
     resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
     prompt_enhancement: z
       .enum(["turbo", "quality", "ultraquality", "disabled"])

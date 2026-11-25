@@ -73,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `XaiResponseOutputItem` gains `XaiResponseReasoningItem` (`type: "reasoning"`: `id`, `summary` (`XaiResponseReasoningSummaryText[]`), `status`, and optional `encrypted_content`, which xAI returns when `include` lists `"reasoning.encrypted_content"` and on every grok-4.7 response), so `v1.responses` output types the reasoning items the API already returns. There is no runtime change. The committed grok-4.6 recording leads with one. Code that treated the union as four kinds stops compiling: a `switch (item.type)` that ends in a `never` check, a final `else` that assumes `file_search_call`, a table keyed by `XaiResponseOutputItem["type"]`, and an assignment to your own union of the four item types. Reading `item.status` before narrowing still compiles, because every member has a `status`. Each of those patterns already mishandled a reasoning item at runtime. Migration: add a `"reasoning"` case or a `default` branch. The API documents more item kinds than apicity models, so keep the `default` branch (ac-50xnm8).
 - `v1.videos.generations` follows xAI's current reference-to-video rules.
   On the grok-imagine-video-1.5 family and with no model, `image` or
   `image_file_id` beside references, voices, `last_frame` or `keyframes` is

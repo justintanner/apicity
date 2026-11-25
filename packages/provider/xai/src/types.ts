@@ -592,11 +592,32 @@ export interface XaiResponseFileSearchCallItem {
   results?: { file_id: string; text: string; score: number }[];
 }
 
+export interface XaiResponseReasoningSummaryText {
+  type: "summary_text";
+  text: string;
+}
+
+// The reasoning a model did for the response. `encrypted_content` is present
+// when the request's `include` lists "reasoning.encrypted_content" (and on
+// every grok-4.7 response); send the item back unchanged in `input` to keep
+// the reasoning across turns. The committed grok-4.6 recording and the docs
+// example both carry `status`. xAI documents no `content` field on the item.
+export interface XaiResponseReasoningItem {
+  type: "reasoning";
+  id: string;
+  summary: XaiResponseReasoningSummaryText[];
+  encrypted_content?: string;
+  status: "completed" | "in_progress" | "incomplete";
+}
+
+// The item kinds apicity models. xAI documents more output kinds than these,
+// so keep a default branch when switching on `type`.
 export type XaiResponseOutputItem =
   | XaiResponseOutputMessage
   | XaiResponseFunctionCallItem
   | XaiResponseWebSearchCallItem
-  | XaiResponseFileSearchCallItem;
+  | XaiResponseFileSearchCallItem
+  | XaiResponseReasoningItem;
 
 export interface XaiResponseUsage {
   input_tokens: number;

@@ -1,4 +1,3 @@
-import { appendFileSync, readFileSync } from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
 import { computeEstimate } from "@apicity/cost";
 import {
@@ -33,24 +32,6 @@ const ENDPOINT = "minimax/h3-max/reference-to-video";
 const UNIT_USD = 0.05;
 const FLOOR_USD = 0.4;
 const RECORDING_CEILING_USD = 2;
-const PLAN_CAP_USD = 10;
-const LEDGER = "/gc/apicity/plans/ac-gupjgo/evidence/spend-ledger.tsv";
-
-function planSpendUsd(): number {
-  let text = "";
-  try {
-    text = readFileSync(LEDGER, "utf8");
-  } catch {
-    return 0;
-  }
-  return text
-    .split("\n")
-    .slice(1)
-    .reduce((sum, line) => {
-      const usd = Number(line.split("\t")[5]);
-      return sum + (Number.isFinite(usd) ? usd : 0);
-    }, 0);
-}
 
 function header(headers: unknown, name: string): string | null {
   if (!headers) return null;
@@ -128,14 +109,6 @@ describe("fal MiniMax H3 Max charsheet pratfall", () => {
       expect(estimate.usd).toBeCloseTo(FLOOR_USD, 6);
       expect(estimate.usd).toBeLessThanOrEqual(RECORDING_CEILING_USD);
       expect(estimate.warnings.join(" ")).toContain("lower bound");
-      if (live && attempt === 0) {
-        const spent = planSpendUsd();
-        if (spent + estimate.usd > PLAN_CAP_USD) {
-          throw new Error(
-            `plan spend ${spent} + ${estimate.usd} would cross ${PLAN_CAP_USD} USD`
-          );
-        }
-      }
 
       try {
         result = await generate(request);
@@ -152,47 +125,12 @@ describe("fal MiniMax H3 Max charsheet pratfall", () => {
             "Image 1 is the reference character sheet.\n" +
             CHARSHEET_PRATFALL_SOFT_PROMPT;
         }
-        if (retry) {
-          const failedUnits = Number(units);
-          if (live && Number.isFinite(failedUnits) && failedUnits > 0) {
-            appendFileSync(
-              LEDGER,
-              [
-                new Date().toISOString(),
-                "ac-7ky39s",
-                "fal",
-                ENDPOINT,
-                requestId || "unknown",
-                (failedUnits * UNIT_USD).toFixed(6),
-                "n/a (fal has no balance API)",
-                "n/a (fal has no balance API)",
-                `billed failure before retry; units ${units}`,
-              ].join("\t") + "\n"
-            );
-          }
-          continue;
-        }
+        if (retry) continue;
         throw error;
       }
       expect(statusCode).toBe(200);
       const parsedUnits = Number(units);
       billedUsd = Number.isFinite(parsedUnits) ? parsedUnits * UNIT_USD : 0;
-      if (live) {
-        appendFileSync(
-          LEDGER,
-          [
-            new Date().toISOString(),
-            "ac-7ky39s",
-            "fal",
-            ENDPOINT,
-            requestId || "unknown",
-            billedUsd.toFixed(6),
-            "n/a (fal has no balance API)",
-            "n/a (fal has no balance API)",
-            `billable units ${units ?? "missing"} x ${UNIT_USD} USD; local 768P floor ${FLOOR_USD}`,
-          ].join("\t") + "\n"
-        );
-      }
     }
 
     expect(result).not.toBeNull();

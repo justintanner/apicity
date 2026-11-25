@@ -23,7 +23,9 @@ import {
 } from "../../packages/provider/cost/src/slugs";
 
 // Pinned against the live queue OpenAPI read on 2026-10-23
-// (sha256 2b872b7c7eb6bae233b43ad3ccaeb18f372ff6465154e563aca1896ac9068c21).
+// (sha256 2b872b7c7eb6bae233b43ad3ccaeb18f372ff6465154e563aca1896ac9068c21),
+// with duration's maximum re-read on 2026-11-25 (5 to 30 seconds; sha256
+// 55aeeab43497bc6467b7c18276853832d35a7bd609c1568551f737fcfe335d61).
 const endpoint = "heygen/heygen-video/image-to-video";
 const recorded = {
   prompt: "The cat waves once, then holds still.",
@@ -128,8 +130,6 @@ describe("HeyGen Video image-to-video contract", () => {
     expect(accepts({ prompt: "" })).toBe(false);
     expect(accepts({ prompt: "   " })).toBe(true);
     expect(accepts({ duration: 4 })).toBe(false);
-    expect(accepts({ duration: 15 })).toBe(true);
-    expect(accepts({ duration: 16 })).toBe(false);
     expect(accepts({ duration: 5.5 })).toBe(false);
     expect(accepts({ resolution: "2k" })).toBe(true);
     expect(accepts({ resolution: "4k" })).toBe(false);
@@ -141,6 +141,22 @@ describe("HeyGen Video image-to-video contract", () => {
     expect(accepts({ seed: 4294967295 })).toBe(true);
     expect(accepts({ seed: 4294967296 })).toBe(false);
     expect(accepts({ seed: null })).toBe(true);
+  });
+
+  it("bounds duration to the live OpenAPI's 5 to 30 seconds", () => {
+    expect(accepts({ duration: 5 })).toBe(true);
+    expect(accepts({ duration: 15 })).toBe(true);
+    expect(accepts({ duration: 16 })).toBe(true);
+    expect(accepts({ duration: 30 })).toBe(true);
+    expect(accepts({ duration: 31 })).toBe(false);
+    expect(accepts({ duration: 29.5 })).toBe(false);
+    expect(accepts({ duration: "30" })).toBe(false);
+    const max = schema.parse({ ...recorded, duration: 30 });
+    expect(max.duration).toBe(30);
+    expect(usd({ ...recorded, duration: 30 })).toBeCloseTo(0.6, 10);
+    expect(
+      usd({ prompt: "x", image_url: "u", resolution: "2k", duration: 30 })
+    ).toBeCloseTo(1.8, 10);
   });
 
   it("prices requested seconds by resolution tier from the card", () => {

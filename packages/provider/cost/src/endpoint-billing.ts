@@ -5551,6 +5551,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     "wavespeed",
     {
       kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/reference-to-video",
+        asOf: "2026-11-25",
+      },
+    },
+    ["POST api.v3.skyworkAi.skyreelsV4.referenceToVideo"]
+  ),
+  ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
       unit: "images",
       source: {
         url: "https://wavespeed.ai/models/kwaivgi/kling-image-v4.0/edit",

@@ -174,6 +174,7 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [6, "MiniMax H3 Max", "Fal", 1146],
   [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
   [8, "Dreamina Seedance 2.5 Flash (720p)", "ByteDance Seed", 1136],
+  [9, "SkyReels V4", "Skywork AI", 1124],
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
@@ -191,7 +192,6 @@ const R2V_LEFT_OUT = [
   "FLUX 3 Max",
   "FLUX 3",
   "Boreal-H3",
-  "SkyReels V4",
 ];
 
 /** KIE field names that carry media rather than a setting. */
@@ -1607,7 +1607,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(8);
+    expect(mappedCount(r2v.endpointMap)).toBe(9);
     expect(
       r2v.endpointMap["Dreamina Seedance 2.5 Flash (720p)"]
     ).toContainEqual({

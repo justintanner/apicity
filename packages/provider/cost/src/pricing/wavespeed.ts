@@ -1300,6 +1300,38 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-20",
     },
   },
+  // The reference-video tier bills output seconds at a higher rate.
+  "skywork-ai/skyreels-v4/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "mode", pick: (p) => asString(p.mode) ?? "std" },
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "1080p" },
+      {
+        name: "videoInput",
+        pick: (p) => (hasItems(p, "ref_videos") ? "video" : "no-video"),
+      },
+    ],
+    rates: {
+      "std|480p|no-video": 0.11,
+      "std|720p|no-video": 0.14,
+      "std|1080p|no-video": 0.35,
+      "fast|480p|no-video": 0.08,
+      "fast|720p|no-video": 0.11,
+      "fast|1080p|no-video": 0.275,
+      "std|480p|video": 0.18,
+      "std|720p|video": 0.25,
+      "std|1080p|video": 0.625,
+      "fast|480p|video": 0.15,
+      "fast|720p|video": 0.2,
+      "fast|1080p|video": 0.5,
+    },
+    source: {
+      url: "https://wavespeed.ai/models/skywork-ai/skyreels-v4/reference-to-video",
+      asOf: "2026-11-25",
+    },
+  },
   // Catalog base_price 0.035 USD on 2026-11-25 (model page: 35000 micros,
   // discount_rate 100). No formula on the model page, only price inputs
   // (images). Free quotes (POST /api/v3/model/price) read 2026-11-25, list

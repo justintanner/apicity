@@ -2186,6 +2186,30 @@ export const WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema = z.object({
     ),
 });
 
+// WaveSpeed's SkyReels V4 reference-to-video catalog, read 2026-11-25.
+export const WaveSpeedSkyworkAiSkyreelsV4ReferenceToVideoRequestSchema =
+  z.object({
+    prompt: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.prompt,
+    images: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe("Up to three reference image URLs."),
+    ref_videos: z
+      .array(z.string())
+      .max(1)
+      .optional()
+      .describe("Up to one reference video URL."),
+    aspect_ratio:
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.aspect_ratio,
+    duration:
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.duration,
+    resolution:
+      WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.resolution,
+    sound: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.sound,
+    mode: WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema.shape.mode,
+  });
+
 // microsoft/mai-image-2.7/edit, from WaveSpeed's model catalog
 // (GET /api/v3/models) and the model page / llms.txt, all read 2026-11-25.
 // Only prompt (max 20000 chars) and 1-5 input images are accepted.

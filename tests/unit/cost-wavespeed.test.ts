@@ -3173,3 +3173,41 @@ describe("wavespeed microsoft/mai-image-2.7-flash/edit", () => {
     }
   });
 });
+
+describe("wavespeed skywork-ai/skyreels-v4/reference-to-video", () => {
+  const model = "skywork-ai/skyreels-v4/reference-to-video";
+  const video = "https://example.com/cat.mp4";
+  it("prices the default five seconds with and without a video reference", () => {
+    expect(estimate(model, { prompt: PROMPT }).usd).toBeCloseTo(1.75);
+    expect(
+      estimate(model, { prompt: PROMPT, ref_videos: [video] }).usd
+    ).toBeCloseTo(3.125, 9);
+  });
+
+  it.each([
+    ["std", "480p", 0.33, 0.54],
+    ["std", "720p", 0.42, 0.75],
+    ["std", "1080p", 1.05, 1.875],
+    ["fast", "480p", 0.24, 0.45],
+    ["fast", "720p", 0.33, 0.6],
+    ["fast", "1080p", 0.825, 1.5],
+  ] as const)(
+    "prices three seconds in %s mode at %s",
+    (mode, resolution, imagesOnly, withVideo) => {
+      const payload = {
+        prompt: PROMPT,
+        mode,
+        resolution,
+        duration: 3,
+        images: ["https://example.com/cat.jpg"],
+      };
+      expect(estimate(model, { ...payload, ref_videos: [] }).usd).toBeCloseTo(
+        imagesOnly,
+        9
+      );
+      expect(
+        estimate(model, { ...payload, ref_videos: [video] }).usd
+      ).toBeCloseTo(withVideo, 9);
+    }
+  );
+});

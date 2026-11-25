@@ -23,7 +23,9 @@ import {
 } from "../../packages/provider/cost/src/slugs";
 
 // Pinned against the live queue OpenAPI read on 2026-10-23
-// (sha256 851444de7b5a9fca64f2e0884f9ca58bea71b0dad031e7394a9811056abd074d).
+// (sha256 851444de7b5a9fca64f2e0884f9ca58bea71b0dad031e7394a9811056abd074d),
+// with duration's maximum re-read on 2026-11-25 (5 to 30 seconds; sha256
+// 101dbb959290d787746b1eb9d6e2c9bd06474ce6826dd859d67c238f7d0a24a0).
 const endpoint = "heygen/heygen-video/reference-to-video";
 const recorded = {
   prompt: "The cat from the reference image waves once, then holds still.",
@@ -132,8 +134,6 @@ describe("HeyGen Video reference-to-video contract", () => {
     expect(accepts({ prompt: "" })).toBe(false);
     expect(accepts({ prompt: "   " })).toBe(true);
     expect(accepts({ duration: 4 })).toBe(false);
-    expect(accepts({ duration: 15 })).toBe(true);
-    expect(accepts({ duration: 16 })).toBe(false);
     expect(accepts({ duration: 5.5 })).toBe(false);
     expect(accepts({ resolution: "2k" })).toBe(true);
     expect(accepts({ resolution: "4k" })).toBe(false);
@@ -146,6 +146,27 @@ describe("HeyGen Video reference-to-video contract", () => {
     expect(accepts({ reference_video_urls: Array(4).fill("u") })).toBe(false);
     expect(accepts({ reference_audio_urls: Array(4).fill("u") })).toBe(false);
     expect(accepts({ reference_image_urls: null })).toBe(false);
+  });
+
+  it("bounds duration to the live OpenAPI's 5 to 30 seconds", () => {
+    expect(accepts({ duration: 5 })).toBe(true);
+    expect(accepts({ duration: 15 })).toBe(true);
+    expect(accepts({ duration: 16 })).toBe(true);
+    expect(accepts({ duration: 30 })).toBe(true);
+    expect(accepts({ duration: 31 })).toBe(false);
+    expect(accepts({ duration: 29.5 })).toBe(false);
+    expect(accepts({ duration: "30" })).toBe(false);
+    const max = schema.parse({ ...recorded, duration: 30 });
+    expect(max.duration).toBe(30);
+    expect(usd({ ...recorded, duration: 30 })).toBeCloseTo(0.6, 10);
+    expect(
+      usd({
+        prompt: "x",
+        reference_video_urls: ["v"],
+        resolution: "2k",
+        duration: 30,
+      })
+    ).toBeCloseTo(1.8, 10);
   });
 
   it("requires a reference image or video, as fal's field validator does", () => {

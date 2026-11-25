@@ -4505,7 +4505,10 @@ const Flux3MaxAspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-const Flux3MaxResolutionSchema = z.enum(["720p", "1080p"]);
+// The live OpenAPI, re-read 2026-11-25, adds "2K" (1440p) and "4K" (2160p),
+// upscaled from the 720p generation. Unlike FLUX 3 ("1440p" / "2160p"), Max
+// spells them "2K" and "4K"; the enum is case-sensitive.
+const Flux3MaxResolutionSchema = z.enum(["720p", "1080p", "2K", "4K"]);
 
 const Flux3MaxDurationSchema = z.number().int().min(5).max(20);
 

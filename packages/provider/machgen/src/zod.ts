@@ -43,6 +43,10 @@ export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   // type, as with Wan 3.0. A last frame is capped at 10 s; the grid has no
   // field for that cap.
   "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V", "UPSCALE"],
+  // On the pricing page and this account's GET /api/v0/models (F2F, I2V,
+  // R2V, T2V on 2026-11-25), absent from /docs/models. F2F is not a
+  // generate task type.
+  "Seedance-2.5-Flash": ["T2V", "I2V", "R2V"],
   "Topaz-Video-Precision": ["UPSCALE"],
   "Topaz-Video-Precision-Animation": ["UPSCALE"],
   "Topaz-Video-Generative": ["UPSCALE"],
@@ -419,6 +423,27 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: ["adaptive", "16:9", "9:16"],
       references: { images: 6, videos: 3, audios: 0 },
       operations: ["reference", "edit", "extend"],
+    },
+  },
+  // GET /api/v0/models, 2026-11-25. R2V lists 10 images, 5 videos and 5
+  // audio clips, as Alibaba-Wan-3.0 does, and no reference_video_operation
+  // controls; as there, the documented 9 / 3 / 3 reference ceilings apply.
+  "Seedance-2.5-Flash": {
+    T2V: {
+      heights: [480, 720],
+      durations: [-1, ...secs(4, 30)],
+      aspectRatios: ADAPTIVE,
+    },
+    I2V: {
+      heights: [480, 720],
+      durations: [-1, ...secs(4, 30)],
+      aspectRatios: ["adaptive"],
+      endFrame: true,
+    },
+    R2V: {
+      heights: [480, 720],
+      durations: [-1, ...secs(4, 30)],
+      aspectRatios: ADAPTIVE,
     },
   },
 };

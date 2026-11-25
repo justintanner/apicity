@@ -86,6 +86,19 @@ const geminiOmniEvidence = JSON.parse(
   )
 ) as Pick<typeof evidence, "grids" | "taskTypes" | "upscale">;
 
+// Seedance-2.5-Flash from this account's model list on 2026-11-25.
+const seedanceFlashEvidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-seedance-2-5-flash-2026-11-25.json",
+    { encoding: "utf8" }
+  )
+) as Pick<typeof evidence, "grids" | "taskTypes"> & {
+  modelList: Record<
+    string,
+    { r2vReferences: { images: number; videos: number; audios: number } }
+  >;
+};
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -137,6 +150,7 @@ describe("MachGen", () => {
       "Grok-Imagine-Video": ["T2V"],
       "Grok-Imagine-Video-1.5": ["I2V"],
       "Gemini-Omni-1.2-Flash": ["T2V", "I2V", "R2V", "UPSCALE"],
+      "Seedance-2.5-Flash": ["T2V", "I2V", "R2V"],
       "Topaz-Video-Precision": ["UPSCALE"],
       "Topaz-Video-Precision-Animation": ["UPSCALE"],
       "Topaz-Video-Generative": ["UPSCALE"],
@@ -145,9 +159,13 @@ describe("MachGen", () => {
     const i2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("I2V"))
       .map(([model]) => model);
-    expect(i2v).toHaveLength(20);
-    // Every task-type list MachGen named in a 400 matches the matrix.
-    for (const [model, tasks] of Object.entries(evidence.taskTypes)) {
+    expect(i2v).toHaveLength(21);
+    // Every task-type list MachGen named in a 400 or its model list matches
+    // the matrix.
+    for (const [model, tasks] of Object.entries({
+      ...evidence.taskTypes,
+      ...seedanceFlashEvidence.taskTypes,
+    })) {
       if (!Object.hasOwn(MACHGEN_VIDEO_MODEL_TASK_TYPES, model)) continue;
       expect(
         [...MACHGEN_VIDEO_MODEL_TASK_TYPES[model as "Kling-v3"]].sort(),
@@ -161,6 +179,7 @@ describe("MachGen", () => {
       ...turboEvidence.grids,
       ...heightsEvidence.grids,
       ...geminiOmniEvidence.grids,
+      ...seedanceFlashEvidence.grids,
     };
     // Each Turbo 400 names the grid the fixture pins.
     for (const probe of turboEvidence.probes)
@@ -205,6 +224,7 @@ describe("MachGen", () => {
       "Kling-v3",
       "Alibaba-Wan-3.0",
       "Gemini-Omni-1.2-Flash",
+      "Seedance-2.5-Flash",
     ]);
     const loneEndFrame = Object.entries(MACHGEN_VIDEO_GRIDS)
       .filter(([, grid]) => grid.I2V?.loneEndFrame)
@@ -213,7 +233,7 @@ describe("MachGen", () => {
     const r2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("R2V"))
       .map(([model]) => model);
-    expect(r2v).toHaveLength(17);
+    expect(r2v).toHaveLength(18);
     for (const model of r2v)
       expect(MACHGEN_VIDEO_GRIDS[model]?.R2V, model).toBeDefined();
     // Upscale tiers and engines from the quote's 400s.
@@ -270,6 +290,84 @@ describe("MachGen", () => {
       }).success
     ).toBe(true);
     expect(parse({ task_type: "F2F" }).success).toBe(false);
+  });
+  it("accepts Seedance 2.5 Flash's account contract", () => {
+    const parse = (overrides: Record<string, unknown>) =>
+      MachGenGenerateRequestSchema.safeParse({
+        model: "Seedance-2.5-Flash",
+        prompt: "The cat slowly blinks.",
+        video_config: { height: 480, duration_secs: 4, aspect_ratio: "16:9" },
+        ...overrides,
+      });
+    const errors = (overrides: Record<string, unknown>) => {
+      const result = parse(overrides);
+      return result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    };
+    expect(errors({ task_type: "T2V" })).toEqual([]);
+    expect(
+      errors({
+        task_type: "T2V",
+        video_config: { height: 720, duration_secs: -1, aspect_ratio: "21:9" },
+      })
+    ).toEqual([]);
+    // I2V follows the source image, and a second image is the end frame.
+    expect(
+      errors({
+        task_type: "I2V",
+        src_image_urls: [
+          "https://example.com/a.jpg",
+          "https://example.com/b.jpg",
+        ],
+        video_config: {
+          height: 720,
+          duration_secs: 30,
+          aspect_ratio: "adaptive",
+        },
+      })
+    ).toEqual([]);
+    expect(
+      errors({
+        task_type: "I2V",
+        src_image_urls: ["https://example.com/a.jpg"],
+      })
+    ).toEqual([
+      "video_config.aspect_ratio: Seedance-2.5-Flash does not support I2V aspect_ratio='16:9'; allowed aspect ratios: adaptive",
+    ]);
+    expect(
+      errors({
+        task_type: "T2V",
+        video_config: { height: 1080, duration_secs: 3 },
+      })
+    ).toEqual([
+      "video_config.height: Seedance-2.5-Flash does not support T2V height=1080; allowed heights: 480, 720",
+      "video_config.duration_secs: Seedance-2.5-Flash does not support T2V duration_secs=3; allowed durations: -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30",
+    ]);
+    // The model list allows 10 images, 5 videos and 5 audio clips; the
+    // documented 9 / 3 / 3 ceilings still apply, as on Alibaba-Wan-3.0.
+    expect(seedanceFlashEvidence.modelList["Seedance-2.5-Flash"]).toMatchObject(
+      { r2vReferences: { images: 10, videos: 5, audios: 5 } }
+    );
+    const urls = (n: number, ext: string) =>
+      Array.from({ length: n }, (_, i) => `https://example.com/${i}.${ext}`);
+    expect(
+      errors({
+        task_type: "R2V",
+        src_image_urls: urls(9, "jpg"),
+        src_video_urls: urls(3, "mp4"),
+        src_audio_urls: urls(3, "mp3"),
+      })
+    ).toEqual([]);
+    expect(
+      errors({ task_type: "R2V", src_image_urls: urls(10, "jpg") })
+    ).toEqual([
+      "src_image_urls: R2V accepts at most 9 reference images; got 10",
+    ]);
+    expect(MACHGEN_VIDEO_GRIDS["Seedance-2.5-Flash"]?.R2V).not.toHaveProperty(
+      "operations"
+    );
+    expect(errors({ task_type: "F2F" })).not.toEqual([]);
   });
   it("accepts every recorded payload", () => {
     for (const [i, task, variant] of MACHGEN_RECORDED)
@@ -630,6 +728,7 @@ describe("MachGen", () => {
       "Alibaba-Wan-3.0",
       "HappyHorse-1.1",
       "HappyHorse-1.0",
+      "Seedance-2.5-Flash",
     ]);
     const payloads: MachGenGenerateRequest[] = [
       ...MACHGEN_CASES.flatMap(([, model], i) =>

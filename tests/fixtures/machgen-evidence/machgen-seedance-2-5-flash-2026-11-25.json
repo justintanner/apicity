@@ -1,0 +1,102 @@
+{
+  "capturedAt": "2026-11-25",
+  "source": "This account's GET https://api.machgen.ai/api/v0/models (model Seedance-2.5-Flash) and the public pricebook GET https://api.machgen.ai/api/v0/billing/pricebook/public, both read 2026-11-25. https://www.machgen.ai/pricing.txt lists the model; /docs/models and llms-full.txt omit it. F2F is on the list and is not a generate task type.",
+  "taskTypes": {
+    "Seedance-2.5-Flash": ["T2V", "I2V", "R2V"]
+  },
+  "grids": {
+    "Seedance-2.5-Flash": {
+      "T2V": {
+        "heights": [480, 720],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "I2V": {
+        "heights": [480, 720],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive"]
+      },
+      "R2V": {
+        "heights": [480, 720],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    }
+  },
+  "modelList": {
+    "Seedance-2.5-Flash": {
+      "surfaces": ["F2F", "I2V", "R2V", "T2V"],
+      "supportsAudio": true,
+      "i2vSupportsLastFrame": true,
+      "r2vReferences": {
+        "images": 10,
+        "videos": 5,
+        "audios": 5
+      },
+      "r2vReferenceVideoOperationControls": {}
+    }
+  },
+  "pricebook": [
+    {
+      "height": 480,
+      "has_input_video": false,
+      "task_type": null,
+      "unit": "PER_SECOND",
+      "unit_price_micros": 67253,
+      "discount_percent": 0,
+      "generation_credit_percent": 0
+    },
+    {
+      "height": 720,
+      "has_input_video": false,
+      "task_type": null,
+      "unit": "PER_SECOND",
+      "unit_price_micros": 151200,
+      "discount_percent": 0,
+      "generation_credit_percent": 0
+    },
+    {
+      "height": 480,
+      "has_input_video": true,
+      "task_type": null,
+      "unit": "PER_SECOND",
+      "unit_price_micros": 41312,
+      "discount_percent": 0,
+      "generation_credit_percent": 0
+    },
+    {
+      "height": 720,
+      "has_input_video": true,
+      "task_type": null,
+      "unit": "PER_SECOND",
+      "unit_price_micros": 92880,
+      "discount_percent": 0,
+      "generation_credit_percent": 0
+    }
+  ]
+}

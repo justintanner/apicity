@@ -2935,3 +2935,50 @@ describe("wavespeed microsoft/mai-image-2.7/text-to-image", () => {
     }
   });
 });
+
+describe("wavespeed microsoft/mai-image-2.7-flash/edit", () => {
+  const model = "microsoft/mai-image-2.7-flash/edit";
+  const IMAGE = "https://example.com/cat1.jpg";
+
+  // Free quotes (POST /api/v3/model/price) read 2026-11-25, list price
+  // (discount_rate 100): 0.0103 USD base plus 0.0026 USD per input image.
+  it("prices the recorded payload at the 0.0129 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [IMAGE],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.0129, 9);
+  });
+
+  it("adds 0.0026 USD for each input image from 1 to 5", () => {
+    for (const [count, usd] of [
+      [1, 0.0129],
+      [2, 0.0155],
+      [3, 0.0181],
+      [4, 0.0207],
+      [5, 0.0233],
+    ] as const) {
+      const result = estimate(model, {
+        prompt: PROMPT,
+        images: Array.from({ length: count }, () => IMAGE),
+      });
+      expect(result.warnings, `${count} image(s)`).toEqual([]);
+      expect(result.usd, `${count} image(s)`).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("fails closed when images are missing, empty, non-array, or exceed 5", () => {
+    for (const payload of [
+      { prompt: PROMPT },
+      { prompt: PROMPT, images: [] },
+      { prompt: PROMPT, images: IMAGE },
+      { prompt: PROMPT, images: Array.from({ length: 6 }, () => IMAGE) },
+    ]) {
+      const result = estimate(model, payload);
+      expect(result.usd, JSON.stringify(payload)).toBe(0);
+      expect(result.warnings, JSON.stringify(payload)).toHaveLength(1);
+    }
+  });
+});

@@ -1157,6 +1157,7 @@ export const MODEL_SLUGS = {
     "skywork-ai/skyreels-v4/image-to-video": "skyreelsv4",
     "microsoft/mai-image-2.7/edit": "mai2p7",
     "microsoft/mai-image-2.7/text-to-image": "mai2p7",
+    "microsoft/mai-image-2.7-flash/edit": "mai2p7f",
   },
 } as const;
 
@@ -2325,6 +2326,7 @@ export const MODEL_DISPLAY = {
     "skywork-ai/skyreels-v4/image-to-video": "SkyReels V4",
     "microsoft/mai-image-2.7/edit": "MAI Image 2.7 Edit",
     "microsoft/mai-image-2.7/text-to-image": "MAI Image 2.7",
+    "microsoft/mai-image-2.7-flash/edit": "MAI Image 2.7 Flash Edit",
   },
 } as const;
 

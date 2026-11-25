@@ -2123,3 +2123,22 @@ export const WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema = z.object({
     .optional()
     .describe("Output size tier. WaveSpeed defaults to 1k."),
 });
+
+// microsoft/mai-image-2.7-flash/edit, from WaveSpeed's model catalog
+// (GET /api/v3/models) read 2026-11-25: required prompt (max 20000 chars)
+// and 1-5 input images; no other field is accepted.
+export const WaveSpeedMicrosoftMaiImage2p7FlashEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20000)
+    .describe(
+      "Describe the edit, or how to combine the input images. Say what to change and what must stay the same."
+    ),
+  images: z
+    .array(z.string())
+    .min(1)
+    .max(5)
+    .describe(
+      "Input image URLs (1-5). One image is edited; several are combined. Each input image adds to the price."
+    ),
+});

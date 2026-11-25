@@ -55,6 +55,7 @@ wavespeed	api.v3.microsoft.maiImage2p7.edit	POST	https://api.wavespeed.ai/api/v3
 wavespeed	api.v3.microsoft.maiImage2p7.textToImage	POST	https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7/text-to-image	https://wavespeed.ai/models/microsoft/mai-image-2.7/text-to-image
 wavespeed	api.v3.microsoft.maiImage2p7Flash.edit	POST	https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7-flash/edit	https://wavespeed.ai/models/microsoft/mai-image-2.7-flash/edit
 wavespeed	api.v3.bytedance.seedance2p5Flash.imageToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5-flash/image-to-video	https://wavespeed.ai/models/bytedance/seedance-2.5-flash/image-to-video
+wavespeed	api.v3.bytedance.seedance2p5Flash.referenceToVideo	POST	https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5-flash/reference-to-video	https://wavespeed.ai/models/bytedance/seedance-2.5-flash/reference-to-video
 omkar	feed.trending	GET	https://tiktok-scraper.omkar.cloud/feed/trending{query}	https://www.omkar.cloud/tools/tiktok-scraper/trending-feed
 omkar	feed.explore	GET	https://tiktok-scraper.omkar.cloud/feed/explore{query}	https://www.omkar.cloud/tools/tiktok-scraper/explore-feed
 omkar	feed.explore.categories	GET	https://tiktok-scraper.omkar.cloud/feed/explore/categories	https://www.omkar.cloud/tools/tiktok-scraper/explore-categories

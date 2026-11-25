@@ -1678,6 +1678,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5-flash",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedance2p5Flash.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5-flash/reference-to-video",
+          },
         ],
       },
     ],

@@ -295,6 +295,14 @@ describe("apicity frontier", () => {
         dotPath: "bytedance.seedance2p5.flash.referenceToVideo",
       })
     );
+    expect(envelope.data).toContainEqual(
+      expect.objectContaining({
+        rank: 8,
+        model: "Dreamina Seedance 2.5 Flash (720p)",
+        provider: "wavespeed",
+        dotPath: "api.v3.bytedance.seedance2p5Flash.referenceToVideo",
+      })
+    );
     // Dreamina Seedance 2.0 reaches r2v from the i2v board alone.
     expect(
       envelope.data.some(

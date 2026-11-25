@@ -2911,3 +2911,27 @@ describe("wavespeed microsoft/mai-image-2.7/edit", () => {
     }
   });
 });
+
+describe("wavespeed microsoft/mai-image-2.7/text-to-image", () => {
+  const model = "microsoft/mai-image-2.7/text-to-image";
+
+  it("prices one image by resolution, defaulting to 1k", () => {
+    for (const [options, usd] of [
+      [{}, 0.07],
+      [{ resolution: "1k" }, 0.07],
+      [{ resolution: "2k", aspect_ratio: "4:1" }, 0.14],
+    ] as const) {
+      const result = estimate(model, { prompt: PROMPT, ...options });
+      expect(result.warnings).toEqual([]);
+      expect(result.usd).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("warns on unsupported resolution tiers", () => {
+    for (const resolution of ["4k", 2]) {
+      const result = estimate(model, { prompt: PROMPT, resolution });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toHaveLength(1);
+    }
+  });
+});

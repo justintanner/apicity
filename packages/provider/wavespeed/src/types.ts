@@ -35,6 +35,7 @@ import type {
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
+  WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -960,8 +961,21 @@ export interface WaveSpeedMicrosoftMaiImage2p7EditMethod {
   ): Promise<WaveSpeedPredictionResponse>;
   schema: typeof WaveSpeedMicrosoftMaiImage2p7EditRequestSchema;
 }
+export type WaveSpeedMicrosoftMaiImage2p7TextToImageRequest = z.input<
+  typeof WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedMicrosoftMaiImage2p7TextToImageMethod {
+  (
+    request: WaveSpeedMicrosoftMaiImage2p7TextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema;
+}
 export interface WaveSpeedMicrosoftMaiImage2p7Namespace {
   edit: WaveSpeedMicrosoftMaiImage2p7EditMethod;
+  textToImage: WaveSpeedMicrosoftMaiImage2p7TextToImageMethod;
 }
 export interface WaveSpeedMicrosoftNamespace {
   maiImage2p7: WaveSpeedMicrosoftMaiImage2p7Namespace;

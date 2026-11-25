@@ -36,6 +36,7 @@ import {
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
   WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
+  WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -3395,6 +3396,7 @@ describe("wavespeed microsoft/mai-image-2.7/edit", () => {
     expect(Object.keys(wavespeed.api.v3.microsoft)).toEqual(["maiImage2p7"]);
     expect(Object.keys(wavespeed.api.v3.microsoft.maiImage2p7)).toEqual([
       "edit",
+      "textToImage",
     ]);
     expect(wavespeed.api.v3.microsoft.maiImage2p7.edit.schema).toBe(
       WaveSpeedMicrosoftMaiImage2p7EditRequestSchema
@@ -3458,6 +3460,63 @@ describe("wavespeed microsoft/mai-image-2.7/edit", () => {
         }).success,
         `${field} ${String(value)}`
       ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed microsoft/mai-image-2.7/text-to-image", () => {
+  const schema = WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema;
+  const prompt = "A sleeping tabby cat on a blue blanket.";
+
+  it("attaches the public schema and preserves optional inputs on submit", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({ code: 200, data: { id: "p1" } })
+    );
+    const generate = createWaveSpeed({ apiKey: "ws-key", fetch }).api.v3
+      .microsoft.maiImage2p7.textToImage;
+    expect(generate.schema).toBe(schema);
+    expect(schema.parse({ prompt })).toEqual({ prompt });
+    const payload = { prompt, resolution: "2k", aspect_ratio: "1:4" } as const;
+    await generate(payload);
+    expect(requests).toHaveLength(1);
+    const [request] = requests;
+    expect(request.url).toBe(
+      "https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7/text-to-image"
+    );
+    expect(request.init.method).toBe("POST");
+    expect(JSON.parse(String(request.init.body))).toEqual(payload);
+  });
+
+  it("accepts the documented aspect ratios and prompt length", () => {
+    for (const aspect_ratio of [
+      "1:1",
+      "16:9",
+      "9:16",
+      "4:3",
+      "3:4",
+      "3:2",
+      "2:3",
+      "21:9",
+      "9:21",
+      "4:1",
+      "1:4",
+    ]) {
+      expect(
+        schema.safeParse({ prompt, aspect_ratio, resolution: "1k" }).success
+      ).toBe(true);
+    }
+    expect(schema.safeParse({ prompt: "a".repeat(20000) }).success).toBe(true);
+  });
+
+  it("rejects missing or out-of-range inputs", () => {
+    for (const payload of [
+      {},
+      { prompt: "" },
+      { prompt: "a".repeat(20001) },
+      { prompt, aspect_ratio: "2:1" },
+      { prompt, resolution: "4k" },
+    ]) {
+      expect(schema.safeParse(payload).success).toBe(false);
     }
   });
 });

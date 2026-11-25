@@ -414,6 +414,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.microsoft.maiImage2p7.textToImage": {
+    "source": "wavespeed/microsoft-mai-image-2-7-text-to-image",
+    "payload": {
+      "prompt": "A sleeping tabby cat on a blue blanket."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.minimax.h3.imageToVideo": {
     "source": "wavespeed/minimax-h3-image-to-video",
     "payload": {

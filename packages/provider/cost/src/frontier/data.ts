@@ -202,6 +202,11 @@ export const FRONTIER = {
             dotPath: "microsoft.maiImage2p7.textToImage",
             pricingKey: "microsoft/mai-image-2.7/text-to-image",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.microsoft.maiImage2p7.textToImage",
+            pricingKey: "microsoft/mai-image-2.7/text-to-image",
+          },
         ],
       },
       {

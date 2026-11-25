@@ -1322,4 +1322,23 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-25",
     },
   },
+  // WaveSpeed's free price quotes on 2026-11-25 matched the model page for
+  // both tiers. Each request produces one image, at any supported aspect ratio.
+  "microsoft/mai-image-2.7/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [
+      {
+        name: "resolution",
+        pick: (p) =>
+          p.resolution === undefined ? "1k" : asString(p.resolution),
+      },
+    ],
+    rates: { "1k": 0.07, "2k": 0.14 },
+    source: {
+      url: "https://wavespeed.ai/models/microsoft/mai-image-2.7/text-to-image",
+      asOf: "2026-11-25",
+    },
+  },
 };

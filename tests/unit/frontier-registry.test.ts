@@ -1217,6 +1217,21 @@ describe("frontier image snapshots", () => {
     expect(text.has("seedream/5-pro-text-to-image")).toBe(true);
   });
 
+  it("maps MAI-Image-2.7 text-to-image to fal and WaveSpeed", () => {
+    expect(t2i.endpointMap["MAI-Image-2.7"]).toEqual([
+      {
+        provider: "fal",
+        dotPath: "microsoft.maiImage2p7.textToImage",
+        pricingKey: "microsoft/mai-image-2.7/text-to-image",
+      },
+      {
+        provider: "wavespeed",
+        dotPath: "api.v3.microsoft.maiImage2p7.textToImage",
+        pricingKey: "microsoft/mai-image-2.7/text-to-image",
+      },
+    ]);
+  });
+
   it("lists Nunchux GPT Image 2.6 text-to-image below max quality", () => {
     const nunchux = {
       provider: "nunchux",

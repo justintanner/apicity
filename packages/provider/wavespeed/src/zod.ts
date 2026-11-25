@@ -2094,3 +2094,32 @@ export const WaveSpeedMicrosoftMaiImage2p7EditRequestSchema = z.object({
       "Input image URLs to edit or combine, 1-5. Each input image adds to the price."
     ),
 });
+
+// microsoft/mai-image-2.7/text-to-image, WaveSpeed catalog and model page, 2026-11-25.
+export const WaveSpeedMicrosoftMaiImage2p7TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(20000)
+    .describe("Text describing the image to generate."),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "16:9",
+      "9:16",
+      "4:3",
+      "3:4",
+      "3:2",
+      "2:3",
+      "21:9",
+      "9:21",
+      "4:1",
+      "1:4",
+    ])
+    .optional()
+    .describe("Aspect ratio of the image. WaveSpeed defaults to 1:1."),
+  resolution: z
+    .enum(["1k", "2k"])
+    .optional()
+    .describe("Output size tier. WaveSpeed defaults to 1k."),
+});

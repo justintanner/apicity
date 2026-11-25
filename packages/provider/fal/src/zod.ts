@@ -1778,6 +1778,7 @@ export const FalAlibabaQwenImage3EditRequestSchema = z.object({
 // `fal-ai/wan/v2.7/pro/*` reuses its non-pro schemas.
 // Docs: https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
 
+const FalWan3p0PromptSchema = z.string().max(20_000);
 const FalWan3p0ResolutionSchema = z.enum(["480p", "720p", "1080p"]);
 
 const FalWan3p0AspectRatioSchema = z.enum([
@@ -1829,7 +1830,7 @@ const falWan3p0CommonFields = {
 // ---------------------------------------------------------------------------
 
 export const FalWan3p0TextToVideoRequestSchema = z.object({
-  prompt: z.string().min(1).max(5000),
+  prompt: FalWan3p0PromptSchema.min(1),
   ...falWan3p0CommonFields,
 });
 
@@ -1839,7 +1840,7 @@ export const FalWan3p0TextToVideoRequestSchema = z.object({
 
 export const FalWan3p0ImageToVideoRequestSchema = z.object({
   // Optional here — the start frame alone is a complete request.
-  prompt: z.string().max(5000).nullable().optional(),
+  prompt: FalWan3p0PromptSchema.nullable().optional(),
   start_image_url: z.string().url(),
   end_image_url: z.string().url().nullable().optional(),
   ...falWan3p0CommonFields,
@@ -1854,7 +1855,7 @@ export const FalWan3p0ImageToVideoRequestSchema = z.object({
 // one grounding input mirrors the `wan/v2.7/reference-to-video` refinement.
 export const FalWan3p0ReferenceToVideoRequestSchema = z
   .object({
-    prompt: z.string().max(5000).nullable().optional(),
+    prompt: FalWan3p0PromptSchema.nullable().optional(),
     reference_image_urls: z.array(z.string().url()).max(10).optional(),
     // Up to 5 clips totaling at most 15 seconds, each at least 16 fps.
     reference_video_urls: z.array(z.string().url()).max(5).optional(),

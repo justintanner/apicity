@@ -4,7 +4,11 @@ import type {
   ChatToolCall,
   ChatUsage,
 } from "./chat-fragments-types";
-import type { OpenAiUploadCreateRequest, OpenAiResponseReasoning } from "./zod";
+import type {
+  OpenAiUploadCreateRequest,
+  OpenAiResponseReasoning,
+  OpenAiResponseReasoningItem,
+} from "./zod";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -83,6 +87,9 @@ export type {
   OpenAiResponseInputMessage,
   OpenAiResponseFunctionCallOutput,
   OpenAiResponseItemReference,
+  OpenAiResponseReasoningSummaryText,
+  OpenAiResponseReasoningText,
+  OpenAiResponseReasoningItem,
   OpenAiResponseInputItem,
   OpenAiResponseFunctionTool,
   OpenAiResponseWebSearchTool,
@@ -501,32 +508,6 @@ export interface OpenAiResponseFileSearchResult {
   filename: string;
   score: number;
   text: string;
-}
-
-// A summary of the model's reasoning, present when the request set
-// `reasoning.summary`.
-export interface OpenAiResponseReasoningSummaryText {
-  type: "summary_text";
-  text: string;
-}
-
-export interface OpenAiResponseReasoningText {
-  type: "reasoning_text";
-  text: string;
-}
-
-// The chain of thought a reasoning model used for the response. The API
-// fills `encrypted_content` by default; send the item back in `input` on
-// later turns when managing context by hand (`store: false`). `status` is
-// optional: no reasoning item in the committed o4-mini recording or the
-// 2026-11-25 videobook capture corpus (230 items) carried one.
-export interface OpenAiResponseReasoningItem {
-  type: "reasoning";
-  id: string;
-  summary: OpenAiResponseReasoningSummaryText[];
-  content?: OpenAiResponseReasoningText[];
-  encrypted_content?: string | null;
-  status?: "in_progress" | "completed" | "incomplete";
 }
 
 // The item kinds apicity models. The API documents more kinds than these

@@ -1,18 +1,30 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type {
   OpenAiResponseAccessPrograms,
+  OpenAiResponseCompactRequest,
+  OpenAiResponseCompactResponse,
   OpenAiResponseImageOptions,
+  OpenAiResponseInputItem,
+  OpenAiResponseInputItemsResponse,
+  OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTransformation,
   OpenAiResponseModeration,
   OpenAiResponseOutputItem,
   OpenAiResponseOutputMessage,
   OpenAiResponseReasoningItem,
+  OpenAiResponseRequest,
   OpenAiResponseResponse,
   OpenAiResponseResponseReasoning,
   OpenAiResponseToolUsage,
   OpenAiTranscribeResponse,
   OpenAiTranscriptionLanguage,
 } from "@apicity/openai";
+import {
+  OpenAiResponseCompactRequestSchema,
+  OpenAiResponseInputItemSchema,
+  OpenAiResponseInputTokensRequestSchema,
+  OpenAiResponseRequestSchema,
+} from "@apicity/openai/zod";
 
 // HAR learning pass 2 (ac-11lqw3) found these keys on the 210 v1.responses
 // calls of the 2026-11-25 videobook capture corpus (204 gpt-5.6-sol, 6
@@ -171,6 +183,111 @@ describe("openai v1.responses reasoning output items", () => {
       }
     }
     expect(blobs).toEqual(["opaque"]);
+  });
+
+  it("accepts a reasoning output item back in v1.responses, compact and input-tokens input with no cast", () => {
+    type ResponseInputListItem = Extract<
+      OpenAiResponseRequest["input"],
+      readonly unknown[]
+    >[number];
+    type CompactInputListItem = Extract<
+      NonNullable<OpenAiResponseCompactRequest["input"]>,
+      readonly unknown[]
+    >[number];
+    type InputTokensListItem = Extract<
+      NonNullable<OpenAiResponseInputTokensRequest["input"]>,
+      readonly unknown[]
+    >[number];
+
+    expectTypeOf<OpenAiResponseReasoningItem>().toExtend<ResponseInputListItem>();
+    expectTypeOf<OpenAiResponseReasoningItem>().toExtend<CompactInputListItem>();
+    expectTypeOf<OpenAiResponseReasoningItem>().toExtend<InputTokensListItem>();
+    expectTypeOf<OpenAiResponseReasoningItem>().toExtend<OpenAiResponseInputItem>();
+
+    const output: OpenAiResponseResponse["output"] = [
+      {
+        type: "reasoning",
+        id: "rs_1",
+        summary: [],
+        content: [],
+        encrypted_content: "opaque",
+      },
+    ];
+    const reasoning = output[0];
+    if (reasoning.type !== "reasoning") {
+      throw new Error("expected reasoning item");
+    }
+
+    const nextReq: OpenAiResponseRequest = {
+      model: "gpt-6-luna",
+      store: false,
+      input: [
+        { role: "user", content: "Turn 1" },
+        reasoning,
+        { role: "assistant", content: "Answer 1" },
+        { role: "user", content: "Turn 2" },
+      ],
+    };
+    const compactReq: OpenAiResponseCompactRequest = {
+      model: "gpt-6-luna",
+      input: [{ role: "user", content: "Turn 1" }, reasoning],
+    };
+    const tokensReq: OpenAiResponseInputTokensRequest = {
+      model: "gpt-6-luna",
+      input: [{ role: "user", content: "Turn 1" }, reasoning],
+    };
+
+    expect(OpenAiResponseRequestSchema.safeParse(nextReq).success).toBe(true);
+    expect(
+      OpenAiResponseCompactRequestSchema.safeParse(compactReq).success
+    ).toBe(true);
+    expect(
+      OpenAiResponseInputTokensRequestSchema.safeParse(tokensReq).success
+    ).toBe(true);
+    expect(OpenAiResponseInputItemSchema.safeParse(reasoning).success).toBe(
+      true
+    );
+  });
+
+  it("keeps one reasoning shape when narrowing OpenAiResponseInputItemsResponse.data", () => {
+    type InputListItem = OpenAiResponseInputItemsResponse["data"][number];
+    type CompactOutputItem = OpenAiResponseCompactResponse["output"][number];
+
+    expectTypeOf<
+      Extract<InputListItem, { type: "reasoning" }>
+    >().toEqualTypeOf<OpenAiResponseReasoningItem>();
+    expectTypeOf<
+      Extract<InputListItem, { type: "reasoning" }>["encrypted_content"]
+    >().toEqualTypeOf<string | null | undefined>();
+    expectTypeOf<
+      Extract<CompactOutputItem, { type: "reasoning" }>
+    >().toEqualTypeOf<OpenAiResponseReasoningItem>();
+
+    const list: OpenAiResponseInputItemsResponse = {
+      object: "list",
+      first_id: "rs_1",
+      last_id: "rs_1",
+      has_more: false,
+      data: [
+        {
+          type: "reasoning",
+          id: "rs_1",
+          summary: [],
+          encrypted_content: "opaque",
+        },
+      ],
+    };
+    const seen: (string | null | undefined)[] = [];
+    for (const item of list.data) {
+      if (item.type === "reasoning") {
+        expectTypeOf(item).toEqualTypeOf<OpenAiResponseReasoningItem>();
+        expectTypeOf(item.encrypted_content).toEqualTypeOf<
+          string | null | undefined
+        >();
+        seen.push(item.encrypted_content);
+      }
+    }
+    expect(seen).toEqual(["opaque"]);
   });
 });
 

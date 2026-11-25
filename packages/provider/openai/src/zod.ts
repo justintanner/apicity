@@ -421,12 +421,39 @@ export const OpenAiResponseItemReferenceSchema = z.object({
   id: z.string(),
 });
 
+// A summary of the model's reasoning, present when the request set
+// `reasoning.summary`.
+export const OpenAiResponseReasoningSummaryTextSchema = z.object({
+  type: z.literal("summary_text"),
+  text: z.string(),
+});
+
+export const OpenAiResponseReasoningTextSchema = z.object({
+  type: z.literal("reasoning_text"),
+  text: z.string(),
+});
+
+// The chain of thought a reasoning model used for a response. The API
+// populates `encrypted_content` by default in stateless mode (`store: false`);
+// send the item back in `input` on later turns when managing context by hand.
+// `status` is optional: no reasoning item in the committed o4-mini recording
+// or the 2026-11-25 videobook capture corpus (230 items) carried one.
+export const OpenAiResponseReasoningItemSchema = z.object({
+  type: z.literal("reasoning"),
+  id: z.string(),
+  summary: z.array(OpenAiResponseReasoningSummaryTextSchema),
+  content: z.array(OpenAiResponseReasoningTextSchema).optional(),
+  encrypted_content: z.string().nullable().optional(),
+  status: z.enum(["in_progress", "completed", "incomplete"]).optional(),
+});
+
 export const OpenAiResponseInputItemSchema = z.discriminatedUnion("type", [
   OpenAiResponseInputMessageSchema.extend({
     type: z.literal("message").optional(),
   }),
   OpenAiResponseFunctionCallOutputSchema,
   OpenAiResponseItemReferenceSchema,
+  OpenAiResponseReasoningItemSchema,
 ]);
 
 // Response API tools
@@ -509,6 +536,7 @@ export const OpenAiResponseRequestSchema = z.object({
         OpenAiResponseInputMessageSchema,
         OpenAiResponseFunctionCallOutputSchema,
         OpenAiResponseItemReferenceSchema,
+        OpenAiResponseReasoningItemSchema,
       ])
     ),
   ]),
@@ -548,6 +576,7 @@ export const OpenAiResponseCompactRequestSchema = z.object({
           OpenAiResponseInputMessageSchema,
           OpenAiResponseFunctionCallOutputSchema,
           OpenAiResponseItemReferenceSchema,
+          OpenAiResponseReasoningItemSchema,
         ])
       ),
     ])
@@ -568,6 +597,7 @@ export const OpenAiResponseInputTokensRequestSchema = z.object({
           OpenAiResponseInputMessageSchema,
           OpenAiResponseFunctionCallOutputSchema,
           OpenAiResponseItemReferenceSchema,
+          OpenAiResponseReasoningItemSchema,
         ])
       ),
     ])
@@ -1379,6 +1409,15 @@ export type OpenAiResponseFunctionCallOutput = z.infer<
 >;
 export type OpenAiResponseItemReference = z.infer<
   typeof OpenAiResponseItemReferenceSchema
+>;
+export type OpenAiResponseReasoningSummaryText = z.infer<
+  typeof OpenAiResponseReasoningSummaryTextSchema
+>;
+export type OpenAiResponseReasoningText = z.infer<
+  typeof OpenAiResponseReasoningTextSchema
+>;
+export type OpenAiResponseReasoningItem = z.infer<
+  typeof OpenAiResponseReasoningItemSchema
 >;
 export type OpenAiResponseInputItem = z.infer<
   typeof OpenAiResponseInputItemSchema

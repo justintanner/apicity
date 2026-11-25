@@ -6,7 +6,10 @@ import { createOpenAi } from "@apicity/openai";
 import type {
   OpenAiResponseOutputMessage,
   OpenAiResponseOutputText,
+  OpenAiResponseReasoningItem,
+  OpenAiResponseRequest,
 } from "@apicity/openai";
+import { OpenAiResponseRequestSchema } from "@apicity/openai/zod";
 
 describe("openai responses integration", () => {
   let ctx: PollyContext;
@@ -168,6 +171,90 @@ describe("openai responses integration", () => {
     expect(reasoning.status).toBeUndefined();
     expect(reasoning.encrypted_content).toBeUndefined();
     expect(result.usage?.output_tokens_details?.reasoning_tokens).toBeDefined();
+  });
+
+  it("should round-trip a reasoning item with encrypted_content in stateless multi-turn input", async () => {
+    ctx = setupPolly("openai/responses-reasoning-round-trip");
+    const provider = createOpenAi({
+      apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
+      timeout: 60000,
+    });
+
+    const turn1Prompt =
+      "A crate holds 7 rows of 6 apples. If 13 apples are removed, how many remain? Reply with just the number.";
+    const turn1 = await provider.post.v1.responses({
+      model: "gpt-5.6-luna",
+      input: [{ role: "user", content: turn1Prompt }],
+      reasoning: { effort: "medium" },
+      store: false,
+      include: ["reasoning.encrypted_content"],
+      max_output_tokens: 500,
+    });
+
+    expect(turn1.id).toBeTruthy();
+    expect(turn1.status).toBe("completed");
+
+    const reasoningItems: OpenAiResponseReasoningItem[] = [];
+    let turn1Text = "";
+    for (const item of turn1.output) {
+      if (item.type === "reasoning") {
+        reasoningItems.push(item);
+      } else if (item.type === "message") {
+        for (const part of item.content) {
+          if (part.type === "output_text") {
+            turn1Text += part.text;
+          }
+        }
+      }
+    }
+
+    expect(reasoningItems.length).toBeGreaterThan(0);
+    const firstReasoning = reasoningItems[0]!;
+    expect(firstReasoning.id).toMatch(/^rs_/);
+    expect(typeof firstReasoning.encrypted_content).toBe("string");
+    expect(firstReasoning.encrypted_content!.length).toBeGreaterThan(0);
+    expect(turn1Text.length).toBeGreaterThan(0);
+
+    // Send the Turn 1 reasoning item(s) back in Turn 2 input with no cast.
+    const turn2Request: OpenAiResponseRequest = {
+      model: "gpt-5.6-luna",
+      input: [
+        { role: "user", content: turn1Prompt },
+        ...reasoningItems,
+        { role: "assistant", content: turn1Text },
+        {
+          role: "user",
+          content:
+            "If 11 more apples are added to the remaining ones, how many are in the crate now? Reply with just the number.",
+        },
+      ],
+      reasoning: { effort: "medium" },
+      store: false,
+      include: ["reasoning.encrypted_content"],
+      max_output_tokens: 500,
+    };
+
+    const turn2 = await provider.post.v1.responses(turn2Request);
+
+    expect(OpenAiResponseRequestSchema.safeParse(turn2Request).success).toBe(
+      true
+    );
+    expect(turn1Text).toMatch(/\b29\b/);
+    expect(turn2.id).toBeTruthy();
+    expect(turn2.status).toBe("completed");
+    expect(turn2.input_transformations).toEqual([]);
+
+    let turn2Text = "";
+    for (const item of turn2.output) {
+      if (item.type === "message") {
+        for (const part of item.content) {
+          if (part.type === "output_text") {
+            turn2Text += part.text;
+          }
+        }
+      }
+    }
+    expect(turn2Text).toMatch(/\b40\b/);
   });
 
   it("should create a response with image input", async () => {

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add Seedance 2.5 Flash image-to-video at `run.bytedance.seedance2p5.flash.imageToVideo`, with `480p`/`720p`, 4-30 s or `auto`, `output_format` and `return_last_frame` (ac-706s29).
 - FLUX 3 Max (`run.blackforestlabs.flux3Max.textToVideo`, `.imageToVideo`, `.keyframesToVideo`) accepts `resolution: "2K"` and `"4K"` from the live OpenAPI (re-read 2026-11-25); `FalFlux3MaxResolution` widens to `"720p" | "1080p" | "2K" | "4K"` (ac-eeqbqb).
 - `run.bytedance.seedream.v5p5.edit`
   (`POST https://fal.run/bytedance/seedream/v5.5/edit`) adds Seedream 5.5

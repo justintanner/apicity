@@ -913,7 +913,7 @@ describe("fal video pricing estimates", () => {
     );
   });
 
-  it("keeps four Seedance ids dynamic and slugs the thirteen priced ones", () => {
+  it("keeps five Seedance ids dynamic and slugs the thirteen priced ones", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
     const slugs = MODEL_SLUGS.fal as Record<string, string>;
     const names = MODEL_DISPLAY.fal as Record<string, string>;
@@ -925,6 +925,7 @@ describe("fal video pricing estimates", () => {
       ["bytedance/seedance-2.0/reference-to-video", "Seedance 2"],
       ["bytedance/seedance-2.5/image-to-video", "Seedance 2.5"],
       ["bytedance/seedance-2.5/us/image-to-video", "Seedance 2.5 US"],
+      ["bytedance/seedance-2.5/flash/image-to-video", "Seedance 2.5 Flash"],
     ]) {
       expect(dynamic, endpoint).toContain(endpoint);
       expect(falPricing[endpoint], endpoint).toBeUndefined();
@@ -1662,6 +1663,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-video-upscale",
       "bytedance/seedance-2.0/fast/reference-to-video",
       "bytedance/seedance-2.0/reference-to-video",
+      "bytedance/seedance-2.5/flash/image-to-video",
       "bytedance/seedance-2.5/image-to-video",
       "bytedance/seedance-2.5/us/image-to-video",
       "bytedance/seedream/v5/pro/edit",

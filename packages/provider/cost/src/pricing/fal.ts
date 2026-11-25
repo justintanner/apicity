@@ -1485,14 +1485,15 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// Four Seedance ids stay dynamic. The other twelve bill output tokens that an
+// Five Seedance ids stay dynamic. The other twelve bill output tokens that an
 // explicit request fixes (seedanceTokens above; ac-j3d6ki.3).
 // - bytedance/seedance-2.0/reference-to-video and
 //   bytedance/seedance-2.0/fast/reference-to-video: no call is recorded, and
 //   the one 2.0-series reference recording (2.0 US) divided by 1000 where the
 //   card says 1024, so neither divisor is known.
-// - bytedance/seedance-2.5/image-to-video and
-//   bytedance/seedance-2.5/us/image-to-video: aspect_ratio is the const
+// - bytedance/seedance-2.5/image-to-video,
+//   bytedance/seedance-2.5/us/image-to-video and
+//   bytedance/seedance-2.5/flash/image-to-video: aspect_ratio is the const
 //   "auto", and the output follows the input image. cat1.jpg (686x667) gave
 //   648x630 at 97 frames and billed 38.671 units. ByteDance publishes no
 //   sizing rule for that adaptive ratio, so no request field fixes the size.
@@ -1511,6 +1512,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedance-2.0/fast/reference-to-video",
   "bytedance/seedance-2.0/reference-to-video",
+  "bytedance/seedance-2.5/flash/image-to-video",
   "bytedance/seedance-2.5/image-to-video",
   "bytedance/seedance-2.5/us/image-to-video",
   "bytedance/seedream/v5/pro/edit",
@@ -1787,6 +1789,13 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "kling/v4/text-to-image": {
     unit: "units at $0.063",
     why: "the card does not define the unit, and one resolution does not fix how 2K, 4K and 8K are billed",
+  },
+  // Card, llms.txt and pricing API read 2026-11-25: $0.014 per 1,000 tokens
+  // (480p and 720p, 4-30 s). Like the standard 2.5 image-to-video, the
+  // output follows the input image (aspect_ratio is the const "auto").
+  "bytedance/seedance-2.5/flash/image-to-video": {
+    unit: "1000 tokens at $0.014",
+    why: "the output size follows the input image, and ByteDance publishes no sizing rule for that adaptive ratio",
   },
   // Card and pricing API checked 2026-10-23: $0.01 per second of input video,
   // with a 60-second minimum, and no charge when no cut is made. Our 2.96 s

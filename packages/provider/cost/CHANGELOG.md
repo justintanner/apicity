@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Keep fal Seedance 2.5 Flash image-to-video dynamic (the output follows the input image), with the display name "Seedance 2.5 Flash" and the billed unit 1000 tokens at $0.014 in its warning. The fal endpoint now appears beside KIE on the image-to-video frontier board (ac-706s29).
 - Price WaveSpeed MAI-Image-2.7-Flash edit at 0.0103 USD per output image plus 0.0026 USD per input image (1-5 inputs). The WaveSpeed endpoint now appears beside fal on the image-editing frontier board (ac-3ql6fp).
 - Price WaveSpeed MAI-Image-2.7 text-to-image at $0.07 per 1k image and $0.14 per 2k image. The WaveSpeed endpoint now appears on the text-to-image frontier board (ac-8f0kj2).
 - Price WaveSpeed `microsoft/mai-image-2.7/edit` (`POST api.v3.microsoft.maiImage2p7.edit`, slug `mai2p7`, display `"MAI Image 2.7 Edit"`, `source.asOf: "2026-11-25"`) from free quotes (`discount_rate: 100`): `0.035` USD base per output image plus `0.0082` USD per input image (`0.0432`–`0.076` USD for 1–5 inputs, failing closed outside 1–5 inputs), add `ENDPOINT_BILLING` metered `images` row, and map `wavespeed` beside `fal` on the frontier `i2i` #1 `MAI-Image-2.7` row. Verified against a live edit recording (prediction `c11cc97625984a4f90671ee44c0f20d5`) that billed `0.0432` USD (ac-gsctwp).

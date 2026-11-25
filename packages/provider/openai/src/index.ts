@@ -186,6 +186,7 @@ export type {
   OpenAiResponseCompactRequest,
   OpenAiResponseCompactRequestInput,
   OpenAiResponseCompactParsedRequest,
+  OpenAiResponseCompactionItem,
   OpenAiResponseCompactResponse,
   OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTokensRequestInput,

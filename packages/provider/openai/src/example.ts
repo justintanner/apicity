@@ -212,6 +212,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "expensive",
     "runByDefault": false
   },
+  "POST v1.responses.compact": {
+    "source": "openai/responses-compact",
+    "payload": {
+      "model": "gpt-5-nano",
+      "input": [
+        {
+          "role": "user",
+          "content": "Pick a color."
+        },
+        {
+          "role": "assistant",
+          "content": "Blue."
+        }
+      ]
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST v1.responses.inputTokens": {
     "source": "openai/responses-input-tokens",
     "payload": {

@@ -202,20 +202,25 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
     I2V: { heights: H3_TURBO_HEIGHTS, durations: secs(1, 15), ...H3_I2V },
     R2V: { heights: H3_TURBO_HEIGHTS, durations: secs(1, 15), ...H3_R2V },
   },
+  // 2160p since 2026-11-25. This account's model list names it on
+  // T2V, I2V, R2V and F2F, and a T2V height of 999 answered 400
+  // with allowed heights [480, 720, 1080, 2160]. See
+  // machgen-seedance-2-5-2160-2026-11-25.json. F2F is not a
+  // generate task type. Seedance-2.5-Flash stays at 480/720.
   "Seedance-2.5": {
     T2V: {
-      heights: [480, 720, 1080],
+      heights: [480, 720, 1080, 2160],
       durations: [-1, ...secs(4, 30)],
       aspectRatios: ADAPTIVE,
     },
     I2V: {
-      heights: [480, 720, 1080],
+      heights: [480, 720, 1080, 2160],
       durations: [-1, ...secs(4, 30)],
       aspectRatios: ["adaptive"],
       endFrame: true,
     },
     R2V: {
-      heights: [480, 720, 1080],
+      heights: [480, 720, 1080, 2160],
       durations: [-1, ...secs(4, 30)],
       aspectRatios: ADAPTIVE,
       operations: ["reference", "edit", "extend"],

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  FAL_ENDPOINT_REQUEST_SCHEMAS,
   FalNanoBanana2EditRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
   FalNanoBanana2LiteTextToImageRequestSchema,
@@ -75,6 +76,23 @@ const FAMILY = [
 const WITH_IMAGE_URLS = FAMILY.filter((entry) => entry.hasImageUrls);
 
 describe("Fal Zod schema validation", () => {
+  describe.each(["wan-3.0", "wan-3.0-prime"] as const)("%s", (model) => {
+    it.each(["text-to-video", "image-to-video", "reference-to-video"] as const)(
+      "caps %s prompts at 20,000 characters",
+      (operation) => {
+        const schema =
+          FAL_ENDPOINT_REQUEST_SCHEMAS[`alibaba/${model}/${operation}`];
+        const base =
+          operation === "image-to-video" ? { start_image_url: IMAGE_URL } : {};
+        const prompt = "x".repeat(20_000);
+        expect(schema.safeParse({ ...base, prompt }).success).toBe(true);
+        expect(
+          schema.safeParse({ ...base, prompt: prompt + "x" }).success
+        ).toBe(false);
+      }
+    );
+  });
+
   describe("Seedream v5 Lite text-to-image schema", () => {
     it("should validate with required prompt field only", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({

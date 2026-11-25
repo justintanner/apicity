@@ -93,28 +93,28 @@ const KIE_IMAGE_INPUT_FIELDS = [
 ] as const;
 
 const T2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1261],
+  [1, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1263],
   [2, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1229],
   [3, "GPT Image 2.6 Flare (max)", "OpenAI", 1227],
-  [4, "MAI-Image-2.7", "Microsoft AI", 1214],
+  [4, "MAI-Image-2.7", "Microsoft AI", 1215],
   [5, "GPT Image 2.5 Flare (max)", "OpenAI", 1210],
-  [6, "GPT Image 2 (high)", "OpenAI", 1192],
+  [6, "GPT Image 2 (high)", "OpenAI", 1195],
   [7, "Kling Image 4.0", "KlingAI", 1180],
-  [8, "Nano Banana 2.1", "Google", 1176],
+  [8, "Nano Banana 2.1", "Google", 1175],
   [9, "MAI-Image-2.6", "Microsoft AI", 1168],
-  [10, "Grok Imagine Image 2.0", "SpaceXAI", 1167],
+  [10, "Grok Imagine Image 2.0", "SpaceXAI", 1166],
 ];
 
 const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "MAI-Image-2.7", "Microsoft AI", 1215],
   [2, "GPT Image 2.6 Sunburst (max)", "OpenAI", 1211],
   [3, "GPT Image 2.6 Flare (max)", "OpenAI", 1205],
-  [4, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1202],
+  [4, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1201],
   [5, "GPT Image 2.5 Flare (max)", "OpenAI", 1185],
   [6, "Kling Image 4.0", "KlingAI", 1183],
   [7, "MAI-Image-2.7-Flash", "Microsoft AI", 1179],
-  [8, "Seedream 5.5", "ByteDance Seed", 1160],
-  [9, "Krea 3 (Ultra)", "Krea", 1154],
+  [8, "Seedream 5.5", "ByteDance Seed", 1159],
+  [9, "Krea 3 (Ultra)", "Krea", 1153],
   [10, "Nano Banana 2.1", "Google", 1152],
 ];
 
@@ -124,27 +124,27 @@ const I2I_UNMAPPED: string[] = [];
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
   [2, "Utopai X", "Utopai Studios", 1151],
-  [3, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
-  [4, "MiniMax H3 (768p)", "MiniMax", 1134],
-  [5, "SkyReels V4", "Skywork AI", 1125],
-  [6, "HeyGen Video 1", "HeyGen", 1124],
-  [7, "Hyperflow H3", "Video Rebirth", 1119],
-  [8, "P-Video-2-Pro", "Pruna AI", 1117],
-  [9, "MiniMax H3 Max", "Fal", 1116],
-  [10, "Pika H3 Flex", "Pika Art", 1114],
+  [3, "Boreal-H3", "Creatify", 1148],
+  [4, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
+  [5, "MiniMax H3 (768p)", "MiniMax", 1137],
+  [6, "Dreamina Seedance 2.5 Flash (720p)", "ByteDance Seed", 1136],
+  [7, "HeyGen Video 1", "HeyGen", 1125],
+  [8, "SkyReels V4", "Skywork AI", 1124],
+  [9, "Hyperflow H3", "Video Rebirth", 1122],
+  [10, "MiniMax H3 Max", "Fal", 1118],
 ];
 
 const T2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "Wan 3.0", "Alibaba", 1174],
-  [2, "Utopai X", "Utopai Studios", 1168],
-  [3, "MiniMax H3 (768p)", "MiniMax", 1159],
-  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1156],
+  [1, "Wan 3.0", "Alibaba", 1175],
+  [2, "Utopai X", "Utopai Studios", 1173],
+  [3, "MiniMax H3 (768p)", "MiniMax", 1163],
+  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1155],
   [5, "Hyperflow H3", "Video Rebirth", 1154],
-  [6, "FLUX 3 Max", "Fal", 1152],
-  [7, "Gemini Omni Flash 1.2", "Google", 1151],
+  [6, "Gemini Omni Flash 1.2", "Google", 1153],
+  [7, "FLUX 3 Max", "Fal", 1150],
   [8, "HeyGen Video 1", "HeyGen", 1149],
-  [9, "MiniMax H3 Max", "Fal", 1143],
-  [10, "FLUX 3", "Black Forest Labs", 1136],
+  [9, "MiniMax H3 Max", "Fal", 1146],
+  [10, "FLUX 3", "Black Forest Labs", 1138],
 ];
 
 /** The video-editing board has 11 models; the top 10 are listed. */
@@ -166,32 +166,32 @@ const V2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
  * Elos would keep source order, the t2v model first; this capture has none.
  */
 const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
-  [1, "Wan 3.0", "Alibaba", 1174],
-  [2, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
-  [3, "MiniMax H3 (768p)", "MiniMax", 1159],
-  [4, "Gemini Omni Flash 1.2", "Google", 1151],
+  [1, "Wan 3.0", "Alibaba", 1175],
+  [2, "MiniMax H3 (768p)", "MiniMax", 1163],
+  [3, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
+  [4, "Gemini Omni Flash 1.2", "Google", 1153],
   [5, "HeyGen Video 1", "HeyGen", 1149],
-  [6, "MiniMax H3 Max", "Fal", 1143],
+  [6, "MiniMax H3 Max", "Fal", 1146],
   [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
+  [8, "Dreamina Seedance 2.5 Flash (720p)", "ByteDance Seed", 1136],
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
-const I2V_UNMAPPED = ["Utopai X"];
+const I2V_UNMAPPED = ["Utopai X", "Boreal-H3"];
 const V2V_UNMAPPED: string[] = [];
 
 /**
  * t2v and i2v top-10 models with no reference-to-video endpoint on the
- * derived board. Hyperflow H3 and Pika H3 Flex stay here: their
- * video-reference route is the v2v adapter row, not an r2v row.
+ * derived board. Hyperflow H3 stays here: its video-reference route is the
+ * v2v adapter row, not an r2v row.
  */
 const R2V_LEFT_OUT = [
   "Utopai X",
   "Hyperflow H3",
   "FLUX 3 Max",
   "FLUX 3",
+  "Boreal-H3",
   "SkyReels V4",
-  "P-Video-2-Pro",
-  "Pika H3 Flex",
 ];
 
 /** KIE field names that carry media rather than a setting. */
@@ -1019,7 +1019,7 @@ describe("frontier snapshots", () => {
     expect(snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/image-to-video"
     );
-    expect(snapshot.capturedOn).toBe("2026-11-19");
+    expect(snapshot.capturedOn).toBe("2026-11-25");
     expect(snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
@@ -1033,7 +1033,7 @@ describe("frontier snapshots", () => {
     ).toEqual(I2V_SEED.map((row) => [...row]));
     expect(snapshotProblems(snapshot)).toEqual([]);
     expect(unmappedNames(endpointMap)).toEqual(I2V_UNMAPPED);
-    expect(mappedCount(endpointMap)).toBe(9);
+    expect(mappedCount(endpointMap)).toBe(8);
     expect(Object.keys(endpointMap)).toHaveLength(10);
   });
 
@@ -1162,7 +1162,7 @@ describe("frontier image snapshots", () => {
     expect(t2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/text-to-image"
     );
-    expect(t2i.snapshot.capturedOn).toBe("2026-11-19");
+    expect(t2i.snapshot.capturedOn).toBe("2026-11-25");
     expect(t2i.snapshot.methodology).toBe(
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators."
     );
@@ -1185,7 +1185,7 @@ describe("frontier image snapshots", () => {
     expect(i2i.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/image/leaderboard/editing"
     );
-    expect(i2i.snapshot.capturedOn).toBe("2026-11-19");
+    expect(i2i.snapshot.capturedOn).toBe("2026-11-25");
     expect(i2i.snapshot.methodology).toBe(
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes."
     );
@@ -1548,7 +1548,7 @@ describe("frontier video snapshots", () => {
     expect(t2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/text-to-video"
     );
-    expect(t2v.snapshot.capturedOn).toBe("2026-11-19");
+    expect(t2v.snapshot.capturedOn).toBe("2026-11-25");
     expect(t2v.snapshot.methodology).toBe(
       "Elo from blind comparisons by validated private evaluators."
     );
@@ -1564,7 +1564,7 @@ describe("frontier video snapshots", () => {
     expect(v2v.snapshot.sourceUrl).toBe(
       "https://artificialanalysis.ai/video/leaderboard/video-editing"
     );
-    expect(v2v.snapshot.capturedOn).toBe("2026-11-19");
+    expect(v2v.snapshot.capturedOn).toBe("2026-11-25");
     expect(v2v.snapshot.methodology).toBe(
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes."
     );
@@ -1583,7 +1583,7 @@ describe("frontier video snapshots", () => {
     ]);
     expect(r2v.snapshot).not.toHaveProperty("leaderboardId");
     expect(r2v.snapshot.sourceUrl).toBe(t2v.snapshot.sourceUrl);
-    expect(r2v.snapshot.capturedOn).toBe("2026-11-19");
+    expect(r2v.snapshot.capturedOn).toBe("2026-11-25");
     expect(r2v.snapshot.methodology).toBe(
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard."
     );
@@ -1591,7 +1591,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(7);
+    expect(mappedCount(r2v.endpointMap)).toBe(8);
 
     const ranked = [
       ...new Set([
@@ -1911,7 +1911,6 @@ describe("frontier video snapshots", () => {
         "MiniMax H3 (768p)",
       ]),
       "Hyperflow H3": [hyperflow],
-      "Pika H3 Flex": [pika],
     });
     expect(machgenRows(r2v.endpointMap)).toEqual(
       expected(Object.keys(MACHGEN_IDS))
@@ -2063,7 +2062,7 @@ describe("frontier generated registry", () => {
       leaderboardId: "",
       sourceUrl:
         "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-      capturedOn: "2026-11-19",
+      capturedOn: "2026-11-25",
     });
     expect(frontier("video-editing")).toEqual(frontier("v2v"));
     expect(
@@ -2125,11 +2124,11 @@ describe("frontier generated registry", () => {
       "reference-to-video is derived because no leaderboard"
     );
     expect(doc).toContain("leaderboard\nexists.");
-    expect(doc).toContain("image-to-video),\ncaptured 2026-11-19");
-    expect(doc).toContain("text-to-image),\ncaptured 2026-11-19");
-    expect(doc).toContain("editing),\ncaptured 2026-11-19");
-    expect(doc).toContain("text-to-video),\ncaptured 2026-11-19");
-    expect(doc).toContain("video-editing),\ncaptured 2026-11-19");
+    expect(doc).toContain("image-to-video),\ncaptured 2026-11-25");
+    expect(doc).toContain("text-to-image),\ncaptured 2026-11-25");
+    expect(doc).toContain("editing),\ncaptured 2026-11-25");
+    expect(doc).toContain("text-to-video),\ncaptured 2026-11-25");
+    expect(doc).toContain("video-editing),\ncaptured 2026-11-25");
     expect(doc).toContain("not yet in apicity");
     expect(doc).not.toMatch(/^, captured /m);
     expect(doc).not.toContain("no data yet");
@@ -2145,7 +2144,7 @@ describe("frontier generated registry", () => {
     }
     const derived = doc.slice(doc.indexOf("## reference-to-video"));
     expect(derived).toContain(
-      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v2.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-11-19. Derived:"
+      "[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)\nand\n[AA-Video-I2V v2.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),\ncaptured 2026-11-25. Derived:"
     );
     expect(doc).toContain("fal `minimax.h3.imageToVideo`");
     expect(doc).toContain("kie `minimax-h3/image-to-video`");

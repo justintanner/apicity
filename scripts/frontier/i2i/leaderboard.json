@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Image-Editing v2.1",
   "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/editing",
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-25",
   "methodology": "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
   "entries": [
     {
@@ -26,7 +26,7 @@
       "rank": 4,
       "model": "GPT Image 2.5 Sunburst (max)",
       "creator": "OpenAI",
-      "elo": 1202
+      "elo": 1201
     },
     {
       "rank": 5,
@@ -50,13 +50,13 @@
       "rank": 8,
       "model": "Seedream 5.5",
       "creator": "ByteDance Seed",
-      "elo": 1160
+      "elo": 1159
     },
     {
       "rank": 9,
       "model": "Krea 3 (Ultra)",
       "creator": "Krea",
-      "elo": 1154
+      "elo": 1153
     },
     {
       "rank": 10,

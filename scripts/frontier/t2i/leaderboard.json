@@ -1,14 +1,14 @@
 {
   "leaderboardId": "AA-Image-T2I v2.1",
   "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-25",
   "methodology": "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
   "entries": [
     {
       "rank": 1,
       "model": "GPT Image 2.6 Sunburst (max)",
       "creator": "OpenAI",
-      "elo": 1261
+      "elo": 1263
     },
     {
       "rank": 2,
@@ -26,7 +26,7 @@
       "rank": 4,
       "model": "MAI-Image-2.7",
       "creator": "Microsoft AI",
-      "elo": 1214
+      "elo": 1215
     },
     {
       "rank": 5,
@@ -38,7 +38,7 @@
       "rank": 6,
       "model": "GPT Image 2 (high)",
       "creator": "OpenAI",
-      "elo": 1192
+      "elo": 1195
     },
     {
       "rank": 7,
@@ -50,7 +50,7 @@
       "rank": 8,
       "model": "Nano Banana 2.1",
       "creator": "Google",
-      "elo": 1176
+      "elo": 1175
     },
     {
       "rank": 9,
@@ -62,7 +62,7 @@
       "rank": 10,
       "model": "Grok Imagine Image 2.0",
       "creator": "SpaceXAI",
-      "elo": 1167
+      "elo": 1166
     }
   ]
 }

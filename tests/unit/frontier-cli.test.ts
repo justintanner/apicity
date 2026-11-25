@@ -37,11 +37,12 @@ describe("apicity frontier", () => {
     expect(table).toContain("leaderboard");
     expect(table).toContain("i2v");
     expect(table).toContain("image-to-video");
+    expect(table).toContain("8/10");
     expect(table).toContain("9/10");
     expect(table).toContain("10/10");
-    expect(table).toContain("2026-11-19");
+    expect(table).toContain("2026-11-25");
     expect(table).toContain("derived");
-    expect(table).toContain("7/7");
+    expect(table).toContain("8/8");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
@@ -66,20 +67,20 @@ describe("apicity frontier", () => {
       "r2v",
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
-    expect(i2v).toMatchObject({ models: "9/10", captured: "2026-11-19" });
+    expect(i2v).toMatchObject({ models: "8/10", captured: "2026-11-25" });
     const t2i = envelope.data.find((row) => row.type === "t2i");
-    expect(t2i).toMatchObject({ models: "9/10", captured: "2026-11-19" });
+    expect(t2i).toMatchObject({ models: "9/10", captured: "2026-11-25" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
-    expect(i2i).toMatchObject({ models: "10/10", captured: "2026-11-19" });
+    expect(i2i).toMatchObject({ models: "10/10", captured: "2026-11-25" });
     const t2v = envelope.data.find((row) => row.type === "t2v");
-    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-19" });
+    expect(t2v).toMatchObject({ models: "9/10", captured: "2026-11-25" });
     const v2v = envelope.data.find((row) => row.type === "v2v");
-    expect(v2v).toMatchObject({ models: "10/10", captured: "2026-11-19" });
+    expect(v2v).toMatchObject({ models: "10/10", captured: "2026-11-25" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
-      models: "7/7",
-      captured: "2026-11-19",
+      models: "8/8",
+      captured: "2026-11-25",
     });
   });
 
@@ -118,7 +119,7 @@ describe("apicity frontier", () => {
         (row) => row.model === "MiniMax H3 (768p)" && row.provider === "fal"
       )
     ).toMatchObject({
-      rank: 4,
+      rank: 5,
       dotPath: "minimax.h3.imageToVideo",
       modelId: "-",
       price: { unit: "seconds", min: 0.05, max: 0.16 },
@@ -167,7 +168,8 @@ describe("apicity frontier", () => {
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
     expect(table).not.toContain("machgen");
-    expect(table).toContain("not yet in apicity: Utopai X");
+    expect(table).toContain("bytedance/seedance-2-5-flash");
+    expect(table).toContain("not yet in apicity: Utopai X, Boreal-H3");
     expect(table).not.toContain("SkyReels V4");
     expect(table).not.toContain("present");
   });
@@ -278,7 +280,7 @@ describe("apicity frontier", () => {
       data: Array<{ rank: number; model: string; provider: string }>;
     };
     expect(envelope.ok).toBe(true);
-    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(7);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(8);
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
       model: "Wan 3.0",
@@ -353,7 +355,7 @@ describe("apicity frontier", () => {
       }
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 6, i2i: 6, t2v: 5, i2v: 5, v2v: 4, r2v: 5 });
+    expect(counts).toEqual({ t2i: 6, i2i: 6, t2v: 5, i2v: 4, v2v: 4, r2v: 5 });
   });
 
   it("rejects an unknown type and names the six codes", async () => {

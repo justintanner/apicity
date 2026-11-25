@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `@apicity/cost`: Refresh the frontier registry (`scripts/frontier`, `packages/provider/cost/src/frontier/data.ts`, `docs/frontier.md`) to the 2026-11-25 Artificial Analysis boards (was 2026-11-19). `i2v` adds `Boreal-H3` (#3, unmapped — Creatify's MiniMax H3 post-train, not served by any wrapped provider) and `Dreamina Seedance 2.5 Flash (720p)` (#6, mapped to existing KIE `bytedance/seedance-2-5-flash`), dropping `P-Video-2-Pro` and `Pika H3 Flex` (`Pika H3 Flex` remains on `v2v` #10). Derived `r2v` grows from 7 to 8 entries with `Dreamina Seedance 2.5 Flash (720p)` (#8, KIE `bytedance/seedance-2-5-flash`), and `MiniMax H3 (768p)` (#2) swaps ahead of `Dreamina Seedance 2.5` (#3). `t2v` swaps `Gemini Omni Flash 1.2` (#6) ahead of `FLUX 3 Max` (#7); `t2i`, `i2i`, and `v2v` hold their top 10 with updated Elos (ac-9v29g5).
 - `@apicity/cost`: Keep KIE Gemini 4 Argon (`gemini-4-argon`, `gemini-4-argon-openai`) permanently without `cacheRead: 0.04` (non-breaking) after 2026-11-22 paired cache-hit probes on both OpenAI-compat and native Gemini routes confirmed neither endpoint reports cached token counts or discounts `credits_consumed` below the `$0.80/1M` input rate (`tests/fixtures/kie-pricing-evidence/gemini-4-argon-cache-probe-2026-11-22.json`, ac-o8ihgj).
 
 ### Added

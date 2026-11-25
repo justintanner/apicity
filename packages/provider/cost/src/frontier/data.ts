@@ -14,7 +14,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     derived: false,
@@ -25,7 +25,7 @@ export const FRONTIER_TYPES = [
     aliases: ["image-editing"],
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     derived: false,
@@ -36,7 +36,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -46,7 +46,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     derived: false,
   },
@@ -56,7 +56,7 @@ export const FRONTIER_TYPES = [
     aliases: ["video-editing"],
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     derived: false,
@@ -67,7 +67,7 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     derived: true,
@@ -78,7 +78,7 @@ export const FRONTIER = {
   t2i: {
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     entries: [
@@ -86,7 +86,7 @@ export const FRONTIER = {
         rank: 1,
         model: "GPT Image 2.6 Sunburst (max)",
         creator: "OpenAI",
-        elo: 1261,
+        elo: 1263,
         endpoints: [
           {
             provider: "fal",
@@ -195,7 +195,7 @@ export const FRONTIER = {
         rank: 4,
         model: "MAI-Image-2.7",
         creator: "Microsoft AI",
-        elo: 1214,
+        elo: 1215,
         endpoints: [
           {
             provider: "fal",
@@ -241,7 +241,7 @@ export const FRONTIER = {
         rank: 6,
         model: "GPT Image 2 (high)",
         creator: "OpenAI",
-        elo: 1192,
+        elo: 1195,
         endpoints: [
           {
             provider: "fal",
@@ -297,7 +297,7 @@ export const FRONTIER = {
         rank: 8,
         model: "Nano Banana 2.1",
         creator: "Google",
-        elo: 1176,
+        elo: 1175,
         endpoints: [
           {
             provider: "fal",
@@ -348,7 +348,7 @@ export const FRONTIER = {
         rank: 10,
         model: "Grok Imagine Image 2.0",
         creator: "SpaceXAI",
-        elo: 1167,
+        elo: 1166,
         endpoints: [
           {
             provider: "fal",
@@ -377,7 +377,7 @@ export const FRONTIER = {
   i2i: {
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     entries: [
@@ -474,7 +474,7 @@ export const FRONTIER = {
         rank: 4,
         model: "GPT Image 2.5 Sunburst (max)",
         creator: "OpenAI",
-        elo: 1202,
+        elo: 1201,
         endpoints: [
           {
             provider: "fal",
@@ -576,7 +576,7 @@ export const FRONTIER = {
         rank: 8,
         model: "Seedream 5.5",
         creator: "ByteDance Seed",
-        elo: 1160,
+        elo: 1159,
         endpoints: [
           {
             provider: "fal",
@@ -604,7 +604,7 @@ export const FRONTIER = {
         rank: 9,
         model: "Krea 3 (Ultra)",
         creator: "Krea",
-        elo: 1154,
+        elo: 1153,
         endpoints: [
           {
             provider: "fal",
@@ -662,14 +662,14 @@ export const FRONTIER = {
   t2v: {
     leaderboardId: "AA-Video-T2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
         rank: 1,
         model: "Wan 3.0",
         creator: "Alibaba",
-        elo: 1174,
+        elo: 1175,
         endpoints: [
           {
             provider: "fal",
@@ -722,14 +722,14 @@ export const FRONTIER = {
         rank: 2,
         model: "Utopai X",
         creator: "Utopai Studios",
-        elo: 1168,
+        elo: 1173,
         endpoints: [],
       },
       {
         rank: 3,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
-        elo: 1159,
+        elo: 1163,
         endpoints: [
           {
             provider: "fal",
@@ -762,7 +762,7 @@ export const FRONTIER = {
         rank: 4,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
-        elo: 1156,
+        elo: 1155,
         endpoints: [
           {
             provider: "fal",
@@ -813,22 +813,9 @@ export const FRONTIER = {
       },
       {
         rank: 6,
-        model: "FLUX 3 Max",
-        creator: "Fal",
-        elo: 1152,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "blackforestlabs.flux3Max.textToVideo",
-            pricingKey: "blackforestlabs/flux-3-max/text-to-video",
-          },
-        ],
-      },
-      {
-        rank: 7,
         model: "Gemini Omni Flash 1.2",
         creator: "Google",
-        elo: 1151,
+        elo: 1153,
         endpoints: [
           {
             provider: "fal",
@@ -863,6 +850,19 @@ export const FRONTIER = {
         ],
       },
       {
+        rank: 7,
+        model: "FLUX 3 Max",
+        creator: "Fal",
+        elo: 1150,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "blackforestlabs.flux3Max.textToVideo",
+            pricingKey: "blackforestlabs/flux-3-max/text-to-video",
+          },
+        ],
+      },
+      {
         rank: 8,
         model: "HeyGen Video 1",
         creator: "HeyGen",
@@ -884,7 +884,7 @@ export const FRONTIER = {
         rank: 9,
         model: "MiniMax H3 Max",
         creator: "Fal",
-        elo: 1143,
+        elo: 1146,
         endpoints: [
           {
             provider: "fal",
@@ -902,7 +902,7 @@ export const FRONTIER = {
         rank: 10,
         model: "FLUX 3",
         creator: "Black Forest Labs",
-        elo: 1136,
+        elo: 1138,
         endpoints: [
           {
             provider: "fal",
@@ -921,7 +921,7 @@ export const FRONTIER = {
   i2v: {
     leaderboardId: "AA-Video-I2V v2.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology: "Elo from blind comparisons by validated private evaluators.",
     entries: [
       {
@@ -971,6 +971,13 @@ export const FRONTIER = {
       },
       {
         rank: 3,
+        model: "Boreal-H3",
+        creator: "Creatify",
+        elo: 1148,
+        endpoints: [],
+      },
+      {
+        rank: 4,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
         elo: 1141,
@@ -1008,10 +1015,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
+        rank: 5,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
-        elo: 1134,
+        elo: 1137,
         endpoints: [
           {
             provider: "fal",
@@ -1041,23 +1048,23 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
-        model: "SkyReels V4",
-        creator: "Skywork AI",
-        elo: 1125,
+        rank: 6,
+        model: "Dreamina Seedance 2.5 Flash (720p)",
+        creator: "ByteDance Seed",
+        elo: 1136,
         endpoints: [
           {
-            provider: "wavespeed",
-            dotPath: "api.v3.skyworkAi.skyreelsV4.imageToVideo",
-            pricingKey: "skywork-ai/skyreels-v4/image-to-video",
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "bytedance/seedance-2-5-flash",
           },
         ],
       },
       {
-        rank: 6,
+        rank: 7,
         model: "HeyGen Video 1",
         creator: "HeyGen",
-        elo: 1124,
+        elo: 1125,
         endpoints: [
           {
             provider: "fal",
@@ -1072,10 +1079,23 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 8,
+        model: "SkyReels V4",
+        creator: "Skywork AI",
+        elo: 1124,
+        endpoints: [
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.skyworkAi.skyreelsV4.imageToVideo",
+            pricingKey: "skywork-ai/skyreels-v4/image-to-video",
+          },
+        ],
+      },
+      {
+        rank: 9,
         model: "Hyperflow H3",
         creator: "Video Rebirth",
-        elo: 1119,
+        elo: 1122,
         endpoints: [
           {
             provider: "machgen",
@@ -1087,23 +1107,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
-        model: "P-Video-2-Pro",
-        creator: "Pruna AI",
-        elo: 1117,
-        endpoints: [
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.prunaAi.pVideo2Pro.imageToVideo",
-            pricingKey: "pruna-ai/p-video-2-pro/image-to-video",
-          },
-        ],
-      },
-      {
-        rank: 9,
+        rank: 10,
         model: "MiniMax H3 Max",
         creator: "Fal",
-        elo: 1116,
+        elo: 1118,
         endpoints: [
           {
             provider: "fal",
@@ -1117,27 +1124,12 @@ export const FRONTIER = {
           },
         ],
       },
-      {
-        rank: 10,
-        model: "Pika H3 Flex",
-        creator: "Pika Art",
-        elo: 1114,
-        endpoints: [
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "MiniMax-H3-Turbo",
-            adapter: "pika_h3_flex",
-            note: "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference.",
-          },
-        ],
-      },
     ],
   },
   v2v: {
     leaderboardId: "AA-Video-Editing v1.1",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/video-editing",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
     entries: [
@@ -1410,7 +1402,7 @@ export const FRONTIER = {
   r2v: {
     leaderboardId: "",
     sourceUrl: "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-    capturedOn: "2026-11-19",
+    capturedOn: "2026-11-25",
     methodology:
       "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
     entries: [
@@ -1418,7 +1410,7 @@ export const FRONTIER = {
         rank: 1,
         model: "Wan 3.0",
         creator: "Alibaba",
-        elo: 1174,
+        elo: 1175,
         endpoints: [
           {
             provider: "fal",
@@ -1469,6 +1461,39 @@ export const FRONTIER = {
       },
       {
         rank: 2,
+        model: "MiniMax H3 (768p)",
+        creator: "MiniMax",
+        elo: 1163,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "minimax.h3.referenceToVideo",
+            pricingKey: "minimax/h3/reference-to-video",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "minimax-h3/reference-to-video",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3",
+          },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.minimax.h3.referenceToVideo",
+            pricingKey: "minimax/h3/reference-to-video",
+          },
+          {
+            provider: "nunchux",
+            dotPath: "v1.minimax.v2.videoGeneration",
+            modelId: "MiniMax-H3",
+          },
+        ],
+      },
+      {
+        rank: 3,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
         elo: 1161,
@@ -1506,43 +1531,10 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
-        model: "MiniMax H3 (768p)",
-        creator: "MiniMax",
-        elo: 1159,
-        endpoints: [
-          {
-            provider: "fal",
-            dotPath: "minimax.h3.referenceToVideo",
-            pricingKey: "minimax/h3/reference-to-video",
-          },
-          {
-            provider: "kie",
-            dotPath: "api.v1.jobs.createTask",
-            modelId: "minimax-h3/reference-to-video",
-          },
-          {
-            provider: "machgen",
-            dotPath: "api.v0.generate",
-            modelId: "MiniMax-H3",
-          },
-          {
-            provider: "wavespeed",
-            dotPath: "api.v3.minimax.h3.referenceToVideo",
-            pricingKey: "minimax/h3/reference-to-video",
-          },
-          {
-            provider: "nunchux",
-            dotPath: "v1.minimax.v2.videoGeneration",
-            modelId: "MiniMax-H3",
-          },
-        ],
-      },
-      {
         rank: 4,
         model: "Gemini Omni Flash 1.2",
         creator: "Google",
-        elo: 1151,
+        elo: 1153,
         endpoints: [
           {
             provider: "fal",
@@ -1598,7 +1590,7 @@ export const FRONTIER = {
         rank: 6,
         model: "MiniMax H3 Max",
         creator: "Fal",
-        elo: 1143,
+        elo: 1146,
         endpoints: [
           {
             provider: "fal",
@@ -1642,6 +1634,19 @@ export const FRONTIER = {
             provider: "wavespeed",
             dotPath: "api.v3.bytedance.seedance2p0.referenceToVideo",
             pricingKey: "bytedance/seedance-2.0/reference-to-video",
+          },
+        ],
+      },
+      {
+        rank: 8,
+        model: "Dreamina Seedance 2.5 Flash (720p)",
+        creator: "ByteDance Seed",
+        elo: 1136,
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "bytedance/seedance-2-5-flash",
           },
         ],
       },

@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Video-Editing v1.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/video-editing",
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-25",
   "methodology": "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
   "entries": [
     {

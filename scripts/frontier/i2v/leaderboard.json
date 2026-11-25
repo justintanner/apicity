@@ -1,7 +1,7 @@
 {
   "leaderboardId": "AA-Video-I2V v2.1",
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/image-to-video",
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-25",
   "methodology": "Elo from blind comparisons by validated private evaluators.",
   "entries": [
     {
@@ -18,51 +18,51 @@
     },
     {
       "rank": 3,
+      "model": "Boreal-H3",
+      "creator": "Creatify",
+      "elo": 1148
+    },
+    {
+      "rank": 4,
       "model": "Dreamina Seedance 2.0",
       "creator": "ByteDance Seed",
       "elo": 1141
     },
     {
-      "rank": 4,
+      "rank": 5,
       "model": "MiniMax H3 (768p)",
       "creator": "MiniMax",
-      "elo": 1134
-    },
-    {
-      "rank": 5,
-      "model": "SkyReels V4",
-      "creator": "Skywork AI",
-      "elo": 1125
+      "elo": 1137
     },
     {
       "rank": 6,
-      "model": "HeyGen Video 1",
-      "creator": "HeyGen",
-      "elo": 1124
+      "model": "Dreamina Seedance 2.5 Flash (720p)",
+      "creator": "ByteDance Seed",
+      "elo": 1136
     },
     {
       "rank": 7,
-      "model": "Hyperflow H3",
-      "creator": "Video Rebirth",
-      "elo": 1119
+      "model": "HeyGen Video 1",
+      "creator": "HeyGen",
+      "elo": 1125
     },
     {
       "rank": 8,
-      "model": "P-Video-2-Pro",
-      "creator": "Pruna AI",
-      "elo": 1117
+      "model": "SkyReels V4",
+      "creator": "Skywork AI",
+      "elo": 1124
     },
     {
       "rank": 9,
-      "model": "MiniMax H3 Max",
-      "creator": "Fal",
-      "elo": 1116
+      "model": "Hyperflow H3",
+      "creator": "Video Rebirth",
+      "elo": 1122
     },
     {
       "rank": 10,
-      "model": "Pika H3 Flex",
-      "creator": "Pika Art",
-      "elo": 1114
+      "model": "MiniMax H3 Max",
+      "creator": "Fal",
+      "elo": 1118
     }
   ]
 }

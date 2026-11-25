@@ -32,6 +32,7 @@
     }
   ],
   "Utopai X": [],
+  "Boreal-H3": [],
   "Dreamina Seedance 2.0": [
     {
       "provider": "fal",
@@ -91,11 +92,11 @@
       "modelId": "MiniMax-H3"
     }
   ],
-  "SkyReels V4": [
+  "Dreamina Seedance 2.5 Flash (720p)": [
     {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.skyworkAi.skyreelsV4.imageToVideo",
-      "pricingKey": "skywork-ai/skyreels-v4/image-to-video"
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2-5-flash"
     }
   ],
   "HeyGen Video 1": [
@@ -110,6 +111,13 @@
       "pricingKey": "heygen/video-1.0/image-to-video"
     }
   ],
+  "SkyReels V4": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.skyworkAi.skyreelsV4.imageToVideo",
+      "pricingKey": "skywork-ai/skyreels-v4/image-to-video"
+    }
+  ],
   "Hyperflow H3": [
     {
       "provider": "machgen",
@@ -117,13 +125,6 @@
       "modelId": "MiniMax-H3-Turbo",
       "adapter": "hyperflow",
       "note": "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference."
-    }
-  ],
-  "P-Video-2-Pro": [
-    {
-      "provider": "wavespeed",
-      "dotPath": "api.v3.prunaAi.pVideo2Pro.imageToVideo",
-      "pricingKey": "pruna-ai/p-video-2-pro/image-to-video"
     }
   ],
   "MiniMax H3 Max": [
@@ -136,15 +137,6 @@
       "provider": "fal",
       "dotPath": "minimax.h3MaxTurbo.imageToVideo",
       "pricingKey": "minimax/h3-max-turbo/image-to-video"
-    }
-  ],
-  "Pika H3 Flex": [
-    {
-      "provider": "machgen",
-      "dotPath": "api.v0.generate",
-      "modelId": "MiniMax-H3-Turbo",
-      "adapter": "pika_h3_flex",
-      "note": "MachGen runs the open weights through MiniMax-H3-Turbo at 480p and 768p. The board rated Pika's own 1080p service, which apicity does not wrap. This is how the model is reached through apicity, not that it equals the rated service. Video-to-video is reference-to-video with a video reference."
     }
   ]
 }

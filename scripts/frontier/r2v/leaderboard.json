@@ -2,32 +2,32 @@
   "derived": true,
   "sources": ["AA-Video-T2V v2.1", "AA-Video-I2V v2.1"],
   "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
-  "capturedOn": "2026-11-19",
+  "capturedOn": "2026-11-25",
   "methodology": "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
   "entries": [
     {
       "rank": 1,
       "model": "Wan 3.0",
       "creator": "Alibaba",
-      "elo": 1174
+      "elo": 1175
     },
     {
       "rank": 2,
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1163
+    },
+    {
+      "rank": 3,
       "model": "Dreamina Seedance 2.5",
       "creator": "ByteDance Seed",
       "elo": 1161
     },
     {
-      "rank": 3,
-      "model": "MiniMax H3 (768p)",
-      "creator": "MiniMax",
-      "elo": 1159
-    },
-    {
       "rank": 4,
       "model": "Gemini Omni Flash 1.2",
       "creator": "Google",
-      "elo": 1151
+      "elo": 1153
     },
     {
       "rank": 5,
@@ -39,13 +39,19 @@
       "rank": 6,
       "model": "MiniMax H3 Max",
       "creator": "Fal",
-      "elo": 1143
+      "elo": 1146
     },
     {
       "rank": 7,
       "model": "Dreamina Seedance 2.0",
       "creator": "ByteDance Seed",
       "elo": 1141
+    },
+    {
+      "rank": 8,
+      "model": "Dreamina Seedance 2.5 Flash (720p)",
+      "creator": "ByteDance Seed",
+      "elo": 1136
     }
   ]
 }

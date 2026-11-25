@@ -16643,11 +16643,15 @@ export type FalIdeogramVectorTextToVectorParsedRequest = z.output<
 // (sha256 32f6a4ab26aebcb0d97234366f2ac872045fa5eff5ecd430b6cf3a5285e4629d).
 // Field order follows x-fal-order-properties; additionalProperties is false.
 // The OpenAPI describes only enable_safety_checker.
+// The queue OpenAPI re-read on 2026-11-25
+// (sha256 cba0da0a7241a60402346f87c687f681c238e97af6cf46016cf4ec48fda572c7)
+// raised duration's maximum from 15 to 30 seconds; every other field rule is
+// unchanged.
 // Docs: https://fal.ai/models/heygen/heygen-video/text-to-video/api
 export const FalHeygenHeygenVideoTextToVideoRequestSchema = z
   .object({
     prompt: z.string().min(1).max(32000),
-    duration: z.number().int().min(5).max(15).default(5),
+    duration: z.number().int().min(5).max(30).default(5),
     resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
     prompt_enhancement: z
       .enum(["turbo", "quality", "ultraquality", "disabled"])

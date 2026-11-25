@@ -11,6 +11,15 @@
  */
 export const CHARSHEET_FIXTURE = "charsheet.png";
 
+/**
+ * The same bytes as a public URL, for providers that fetch their inputs
+ * (MachGen, WaveSpeed, and any fal or KIE field that takes a URL). Pinned to
+ * the commit that added the sheet, so a recorded request body stays
+ * byte-identical; tests/machgen-helpers.ts pins cat1.jpg the same way.
+ */
+export const CHARSHEET_URL =
+  "https://raw.githubusercontent.com/justintanner/apicity/483c0b7bbed4232eeed9af3e2624a4d8b12b4ef2/tests/fixtures/charsheet.png";
+
 /** The sheet's MIME type, for uploads and data URIs. */
 export const CHARSHEET_MIME_TYPE = "image/png";
 

@@ -209,5 +209,12 @@
       "dotPath": "api.v0.generate",
       "modelId": "Seedance-2.5-Flash"
     }
+  ],
+  "SkyReels V4": [
+    {
+      "provider": "wavespeed",
+      "dotPath": "api.v3.skyworkAi.skyreelsV4.referenceToVideo",
+      "pricingKey": "skywork-ai/skyreels-v4/reference-to-video"
+    }
   ]
 }

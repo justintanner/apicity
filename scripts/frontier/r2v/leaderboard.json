@@ -52,6 +52,12 @@
       "model": "Dreamina Seedance 2.5 Flash (720p)",
       "creator": "ByteDance Seed",
       "elo": 1136
+    },
+    {
+      "rank": 9,
+      "model": "SkyReels V4",
+      "creator": "Skywork AI",
+      "elo": 1124
     }
   ]
 }

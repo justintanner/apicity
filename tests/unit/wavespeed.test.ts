@@ -57,6 +57,7 @@ import {
   WaveSpeedRunwaymlAleph2RequestSchema,
   WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema,
   WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
+  WaveSpeedSkyworkAiSkyreelsV4ReferenceToVideoRequestSchema,
   WaveSpeedWavespeedAiMinimaxH3VideoEditRequestSchema,
   WaveSpeedXAiGrokImagineImageV2p0TextToImageRequestSchema,
   WaveSpeedXAiGrokImagineVideoV1p5ImageToVideoRequestSchema,
@@ -3200,6 +3201,7 @@ describe("wavespeed skywork-ai/skyreels-v4/text-to-video", () => {
     expect(Object.keys(wavespeed.api.v3.skyworkAi.skyreelsV4)).toEqual([
       "textToVideo",
       "imageToVideo",
+      "referenceToVideo",
     ]);
     expect(wavespeed.api.v3.skyworkAi.skyreelsV4.textToVideo.schema).toBe(
       WaveSpeedSkyworkAiSkyreelsV4TextToVideoRequestSchema
@@ -3818,5 +3820,50 @@ describe("wavespeed bytedance/seedance-2.5-flash/reference-to-video", () => {
         }
       ).success
     ).toBe(true);
+  });
+});
+
+describe("wavespeed skywork-ai/skyreels-v4/reference-to-video", () => {
+  const schema = WaveSpeedSkyworkAiSkyreelsV4ReferenceToVideoRequestSchema;
+  const prompt = "A cat turns toward the window.";
+  const image = "https://example.com/cat.jpg";
+  const video = "https://example.com/cat.mp4";
+
+  it("accepts a prompt alone or up to three images and one video", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+    expect(wavespeed.api.v3.skyworkAi.skyreelsV4.referenceToVideo.schema).toBe(
+      schema
+    );
+    expect(schema.safeParse({ prompt }).success).toBe(true);
+    expect(
+      schema.safeParse({
+        prompt,
+        images: [image, image, image],
+        ref_videos: [video],
+        aspect_ratio: "9:16",
+        duration: 15,
+        resolution: "720p",
+        sound: true,
+        mode: "std",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects excess references and unsupported generation options", () => {
+    for (const invalid of [
+      { prompt: undefined },
+      { images: [image, image, image, image] },
+      { ref_videos: [video, video] },
+      { ref_videos: video },
+      { aspect_ratio: "4:3" },
+      { duration: 2 },
+      { duration: 3.5 },
+      { duration: 16 },
+      { resolution: "4k" },
+      { mode: "turbo" },
+      { sound: "false" },
+    ]) {
+      expect(schema.safeParse({ prompt, ...invalid }).success).toBe(false);
+    }
   });
 });

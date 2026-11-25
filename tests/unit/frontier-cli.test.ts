@@ -42,7 +42,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("10/10");
     expect(table).toContain("2026-11-25");
     expect(table).toContain("derived");
-    expect(table).toContain("8/8");
+    expect(table).toContain("9/9");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
@@ -79,7 +79,7 @@ describe("apicity frontier", () => {
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
-      models: "8/8",
+      models: "9/9",
       captured: "2026-11-25",
     });
   });
@@ -281,7 +281,7 @@ describe("apicity frontier", () => {
       data: Array<{ rank: number; model: string; provider: string }>;
     };
     expect(envelope.ok).toBe(true);
-    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(8);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(9);
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
       model: "Wan 3.0",
@@ -301,6 +301,14 @@ describe("apicity frontier", () => {
         model: "Dreamina Seedance 2.5 Flash (720p)",
         provider: "wavespeed",
         dotPath: "api.v3.bytedance.seedance2p5Flash.referenceToVideo",
+      })
+    );
+    expect(envelope.data).toContainEqual(
+      expect.objectContaining({
+        rank: 9,
+        model: "SkyReels V4",
+        provider: "wavespeed",
+        dotPath: "api.v3.skyworkAi.skyreelsV4.referenceToVideo",
       })
     );
     // Dreamina Seedance 2.0 reaches r2v from the i2v board alone.

@@ -1078,6 +1078,11 @@ export const FRONTIER = {
             dotPath: "bytedance.seedance2p5.flash.imageToVideo",
             pricingKey: "bytedance/seedance-2.5/flash/image-to-video",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.bytedance.seedance2p5Flash.imageToVideo",
+            pricingKey: "bytedance/seedance-2.5-flash/image-to-video",
+          },
         ],
       },
       {

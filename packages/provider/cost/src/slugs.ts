@@ -1159,6 +1159,7 @@ export const MODEL_SLUGS = {
     "microsoft/mai-image-2.7/edit": "mai2p7",
     "microsoft/mai-image-2.7/text-to-image": "mai2p7",
     "microsoft/mai-image-2.7-flash/edit": "mai2p7f",
+    "bytedance/seedance-2.5-flash/image-to-video": "sd2p5flash",
   },
 } as const;
 
@@ -2330,6 +2331,7 @@ export const MODEL_DISPLAY = {
     "microsoft/mai-image-2.7/edit": "MAI Image 2.7 Edit",
     "microsoft/mai-image-2.7/text-to-image": "MAI Image 2.7",
     "microsoft/mai-image-2.7-flash/edit": "MAI Image 2.7 Flash Edit",
+    "bytedance/seedance-2.5-flash/image-to-video": "Seedance 2.5 Flash",
   },
 } as const;
 

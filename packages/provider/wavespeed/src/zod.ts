@@ -393,6 +393,52 @@ export const WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema = z.object({
     ),
 });
 
+// bytedance/seedance-2.5-flash/image-to-video, from WaveSpeed's model page
+// and llms.txt, both read 2026-11-25.
+export const WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema =
+  z.object({
+    prompt: z
+      .string()
+      .describe(
+        "Describe the scene, action, camera movement, and mood for the video."
+      ),
+    image: z
+      .string()
+      .describe("Start image URL to guide the video generation."),
+    last_image: z
+      .string()
+      .optional()
+      .describe("Last frame image URL for video continuation."),
+    resolution: z
+      .enum(["480p", "720p", "1080p", "4k"])
+      .optional()
+      .describe(
+        "Output video resolution. 1080p and 4k are generated at 720p and upscaled. WaveSpeed default: `720p`."
+      ),
+    duration: z
+      .number()
+      .int()
+      .min(4)
+      .max(30)
+      .optional()
+      .describe("Length of the video in seconds, 4-30. WaveSpeed default: 5."),
+    generate_audio: z
+      .boolean()
+      .optional()
+      .describe(
+        "Generate native audio synchronized with the video. WaveSpeed default: true."
+      ),
+    // mov at 1080p or 4k is refused upstream. This stays a ZodObject:
+    // a superRefine would become ZodEffects and apicity describe would
+    // drop the object shape.
+    output_format: z
+      .enum(["mp4", "mov"])
+      .optional()
+      .describe(
+        "Container of the output video. `mov` is QuickTime H.264 4:4:4 with uncompressed audio and is not available at 1080p or 4k. WaveSpeed default: `mp4`."
+      ),
+  });
+
 // google/gemini-omni-1.1-flash/image-to-video, from WaveSpeed's model catalog
 // (GET /api/v3/models, read 2026-11-02).
 export const WaveSpeedGoogleGeminiOmni1p1FlashImageToVideoRequestSchema =

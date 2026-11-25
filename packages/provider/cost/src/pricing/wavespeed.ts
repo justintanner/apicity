@@ -1362,4 +1362,22 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-25",
     },
   },
+  // Model page and llms.txt read 2026-11-25, confirmed by free quotes
+  // (POST /api/v3/model/price, discount_rate 90). List USD per second:
+  // 480p 0.12, 720p 0.24, 1080p 0.60, 4k 1.20. Audio and output_format
+  // do not change the price. An omitted duration is 5 s and an omitted
+  // resolution is 720p (1.20 USD). 1080p and 4k are upscaled from 720p.
+  "bytedance/seedance-2.5-flash/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: requestedSeconds(5),
+    select: [
+      { name: "resolution", pick: (p) => asString(p.resolution) ?? "720p" },
+    ],
+    rates: { "480p": 0.12, "720p": 0.24, "1080p": 0.6, "4k": 1.2 },
+    source: {
+      url: "https://wavespeed.ai/models/bytedance/seedance-2.5-flash/image-to-video",
+      asOf: "2026-11-25",
+    },
+  },
 };

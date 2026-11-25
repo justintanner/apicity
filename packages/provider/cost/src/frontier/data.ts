@@ -580,6 +580,11 @@ export const FRONTIER = {
             dotPath: "microsoft.maiImage2p7.flash.edit",
             pricingKey: "microsoft/mai-image-2.7/flash/edit",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.microsoft.maiImage2p7Flash.edit",
+            pricingKey: "microsoft/mai-image-2.7-flash/edit",
+          },
         ],
       },
       {

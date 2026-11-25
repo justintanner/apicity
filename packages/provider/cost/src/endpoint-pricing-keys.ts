@@ -641,6 +641,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "microsoft/mai-image-2.7/edit",
   "wavespeed POST api.v3.microsoft.maiImage2p7.textToImage":
     "microsoft/mai-image-2.7/text-to-image",
+  "wavespeed POST api.v3.microsoft.maiImage2p7Flash.edit":
+    "microsoft/mai-image-2.7-flash/edit",
   "wavespeed POST api.v3.minimax.h3.imageToVideo": "minimax/h3/image-to-video",
   "wavespeed POST api.v3.minimax.h3.referenceToVideo":
     "minimax/h3/reference-to-video",

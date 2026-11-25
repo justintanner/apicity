@@ -1863,6 +1863,7 @@ wavespeed	api.v3.kwaivgi.klingImageV4p0.textToImage	POST	metered	images		https:/
 wavespeed	api.v3.kwaivgi.klingVideoO3Pro.videoEdit	POST	metered	seconds		https://wavespeed.ai/models/kwaivgi/kling-video-o3-pro/video-edit	2026-11-06
 wavespeed	api.v3.microsoft.maiImage2p7.edit	POST	metered	images		https://wavespeed.ai/models/microsoft/mai-image-2.7/edit	2026-11-25
 wavespeed	api.v3.microsoft.maiImage2p7.textToImage	POST	metered	images		https://wavespeed.ai/models/microsoft/mai-image-2.7/text-to-image	2026-11-25
+wavespeed	api.v3.microsoft.maiImage2p7Flash.edit	POST	metered	images		https://wavespeed.ai/models/microsoft/mai-image-2.7-flash/edit	2026-11-25
 wavespeed	api.v3.minimax.h3.imageToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/image-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.referenceToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/reference-to-video	2026-11-04
 wavespeed	api.v3.minimax.h3.textToVideo	POST	metered	seconds		https://wavespeed.ai/models/minimax/h3/text-to-video	2026-11-04

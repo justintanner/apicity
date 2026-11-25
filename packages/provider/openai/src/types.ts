@@ -535,9 +535,11 @@ export interface OpenAiResponseGetOptions {
   stream?: boolean;
 }
 
-// Responses API response fields from the API reference (read 2026-11-25);
-// gpt-5.6-sol returns them on every response in the videobook capture
-// corpus (HAR learning pass 2, ac-11lqw3 -> ac-14k4jm).
+// Responses API response fields from the API reference (read 2026-11-25).
+// The 210 v1.responses calls of the videobook capture corpus (204
+// gpt-5.6-sol, 6 gpt-6-astra) carry them: image on 145 and
+// input_transformations on 86, the rest on all 210 (HAR learning pass 2,
+// ac-11lqw3 -> ac-14k4jm).
 
 // The effective Cyber access program for the response.
 export interface OpenAiResponseAccessPrograms {

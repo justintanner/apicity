@@ -12,9 +12,10 @@ import type {
   OpenAiTranscriptionLanguage,
 } from "@apicity/openai";
 
-// HAR learning pass 2 (ac-11lqw3) found these keys on every gpt-5.6-sol
-// response in the 2026-11-25 videobook capture corpus (210 responses), and
-// the closed OpenAiResponseResponse hid them. Shapes follow the API
+// HAR learning pass 2 (ac-11lqw3) found these keys on the 210 v1.responses
+// calls of the 2026-11-25 videobook capture corpus (204 gpt-5.6-sol, 6
+// gpt-6-astra; image on 145, input_transformations on 86, the rest on all
+// 210), and the closed OpenAiResponseResponse hid them. Shapes follow the API
 // reference read 2026-11-25 (ac-14k4jm). The literal below uses the values
 // the captures carried; its text is invented.
 describe("openai v1.responses response fields", () => {

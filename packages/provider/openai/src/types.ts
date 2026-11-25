@@ -693,12 +693,23 @@ export interface OpenAiResponseInputItemsResponse {
   has_more: boolean;
 }
 
-// Responses API compact response
+// The opaque context returned by POST /v1/responses/compact.
+export interface OpenAiResponseCompactionItem {
+  type: "compaction";
+  id: string;
+  encrypted_content: string;
+  created_by?: string;
+}
+
 export interface OpenAiResponseCompactResponse {
   id: string;
   object: "response.compaction";
   created_at: number;
-  output: (OpenAiResponseInputItem | OpenAiResponseOutputItem)[];
+  output: (
+    | OpenAiResponseInputItem
+    | OpenAiResponseOutputItem
+    | OpenAiResponseCompactionItem
+  )[];
   usage?: OpenAiResponseUsage;
 }
 

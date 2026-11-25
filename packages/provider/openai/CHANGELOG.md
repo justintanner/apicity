@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `OpenAiResponseCompactResponse.output` can contain an `OpenAiResponseCompactionItem`. Callers that exhaustively handle compact output must add a `"compaction"` case. Narrow on `item.type` to read its opaque `encrypted_content` (ac-3o32zx).
 - **Breaking:** `OpenAiResponseOutputItem` gains `OpenAiResponseReasoningItem` (`type: "reasoning"`: `id`, `summary`, and optional `content`, `encrypted_content` and `status`), so `v1.responses` output, the input-items list `data` and the compact `output` type the reasoning items the API already returns. There is no runtime change. The committed o4-mini recording holds one, and 205 of the 210 `v1.responses` calls in the videobook capture corpus held 230 (204 of 204 on gpt-5.6-sol), each with `encrypted_content` and none with `status`. Code that treated the union as four kinds stops compiling: a `switch (item.type)` that ends in a `never` check, a final `else` that assumes `file_search_call`, a table keyed by `OpenAiResponseOutputItem["type"]`, an assignment to your own union of the four item types, and `item.status` read before narrowing (now possibly `undefined`). Each of those already mishandled a reasoning item at runtime. Migration: add a `"reasoning"` case or a `default` branch, and narrow on `item.type` before reading `status`. The API documents more item kinds than apicity models, so keep the `default` branch (ac-puf914).
 
 ### Fixed

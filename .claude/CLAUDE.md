@@ -357,6 +357,17 @@ file's content.
 - Type guards: `is<Name>` pattern (e.g., `isAnthropicErrorBody`)
 - Prefer `interface` over `type` for object shapes
 - `Record<string, unknown>` for API request/response bodies
+- **Closed response unions: a new member is Breaking.** A closed exported
+  union of response objects keyed by `type` (`OpenAiResponseOutputItem`,
+  `XaiResponseOutputItem`) can be matched exhaustively, so a new member stops
+  caller code compiling: a `never` check, a final `else`, a table keyed by
+  `type`, a field read before narrowing. Ship it as `feat(<provider>)!` with a
+  **Breaking:** line that says how to migrate, in a minor, together with any
+  other member that union is waiting for. Add a member only when a recording
+  or capture carries the kind. Do not open such a union with a catch-all: a
+  member typed `type: string`, branded or not, stays in every narrowed type and
+  turns the other members' fields into `unknown`, and a closed list of
+  unmodelled kinds only moves the lag (`ac-wrydrp`).
 - **Model-identifier enums stay open.** When a field names an upstream _model_
   and upstream independently ships new identifiers in that family on its own
   cadence, write `z.enum([...known]).or(<FamilyAliasSchema>)`, where the alias

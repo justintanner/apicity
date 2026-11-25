@@ -2864,3 +2864,50 @@ describe("wavespeed skywork-ai/skyreels-v4/image-to-video", () => {
     expect(result.warnings).toHaveLength(1);
   });
 });
+
+describe("wavespeed microsoft/mai-image-2.7/edit", () => {
+  const model = "microsoft/mai-image-2.7/edit";
+  const IMAGE = "https://example.com/cat1.jpg";
+
+  // Free quotes (POST /api/v3/model/price) read 2026-11-25, list price
+  // (discount_rate 100): 0.035 USD base plus 0.0082 USD per input image.
+  it("prices the recorded payload at the 0.0432 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      images: [IMAGE],
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.0432, 9);
+  });
+
+  it("adds 0.0082 USD for each input image from 1 to 5", () => {
+    for (const [count, usd] of [
+      [1, 0.0432],
+      [2, 0.0514],
+      [3, 0.0596],
+      [4, 0.0678],
+      [5, 0.076],
+    ] as const) {
+      const result = estimate(model, {
+        prompt: PROMPT,
+        images: Array.from({ length: count }, () => IMAGE),
+      });
+      expect(result.warnings, `${count} image(s)`).toEqual([]);
+      expect(result.usd, `${count} image(s)`).toBeCloseTo(usd, 9);
+    }
+  });
+
+  it("fails closed when images are missing, empty, non-array, or exceed 5", () => {
+    for (const payload of [
+      { prompt: PROMPT },
+      { prompt: PROMPT, images: [] },
+      { prompt: PROMPT, images: IMAGE },
+      { prompt: PROMPT, images: Array.from({ length: 6 }, () => IMAGE) },
+    ]) {
+      const result = estimate(model, payload);
+      expect(result.usd, JSON.stringify(payload)).toBe(0);
+      expect(result.warnings, JSON.stringify(payload)).toHaveLength(1);
+    }
+  });
+});

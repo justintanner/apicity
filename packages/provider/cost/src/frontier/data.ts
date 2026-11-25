@@ -392,6 +392,11 @@ export const FRONTIER = {
             dotPath: "microsoft.maiImage2p7.edit",
             pricingKey: "microsoft/mai-image-2.7/edit",
           },
+          {
+            provider: "wavespeed",
+            dotPath: "api.v3.microsoft.maiImage2p7.edit",
+            pricingKey: "microsoft/mai-image-2.7/edit",
+          },
         ],
       },
       {

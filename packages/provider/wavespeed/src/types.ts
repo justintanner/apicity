@@ -34,6 +34,7 @@ import type {
   WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
+  WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -947,6 +948,24 @@ export interface WaveSpeedSkyworkAiSkyreelsV4Namespace {
 export interface WaveSpeedSkyworkAiNamespace {
   skyreelsV4: WaveSpeedSkyworkAiSkyreelsV4Namespace;
 }
+export type WaveSpeedMicrosoftMaiImage2p7EditRequest = z.input<
+  typeof WaveSpeedMicrosoftMaiImage2p7EditRequestSchema
+>;
+
+/** A model submit answers at once; poll `api.v3.predictions.result`. */
+export interface WaveSpeedMicrosoftMaiImage2p7EditMethod {
+  (
+    request: WaveSpeedMicrosoftMaiImage2p7EditRequest,
+    signal?: AbortSignal
+  ): Promise<WaveSpeedPredictionResponse>;
+  schema: typeof WaveSpeedMicrosoftMaiImage2p7EditRequestSchema;
+}
+export interface WaveSpeedMicrosoftMaiImage2p7Namespace {
+  edit: WaveSpeedMicrosoftMaiImage2p7EditMethod;
+}
+export interface WaveSpeedMicrosoftNamespace {
+  maiImage2p7: WaveSpeedMicrosoftMaiImage2p7Namespace;
+}
 export interface WaveSpeedV3Namespace {
   predictions: WaveSpeedPredictionsNamespace;
   alibaba: WaveSpeedAlibabaNamespace;
@@ -962,6 +981,7 @@ export interface WaveSpeedV3Namespace {
   openai: WaveSpeedOpenaiNamespace;
   prunaAi: WaveSpeedPrunaAiNamespace;
   skyworkAi: WaveSpeedSkyworkAiNamespace;
+  microsoft: WaveSpeedMicrosoftNamespace;
 }
 export interface WaveSpeedApiNamespace {
   v3: WaveSpeedV3Namespace;

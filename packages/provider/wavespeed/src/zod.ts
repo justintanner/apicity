@@ -2075,3 +2075,22 @@ export const WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema = z.object({
       "Quality/performance mode. `fast` currently requires `sound` false. WaveSpeed default: `std`."
     ),
 });
+
+// microsoft/mai-image-2.7/edit, from WaveSpeed's model catalog
+// (GET /api/v3/models) and the model page / llms.txt, all read 2026-11-25.
+// Only prompt (max 20000 chars) and 1-5 input images are accepted.
+export const WaveSpeedMicrosoftMaiImage2p7EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20000)
+    .describe(
+      "Text prompt describing the image edit or how to combine the input images."
+    ),
+  images: z
+    .array(z.string())
+    .min(1)
+    .max(5)
+    .describe(
+      "Input image URLs to edit or combine, 1-5. Each input image adds to the price."
+    ),
+});

@@ -35,6 +35,7 @@ import {
   WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
+  WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -132,6 +133,7 @@ describe("wavespeed provider", () => {
       "openai",
       "prunaAi",
       "skyworkAi",
+      "microsoft",
     ]);
     expect(Object.keys(wavespeed.api.v3.predictions)).toEqual(["result"]);
     expect(typeof wavespeed.api.v3.predictions.result).toBe("function");
@@ -3367,6 +3369,90 @@ describe("wavespeed skywork-ai/skyreels-v4/image-to-video", () => {
     ] as const) {
       expect(
         WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed microsoft/mai-image-2.7/edit", () => {
+  // The payload
+  // tests/integration/wavespeed-microsoft-mai-image-2-7-edit.test.ts
+  // recorded (the cat photo at its pinned raw URL).
+  const CAT_IMAGE =
+    "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg";
+  const RECORDED = {
+    prompt: "Give the cat a small blue knitted scarf.",
+    images: [CAT_IMAGE],
+  };
+
+  it("attaches the schema and owns the microsoft.maiImage2p7 namespace", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.microsoft)).toEqual(["maiImage2p7"]);
+    expect(Object.keys(wavespeed.api.v3.microsoft.maiImage2p7)).toEqual([
+      "edit",
+    ]);
+    expect(wavespeed.api.v3.microsoft.maiImage2p7.edit.schema).toBe(
+      WaveSpeedMicrosoftMaiImage2p7EditRequestSchema
+    );
+    expect(
+      Object.keys(WaveSpeedMicrosoftMaiImage2p7EditRequestSchema.shape)
+    ).toEqual(["prompt", "images"]);
+    expect(
+      WaveSpeedMicrosoftMaiImage2p7EditRequestSchema.safeParse(RECORDED).success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "microsoft/mai-image-2.7/edit",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.microsoft.maiImage2p7.edit({
+      prompt: RECORDED.prompt,
+      images: [CAT_IMAGE],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7/edit"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("accepts up to five images and a 20000-character prompt", () => {
+    expect(
+      WaveSpeedMicrosoftMaiImage2p7EditRequestSchema.safeParse({
+        prompt: "a".repeat(20000),
+        images: Array.from({ length: 5 }, () => CAT_IMAGE),
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects values off WaveSpeed's bounds", () => {
+    for (const [field, value] of [
+      ["images", []],
+      ["images", Array.from({ length: 6 }, () => CAT_IMAGE)],
+      ["images", undefined],
+      ["prompt", undefined],
+      ["prompt", "a".repeat(20001)],
+    ] as const) {
+      expect(
+        WaveSpeedMicrosoftMaiImage2p7EditRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

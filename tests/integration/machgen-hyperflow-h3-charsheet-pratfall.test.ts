@@ -9,7 +9,8 @@ import { recordingExists, setupPolly, teardownPolly } from "../harness";
 
 // Charsheet umbrella-pratfall bake-off (ac-gupjgo), R04 = ac-az1538:
 // Hyperflow H3 is the MiniMax-H3-Turbo `hyperflow` adapter. The derived r2v
-// board leaves it out, so free 400s settled R2V first on 2026-11-25: with a
+// board left it out (it maps it now, ac-46ojeh), so free 400s settled R2V
+// first on 2026-11-25: with a
 // made-up adapter and duration_secs 999, MachGen answered "MiniMax-H3-MultiMax
 // R2V does not support adapter=...; allowed: (... 'hyperflow' ...)", and with
 // `hyperflow` it moved on to the duration check, so R2V takes the adapter at

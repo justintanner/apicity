@@ -169,12 +169,13 @@ const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Wan 3.0", "Alibaba", 1175],
   [2, "MiniMax H3 (768p)", "MiniMax", 1163],
   [3, "Dreamina Seedance 2.5", "ByteDance Seed", 1161],
-  [4, "Gemini Omni Flash 1.2", "Google", 1153],
-  [5, "HeyGen Video 1", "HeyGen", 1149],
-  [6, "MiniMax H3 Max", "Fal", 1146],
-  [7, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
-  [8, "Dreamina Seedance 2.5 Flash (720p)", "ByteDance Seed", 1136],
-  [9, "SkyReels V4", "Skywork AI", 1124],
+  [4, "Hyperflow H3", "Video Rebirth", 1154],
+  [5, "Gemini Omni Flash 1.2", "Google", 1153],
+  [6, "HeyGen Video 1", "HeyGen", 1149],
+  [7, "MiniMax H3 Max", "Fal", 1146],
+  [8, "Dreamina Seedance 2.0", "ByteDance Seed", 1141],
+  [9, "Dreamina Seedance 2.5 Flash (720p)", "ByteDance Seed", 1136],
+  [10, "SkyReels V4", "Skywork AI", 1124],
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
@@ -183,16 +184,10 @@ const V2V_UNMAPPED: string[] = [];
 
 /**
  * t2v and i2v top-10 models with no reference-to-video endpoint on the
- * derived board. Hyperflow H3 stays here: its video-reference route is the
- * v2v adapter row, not an r2v row.
+ * derived board. Hyperflow H3 left this list once MachGen's R2V task on
+ * MiniMax-H3-Turbo with the hyperflow adapter was recorded.
  */
-const R2V_LEFT_OUT = [
-  "Utopai X",
-  "Hyperflow H3",
-  "FLUX 3 Max",
-  "FLUX 3",
-  "Boreal-H3",
-];
+const R2V_LEFT_OUT = ["Utopai X", "FLUX 3 Max", "FLUX 3", "Boreal-H3"];
 
 /** KIE field names that carry media rather than a setting. */
 const KIE_MEDIA_FIELD =
@@ -1607,7 +1602,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(9);
+    expect(mappedCount(r2v.endpointMap)).toBe(10);
     expect(
       r2v.endpointMap["Dreamina Seedance 2.5 Flash (720p)"]
     ).toContainEqual({
@@ -1943,9 +1938,10 @@ describe("frontier video snapshots", () => {
       ]),
       "Hyperflow H3": [hyperflow],
     });
-    expect(machgenRows(r2v.endpointMap)).toEqual(
-      expected(Object.keys(MACHGEN_IDS))
-    );
+    expect(machgenRows(r2v.endpointMap)).toEqual({
+      ...expected(Object.keys(MACHGEN_IDS)),
+      "Hyperflow H3": [hyperflow],
+    });
     expect(machgenRows(v2v.endpointMap)).toEqual({
       ...expected(["Gemini Omni Flash 1.2", "Dreamina Seedance 2.5"]),
       "Hyperflow H3": [hyperflow],

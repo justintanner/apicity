@@ -25,36 +25,42 @@
     },
     {
       "rank": 4,
+      "model": "Hyperflow H3",
+      "creator": "Video Rebirth",
+      "elo": 1154
+    },
+    {
+      "rank": 5,
       "model": "Gemini Omni Flash 1.2",
       "creator": "Google",
       "elo": 1153
     },
     {
-      "rank": 5,
+      "rank": 6,
       "model": "HeyGen Video 1",
       "creator": "HeyGen",
       "elo": 1149
     },
     {
-      "rank": 6,
+      "rank": 7,
       "model": "MiniMax H3 Max",
       "creator": "Fal",
       "elo": 1146
     },
     {
-      "rank": 7,
+      "rank": 8,
       "model": "Dreamina Seedance 2.0",
       "creator": "ByteDance Seed",
       "elo": 1141
     },
     {
-      "rank": 8,
+      "rank": 9,
       "model": "Dreamina Seedance 2.5 Flash (720p)",
       "creator": "ByteDance Seed",
       "elo": 1136
     },
     {
-      "rank": 9,
+      "rank": 10,
       "model": "SkyReels V4",
       "creator": "Skywork AI",
       "elo": 1124

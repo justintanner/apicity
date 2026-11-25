@@ -287,7 +287,10 @@ Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness
 **Media-to-media input images.** Every new recording that feeds an image into a
 generation — image-to-video, reference-to-video, first/last frame, image edit,
 or any other media-to-media call — uses `tests/fixtures/cat1.jpg` (the cat; `cat2.jpg`
-is the same photo) or `tests/fixtures/man.jpg` (the man). Never add another
+is the same photo) or `tests/fixtures/man.jpg` (the man). A recording that
+needs a full-body character reference may instead use
+`tests/fixtures/charsheet.png`, a turnaround sheet of the same man, with the
+shared prompt in `tests/charsheet-pratfall-helpers.ts`. Never add another
 person or cat photo. `tests/fixtures/legacy/` holds the previous `cat1`, `cat2`
 and `man` bytes only for recordings whose replay matches on them; do not use it
 for new tests, and point a test back at `tests/fixtures/` whenever you re-record it.

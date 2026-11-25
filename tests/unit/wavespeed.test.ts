@@ -16,6 +16,7 @@ import {
   WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
@@ -595,6 +596,7 @@ describe("wavespeed bytedance/seedance-2.0/text-to-video", () => {
 
     expect(Object.keys(wavespeed.api.v3.bytedance)).toEqual([
       "seedance2p5",
+      "seedance2p5Flash",
       "seedance2p0",
       "seedreamV5p5",
     ]);
@@ -3602,6 +3604,98 @@ describe("wavespeed microsoft/mai-image-2.7-flash/edit", () => {
     ] as const) {
       expect(
         WaveSpeedMicrosoftMaiImage2p7FlashEditRequestSchema.safeParse({
+          ...RECORDED,
+          [field]: value,
+        }).success,
+        `${field} ${String(value)}`
+      ).toBe(false);
+    }
+  });
+});
+
+describe("wavespeed bytedance/seedance-2.5-flash/image-to-video", () => {
+  // The payload
+  // tests/integration/wavespeed-bytedance-seedance-2-5-flash-image-to-video.test.ts
+  // records (the cat photo at its pinned raw URL).
+  const RECORDED = {
+    prompt: "The cat slowly blinks and turns its head toward the window.",
+    image:
+      "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+    resolution: "480p",
+    duration: 4,
+    generate_audio: false,
+  } as const;
+
+  it("owns bytedance.seedance2p5Flash and attaches the schema", () => {
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key" });
+
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5)).toEqual([
+      "textToVideo",
+      "imageToVideo",
+      "videoEdit",
+      "referenceToVideo",
+    ]);
+    expect(Object.keys(wavespeed.api.v3.bytedance.seedance2p5Flash)).toEqual([
+      "imageToVideo",
+    ]);
+    expect(
+      wavespeed.api.v3.bytedance.seedance2p5Flash.imageToVideo.schema
+    ).toBe(WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema);
+    expect(
+      Object.keys(
+        WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema.shape
+      )
+    ).toEqual([
+      "prompt",
+      "image",
+      "last_image",
+      "resolution",
+      "duration",
+      "generate_audio",
+      "output_format",
+    ]);
+    expect(
+      WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema.safeParse(
+        RECORDED
+      ).success
+    ).toBe(true);
+  });
+
+  it("posts the payload to the model's submit URL", async () => {
+    const { requests, fetch } = capture(() =>
+      jsonResponse({
+        code: 200,
+        message: "success",
+        data: {
+          id: "p1",
+          model: "bytedance/seedance-2.5-flash/image-to-video",
+          status: "created",
+        },
+      })
+    );
+    const wavespeed = createWaveSpeed({ apiKey: "ws-key", fetch });
+
+    await wavespeed.api.v3.bytedance.seedance2p5Flash.imageToVideo(RECORDED);
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].init.method).toBe("POST");
+    expect(requests[0].url).toBe(
+      "https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5-flash/image-to-video"
+    );
+    expect(JSON.parse(String(requests[0].init.body))).toEqual(RECORDED);
+  });
+
+  it("rejects values off WaveSpeed's grid", () => {
+    for (const [field, value] of [
+      ["resolution", "2k"],
+      ["duration", 3],
+      ["duration", 31],
+      ["image", undefined],
+      ["prompt", undefined],
+      ["output_format", "webm"],
+    ] as const) {
+      expect(
+        WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema.safeParse({
           ...RECORDED,
           [field]: value,
         }).success,

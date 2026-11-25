@@ -2936,6 +2936,80 @@ describe("wavespeed microsoft/mai-image-2.7/text-to-image", () => {
   });
 });
 
+describe("wavespeed bytedance/seedance-2.5-flash/image-to-video", () => {
+  const model = "bytedance/seedance-2.5-flash/image-to-video";
+  const image = "https://example.com/cat.jpg";
+
+  it("prices the recorded payload at the 0.48 USD list quote", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 4,
+      generate_audio: false,
+    });
+
+    expect(result.warnings).toEqual([]);
+    expect(result.usd).toBeCloseTo(0.48, 9);
+  });
+
+  it("bills 5 s at 720p by default", () => {
+    expect(estimate(model, { prompt: PROMPT, image }).usd).toBeCloseTo(1.2, 9);
+  });
+
+  it("bills 4k at ten times the 480p rate", () => {
+    const clip = { prompt: PROMPT, image, duration: 4 };
+    expect(estimate(model, { ...clip, resolution: "4k" }).usd).toBeCloseTo(
+      4.8,
+      9
+    );
+    expect(estimate(model, { ...clip, resolution: "480p" }).usd).toBeCloseTo(
+      0.48,
+      9
+    );
+  });
+
+  it("ignores audio and output format", () => {
+    const priced = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "480p",
+      duration: 4,
+    }).usd;
+    for (const payload of [
+      {
+        prompt: PROMPT,
+        image,
+        resolution: "480p",
+        duration: 4,
+        generate_audio: true,
+      },
+      {
+        prompt: PROMPT,
+        image,
+        resolution: "480p",
+        duration: 4,
+        generate_audio: false,
+        output_format: "mov",
+      },
+    ]) {
+      expect(estimate(model, payload).usd).toBeCloseTo(priced, 9);
+    }
+  });
+
+  it("fails closed on a resolution WaveSpeed does not price", () => {
+    const result = estimate(model, {
+      prompt: PROMPT,
+      image,
+      resolution: "2k",
+      duration: 4,
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+});
+
 describe("wavespeed microsoft/mai-image-2.7-flash/edit", () => {
   const model = "microsoft/mai-image-2.7-flash/edit";
   const IMAGE = "https://example.com/cat1.jpg";

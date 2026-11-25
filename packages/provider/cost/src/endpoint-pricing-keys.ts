@@ -609,6 +609,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "bytedance/seedance-2.5/text-to-video",
   "wavespeed POST api.v3.bytedance.seedance2p5.videoEdit":
     "bytedance/seedance-2.5/video-edit",
+  "wavespeed POST api.v3.bytedance.seedance2p5Flash.imageToVideo":
+    "bytedance/seedance-2.5-flash/image-to-video",
   "wavespeed POST api.v3.bytedance.seedreamV5p5.edit":
     "bytedance/seedream-v5.5/edit",
   "wavespeed POST api.v3.google.geminiOmni1p1Flash.imageToVideo":

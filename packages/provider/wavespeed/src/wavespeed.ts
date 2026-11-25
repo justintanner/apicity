@@ -15,6 +15,7 @@ import type {
   WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequest,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequest,
   WaveSpeedBytedanceSeedance2p0VideoEditRequest,
+  WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequest,
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequest,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequest,
@@ -77,6 +78,7 @@ import {
   WaveSpeedBytedanceSeedance2p0ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0TextToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p0VideoEditRequestSchema,
+  WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ImageToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
   WaveSpeedBytedanceSeedance2p5TextToVideoRequestSchema,
@@ -550,6 +552,28 @@ export function createWaveSpeed(
               {
                 schema:
                   WaveSpeedBytedanceSeedance2p5ReferenceToVideoRequestSchema,
+              }
+            ),
+          },
+          seedance2p5Flash: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/bytedance/seedance-2.5-flash/image-to-video
+            // Docs: https://wavespeed.ai/models/bytedance/seedance-2.5-flash/image-to-video
+            imageToVideo: Object.assign(
+              async (
+                body: WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/bytedance/seedance-2.5-flash/image-to-video",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema:
+                  WaveSpeedBytedanceSeedance2p5FlashImageToVideoRequestSchema,
               }
             ),
           },

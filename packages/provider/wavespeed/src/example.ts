@@ -230,6 +230,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.bytedance.seedance2p5Flash.imageToVideo": {
+    "source": "wavespeed/bytedance-seedance-2-5-flash-image-to-video",
+    "payload": {
+      "prompt": "The cat slowly blinks and turns its head toward the window.",
+      "image": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "resolution": "480p",
+      "duration": 4,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.bytedance.seedreamV5p5.edit": {
     "source": "wavespeed/bytedance-seedream-v5-5-edit",
     "payload": {

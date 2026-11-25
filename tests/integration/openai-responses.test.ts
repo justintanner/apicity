@@ -158,6 +158,15 @@ describe("openai responses integration", () => {
     ) as OpenAiResponseOutputMessage;
     const text = message.content[0] as OpenAiResponseOutputText;
     expect(text.text).toMatch(/3|three/i);
+    // The recorded o4-mini response leads with a reasoning item, which
+    // carries neither `status` nor `encrypted_content`.
+    const reasoning = result.output[0];
+    expect(reasoning.type).toBe("reasoning");
+    if (reasoning.type !== "reasoning") throw new Error("not reasoning");
+    expect(reasoning.id).toMatch(/^rs_/);
+    expect(reasoning.summary).toEqual([]);
+    expect(reasoning.status).toBeUndefined();
+    expect(reasoning.encrypted_content).toBeUndefined();
     expect(result.usage?.output_tokens_details?.reasoning_tokens).toBeDefined();
   });
 

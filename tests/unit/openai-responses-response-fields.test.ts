@@ -4,7 +4,9 @@ import type {
   OpenAiResponseImageOptions,
   OpenAiResponseInputTransformation,
   OpenAiResponseModeration,
+  OpenAiResponseOutputItem,
   OpenAiResponseOutputMessage,
+  OpenAiResponseReasoningItem,
   OpenAiResponseResponse,
   OpenAiResponseResponseReasoning,
   OpenAiResponseToolUsage,
@@ -97,6 +99,78 @@ describe("openai v1.responses response fields", () => {
     };
     expect(captured.tool_usage?.web_search.num_requests).toBe(0);
     expect(captured.reasoning?.context).toBe("all_turns");
+  });
+});
+
+// Reasoning models return `reasoning` items in `output`: the committed
+// o4-mini recording holds one, and 205 of the 210 v1.responses calls in
+// the 2026-11-25 videobook capture corpus held 230 (204 of 204 on
+// gpt-5.6-sol), each with `encrypted_content` and none with `status`.
+describe("openai v1.responses reasoning output items", () => {
+  it("pins the modelled item kinds", () => {
+    // A new member is a Breaking change: update this pin with it.
+    expectTypeOf<OpenAiResponseOutputItem["type"]>().toEqualTypeOf<
+      | "message"
+      | "function_call"
+      | "web_search_call"
+      | "file_search_call"
+      | "reasoning"
+    >();
+    expectTypeOf<
+      Extract<OpenAiResponseOutputItem, { type: "reasoning" }>
+    >().toEqualTypeOf<OpenAiResponseReasoningItem>();
+  });
+
+  it("types the reasoning item per the API reference", () => {
+    expectTypeOf<
+      OpenAiResponseReasoningItem["encrypted_content"]
+    >().toEqualTypeOf<string | null | undefined>();
+    expectTypeOf<OpenAiResponseReasoningItem["status"]>().toEqualTypeOf<
+      "in_progress" | "completed" | "incomplete" | undefined
+    >();
+    expectTypeOf<
+      OpenAiResponseReasoningItem["summary"][number]
+    >().toEqualTypeOf<{ type: "summary_text"; text: string }>();
+    expectTypeOf<
+      NonNullable<OpenAiResponseReasoningItem["content"]>[number]
+    >().toEqualTypeOf<{ type: "reasoning_text"; text: string }>();
+  });
+
+  it("makes status optional on an item that is not narrowed", () => {
+    expectTypeOf<OpenAiResponseOutputItem["status"]>().toEqualTypeOf<
+      "in_progress" | "completed" | "incomplete" | undefined
+    >();
+    expectTypeOf<OpenAiResponseOutputItem["id"]>().toEqualTypeOf<string>();
+  });
+
+  it("narrows an output item to the reasoning item", () => {
+    // The key set every captured reasoning item carried; the text is
+    // invented.
+    const captured: OpenAiResponseResponse["output"] = [
+      {
+        type: "reasoning",
+        id: "rs_1",
+        summary: [],
+        content: [],
+        encrypted_content: "opaque",
+      },
+      {
+        type: "message",
+        id: "msg_1",
+        role: "assistant",
+        status: "completed",
+        phase: "final_answer",
+        content: [{ type: "output_text", text: "t", annotations: [] }],
+      },
+    ];
+    const blobs: string[] = [];
+    for (const item of captured) {
+      if (item.type === "reasoning" && item.encrypted_content) {
+        expectTypeOf(item).toEqualTypeOf<OpenAiResponseReasoningItem>();
+        blobs.push(item.encrypted_content);
+      }
+    }
+    expect(blobs).toEqual(["opaque"]);
   });
 });
 

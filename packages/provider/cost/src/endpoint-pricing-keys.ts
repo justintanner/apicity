@@ -637,6 +637,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "kwaivgi/kling-image-v4.0/text-to-image",
   "wavespeed POST api.v3.kwaivgi.klingVideoO3Pro.videoEdit":
     "kwaivgi/kling-video-o3-pro/video-edit",
+  "wavespeed POST api.v3.microsoft.maiImage2p7.edit":
+    "microsoft/mai-image-2.7/edit",
   "wavespeed POST api.v3.minimax.h3.imageToVideo": "minimax/h3/image-to-video",
   "wavespeed POST api.v3.minimax.h3.referenceToVideo":
     "minimax/h3/reference-to-video",

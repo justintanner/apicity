@@ -31,7 +31,7 @@ const wavespeed = createWaveSpeed({ apiKey: process.env.WAVESPEED_API_KEY! });
 
 ## API Reference
 
-55 endpoints across 14 groups. Each method mirrors an upstream URL path.
+56 endpoints across 15 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -617,6 +617,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await wavespeed.api.v3.kwaivgi.klingVideoO3Pro.videoEdit({ /* ... */ });
+```
+
+Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)
+
+</details>
+
+### microsoft
+
+<details>
+<summary><code>POST</code> <b><code>wavespeed.api.v3.microsoft.maiImage2p7.edit</code></b></summary>
+
+<code>POST https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://wavespeed.ai/models/microsoft/mai-image-2.7/edit)
+
+```typescript
+const res = await wavespeed.api.v3.microsoft.maiImage2p7.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/wavespeed/src/wavespeed.ts`](src/wavespeed.ts)

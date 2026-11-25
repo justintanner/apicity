@@ -1155,6 +1155,7 @@ export const MODEL_SLUGS = {
     "kwaivgi/kling-image-v4.0/text-to-image": "kling4i",
     "skywork-ai/skyreels-v4/text-to-video": "skyreelsv4",
     "skywork-ai/skyreels-v4/image-to-video": "skyreelsv4",
+    "microsoft/mai-image-2.7/edit": "mai2p7",
   },
 } as const;
 
@@ -2321,6 +2322,7 @@ export const MODEL_DISPLAY = {
     "kwaivgi/kling-image-v4.0/text-to-image": "Kling Image 4.0",
     "skywork-ai/skyreels-v4/text-to-video": "SkyReels V4",
     "skywork-ai/skyreels-v4/image-to-video": "SkyReels V4",
+    "microsoft/mai-image-2.7/edit": "MAI Image 2.7 Edit",
   },
 } as const;
 

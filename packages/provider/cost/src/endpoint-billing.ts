@@ -5535,6 +5535,18 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
     ["POST api.v3.kwaivgi.klingImageV4p0.textToImage"]
   ),
   ...rows(
+    "wavespeed",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://wavespeed.ai/models/microsoft/mai-image-2.7/edit",
+        asOf: "2026-11-25",
+      },
+    },
+    ["POST api.v3.microsoft.maiImage2p7.edit"]
+  ),
+  ...rows(
     "x",
     {
       kind: "unpriced",

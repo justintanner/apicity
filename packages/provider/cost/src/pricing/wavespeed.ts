@@ -1300,4 +1300,26 @@ export const wavespeed: Record<string, ModelPricing> = {
       asOf: "2026-11-20",
     },
   },
+  // Catalog base_price 0.035 USD on 2026-11-25 (model page: 35000 micros,
+  // discount_rate 100). No formula on the model page, only price inputs
+  // (images). Free quotes (POST /api/v3/model/price) read 2026-11-25, list
+  // price: 0.035 USD base per output image plus 0.0082 USD per input image
+  // (1..5 images quoted: 0.0432, 0.0514, 0.0596, 0.0678 and 0.076 USD). One
+  // request returns one image. An estimate without 1-5 input images fails
+  // closed.
+  "microsoft/mai-image-2.7/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.035 },
+    extra: (p) =>
+      Array.isArray(p.images) && p.images.length >= 1 && p.images.length <= 5
+        ? 0.0082 * p.images.length
+        : undefined,
+    source: {
+      url: "https://wavespeed.ai/models/microsoft/mai-image-2.7/edit",
+      asOf: "2026-11-25",
+    },
+  },
 };

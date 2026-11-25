@@ -35,6 +35,7 @@ import type {
   WaveSpeedKwaivgiKlingImageV4p0EditRequest,
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequest,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequest,
+  WaveSpeedMicrosoftMaiImage2p7EditRequest,
   WaveSpeedMinimaxH3ImageToVideoRequest,
   WaveSpeedMinimaxH3ReferenceToVideoRequest,
   WaveSpeedMinimaxH3TextToVideoRequest,
@@ -94,6 +95,7 @@ import {
   WaveSpeedKwaivgiKlingImageV4p0EditRequestSchema,
   WaveSpeedKwaivgiKlingImageV4p0TextToImageRequestSchema,
   WaveSpeedKwaivgiKlingVideoO3ProVideoEditRequestSchema,
+  WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
   WaveSpeedMinimaxH3ImageToVideoRequestSchema,
   WaveSpeedMinimaxH3ReferenceToVideoRequestSchema,
   WaveSpeedMinimaxH3TextToVideoRequestSchema,
@@ -1250,6 +1252,29 @@ export function createWaveSpeed(
               },
               {
                 schema: WaveSpeedSkyworkAiSkyreelsV4ImageToVideoRequestSchema,
+              }
+            ),
+          },
+        },
+        microsoft: {
+          maiImage2p7: {
+            // sig-ok: version dots become "p" (fal dot rule)
+            // POST https://api.wavespeed.ai/api/v3/microsoft/mai-image-2.7/edit
+            // Docs: https://wavespeed.ai/models/microsoft/mai-image-2.7/edit
+            edit: Object.assign(
+              async (
+                body: WaveSpeedMicrosoftMaiImage2p7EditRequest,
+                signal?: AbortSignal
+              ) => {
+                return request<WaveSpeedPredictionResponse>(
+                  "POST",
+                  "/api/v3/microsoft/mai-image-2.7/edit",
+                  body,
+                  signal
+                );
+              },
+              {
+                schema: WaveSpeedMicrosoftMaiImage2p7EditRequestSchema,
               }
             ),
           },

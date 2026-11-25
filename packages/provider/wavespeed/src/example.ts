@@ -403,6 +403,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v3.microsoft.maiImage2p7.edit": {
+    "source": "wavespeed/microsoft-mai-image-2-7-edit",
+    "payload": {
+      "prompt": "Give the cat a small blue knitted scarf.",
+      "images": [
+        "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v3.minimax.h3.imageToVideo": {
     "source": "wavespeed/minimax-h3-image-to-video",
     "payload": {

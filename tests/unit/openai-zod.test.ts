@@ -10,6 +10,8 @@ import {
   OpenAiModerationRequestSchema,
   OpenAiBatchCreateRequestSchema,
   OpenAiResponseRequestSchema,
+  OpenAiResponseInputItemSchema,
+  OpenAiResponseReasoningItemSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
   OpenAiFileUploadRequestSchema,
@@ -450,6 +452,95 @@ describe("OpenAI Zod schemas", () => {
         input: "Hello",
       });
       expect(result.success).toBe(false);
+    });
+
+    it("accepts reasoning items in input, compact, input-tokens and input-item schemas", () => {
+      const minimal = {
+        type: "reasoning" as const,
+        id: "rs_1",
+        summary: [],
+      };
+      const full = {
+        type: "reasoning" as const,
+        id: "rs_2",
+        summary: [
+          { type: "summary_text" as const, text: "Checked arithmetic" },
+        ],
+        content: [{ type: "reasoning_text" as const, text: "17 * 3 = 51" }],
+        encrypted_content: "opaque-ciphertext",
+        status: "completed" as const,
+      };
+      const nullEncrypted = {
+        type: "reasoning" as const,
+        id: "rs_3",
+        summary: [],
+        encrypted_content: null,
+      };
+
+      for (const item of [minimal, full, nullEncrypted]) {
+        expect(OpenAiResponseReasoningItemSchema.safeParse(item).success).toBe(
+          true
+        );
+        expect(OpenAiResponseInputItemSchema.safeParse(item).success).toBe(
+          true
+        );
+        expect(
+          OpenAiResponseRequestSchema.safeParse({
+            model: "gpt-6-luna",
+            store: false,
+            input: [{ role: "user", content: "Hi" }, item],
+          }).success
+        ).toBe(true);
+        expect(
+          OpenAiResponseCompactRequestSchema.safeParse({
+            model: "gpt-6-luna",
+            input: [item],
+          }).success
+        ).toBe(true);
+        expect(
+          OpenAiResponseInputTokensRequestSchema.safeParse({
+            model: "gpt-6-luna",
+            input: [item],
+          }).success
+        ).toBe(true);
+      }
+
+      // Reject malformed reasoning items.
+      expect(
+        OpenAiResponseReasoningItemSchema.safeParse({
+          type: "reasoning",
+          summary: [],
+        }).success
+      ).toBe(false);
+      expect(
+        OpenAiResponseReasoningItemSchema.safeParse({
+          type: "reasoning",
+          id: "rs_bad",
+        }).success
+      ).toBe(false);
+      expect(
+        OpenAiResponseReasoningItemSchema.safeParse({
+          type: "reasoning",
+          id: "rs_bad",
+          summary: [],
+          status: "failed",
+        }).success
+      ).toBe(false);
+      expect(
+        OpenAiResponseReasoningItemSchema.safeParse({
+          type: "reasoning",
+          id: "rs_bad",
+          summary: [{ type: "output_text", text: "wrong" }],
+        }).success
+      ).toBe(false);
+
+      // JSON Schema generation (used by `apicity describe`) includes reasoning input items.
+      const json = JSON.stringify(
+        z.toJSONSchema(OpenAiResponseRequestSchema, { unrepresentable: "any" })
+      );
+      expect(json).toContain("encrypted_content");
+      expect(json).toContain("summary_text");
+      expect(json).toContain("reasoning_text");
     });
   });
 

@@ -132,6 +132,8 @@ export type {
   XaiResponseTextFormat,
   XaiResponseReasoning,
   XaiResponseOutputItem,
+  XaiResponseReasoningItem,
+  XaiResponseReasoningSummaryText,
   XaiResponseOutputMessage,
   XaiResponseOutputContent,
   XaiResponseOutputText,

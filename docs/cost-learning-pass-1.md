@@ -197,7 +197,8 @@ hosts.
 | `ac-89cvvz` | fal    | Settled 2026-11-07: US 2.5 billed $0.0214/1K tokens; US base rates aligned |
 | `ac-cukhhs` | fal    | Timed: MiniMax H3 Max's promotion ends 11-15, and which promo policy       |
 | `ac-eue5ej` | fal    | Settled 2026-11-09: FLUX 3 Max's promotion rolled into 50% off, to 11-22   |
-| `ac-f9aih6` | fal    | Timed: FLUX 3 Max's 50% promotion ends 11-22; list $0.17/$0.29 from 11-23  |
+| `ac-f9aih6` | fal    | Settled 2026-11-24: FLUX 3 Max's promotion rolled into 35% off, to 12-07   |
+| `ac-9gxmjm` | fal    | Timed: FLUX 3 Max's 35% promo ends 12-07; list $0.17-$0.80/s from 12-08    |
 | `vb-olmxr`  | fal    | `sora-2` is retired, and videobook's catalog still names it                |
 
 Filing WaveSpeed's `billings/search` as an endpoint was left to this pass if the deltas

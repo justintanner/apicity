@@ -230,10 +230,17 @@ export type OpenAiTranscriptionUsage =
   | OpenAiTranscriptionTokenUsage
   | OpenAiTranscriptionDurationUsage;
 
+// A language detected in the audio (gpt-transcribe).
+export interface OpenAiTranscriptionLanguage {
+  code: string;
+}
+
 // Transcription response
 export interface OpenAiTranscribeResponse {
   text: string;
   usage?: OpenAiTranscriptionUsage;
+  // Returned by gpt-transcribe; empty when no language was reliably detected.
+  languages?: OpenAiTranscriptionLanguage[];
 }
 
 // Translation response
@@ -462,6 +469,9 @@ export interface OpenAiResponseOutputMessage {
   role: "assistant";
   content: OpenAiResponseOutputContent[];
   status: "in_progress" | "completed" | "incomplete";
+  // Intermediate commentary or the final answer; resend it on follow-up
+  // turns for gpt-5.3-codex and later.
+  phase?: "commentary" | "final_answer" | null;
 }
 
 export interface OpenAiResponseFunctionCallItem {
@@ -525,6 +535,93 @@ export interface OpenAiResponseGetOptions {
   stream?: boolean;
 }
 
+// Responses API response fields from the API reference (read 2026-11-25);
+// gpt-5.6-sol returns them on every response in the videobook capture
+// corpus (HAR learning pass 2, ac-11lqw3 -> ac-14k4jm).
+
+// The effective Cyber access program for the response.
+export interface OpenAiResponseAccessPrograms {
+  cyber: "standard" | "daybreak_blue" | "daybreak_red";
+}
+
+// The effective image context optimization policy.
+export interface OpenAiResponseImageOptions {
+  context_compression: "enabled" | "disabled";
+}
+
+// A reasoning input withheld from the model, in input order.
+export interface OpenAiResponseInputTransformation {
+  id: string;
+  action: "removed";
+  reason:
+    | "organization_mismatch"
+    | "end_user_mismatch"
+    | "model_mismatch"
+    | "prefix_mismatch"
+    | "turn_boundary";
+  type: "reasoning";
+}
+
+export interface OpenAiResponseModerationResult {
+  type: "moderation_result";
+  categories: Record<string, boolean>;
+  category_applied_input_types: Record<string, Array<"text" | "image">>;
+  category_scores: Record<string, number>;
+  flagged: boolean;
+  model: string;
+}
+
+export interface OpenAiResponseModerationError {
+  type: "error";
+  code: string;
+  message: string;
+}
+
+export type OpenAiResponseModerationOutcome =
+  | OpenAiResponseModerationResult
+  | OpenAiResponseModerationError;
+
+// Moderation of the input and output, when moderated completions were
+// requested.
+export interface OpenAiResponseModeration {
+  input: OpenAiResponseModerationOutcome;
+  output: OpenAiResponseModerationOutcome;
+}
+
+export interface OpenAiResponseImageGenToolUsage {
+  input_tokens: number;
+  input_tokens_details: {
+    image_tokens: number;
+    text_tokens: number;
+  };
+  output_tokens: number;
+  total_tokens: number;
+  cached_tokens?: number;
+  cached_tokens_details?: {
+    cached_image_tokens: number;
+    cached_text_tokens: number;
+  };
+  output_tokens_details?: {
+    image_tokens: number;
+    text_tokens: number;
+  };
+}
+
+// Usage of hosted tools, separate from the model's usage. An omitted cache
+// count means cache usage is unknown.
+export interface OpenAiResponseToolUsage {
+  image_gen: OpenAiResponseImageGenToolUsage;
+  web_search: {
+    num_requests: number;
+  };
+}
+
+// The response echoes the effective reasoning context and execution mode.
+export interface OpenAiResponseResponseReasoning extends OpenAiResponseReasoning {
+  context?: "auto" | "current_turn" | "all_turns" | null;
+  mode?: "standard" | "pro" | (string & {});
+}
+
 // Responses API response
 export interface OpenAiResponseResponse {
   id: string;
@@ -553,7 +650,14 @@ export interface OpenAiResponseResponse {
   top_p?: number | null;
   max_output_tokens?: number | null;
   previous_response_id?: string | null;
-  reasoning?: OpenAiResponseReasoning | null;
+  reasoning?: OpenAiResponseResponseReasoning | null;
+  access_programs?: OpenAiResponseAccessPrograms | null;
+  image?: OpenAiResponseImageOptions;
+  input_transformations?: OpenAiResponseInputTransformation[];
+  moderation?: OpenAiResponseModeration | null;
+  tool_usage?: OpenAiResponseToolUsage;
+  // Deprecated upstream in favour of prompt_cache_options.ttl.
+  prompt_cache_retention?: "in_memory" | "24h" | null;
 }
 
 // Responses API input_items list options

@@ -43,10 +43,11 @@ const sweepAsOf = "2026-07-22";
 const flux3AsOf = "2026-08-21";
 
 // FLUX 3 Max promotional rates, read from each model's fal.ai
-// pricingInfoOverride and GET /v1/models/pricing on this date. The card's 50%
-// promotion runs through 2026-11-22; list rates of $0.17 at 720p and $0.29 at
-// 1080p resume on 2026-11-23 at 00:00 UTC (follow-up ac-f9aih6).
-const flux3MaxAsOf = "2026-11-09";
+// pricingInfoOverride and GET /v1/models/pricing on this date. The card's 35%
+// promotion runs through 2026-12-07; list rates of $0.17 at 720p, $0.29 at
+// 1080p, $0.40 at 2K and $0.80 at 4K resume on 2026-12-08 at 00:00 UTC
+// (follow-up ac-9gxmjm).
+const flux3MaxAsOf = "2026-11-24";
 
 // Audio endpoints were read directly from each model's fal.ai pricing card on
 // this date.
@@ -955,17 +956,20 @@ const FLUX_3_EXTEND_RATES: Record<string, number> = {
   "1080p": 0.53,
 };
 
-// The 75% promotion ($0.0425/s at 720p, $0.0725/s at 1080p) ended on
-// 2026-11-07 and rolled into a 50% one. Card read 2026-11-09: $0.085/s at 720p
-// and $0.145/s at 1080p from 2026-11-08 through 2026-11-22, then list $0.17 /
-// $0.29. Pricing API the same day: unit_price $0.0425 on all three endpoints,
-// and each recorded 5s 720p clip billed 10 units, $0.425 at that price. The
-// keyframes card still prints the ended 75% promotion, but its unit price
-// matches the other two. Audio and reasoning_level are not separate billing
-// dimensions.
+// fal has rolled this promotion over twice: 75% off ended 2026-11-07, then
+// 50% off ($0.085/s at 720p, $0.145/s at 1080p) ended 2026-11-22. All three
+// cards, read 2026-11-24, print a 35% one from 2026-11-23 through 2026-12-07:
+// $0.1105/s at 720p, $0.1885/s at 1080p, $0.26/s at 2K and $0.52/s at 4K, then
+// list $0.17 / $0.29 / $0.40 / $0.80. Pricing API the same day: unit_price
+// $0.05525 on all three endpoints, and each recorded 5s 720p clip billed 10
+// units, $0.5525 at that price. The live OpenAPI enum spells the upscaled
+// tiers "2K" (1440p) and "4K" (2160p). Audio and reasoning_level are not
+// separate billing dimensions.
 const FLUX_3_MAX_RATES: Record<string, number> = {
-  "720p": 0.085,
-  "1080p": 0.145,
+  "720p": 0.1105,
+  "1080p": 0.1885,
+  "2K": 0.26,
+  "4K": 0.52,
 };
 
 // GPT Image 1.5 prices per image on a quality × size grid. `quality`

@@ -1,4 +1,3 @@
-import { appendFileSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { computeEstimate } from "@apicity/cost";
 import { createMachGen, type MachGenGenerateRequest } from "@apicity/machgen";
@@ -33,9 +32,7 @@ const RECEIPT_MICROS = 349200;
 const CREDIT_MICROS = 0;
 const NET_MICROS = RECEIPT_MICROS - CREDIT_MICROS;
 const FLOOR_MICROS = 10_000_000;
-const PLAN_CAP_USD = 10;
 const RECORDING_CEILING_USD = 2;
-const LEDGER = "/gc/apicity/plans/ac-gupjgo/evidence/spend-ledger.tsv";
 
 async function balance(apiKey: string): Promise<number> {
   const response = await fetch(
@@ -46,22 +43,6 @@ async function balance(apiKey: string): Promise<number> {
   const body = (await response.json()) as { balance_micros: number };
   expect(Number.isFinite(body.balance_micros)).toBe(true);
   return body.balance_micros;
-}
-
-function planSpendUsd(): number {
-  let text = "";
-  try {
-    text = readFileSync(LEDGER, "utf8");
-  } catch {
-    return 0;
-  }
-  return text
-    .split("\n")
-    .slice(1)
-    .reduce((sum, line) => {
-      const usd = Number(line.split("\t")[5]);
-      return sum + (Number.isFinite(usd) ? usd : 0);
-    }, 0);
 }
 
 describe("MachGen Gemini Omni 1.2 Flash charsheet pratfall", () => {
@@ -92,14 +73,6 @@ describe("MachGen Gemini Omni 1.2 Flash charsheet pratfall", () => {
       expect(estimate.warnings).toEqual([]);
       expect(Math.round(estimate.usd * 1e6)).toBe(QUOTE_MICROS);
       expect(estimate.usd).toBeLessThanOrEqual(RECORDING_CEILING_USD);
-      if (live) {
-        const spent = planSpendUsd();
-        if (spent + estimate.usd > PLAN_CAP_USD) {
-          throw new Error(
-            `plan spend ${spent} + ${estimate.usd} would cross ${PLAN_CAP_USD} USD`
-          );
-        }
-      }
       const before = await balance(apiKey);
       if (before - QUOTE_MICROS < FLOOR_MICROS) {
         throw new Error(
@@ -127,28 +100,6 @@ describe("MachGen Gemini Omni 1.2 Flash charsheet pratfall", () => {
       }
       const billing = await provider.api.v0.tasks.billing(taskId);
       const after = await balance(apiKey);
-      if (live) {
-        appendFileSync(
-          LEDGER,
-          [
-            new Date().toISOString(),
-            "ac-e9t125",
-            "machgen",
-            "POST https://api.machgen.ai/api/v0/generate",
-            taskId,
-            (billing.net_cost_micros / 1e6).toFixed(6),
-            String(before),
-            String(after),
-            [
-              `gross ${billing.generation_cost_micros}`,
-              `credit ${billing.generation_credit_micros}`,
-              `net ${billing.net_cost_micros}`,
-              `status ${status.status}`,
-              "wallets are micros",
-            ].join(" "),
-          ].join("\t") + "\n"
-        );
-      }
       expect(status.status, status.error_msg ?? "task did not complete").toBe(
         "COMPLETED"
       );

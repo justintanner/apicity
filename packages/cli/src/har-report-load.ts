@@ -266,6 +266,16 @@ export async function loadCorpus(
         }
       }
       row ??= candidates.length === 1 ? candidates[0] : undefined;
+      // A call that sent nothing has only a local entry. When the capture
+      // recorded the endpoint's method, it picks the row among a dot path's
+      // methods; older captures without one stay method-ambiguous.
+      if (!row && typeof meta.method === "string") {
+        const method = meta.method.toUpperCase();
+        const byMethod = candidates.filter(
+          (r) => r.method.toUpperCase() === method
+        );
+        if (byMethod.length === 1) row = byMethod[0];
+      }
       if (row) {
         const derived = primary.length
           ? outcome(primary[0].entry, row)

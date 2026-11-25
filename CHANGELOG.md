@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/har` `capture.call` takes the endpoint's HTTP `method` (`HarCallMeta.method`) and records it, upper-cased, in `log._apicity.method`. A call that fails before sending anything gets one local entry, which now takes that method instead of always saying GET. `apicity` passes the registry method, and `apicity har report` uses the recorded method to pick a local-only call's row on a dot path with several methods. Two aborted POST `v1.responses` calls in the videobook corpus were unresolved for this reason. Captures without `method`, including every one made before this change, still list such calls as `method-ambiguous`. A method that `Request` refuses (`CONNECT`, `TRACE`, `TRACK`) keeps GET on the entry (ac-nq4uuw).
 - `@apicity/cost`: Guard OpenAI Responses `prompt_cache_options.ttl`, per-breakpoint `prompt_cache_breakpoint.ttl`, mixed-retention requests, and response `cache_write_tokens_details.ttl_12h_tokens` so 12-hour cache writes fail closed instead of pricing at the 30-minute write rate (ac-k0mwj9).
 
 ### Changed

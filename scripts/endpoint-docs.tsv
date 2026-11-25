@@ -902,6 +902,7 @@ fal	bytedance.seedance2p0.imageToVideo	POST	https://fal.run/bytedance/seedance-2
 fal	bytedance.seedance2p0.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.0/reference-to-video
 fal	bytedance.seedance2p0.textToVideo	POST	https://fal.run/bytedance/seedance-2.0/text-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p5.imageToVideo	POST	https://fal.run/bytedance/seedance-2.5/image-to-video	https://fal.ai/models/bytedance/seedance-2.5/image-to-video/api
+fal	bytedance.seedance2p5.flash.imageToVideo	POST	https://fal.run/bytedance/seedance-2.5/flash/image-to-video	https://fal.ai/models/bytedance/seedance-2.5/flash/image-to-video/api
 fal	bytedance.seedance2p5.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.5/reference-to-video	https://fal.ai/models/bytedance/seedance-2.5/reference-to-video/api
 fal	bytedance.seedance2p5.textToVideo	POST	https://fal.run/bytedance/seedance-2.5/text-to-video	https://fal.ai/models/bytedance/seedance-2.5/text-to-video/api
 fal	bytedance.seedream.v5.lite.edit	POST	https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit	https://docs.fal.ai

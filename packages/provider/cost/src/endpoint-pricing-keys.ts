@@ -136,6 +136,8 @@ export const ENDPOINT_PRICING_KEYS: Readonly<Record<string, string>> = {
     "bytedance/seedance-2.0/us/text-to-video",
   "fal POST bytedance.seedance2p5.draft.complete":
     "bytedance/seedance-2.5/draft/complete",
+  "fal POST bytedance.seedance2p5.flash.imageToVideo":
+    "bytedance/seedance-2.5/flash/image-to-video",
   "fal POST bytedance.seedance2p5.imageToVideo":
     "bytedance/seedance-2.5/image-to-video",
   "fal POST bytedance.seedance2p5.referenceToVideo":

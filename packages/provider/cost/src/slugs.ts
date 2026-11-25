@@ -2124,6 +2124,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.0/fast/reference-to-video": "Seedance 2 Fast",
     "bytedance/seedance-2.0/reference-to-video": "Seedance 2",
     "bytedance/seedance-2.5/image-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/flash/image-to-video": "Seedance 2.5 Flash",
     "bytedance/seedance-2.5/us/image-to-video": "Seedance 2.5 US",
     "bytedance/seedream/v5/pro/edit": "Seedream 5 Pro Edit",
     "bytedance/seedream/v5/pro/layerize": "Seedream 5 Pro Layer Decomposition",

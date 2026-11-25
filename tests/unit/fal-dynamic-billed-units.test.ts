@@ -19,6 +19,9 @@ const CHECKED = [
   "blackforestlabs/flux-3/klein/edit-image/lora",
   "blackforestlabs/flux-3/klein/text-to-image",
   "blackforestlabs/flux-3/klein/text-to-image/lora",
+  // Card and pricing API read 2026-11-25: $0.014 per 1,000 tokens; the
+  // recorded 4 s 480p call follows the 3:4 input image.
+  "bytedance/seedance-2.5/flash/image-to-video",
   "fal-ai/flux-2-flex",
   "fal-ai/heygen/avatar3/digital-twin",
   "fal-ai/heygen/avatar4/digital-twin",

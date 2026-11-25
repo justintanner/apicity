@@ -15577,6 +15577,121 @@ export type FalBytedanceSeedance2p5UsImageToVideoParsedRequest = z.output<
   typeof FalBytedanceSeedance2p5UsImageToVideoRequestSchema
 >;
 
+// Bytedance Seedance 2.5 Flash image-to-video, from the live queue OpenAPI
+// read 2026-11-25 (Seedance25FlashImageToVideoInput). It matches the
+// standard 2.5 image-to-video Input without draft, and with resolution
+// limited to 480p and 720p.
+export const FalBytedanceSeedance2p5FlashImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The text prompt describing the desired motion and action for the video."
+    ),
+  image_url: z
+    .string()
+    .describe(
+      "The URL of the starting frame image to animate. Supported formats: JPEG, PNG, WebP, BMP, TIFF, GIF, HEIC, HEIF. Max 30 MB."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The URL of the image to use as the last frame of the video. When provided, the generated video will transition from the starting image to this ending image. Supported formats: JPEG, PNG, WebP, BMP, TIFF, GIF, HEIC, HEIF. Max 30 MB."
+    ),
+  resolution: z
+    .enum(["480p", "720p"])
+    .default("720p")
+    .describe("Video resolution: 480p or 720p."),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+    ])
+    .default("auto")
+    .describe(
+      "Duration of the video in seconds. Supports 4 to 30 seconds, or auto to let the model decide based on the prompt."
+    ),
+  // The live Input declares const "auto": the output follows the input image.
+  aspect_ratio: z
+    .literal("auto")
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated video. Always "auto" for image-to-video'
+    ),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Whether to generate synchronized audio for the video, including sound effects, ambient sounds, and lip-synced speech."
+    ),
+  bitrate_mode: z
+    .enum(["standard", "high"])
+    .default("standard")
+    .describe(
+      "Output bitrate mode. 'high' requests a higher-quality, larger-file encode from the model; 'standard' uses the default bitrate."
+    ),
+  codec: z
+    .enum(["auto", "H264", "H265"])
+    .default("auto")
+    .describe(
+      "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+    ),
+  output_format: z
+    .enum(["mp4", "mov"])
+    .default("mp4")
+    .describe(
+      "Output video format. 'mp4' is broadly compatible; 'mov' targets professional post-production but may not be supported by all players."
+    ),
+  return_last_frame: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, also return the last frame of the generated video as an image."
+    ),
+  end_user_id: z
+    .string()
+    .nullable()
+    .describe("The unique user ID of the end user.")
+    .optional(),
+});
+export type FalBytedanceSeedance2p5FlashImageToVideoRequest = z.input<
+  typeof FalBytedanceSeedance2p5FlashImageToVideoRequestSchema
+>;
+export type FalBytedanceSeedance2p5FlashImageToVideoRequestInput =
+  FalBytedanceSeedance2p5FlashImageToVideoRequest;
+export type FalBytedanceSeedance2p5FlashImageToVideoParsedRequest = z.output<
+  typeof FalBytedanceSeedance2p5FlashImageToVideoRequestSchema
+>;
+
 // Bytedance Seedance 2.5 US reference-to-video. The per-modality caps are
 // documented in the field descriptions only (fal's 422 validator does not
 // report them); together they also bound the documented 50-file total.
@@ -19266,6 +19381,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   "bytedance/seedance-2.5/us/image-to-video":
     FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
+  "bytedance/seedance-2.5/flash/image-to-video":
+    FalBytedanceSeedance2p5FlashImageToVideoRequestSchema,
   "bytedance/seedance-2.5/us/text-to-video":
     FalBytedanceSeedance2p5UsTextToVideoRequestSchema,
   "bytedance/seedance-2.0/us/reference-to-video":

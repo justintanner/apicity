@@ -1073,6 +1073,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5-flash",
           },
+          {
+            provider: "fal",
+            dotPath: "bytedance.seedance2p5.flash.imageToVideo",
+            pricingKey: "bytedance/seedance-2.5/flash/image-to-video",
+          },
         ],
       },
       {

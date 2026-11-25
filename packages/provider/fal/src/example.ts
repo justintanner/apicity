@@ -875,6 +875,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p5.flash.imageToVideo": {
+    "source": "fal/bytedance-seedance2p5-flash-image-to-video",
+    "payload": {
+      "prompt": "The cat blinks slowly and turns its head toward the camera.",
+      "image_url": "https://raw.githubusercontent.com/justintanner/apicity/ba051beeb8de3c82a9893f65b610653c32616e94/tests/fixtures/cat1.jpg",
+      "resolution": "480p",
+      "duration": "4"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedance2p5.imageToVideo": {
     "source": "fal/bytedance-seedance2p5-image-to-video",
     "payload": {

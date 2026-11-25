@@ -112,6 +112,9 @@ export type {
   FalBytedanceSeedance2p5UsDraftCompleteParsedRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashImageToVideoRequestInput,
+  FalBytedanceSeedance2p5FlashImageToVideoParsedRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestInput,
   FalBytedanceSeedance2p5UsImageToVideoRequestInput,
@@ -974,6 +977,7 @@ import type {
   FalBytedanceSeedance2p5UsDraftCompleteRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
+  FalBytedanceSeedance2p5FlashImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
@@ -7590,6 +7594,38 @@ export interface FalRunBytedanceSeedance2p5UsNamespace {
 }
 export interface FalRunBytedanceSeedance2p5Namespace {
   us: FalRunBytedanceSeedance2p5UsNamespace;
+}
+
+export interface FalBytedanceSeedance2p5FlashImageToVideoResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+  /** The last frame of the video, when the request set return_last_frame. */
+  last_frame?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+  /** Present on the shared Output schema; Flash has no draft mode. */
+  draft_id?: string | null;
+}
+export interface FalRunBytedanceSeedance2p5FlashNamespace {
+  imageToVideo: ((
+    params: FalBytedanceSeedance2p5FlashImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p5FlashImageToVideoResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p5FlashImageToVideoRequest>;
+  };
+}
+export interface FalRunBytedanceSeedance2p5Namespace {
+  flash: FalRunBytedanceSeedance2p5FlashNamespace;
 }
 
 export interface FalBytedanceSeedance2p5DraftCompleteResponse {

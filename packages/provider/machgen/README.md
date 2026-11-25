@@ -72,7 +72,9 @@ answers an off-grid request with HTTP 400 before it accepts the task, and
 does not bill it. The grids were read from those 400 responses on
 2026-10-25, the SHARPEN heights on
 2026-10-31, and the 540p height of MiniMax-H3 and MiniMax-H3-Turbo on
-2026-11-18. `-1` asks the model for a Smart length.
+2026-11-18. Seedance-2.5 gained 2160p on 2026-11-25: this account's
+model list names it, and a T2V height of 999 was refused with allowed
+heights 480, 720, 1080 and 2160. `-1` asks the model for a Smart length.
 
 | Model | T2V | I2V | R2V | UPSCALE | SHARPEN | I2V frames | I2V heights | I2V seconds | Priced |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -82,7 +84,7 @@ does not bill it. The grids were read from those 400 responses on
 | `Vidu-Q3-Pro` | ✓ | ✓ | ✓ |  |  | start + end | 540, 720, 1080 | 1-16 | T2V, I2V, R2V |
 | `MiniMax-H3` | ✓ | ✓ | ✓ | ✓ | ✓ | start + end, or end only | 480, 540, 768, 1080, 1440 | 1-30 | T2V, I2V, R2V, UPSCALE, SHARPEN |
 | `MiniMax-H3-Turbo` | ✓ | ✓ | ✓ |  |  | start + end, or end only | 480, 540, 768, 1080 | 1-15 | T2V, I2V, R2V |
-| `Seedance-2.5` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080 | -1, 4-30 | T2V, I2V, R2V |
+| `Seedance-2.5` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080, 2160 | -1, 4-30 | T2V, I2V, R2V |
 | `Seedance-2.0` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720, 1080, 2160 | -1, 4-15 | T2V, I2V, R2V |
 | `Seedance-2.0-Fast` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
 | `Seedance-2.0-Mini` | ✓ | ✓ | ✓ |  |  | start + end | 480, 720 | -1, 4-15 | T2V, I2V, R2V |
@@ -135,7 +137,7 @@ most 3 each in `src_video_urls` and `src_audio_urls`.
 | `Vidu-Q3-Pro` | 540, 720 | 1-16 | up to 7 images; no videos or audio | none |
 | `MiniMax-H3` | 480, 540, 768, 1080, 1440 | 1-30 | up to 9 images, 3 videos, 3 audio; 15 in all | reference; start offsets |
 | `MiniMax-H3-Turbo` | 480, 540, 768, 1080 | 1-15 | up to 9 images, 3 videos, 3 audio; 15 in all | reference; start offsets |
-| `Seedance-2.5` | 480, 720, 1080 | -1, 4-30 | not checked | reference, edit, extend |
+| `Seedance-2.5` | 480, 720, 1080, 2160 | -1, 4-30 | not checked | reference, edit, extend |
 | `Seedance-2.0` | 480, 720, 1080, 2160 | -1, 4-15 | up to 9 images, 3 videos, 3 audio; audio needs an image or video | reference |
 | `Seedance-2.0-Fast` | 480, 720 | -1, 4-15 | up to 9 images, 3 videos, 3 audio; 12 in all; audio needs an image or video | reference |
 | `Seedance-2.0-Mini` | 480, 720 | -1, 4-15 | up to 9 images, 3 videos, 3 audio; 12 in all; audio needs an image or video | reference |

@@ -99,6 +99,27 @@ const seedanceFlashEvidence = JSON.parse(
   >;
 };
 
+// Seedance-2.5 2160p from this account's model list and one height 400
+// on 2026-11-25. The 2026-10-25 grid stopped at 1080.
+const seedance2160Evidence = JSON.parse(
+  readFileSync(
+    "tests/fixtures/machgen-evidence/machgen-seedance-2-5-2160-2026-11-25.json",
+    { encoding: "utf8" }
+  )
+) as Pick<typeof evidence, "grids"> & {
+  probes: Array<{
+    label: string;
+    status: number;
+    request: { model: string; task_type: string };
+    response: { detail: string };
+  }>;
+  wallet: {
+    before: { balance_micros: number };
+    after: { balance_micros: number };
+  };
+  modelList: { heights: Record<string, Record<string, number[]>> };
+};
+
 // SHARPEN rules and heights from MachGen's quote on 2026-10-31.
 const sharpenEvidence = JSON.parse(
   readFileSync(
@@ -180,6 +201,7 @@ describe("MachGen", () => {
       ...heightsEvidence.grids,
       ...geminiOmniEvidence.grids,
       ...seedanceFlashEvidence.grids,
+      ...seedance2160Evidence.grids,
     };
     // Each Turbo 400 names the grid the fixture pins.
     for (const probe of turboEvidence.probes)
@@ -195,6 +217,30 @@ describe("MachGen", () => {
         `does not support ${task_type} height=999; allowed heights: ` +
           `[${heightsEvidence.grids[model]![task_type]!.heights.join(", ")}]`
       );
+    }
+    expect(seedance2160Evidence.probes).toHaveLength(1);
+    const seedance2160 = seedance2160Evidence.probes[0]!;
+    expect(seedance2160.status).toBe(400);
+    expect(seedance2160.response.detail).toContain(
+      "allowed heights: [" +
+        seedance2160Evidence.grids["Seedance-2.5"]!.T2V!.heights.join(", ") +
+        "]"
+    );
+    expect(seedance2160Evidence.wallet.before.balance_micros).toBe(
+      seedance2160Evidence.wallet.after.balance_micros
+    );
+    for (const task of ["T2V", "I2V", "R2V"]) {
+      expect(
+        seedance2160Evidence.modelList.heights["Seedance-2.5"]![task]
+      ).toEqual(seedance2160Evidence.grids["Seedance-2.5"]![task]!.heights);
+    }
+    for (const task of ["T2V", "I2V", "R2V"] as const) {
+      const payload = machgenPayload(1, task);
+      payload.video_config = { ...payload.video_config, height: 2160 };
+      expect(
+        MachGenGenerateRequestSchema.safeParse(payload).success,
+        task
+      ).toBe(true);
     }
     expect(Object.keys(MACHGEN_VIDEO_GRIDS).sort()).toEqual(
       Object.keys(grids).sort()
@@ -343,6 +389,14 @@ describe("MachGen", () => {
     ).toEqual([
       "video_config.height: Seedance-2.5-Flash does not support T2V height=1080; allowed heights: 480, 720",
       "video_config.duration_secs: Seedance-2.5-Flash does not support T2V duration_secs=3; allowed durations: -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30",
+    ]);
+    expect(
+      errors({
+        task_type: "T2V",
+        video_config: { height: 2160, duration_secs: 4, aspect_ratio: "16:9" },
+      })
+    ).toEqual([
+      "video_config.height: Seedance-2.5-Flash does not support T2V height=2160; allowed heights: 480, 720",
     ]);
     // The model list allows 10 images, 5 videos and 5 audio clips; the
     // documented 9 / 3 / 3 ceilings still apply, as on Alibaba-Wan-3.0.

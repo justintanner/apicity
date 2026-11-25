@@ -321,19 +321,24 @@ export const machgen: Record<string, ModelPricing> = {
     warn,
     source,
   },
-  // Public pricebook micros / 1e6, re-read 2026-10-29. The 2026-10-25
-  // page rates were 0.1/0.23/0.59 and 0.06/0.14/0.32.
+  // Public pricebook micros / 1e6, re-read 2026-11-25. 480/720/1080
+  // match the 2026-10-29 rows (themselves above the 2026-10-25 page
+  // rates 0.1/0.23/0.59 and 0.06/0.14/0.32). 2160p is 913680 / 563760
+  // micros, gross, before the row's 15% Generation Credit, as the
+  // older tiers are.
   "Seedance-2.5": flat(
     {
       "no-video|480": 0.1028,
       "no-video|720": 0.23112,
       "no-video|1080": 0.56862,
+      "no-video|2160": 0.91368,
       "video|480": 0.061488,
       "video|720": 0.13824,
       "video|1080": 0.3402,
+      "video|2160": 0.56376,
     },
     [videoInput, height],
-    pricebookSource
+    { ...pricebookSource, asOf: "2026-11-25" }
   ),
   // Public pricebook micros / 1e6, re-read 2026-10-29. The 2026-10-25
   // page rates were 0.07/0.15/0.37/0.78 and 0.04/0.085/0.23/0.465.

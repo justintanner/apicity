@@ -1,0 +1,159 @@
+{
+  "capturedAt": "2026-11-25",
+  "source": "This account's GET https://api.machgen.ai/api/v0/models and the public pricebook GET https://api.machgen.ai/api/v0/billing/pricebook/public, both re-read 2026-11-25, plus one free POST https://api.machgen.ai/api/v0/generate that MachGen refused before accepting a task. Height 2160 is on every Seedance-2.5 surface in the model list. The T2V probe sends height 999 and duration_secs 999, which the grid cannot accept. No generation was recorded. Seedance-2.5-Flash is not in this pin.",
+  "probes": [
+    {
+      "label": "S-Seedance-2.5-T2V-height-999",
+      "at": "2026-11-25T14:26:26.768Z",
+      "request": {
+        "model": "Seedance-2.5",
+        "task_type": "T2V",
+        "prompt": "A cat walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 999,
+          "duration_secs": 999
+        }
+      },
+      "status": 400,
+      "response": {
+        "detail": "Seedance-2.5 does not support T2V height=999; allowed heights: [480, 720, 1080, 2160]",
+        "task_id": "4b98dbd4-7ab4-4163-a0b7-68298d121209"
+      }
+    }
+  ],
+  "wallet": {
+    "before": {
+      "at": "2026-11-25T14:26:25.244Z",
+      "balance_micros": 13277085,
+      "pending_tasks": 0,
+      "running_tasks": 0
+    },
+    "after": {
+      "at": "2026-11-25T14:26:27.191Z",
+      "balance_micros": 13277085,
+      "pending_tasks": 0,
+      "running_tasks": 0
+    }
+  },
+  "modelList": {
+    "source": "https://api.machgen.ai/api/v0/models",
+    "readAt": "2026-11-25T14:26:25.244Z",
+    "heights": {
+      "Seedance-2.5": {
+        "F2F": [480, 720, 1080, 2160],
+        "I2V": [480, 720, 1080, 2160],
+        "R2V": [480, 720, 1080, 2160],
+        "T2V": [480, 720, 1080, 2160]
+      }
+    }
+  },
+  "pricebook": [
+    {
+      "height": 2160,
+      "has_input_video": false,
+      "unit_price_micros": 913680,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 1080,
+      "has_input_video": false,
+      "unit_price_micros": 568620,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 720,
+      "has_input_video": false,
+      "unit_price_micros": 231120,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 480,
+      "has_input_video": false,
+      "unit_price_micros": 102800,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 2160,
+      "has_input_video": true,
+      "unit_price_micros": 563760,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 1080,
+      "has_input_video": true,
+      "unit_price_micros": 340200,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 720,
+      "has_input_video": true,
+      "unit_price_micros": 138240,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    },
+    {
+      "height": 480,
+      "has_input_video": true,
+      "unit_price_micros": 61488,
+      "discount_percent": 0,
+      "generation_credit_percent": 15
+    }
+  ],
+  "grids": {
+    "Seedance-2.5": {
+      "T2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "I2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive"]
+      },
+      "R2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    }
+  },
+  "notes": [
+    "The T2V 400 lists 2160, so this account's validator accepts that height. I2V, R2V and F2F heights are from the model list read in the same minute; they match the T2V allowed list. F2F is not a generate task type.",
+    "No 2160p video was generated. A 4 s 2160p take is about 3.65 USD and was not approved.",
+    "The wallet was 13277085 micros before and after the probe, with 0 pending and 0 running tasks.",
+    "480, 720 and 1080 micros match the 2026-10-29 table. 2160 is new. Every Seedance-2.5 row has generation_credit_percent 15 and discount_percent 0; the table stores the gross micros, as it does for the older tiers.",
+    "Durations and aspect ratios are unchanged from machgen-grids-2026-10-25.json."
+  ]
+}

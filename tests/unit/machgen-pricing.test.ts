@@ -72,7 +72,7 @@ const turboRow = (
 const pricebookAsOf: Record<string, string> = {
   "GPT-Image-2.6-Sunburst": "2026-11-18",
   "GPT-Image-2.6-Flare": "2026-11-18",
-  "Seedance-2.5": "2026-10-29",
+  "Seedance-2.5": "2026-11-25",
   "Seedance-2.0": "2026-10-29",
   "MiniMax-H3-Turbo": "2026-11-19",
   "Gemini-Omni-1.2-Flash": "2026-11-19",
@@ -247,6 +247,74 @@ describe("MachGen pricing", () => {
     });
     expect(upscale.usd).toBe(0);
     expect(upscale.warnings[0]).toContain("T2V, I2V, R2V");
+  });
+  it("prices Seedance 2.5 at 2160p from the 2026-11-25 pricebook", () => {
+    const pin = JSON.parse(
+      readFileSync(
+        "tests/fixtures/machgen-evidence/machgen-seedance-2-5-2160-2026-11-25.json",
+        "utf8"
+      )
+    ) as {
+      pricebook: Array<{
+        height: number;
+        has_input_video: boolean;
+        unit_price_micros: number;
+        generation_credit_percent: number;
+      }>;
+    };
+    const row = PRICING.machgen["Seedance-2.5"];
+    expect(row?.kind).toBe("perUnit");
+    if (row?.kind !== "perUnit") return;
+    expect(row.source).toEqual({
+      url: "https://api.machgen.ai/api/v0/billing/pricebook/public",
+      asOf: "2026-11-25",
+    });
+    expect(pin.pricebook.map((r) => r.unit_price_micros)).toEqual([
+      913680, 568620, 231120, 102800, 563760, 340200, 138240, 61488,
+    ]);
+    for (const price of pin.pricebook) {
+      const key = `${price.has_input_video ? "video" : "no-video"}|${price.height}`;
+      expect(row.rates[key], key).toBe(price.unit_price_micros / 1e6);
+      expect(price.generation_credit_percent).toBe(15);
+    }
+    const t2v = computeEstimate({
+      provider: "machgen",
+      payload: {
+        model: "Seedance-2.5",
+        task_type: "T2V",
+        prompt: "A cat walks across a sunlit wooden floor.",
+        video_config: { height: 2160, duration_secs: 4, aspect_ratio: "16:9" },
+      },
+    });
+    // 4 s * 913680 micros, gross. Generation Credit is not subtracted.
+    expect(t2v.usd).toBeCloseTo((4 * 913680) / 1e6, 8);
+    expect(t2v.rateAsOf).toBe("2026-11-25");
+    expect(t2v.warnings).toEqual([]);
+    const video = computeEstimate({
+      provider: "machgen",
+      payload: {
+        model: "Seedance-2.5",
+        task_type: "R2V",
+        prompt: "A cat walks across a sunlit wooden floor.",
+        src_video_urls: ["https://example.com/ref.mp4"],
+        video_config: { height: 2160, duration_secs: 4 },
+      },
+      costHints: { inputDurationSeconds: 4 },
+    });
+    // 4 s out + 4 s of input video, at 563760 micros/s.
+    expect(video.usd).toBeCloseTo((8 * 563760) / 1e6, 8);
+    expect(video.warnings).toEqual([]);
+    expect(
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model: "Seedance-2.5",
+          task_type: "T2V",
+          prompt: "A cat walks across a sunlit wooden floor.",
+          video_config: { height: 480, duration_secs: 4 },
+        },
+      }).usd
+    ).toBeCloseTo(0.4112, 8);
   });
   it("prices every recorded request at its billing receipt", () => {
     // Seedance 2.5 and 2.0 were re-read from the public pricebook on

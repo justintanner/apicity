@@ -16711,11 +16711,15 @@ export type FalHeygenHeygenVideoImageToVideoParsedRequest = z.output<
 // Free 422 probes the same day returned "At least one reference image or
 // video is required" at reference_video_urls whenever neither list had an
 // item (audio references alone do not count), and refused null lists.
+// The queue OpenAPI re-read on 2026-11-25
+// (sha256 101dbb959290d787746b1eb9d6e2c9bd06474ce6826dd859d67c238f7d0a24a0)
+// raised duration's maximum from 15 to 30 seconds; the model page prose still
+// says 5 to 15, but the machine-readable input schema is the contract.
 // Docs: https://fal.ai/models/heygen/heygen-video/reference-to-video/api
 export const FalHeygenHeygenVideoReferenceToVideoRequestSchema = z
   .object({
     prompt: z.string().min(1).max(32000),
-    duration: z.number().int().min(5).max(15).default(5),
+    duration: z.number().int().min(5).max(30).default(5),
     resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
     prompt_enhancement: z
       .enum(["turbo", "quality", "ultraquality", "disabled"])

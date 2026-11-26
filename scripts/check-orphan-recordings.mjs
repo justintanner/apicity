@@ -8,6 +8,10 @@
 //     recording.har on disk (a phantom reference)
 //   - captured failures  -- a tests/failures/**/<name>.har without its
 //     <name>.expect.json, or a sidecar without its HAR
+//   - partial recordings -- a recording.har.partial marker, or a leftover
+//     recording.har.tmp / recording.har.partial.tmp: a recording session
+//     died on that cassette (tests/harness-checkpoint.ts) and has to be
+//     resumed or discarded
 //
 // The name<->path mapping mirrors recordingExists() in tests/harness.ts: each
 // directory segment carries a trailing "_<hash>" suffix, and dots in a
@@ -269,6 +273,21 @@ function failureHarProblems(providers) {
   };
 }
 
+// tests/harness.ts writes recording.har.partial before a recording session's
+// first live request and removes it at teardown, and replaces both files
+// through a .tmp sibling. Any of them left on disk is a session that died:
+// its cassette may stop mid-flow (ac-anz4xg).
+const PARTIAL_FILE = /^recording\.har\.(partial|tmp|partial(?:\.\d+)?\.tmp)$/;
+
+function partialRecordingNames(providers) {
+  const names = walkFiles(recordingsDir, (file) =>
+    PARTIAL_FILE.test(path.basename(file))
+  ).map((file) =>
+    dirToRecordingName(path.relative(recordingsDir, path.dirname(file)))
+  );
+  return [...filterByProvider(names, providers)].sort();
+}
+
 function run() {
   const options = parseArgSets();
   if (!options) return 1;
@@ -279,6 +298,7 @@ function run() {
 
   const failures = failureHarProblems(options.providers);
   for (const problem of failures.problems) console.error(problem);
+  const partial = partialRecordingNames(options.providers);
   const diskEntries = diskRecordingEntries();
   const diskAllNames = new Set(diskEntries.keys());
   const disk = filterByProvider(diskAllNames, options.providers);
@@ -302,9 +322,23 @@ function run() {
     console.warn(`warn: non-static setupPolly name, skipped -- ${entry}`);
   }
 
+  if (partial.length) {
+    console.error(
+      `\n${partial.length} PARTIAL recording(s) -- a recording session ` +
+        "died before teardown:"
+    );
+    for (const name of partial) console.error(`  ${name}`);
+    console.error(
+      "  Resume each with `pnpm run dev:record -- <its test file>`: what " +
+        "was\n  recorded replays and nothing accepted is sent again. Or " +
+        "delete the\n  recording's directory to discard it."
+    );
+  }
+
   if (
     orphans.length === 0 &&
     missing.length === 0 &&
+    partial.length === 0 &&
     failures.problems.length === 0
   ) {
     const providerLabel =

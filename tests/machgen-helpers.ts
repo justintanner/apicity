@@ -10,7 +10,11 @@ import {
 import { computeEstimate } from "../packages/provider/cost/src/compute";
 import { resolveMachGenUpscaleEstimate } from "../packages/provider/cost/src/machgen-quote";
 import type { CostHints } from "../packages/provider/cost/src/types";
-import { type PollyContext, teardownPolly, recordingExists } from "./harness";
+import {
+  type PollyContext,
+  teardownPolly,
+  lastExchangeWasLive,
+} from "./harness";
 
 // Current tests/fixtures/cat1.jpg, pinned to the commit containing these bytes.
 export const CAT =
@@ -242,10 +246,6 @@ export function machgenHints(variant?: MachgenVariant): CostHints | undefined {
     : undefined;
 }
 
-const liveFor = (name: string) =>
-  process.env.POLLY_MODE === "record" ||
-  (process.env.POLLY_MODE === "record-missing" && !recordingExists(name));
-
 // Submits a task, polls it to a terminal state and reads its receipt.
 async function runTask(
   provider: ReturnType<typeof createMachGen>,
@@ -253,8 +253,9 @@ async function runTask(
   name: string,
   estimateUsd: number | null
 ) {
-  const live = liveFor(name);
   const task = await provider.api.v0.generate(payload);
+  // False when the submit replayed: a resumed run sent nothing.
+  let live = lastExchangeWasLive(name);
   expect(task.task_id).toBeTruthy();
   if (live) {
     console.log(
@@ -282,10 +283,15 @@ async function runTask(
     attempt < 180 && !["COMPLETED", "FAILED"].includes(status.status);
     attempt++
   ) {
-    if (live) await new Promise((resolve) => setTimeout(resolve, 10000));
+    // Recorded polls replay at once; wait only after one that was live.
+    if (lastExchangeWasLive(name)) {
+      live = true;
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+    }
     status = await provider.api.v0.tasks(task.task_id);
   }
   // The receipt is final once the task is COMPLETED or FAILED.
+  live ||= lastExchangeWasLive(name);
   const billing = await provider.api.v0.tasks.billing(task.task_id);
   expect(billing.task_id).toBe(task.task_id);
   expect(billing.net_cost_micros).toBe(
@@ -303,7 +309,7 @@ async function runTask(
   expect(status.metadata.model).toBe(
     resolvedModel(payload.model, payload.task_type)
   );
-  if (live)
+  if (live || lastExchangeWasLive(name))
     console.log(
       JSON.stringify({ recording: name, estimate_usd: estimateUsd, ...billing })
     );

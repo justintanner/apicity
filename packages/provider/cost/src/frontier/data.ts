@@ -1562,6 +1562,21 @@ export const FRONTIER = {
       },
       {
         rank: 4,
+        model: "Hyperflow H3",
+        creator: "Video Rebirth",
+        elo: 1154,
+        endpoints: [
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3-Turbo",
+            adapter: "hyperflow",
+            note: "The open weights are the product, reached through MiniMax-H3-Turbo at 480p and 768p. Video-to-video is reference-to-video with a video reference.",
+          },
+        ],
+      },
+      {
+        rank: 5,
         model: "Gemini Omni Flash 1.2",
         creator: "Google",
         elo: 1153,
@@ -1599,7 +1614,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 6,
         model: "HeyGen Video 1",
         creator: "HeyGen",
         elo: 1149,
@@ -1617,7 +1632,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
+        rank: 7,
         model: "MiniMax H3 Max",
         creator: "Fal",
         elo: 1146,
@@ -1635,7 +1650,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 8,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
         elo: 1141,
@@ -1668,7 +1683,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
         model: "Dreamina Seedance 2.5 Flash (720p)",
         creator: "ByteDance Seed",
         elo: 1136,
@@ -1696,7 +1711,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 9,
+        rank: 10,
         model: "SkyReels V4",
         creator: "Skywork AI",
         elo: 1124,

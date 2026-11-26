@@ -42,7 +42,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("10/10");
     expect(table).toContain("2026-11-25");
     expect(table).toContain("derived");
-    expect(table).toContain("9/9");
+    expect(table).toMatch(/derived\s+2026-11-25\s+10\/10/);
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
@@ -79,7 +79,7 @@ describe("apicity frontier", () => {
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
-      models: "9/9",
+      models: "10/10",
       captured: "2026-11-25",
     });
   });
@@ -281,7 +281,9 @@ describe("apicity frontier", () => {
       data: Array<{ rank: number; model: string; provider: string }>;
     };
     expect(envelope.ok).toBe(true);
-    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(9);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(
+      10
+    );
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
       model: "Wan 3.0",
@@ -289,7 +291,7 @@ describe("apicity frontier", () => {
     });
     expect(envelope.data).toContainEqual(
       expect.objectContaining({
-        rank: 8,
+        rank: 9,
         model: "Dreamina Seedance 2.5 Flash (720p)",
         provider: "fal",
         dotPath: "bytedance.seedance2p5.flash.referenceToVideo",
@@ -297,7 +299,7 @@ describe("apicity frontier", () => {
     );
     expect(envelope.data).toContainEqual(
       expect.objectContaining({
-        rank: 8,
+        rank: 9,
         model: "Dreamina Seedance 2.5 Flash (720p)",
         provider: "wavespeed",
         dotPath: "api.v3.bytedance.seedance2p5Flash.referenceToVideo",
@@ -305,7 +307,7 @@ describe("apicity frontier", () => {
     );
     expect(envelope.data).toContainEqual(
       expect.objectContaining({
-        rank: 9,
+        rank: 10,
         model: "SkyReels V4",
         provider: "wavespeed",
         dotPath: "api.v3.skyworkAi.skyreelsV4.referenceToVideo",
@@ -353,7 +355,7 @@ describe("apicity frontier", () => {
           (row) => row.dotPath === "api.v0.generate" && row.configured
         )
       ).toBe(true);
-      if (type === "t2v") {
+      if (type === "t2v" || type === "r2v") {
         expect(
           envelope.data.some(
             (row) =>
@@ -380,7 +382,7 @@ describe("apicity frontier", () => {
       }
       counts[type] = envelope.data.length;
     }
-    expect(counts).toEqual({ t2i: 6, i2i: 6, t2v: 5, i2v: 5, v2v: 4, r2v: 6 });
+    expect(counts).toEqual({ t2i: 6, i2i: 6, t2v: 5, i2v: 5, v2v: 4, r2v: 7 });
   });
 
   it("rejects an unknown type and names the six codes", async () => {

@@ -328,6 +328,17 @@ The recording system uses two modes, chosen based on whether you're adding new t
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
+**Resuming an interrupted recording.** Run the same
+`pnpm run dev:record -- <file>` again. The harness saves each response before
+returning it and keeps a `recording.har.partial` journal until teardown. The
+rerun replays the saved exchanges and records missing GET, HEAD and OPTIONS
+requests. It blocks other live requests while a previous submission is
+unanswered or still needs to replay. Restore a changed request so it matches.
+For an unanswered submission, check its status with the provider before
+discarding the marker and sending it again. A partial recording makes
+`recordingExists()` return false, blocks `dev:rerecord`, and fails recording
+lint. Poll loops can use `lastExchangeWasLive(name)` to wait after live calls.
+
 Recordings are committed alongside source code and included in PRs. CI no longer generates a harness report or screenshots on PRs; instead, on every push (any branch) the `endpoint-telegram` job sends one Telegram message per changed recording. To inspect recording diffs locally, use the harness viewer (`pnpm run harness`, `pnpm run harness:report`, `pnpm run harness:telegram -- --dry-run`).
 
 **Secrets management:**

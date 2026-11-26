@@ -4,6 +4,12 @@ import FSPersister from "@pollyjs/persister-fs";
 import path from "path";
 import fs from "fs";
 import {
+  CheckpointFetchAdapter,
+  CheckpointFSPersister,
+  PARTIAL_MARKER,
+  RECORDING_FILE,
+} from "./harness-checkpoint";
+import {
   type PersistedHarRecording,
   redactPersistedHarSecrets,
   persistSafeTextRequestBody,
@@ -22,7 +28,15 @@ export interface PollyContext {
   releaseDispatcher?: () => void;
   /** Requests replay found no recording for; teardownPolly fails on them. */
   replayMisses?: string[];
+  /** True when the context's most recent exchange reached the network. */
+  lastExchangeLive?: boolean;
 }
+
+export {
+  PARTIAL_MARKER,
+  RecordingResumeRefusal,
+  type PartialMarker,
+} from "./harness-checkpoint";
 
 export {
   type PersistedHarRecording,
@@ -93,15 +107,20 @@ export function setupPollyIgnoringBody(recordingName: string): PollyContext {
   });
 }
 
-type RawPollyMode = "record" | "replay" | "passthrough" | "record-missing";
+export type RawPollyMode =
+  | "record"
+  | "replay"
+  | "passthrough"
+  | "record-missing";
 type PollyAdapterMode = "record" | "replay" | "passthrough";
 
-function resolvePollyMode(): {
+function resolvePollyMode(override?: RawPollyMode): {
   raw: RawPollyMode;
   adapter: PollyAdapterMode;
   recordIfMissing: boolean;
 } {
-  const raw = (process.env.POLLY_MODE ?? "replay") as RawPollyMode;
+  const raw =
+    override ?? ((process.env.POLLY_MODE ?? "replay") as RawPollyMode);
   if (raw === "record-missing") {
     return { raw, adapter: "replay", recordIfMissing: true };
   }
@@ -208,15 +227,62 @@ function recordingsRoot(): string {
   return path.resolve(override);
 }
 
+// The URL a cassette entry would carry for `url`, for the partial marker.
+function redactRequestUrl(url: string): string {
+  const probe: PersistedHarRecording = { request: { url } };
+  redactPersistedHarSecrets(probe);
+  return probe.request?.url ?? url;
+}
+
+const activeContexts = new Map<string, PollyContext>();
+
+/**
+ * True when the most recent exchange of the open context for `recordingName`
+ * reached the network, false when it replayed. Before the first exchange,
+ * and for a name with no open context, it is true outside replay. Poll loops
+ * pace on this, so a resumed recording replays its recorded polls at once
+ * and backs off only on the live ones.
+ */
+export function lastExchangeWasLive(recordingName: string): boolean {
+  return (
+    activeContexts.get(recordingName)?.lastExchangeLive ??
+    getPollyMode() !== "replay"
+  );
+}
+
+/** Where and how a harness self-test records, whatever POLLY_MODE says. */
+export interface RecordingSandbox {
+  mode: RawPollyMode;
+  recordingsDir: string;
+}
+
+interface PollySetupOptions {
+  matchRequestsBy?: Record<string, unknown>;
+  beforePersist?: (recording: PersistedHarRecording) => void;
+  sandbox?: RecordingSandbox;
+}
+
+/**
+ * Harness self-tests only: a context that records into `sandbox`, never into
+ * tests/recordings. The name avoids `setupPolly*` on purpose, so the
+ * recording-name scanners do not look for a committed cassette.
+ */
+export function openRecordingSandbox(
+  recordingName: string,
+  sandbox: RecordingSandbox,
+  beforePersist?: (recording: PersistedHarRecording) => void
+): PollyContext {
+  return setupPollyWithOptions(recordingName, { sandbox, beforePersist });
+}
+
 function setupPollyWithOptions(
   recordingName: string,
-  options: {
-    matchRequestsBy?: Record<string, unknown>;
-    beforePersist?: (recording: PersistedHarRecording) => void;
-  }
+  options: PollySetupOptions
 ): PollyContext {
-  const { raw, adapter, recordIfMissing } = resolvePollyMode();
-  const recordingsDir = recordingsRoot();
+  const { raw, adapter, recordIfMissing } = resolvePollyMode(
+    options.sandbox?.mode
+  );
+  const recordingsDir = options.sandbox?.recordingsDir ?? recordingsRoot();
   const releaseDispatcher = holdRecordingDispatcher(raw);
 
   const defaultMatchRequestsBy = {
@@ -235,14 +301,20 @@ function setupPollyWithOptions(
     },
   };
 
+  const recording = raw === "record" || raw === "record-missing";
   let polly: Polly;
   try {
     polly = new Polly(recordingName, {
       mode: adapter,
-      adapters: [FetchAdapter],
-      persister: FSPersister,
+      adapters: [recording ? CheckpointFetchAdapter : FetchAdapter],
+      persister: recording ? CheckpointFSPersister : FSPersister,
       persisterOptions: {
         fs: { recordingsDir },
+        checkpoint: {
+          mode: raw,
+          redactUrl: redactRequestUrl,
+          persistedId: redactedRequestId,
+        },
       },
       recordIfMissing,
       recordFailedRequests: true,
@@ -292,14 +364,46 @@ function setupPollyWithOptions(
     redactPersistedHarSecrets(recording as PersistedHarRecording);
   });
 
-  return { polly, mode: raw, releaseDispatcher, replayMisses };
+  const ctx: PollyContext = {
+    polly,
+    mode: raw,
+    releaseDispatcher,
+    replayMisses,
+    lastExchangeLive: raw !== "replay",
+  };
+  polly.server.any().on("response", (req) => {
+    ctx.lastExchangeLive = req.action !== "replay";
+    if (recording && req.action === "replay")
+      (polly.persister as unknown as CheckpointFSPersister).replayed(req);
+  });
+
+  if (recording) {
+    try {
+      (polly.persister as unknown as CheckpointFSPersister).start();
+    } catch (error) {
+      polly.disconnect();
+      releaseDispatcher();
+      throw error;
+    }
+  }
+  activeContexts.set(recordingName, ctx);
+  return ctx;
 }
 
 export async function teardownPolly(ctx: PollyContext): Promise<void> {
+  const persister = ctx.polly.persister as unknown as CheckpointFSPersister;
   try {
     await ctx.polly.stop();
   } finally {
     ctx.releaseDispatcher?.();
+    if (activeContexts.get(ctx.polly.recordingName) === ctx)
+      activeContexts.delete(ctx.polly.recordingName);
+  }
+  if (ctx.mode === "record" || ctx.mode === "record-missing") {
+    // Reaching here means the session was not interrupted.
+    persister.finish();
+    const refusals = persister.refusals();
+    if (refusals.length > 0) throw new Error(refusals.join("\n"));
   }
   const misses = ctx.replayMisses ?? [];
   if (misses.length > 0) {
@@ -311,29 +415,49 @@ export async function teardownPolly(ctx: PollyContext): Promise<void> {
   }
 }
 
-export function recordingExists(recordingName: string): boolean {
-  const recordingsDir = recordingsRoot();
+export type RecordingState = "missing" | "partial" | "complete";
+
+/**
+ * "partial" while a recording session is open on the cassette or died on it
+ * (its `recording.har.partial` marker is there), "complete" for a cassette
+ * with no marker, "missing" otherwise.
+ */
+export function recordingState(
+  recordingName: string,
+  recordingsDir = recordingsRoot()
+): RecordingState {
   // Polly normalizes dots to hyphens when creating directory names
   const parts = recordingName.split("/").map((p) => p.replace(/\./g, "-"));
-  function walk(dir: string, depth: number): boolean {
+  function walk(dir: string, depth: number): RecordingState {
     if (depth === parts.length) {
-      return fs.existsSync(path.join(dir, "recording.har"));
+      if (fs.existsSync(path.join(dir, PARTIAL_MARKER))) return "partial";
+      return fs.existsSync(path.join(dir, RECORDING_FILE))
+        ? "complete"
+        : "missing";
     }
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
       if (entry.isDirectory() && entry.name.startsWith(parts[depth] + "_")) {
-        if (walk(path.join(dir, entry.name), depth + 1)) {
-          return true;
-        }
+        const state = walk(path.join(dir, entry.name), depth + 1);
+        if (state !== "missing") return state;
       }
     }
-    return false;
+    return "missing";
   }
   try {
     return walk(recordingsDir, 0);
   } catch {
-    return false;
+    return "missing";
   }
+}
+
+/**
+ * True for a finished cassette only. A partial one is not a recording yet:
+ * a caller that picks its live path (real key, poll delays) from this must
+ * keep picking it while the recording is being made or resumed.
+ */
+export function recordingExists(recordingName: string): boolean {
+  return recordingState(recordingName) === "complete";
 }
 
 export function getPollyMode(): RawPollyMode {

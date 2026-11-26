@@ -7,7 +7,7 @@ import {
   type WaveSpeedPrediction,
   type WaveSpeedPredictionResponse,
 } from "@apicity/wavespeed";
-import { recordingExists } from "./harness";
+import { lastExchangeWasLive } from "./harness";
 
 // Media inputs are public URLs that WaveSpeed fetches. Pinned to commit
 // ba051bee, so a recorded request body stays byte-identical.
@@ -47,20 +47,17 @@ export function wavespeedClient() {
   });
 }
 
-const liveFor = (recording: string) =>
-  process.env.POLLY_MODE === "record" ||
-  (process.env.POLLY_MODE === "record-missing" && !recordingExists(recording));
-
 /**
  * Submits `payload` once through `submit`, polls `api.v3.predictions.result`
  * until the prediction is terminal and asserts a completed prediction of
  * `modelId` whose first output is an https URL. Returns the final prediction.
  *
  * A submit is never retried: one whose answer was lost may still have
- * created, and billed, a task. When the live window ends first, the saved
- * recording holds the submit and the polls so far. Rerun `dev:record` once
- * the prediction is terminal: record-missing replays the recorded exchanges,
- * so nothing is resubmitted, and records only the polls after them.
+ * created, and billed, a task. The harness saves each exchange as it
+ * arrives, so a run that dies, or whose live window ends first, leaves the
+ * submit and the polls so far on disk. Rerun `dev:record`: record-missing
+ * replays the recorded exchanges at once, so nothing is resubmitted, and
+ * backs off again only from the first poll that reaches the network.
  */
 export async function recordWaveSpeed<T>(
   submit: (payload: T) => Promise<WaveSpeedPredictionResponse>,
@@ -68,8 +65,9 @@ export async function recordWaveSpeed<T>(
   recording: string,
   modelId: string
 ): Promise<WaveSpeedPrediction> {
-  const live = liveFor(recording);
   const submitted = await submit(payload);
+  // False when the submit replayed: a resumed run sent nothing.
+  let live = lastExchangeWasLive(recording);
   expect(submitted.data.model).toBe(modelId);
   const id = submitted.data.id;
   expect(id).toBeTruthy();
@@ -90,9 +88,12 @@ export async function recordWaveSpeed<T>(
 
   const results = wavespeedClient().api.v3.predictions;
   let prediction = submitted.data;
-  const started = Date.now();
+  let started = Date.now();
   for (let poll = 0; poll < MAX_REPLAY_POLLS; poll++) {
-    if (live) {
+    // Recorded polls replay at once; wait only after one that was live.
+    if (lastExchangeWasLive(recording)) {
+      if (!live) started = Date.now();
+      live = true;
       const elapsedMs = Date.now() - started;
       if (elapsedMs >= LIVE_WINDOW_MS) break;
       await new Promise((resolve) =>
@@ -111,7 +112,7 @@ export async function recordWaveSpeed<T>(
   expect(prediction.id).toBe(id);
   expect(prediction.model).toBe(modelId);
   expect(prediction.outputs?.[0]).toMatch(/^https:\/\//);
-  if (live)
+  if (live || lastExchangeWasLive(recording))
     console.log(
       JSON.stringify({ recording, prediction: id, timings: prediction.timings })
     );

@@ -239,6 +239,17 @@ replay.
 
 **Pitfall:** `pnpm run dev:rerecord` without a file filter will refuse to run (by design). Do not set `POLLY_FORCE_ALL=1` to force it — prefer deleting the specific recording directory and re-running `dev:record` on that one test.
 
+**Resuming an interrupted recording.** Run the same
+`pnpm run dev:record -- <file>` again. The harness saves each response before
+returning it and keeps a `recording.har.partial` journal until teardown. The
+rerun replays the saved exchanges and records missing GET, HEAD and OPTIONS
+requests. It blocks other live requests while a previous submission is
+unanswered or still needs to replay. Restore a changed request so it matches.
+For an unanswered submission, check its status with the provider before
+discarding the marker and sending it again. A partial recording makes
+`recordingExists()` return false, blocks `dev:rerecord`, and fails recording
+lint. Poll loops can use `lastExchangeWasLive(name)` to wait after live calls.
+
 API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env`). The tracked `.env` file contains 1Password references only.
 
 ## Code Conventions

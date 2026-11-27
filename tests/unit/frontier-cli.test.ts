@@ -111,7 +111,7 @@ describe("apicity frontier", () => {
       provider: "fal",
       dotPath: "bytedance.seedance2p5.imageToVideo",
       modelId: "-",
-      price: { unit: "dynamic" },
+      price: { unit: "tokens", min: 0.0094 / 1000, max: 0.0234116 / 1000 },
       configured: false,
     });
     expect(

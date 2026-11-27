@@ -93,7 +93,7 @@ describe("fal bytedance seedance2p5 image-to-video integration", () => {
       provider.run.bytedance.seedance2p5.imageToVideo.schema.safeParse({
         prompt: "a cat",
         image_url: "https://example.com/cat.jpg",
-        resolution: "4k",
+        resolution: "8k",
       });
     expect(result.success).toBe(false);
   });

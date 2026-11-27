@@ -44,7 +44,7 @@ describe("FLUX3 edit image", () => {
         .success
     ).toBe(false)
   );
-  it.each(["512sq", "768sq", "1k", "2k", "4k"])(
+  it.each(["512sq", "768sq", "1k", "1.5k", "2k", "4k"])(
     "accepts resolution%s",
     (resolution) =>
       expect(schema.safeParse({ ...input, resolution }).success).toBe(true)
@@ -61,9 +61,9 @@ describe("FLUX3 edit image", () => {
     expect(schema.safeParse({ ...input, version: "invalid" }).success).toBe(
       false
     ));
-  it("directs uncertain billing to fal pricing", () => {
+  it("prices the default 1k edit", () => {
     const e = computeEstimate({ provider: "fal", endpoint, payload: input });
-    expect(e.usd).toBe(0);
-    expect(e.warnings.join(" ")).toContain("fal.v1.models.pricing.estimate");
+    expect(e.usd).toBe(0.048);
+    expect(e.warnings).toEqual([]);
   });
 });

@@ -824,6 +824,11 @@ export const MODEL_SLUGS = {
   // underlying models kie also resells, so their slugs intentionally match
   // kie's.
   fal: {
+    "blackforestlabs/flux-3/edit-image": "flux3i",
+    "blackforestlabs/flux-3/text-to-image": "flux3i",
+    "bytedance/seedance-2.5/image-to-video": "sd2p5",
+    "bytedance/seedance-2.5/us/image-to-video": "sd2p5",
+    "kling/v4/video-to-video/edit": "kling4",
     "kling/v4/reference-to-video": "kling4",
     "kling/v4/image-to-video": "kling4",
     "kling/v4/text-to-video": "kling4",
@@ -984,8 +989,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.0/us/image-to-video": "sd2",
     "bytedance/seedance-2.0/us/reference-to-video": "sd2",
 
-    // Video — Seedance 2.5, US twins and the draft completion included (2.5
-    // and 2.5 US image-to-video are dynamic and carry no slug).
+    // Video — Seedance 2.5, US twins and draft completion included.
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
     "bytedance/seedance-2.5/flash/reference-to-video": "sd2p5flash",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",

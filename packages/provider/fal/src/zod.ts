@@ -562,7 +562,7 @@ export type FalSeedance2p0MiniReferenceToVideoParsedRequest = z.output<
 // Bytedance Seedance 2.5 shared vocabularies
 // ---------------------------------------------------------------------------
 
-const Seedance2p5ResolutionSchema = z.enum(["480p", "720p", "1080p"]);
+const Seedance2p5ResolutionSchema = z.enum(["480p", "720p", "1080p", "4k"]);
 
 const Seedance2p5DurationSchema = z.enum([
   "auto",
@@ -615,7 +615,7 @@ export const FalSeedance2p5TextToVideoRequestSchema = z.object({
   draft: z
     .boolean()
     .describe(
-      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within seven days."
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p or 4k within 14 days."
     )
     .optional(),
   duration: Seedance2p5DurationSchema.optional(),
@@ -4764,7 +4764,9 @@ export const FalFlux3EditImageRequestSchema = z.object({
       "1:2",
     ])
     .default("auto"),
-  resolution: z.enum(["512sq", "768sq", "1k", "2k", "4k"]).default("1k"),
+  resolution: z
+    .enum(["512sq", "768sq", "1k", "1.5k", "2k", "4k"])
+    .default("1k"),
   enable_prompt_expansion: z.boolean().default(false),
   safety_tolerance: z.number().int().min(0).max(4).default(2),
   output_format: z.enum(["jpeg", "png"]).default("jpeg"),
@@ -15424,17 +15426,14 @@ export type FalBytedanceSeedance2p0UsReferenceToVideoParsedRequest = z.output<
 // Bytedance Seedance 2.5 US text-to-video
 export const FalBytedanceSeedance2p5UsTextToVideoRequestSchema = z.object({
   prompt: z.string().describe("The text prompt used to generate the video"),
-  resolution: z
-    .enum(["480p", "720p", "1080p"])
-    .default("720p")
-    .describe(
-      "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
-    ),
+  resolution: Seedance2p5ResolutionSchema.default("720p").describe(
+    "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality, 4k for highest quality."
+  ),
   draft: z
     .boolean()
     .default(false)
     .describe(
-      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p or 4k within 14 days."
     ),
   duration: z
     .enum([
@@ -15531,17 +15530,14 @@ export const FalBytedanceSeedance2p5UsImageToVideoRequestSchema = z.object({
     .describe(
       "The URL of the image to use as the last frame of the video. When provided, the generated video will transition from the starting image to this ending image. Supported formats: JPEG, PNG, WebP. Max 30 MB."
     ),
-  resolution: z
-    .enum(["480p", "720p", "1080p"])
-    .default("720p")
-    .describe(
-      "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
-    ),
+  resolution: Seedance2p5ResolutionSchema.default("720p").describe(
+    "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality, 4k for highest quality."
+  ),
   draft: z
     .boolean()
     .default(false)
     .describe(
-      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p or 4k within 14 days."
     ),
   duration: z
     .enum([
@@ -15836,17 +15832,14 @@ export const FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema = z.object({
     .describe(
       "Reference audio to guide video generation. Refer to them in the prompt as @Audio1, @Audio2, etc. Supported formats: MP3, WAV. Up to 10 files. Each file must be 1.8 to 30.2 seconds and no larger than 15 MB; combined duration must not exceed 30.2 seconds."
     ),
-  resolution: z
-    .enum(["480p", "720p", "1080p"])
-    .default("720p")
-    .describe(
-      "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality."
-    ),
+  resolution: Seedance2p5ResolutionSchema.default("720p").describe(
+    "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality, 4k for highest quality."
+  ),
   draft: z
     .boolean()
     .default(false)
     .describe(
-      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within 14 days."
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p or 4k within 14 days."
     ),
   duration: z
     .enum([
@@ -15940,9 +15933,9 @@ export const FalBytedanceSeedance2p5DraftCompleteRequestSchema = z.object({
       "The draft_id returned with draft enabled. Valid for seven days and only for the original caller."
     ),
   resolution: z
-    .literal("1080p")
+    .enum(["1080p", "4k"])
     .default("1080p")
-    .describe("Completed drafts only support 1080p output."),
+    .describe("Resolution of the completed video: 1080p or 4k."),
   codec: z
     .enum(["auto", "H264", "H265"])
     .default("auto")
@@ -15969,9 +15962,9 @@ export const FalBytedanceSeedance2p5UsDraftCompleteRequestSchema = z.object({
       "The draft_id returned with draft enabled. Valid for 14 days and only for the original caller."
     ),
   resolution: z
-    .literal("1080p")
+    .enum(["1080p", "4k"])
     .default("1080p")
-    .describe("Completed drafts only support 1080p output."),
+    .describe("Resolution of the completed video: 1080p or 4k."),
   codec: z
     .enum(["auto", "H264", "H265"])
     .default("auto")
@@ -18957,8 +18950,12 @@ export const FalKlingV4TextToVideoRequestSchema = z.object({
     .max(30)
     .default(5)
     .describe("Video duration in seconds (3-30)."),
+  hdr: z
+    .boolean()
+    .optional()
+    .describe("10-bit HDR at 1080p or 4k, billed per output second."),
   resolution: z
-    .enum(["720p", "1080p"])
+    .enum(["720p", "1080p", "4k"])
     .default("1080p")
     .describe("Output resolution."),
   aspect_ratio: z
@@ -19021,8 +19018,12 @@ export const FalKlingV4ImageToVideoRequestSchema = z.object({
     .max(30)
     .default(5)
     .describe("Video duration in seconds (3-30)."),
+  hdr: z
+    .boolean()
+    .optional()
+    .describe("10-bit HDR at 1080p or 4k, billed per output second."),
   resolution: z
-    .enum(["720p", "1080p"])
+    .enum(["720p", "1080p", "4k"])
     .default("1080p")
     .describe("Output resolution."),
 });
@@ -19131,8 +19132,12 @@ export const FalKlingV4ReferenceToVideoRequestSchema = z.object({
     .describe(
       "Characters/objects, referenced as @Element1, @Element2, ... (max 7). Up to 3 elements may carry a voice_id and up to 3 may be video elements."
     ),
+  hdr: z
+    .boolean()
+    .optional()
+    .describe("10-bit HDR at 1080p or 4k, billed per output second."),
   resolution: z
-    .enum(["720p", "1080p"])
+    .enum(["720p", "1080p", "4k"])
     .default("1080p")
     .describe("Output resolution."),
   aspect_ratio: z
@@ -19200,8 +19205,12 @@ export const FalKlingV4VideoToVideoEditRequestSchema = z.object({
     .describe(
       "Output duration in seconds (3-30). Defaults to the source video's length."
     ),
+  hdr: z
+    .boolean()
+    .optional()
+    .describe("10-bit HDR at 1080p or 4k, billed per output second."),
   resolution: z
-    .enum(["720p", "1080p"])
+    .enum(["720p", "1080p", "4k"])
     .default("1080p")
     .describe("Output resolution."),
 });

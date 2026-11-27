@@ -153,10 +153,10 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
       expect(valid({ end_image_url })).toBe(true);
     expect(valid({ end_image_url: 7 })).toBe(false);
   });
-  it("takes 480p, 720p or 1080p and refuses 4k", () => {
-    for (const resolution of ["480p", "720p", "1080p"])
+  it("takes 480p through 4k and rejects unknown resolutions", () => {
+    for (const resolution of ["480p", "720p", "1080p", "4k"])
       expect(valid({ resolution })).toBe(true);
-    for (const resolution of ["4k", "240p", "1440p", 480])
+    for (const resolution of ["8k", "240p", "1440p", 480])
       expect(valid({ resolution })).toBe(false);
   });
   it("bounds duration to auto or the digit strings 4 through 30", () => {
@@ -202,17 +202,20 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
 });
 
 describe("Bytedance Seedance 2.5 US image-to-video pricing", () => {
-  // The recorded 480p, 4 s call billed 38.671 units ($0.99307128): 648x630,
-  // the input image's aspect, with 97 frames. aspect_ratio is the const
-  // "auto" and ByteDance publishes no sizing rule for it, so no request field
-  // fixes the output size and this stays dynamic while its text- and
-  // reference-to-video twins are priced (P-7 rules 1, 4; ac-j3d6ki.3).
-  it("stays dynamically priced because output frames set the charge", () => {
-    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
+  it("prices declared tokens for an adaptive output", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint
     );
-    expect(pricing[endpoint]).toBeUndefined();
-    expect(Object.keys(MODEL_SLUGS.fal)).not.toContain(endpoint);
+    expect(pricing[endpoint]).toBeDefined();
+    expect(Object.keys(MODEL_SLUGS.fal)).toContain(endpoint);
+    expect(
+      computeEstimate({
+        provider: "fal",
+        endpoint,
+        payload,
+        costHints: { videoOutputTokens: 1000 },
+      }).usd
+    ).toBeCloseTo(0.0214);
     expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
       "Seedance 2.5 US"
     );

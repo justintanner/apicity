@@ -144,10 +144,10 @@ describe("Bytedance Seedance 2.5 US text-to-video", () => {
     ])
       expect(valid({ [key]: null })).toBe(false);
   });
-  it("takes 480p, 720p or 1080p and refuses 4k", () => {
-    for (const resolution of ["480p", "720p", "1080p"])
+  it("takes 480p through 4k and rejects unknown resolutions", () => {
+    for (const resolution of ["480p", "720p", "1080p", "4k"])
       expect(valid({ resolution })).toBe(true);
-    for (const resolution of ["4k", "240p", "1440p", 480])
+    for (const resolution of ["8k", "240p", "1440p", 480])
       expect(valid({ resolution })).toBe(false);
   });
   it("bounds duration to auto or the digit strings 4 through 30", () => {

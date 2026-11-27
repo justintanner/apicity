@@ -923,8 +923,6 @@ describe("fal video pricing estimates", () => {
     for (const [endpoint, name] of [
       ["bytedance/seedance-2.0/fast/reference-to-video", "Seedance 2 Fast"],
       ["bytedance/seedance-2.0/reference-to-video", "Seedance 2"],
-      ["bytedance/seedance-2.5/image-to-video", "Seedance 2.5"],
-      ["bytedance/seedance-2.5/us/image-to-video", "Seedance 2.5 US"],
       ["bytedance/seedance-2.5/flash/image-to-video", "Seedance 2.5 Flash"],
     ]) {
       expect(dynamic, endpoint).toContain(endpoint);
@@ -938,6 +936,8 @@ describe("fal video pricing estimates", () => {
       expect(result.warnings[0], endpoint).toContain("models/pricing/estimate");
     }
     const priced: Array<[string, string, string]> = [
+      ["bytedance/seedance-2.5/us/image-to-video", "sd2p5", "Seedance 2.5 US"],
+      ["bytedance/seedance-2.5/image-to-video", "sd2p5", "Seedance 2.5"],
       ["bytedance/seedance-2.0/text-to-video", "sd2", "Seedance 2"],
       ["bytedance/seedance-2.0/image-to-video", "sd2", "Seedance 2"],
       ["bytedance/seedance-2.0/fast/text-to-video", "sd2f", "Seedance 2 Fast"],
@@ -959,7 +959,11 @@ describe("fal video pricing estimates", () => {
       expect(dynamic, endpoint).not.toContain(endpoint);
       expect(falPricing[endpoint], endpoint).toBeDefined();
       expect(falPricing[endpoint].source.asOf, endpoint).toBe(
-        endpoint.includes("/us/") ? "2026-11-07" : "2026-10-17"
+        endpoint.includes("seedance-2.5/")
+          ? "2026-11-27"
+          : endpoint.includes("/us/")
+            ? "2026-11-07"
+            : "2026-10-17"
       );
       expect(slugs[endpoint], endpoint).toBe(slug);
       expect(names[endpoint], endpoint).toBe(name);
@@ -967,7 +971,7 @@ describe("fal video pricing estimates", () => {
     // The US draft completion came after that sweep (ac-jjngde).
     const usComplete = "bytedance/seedance-2.5/us/draft/complete";
     expect(dynamic).not.toContain(usComplete);
-    expect(falPricing[usComplete].source.asOf).toBe("2026-11-07");
+    expect(falPricing[usComplete].source.asOf).toBe("2026-11-27");
     expect(slugs[usComplete]).toBe("sd2p5");
     expect(names[usComplete]).toBe("Seedance 2.5 US");
     // The same models kie resells keep the same slugs.
@@ -1641,17 +1645,16 @@ describe("fal edit/image pricing estimates", () => {
     // rounds up to one megapixel ($0.05). FLUX 3 Action SO-101 bills compute
     // seconds that no request field fixes. Grok Voice bills seconds whose
     // meaning is unpublished and which differ from input/reply duration.
-    // Four Seedance ids stay. 2.0 and 2.0 Fast reference-to-video are
+    // Three Seedance ids stay. 2.0 and 2.0 Fast reference-to-video are
     // unrecorded, and the one 2.0-series reference recording (2.0 US)
-    // divides by 1000 where the card says 1024. 2.5 and 2.5 US
-    // image-to-video follow the input image's aspect, which no request field
+    // divides by 1000 where the card says 1024. 2.5 Flash
+    // image-to-video follows the input image's aspect, which no request field
     // sizes (ac-j3d6ki.3). Reframe-video also bills generated overlap. HeyGen
     // digital twins bill whole output seconds that the spoken script sets
     // (ac-7wb7u7). All use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
-      "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/klein/base/edit-image/lora",
       "blackforestlabs/flux-3/klein/base/text-to-image/lora",
       "blackforestlabs/flux-3/klein/base/trainer/edit",
@@ -1659,13 +1662,10 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/klein/edit-image/lora",
       "blackforestlabs/flux-3/klein/text-to-image",
       "blackforestlabs/flux-3/klein/text-to-image/lora",
-      "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
       "bytedance/seedance-2.0/fast/reference-to-video",
       "bytedance/seedance-2.0/reference-to-video",
       "bytedance/seedance-2.5/flash/image-to-video",
-      "bytedance/seedance-2.5/image-to-video",
-      "bytedance/seedance-2.5/us/image-to-video",
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
@@ -1708,7 +1708,6 @@ describe("fal edit/image pricing estimates", () => {
       "google/nano-banana-lite/edit",
       "kling/v4/image-to-image",
       "kling/v4/text-to-image",
-      "kling/v4/video-to-video/edit",
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",
       "luma/agent/ray/v3.2/reframe",

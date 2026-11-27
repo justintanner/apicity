@@ -26,6 +26,66 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       kind: "metered",
       unit: "1000 tokens",
       source: {
+        url: "https://fal.ai/models/bytedance/seedance-2.5/us/image-to-video",
+        asOf: "2026-11-27",
+      },
+    },
+    ["POST bytedance.seedance2p5.us.imageToVideo"]
+  ),
+  ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "1000 tokens",
+      source: {
+        url: "https://fal.ai/models/bytedance/seedance-2.5/image-to-video",
+        asOf: "2026-11-27",
+      },
+    },
+    ["POST bytedance.seedance2p5.imageToVideo"]
+  ),
+  ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "seconds",
+      source: {
+        url: "https://fal.ai/models/kling/v4/video-to-video/edit",
+        asOf: "2026-11-27",
+      },
+    },
+    ["POST kling.v4.videoToVideo.edit"]
+  ),
+  ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://fal.ai/models/blackforestlabs/flux-3/text-to-image",
+        asOf: "2026-11-27",
+      },
+    },
+    ["POST blackforestlabs.flux3.textToImage"]
+  ),
+  ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "images",
+      source: {
+        url: "https://fal.ai/models/blackforestlabs/flux-3/edit-image",
+        asOf: "2026-11-27",
+      },
+    },
+    ["POST blackforestlabs.flux3.editImage"]
+  ),
+  ...rows(
+    "fal",
+    {
+      kind: "metered",
+      unit: "1000 tokens",
+      source: {
         url: "https://api.fal.ai/v1/models/pricing",
         asOf: "2026-11-25",
       },
@@ -2142,14 +2202,12 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       },
     },
     [
-      "POST blackforestlabs.flux3.editImage",
       "POST blackforestlabs.flux3.klein.base.editImage.lora",
       "POST blackforestlabs.flux3.klein.base.textToImage.lora",
       "POST blackforestlabs.flux3.klein.editImage",
       "POST blackforestlabs.flux3.klein.editImage.lora",
       "POST blackforestlabs.flux3.klein.textToImage",
       "POST blackforestlabs.flux3.klein.textToImage.lora",
-      "POST blackforestlabs.flux3.textToImage",
     ]
   ),
   ...rows(
@@ -2187,7 +2245,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST heygen.v3.lipsync.precision",
       "POST heygen.v3.lipsync.speed",
       "POST heygen.v3.videoAgent",
-      "POST kling.v4.videoToVideo.edit",
       "POST luma.agent.ray.v3p2.reframe",
       "POST luma.agent.ray.v3p2.textToVideo",
       "POST minimax.h3Max.extendVideo",
@@ -2292,8 +2349,6 @@ export const ENDPOINT_BILLING: readonly EndpointBillingPolicy[] = [
       "POST bytedance.seedance2p0.fast.referenceToVideo",
       "POST bytedance.seedance2p0.referenceToVideo",
       "POST bytedance.seedance2p5.flash.imageToVideo",
-      "POST bytedance.seedance2p5.imageToVideo",
-      "POST bytedance.seedance2p5.us.imageToVideo",
     ]
   ),
   ...rows(

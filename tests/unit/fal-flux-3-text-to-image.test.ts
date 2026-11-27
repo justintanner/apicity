@@ -28,7 +28,7 @@ describe("FLUX 3 text-to-image", () => {
     }));
   it("omits the edit-only image field from the request schema", () =>
     expect(schema.shape).not.toHaveProperty("image_urls"));
-  it.each(["512sq", "768sq", "1k", "2k", "4k"])(
+  it.each(["512sq", "768sq", "1k", "1.5k", "2k", "4k"])(
     "supports resolution%s",
     (resolution) =>
       expect(schema.safeParse({ prompt: "Fox", resolution }).success).toBe(true)
@@ -41,13 +41,13 @@ describe("FLUX 3 text-to-image", () => {
       schema.safeParse({ prompt: "Fox", safety_tolerance: 5 }).success
     ).toBe(false);
   });
-  it("routes unknown local costs to dynamic pricing", () => {
+  it("prices the default 1k image", () => {
     const e = computeEstimate({
       provider: "fal",
       endpoint,
       payload: { prompt: "Fox" },
     });
-    expect(e.usd).toBe(0);
-    expect(e.warnings.join(" ")).toContain("fal.v1.models.pricing.estimate");
+    expect(e.usd).toBe(0.048);
+    expect(e.warnings).toEqual([]);
   });
 });

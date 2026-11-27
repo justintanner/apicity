@@ -16,7 +16,6 @@ import { computeEstimate } from "../../packages/provider/cost/src/compute";
 import {
   fal as falPricing,
   FAL_DYNAMIC_PRICING_ENDPOINTS,
-  falDynamicBilledUnit,
 } from "../../packages/provider/cost/src/pricing/fal";
 import {
   MODEL_DISPLAY,
@@ -99,6 +98,7 @@ describe("Kling 4 video edit contract", () => {
       "image_urls",
       "elements",
       "duration",
+      "hdr",
       "resolution",
     ]);
     expect(
@@ -165,23 +165,22 @@ describe("Kling 4 video edit contract", () => {
     expect(accepts({ foo: 1 })).toBe(true);
   });
 
-  it("is dynamically priced: the source video's length is billed too", () => {
-    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
-    expect(falPricing[endpoint]).toBeUndefined();
-    expect(MODEL_SLUGS.fal).not.toHaveProperty(endpoint);
+  it("prices the edited clip when its input duration is declared", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
+    expect(falPricing[endpoint]).toBeDefined();
+    expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
+      "kling4"
+    );
     expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
       "Kling 4 Video Edit"
     );
-    // The recording billed 3.6175 units ($0.568) for 3.04 s in and 3.04 s out.
-    expect(falDynamicBilledUnit(endpoint)?.unit).toBe(
-      "units at $0.157, with the card quoting $0.094 (720p) or $0.141 (1080p) per second of input plus output video, at least twice the output"
+    const request = { provider: "fal" as const, endpoint, payload: recorded };
+    expect(computeEstimate(request).warnings.join(" ")).toContain(
+      "costHints.inputDurationSeconds"
     );
-    const estimate = computeEstimate({
-      provider: "fal",
-      endpoint,
-      payload: recorded,
-    });
-    expect(estimate.usd).toBe(0);
-    expect(estimate.warnings.join(" ")).toContain("pricing/estimate");
+    expect(
+      computeEstimate({ ...request, costHints: { inputDurationSeconds: 3 } })
+        .usd
+    ).toBeCloseTo(6 * 0.094);
   });
 });

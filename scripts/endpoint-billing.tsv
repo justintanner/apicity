@@ -526,7 +526,7 @@ fal	alibaba.wan3p0Prime.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1
 fal	alibaba.wan3p0Prime.referenceToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	alibaba.wan3p0Prime.textToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.draftEnhance	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	blackforestlabs.flux3.editImage	POST	metered	megapixels	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	blackforestlabs.flux3.editImage	POST	metered	images		https://fal.ai/models/blackforestlabs/flux-3/edit-image	2026-11-27
 fal	blackforestlabs.flux3.editVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.extendVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.extendVideo.draft	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
@@ -544,7 +544,7 @@ fal	blackforestlabs.flux3.klein.editImage	POST	metered	megapixels	fal dynamic li
 fal	blackforestlabs.flux3.klein.editImage.lora	POST	metered	megapixels	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.klein.textToImage	POST	metered	megapixels	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.klein.textToImage.lora	POST	metered	megapixels	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	blackforestlabs.flux3.textToImage	POST	metered	megapixels	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	blackforestlabs.flux3.textToImage	POST	metered	images		https://fal.ai/models/blackforestlabs/flux-3/text-to-image	2026-11-27
 fal	blackforestlabs.flux3.textToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3.textToVideo.draft	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	blackforestlabs.flux3Max.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
@@ -575,11 +575,11 @@ fal	bytedance.seedance2p0.us.textToVideo	POST	metered	1000 tokens		https://api.f
 fal	bytedance.seedance2p5.draft.complete	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.flash.imageToVideo	POST	metered	1000 tokens	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.flash.referenceToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-25
-fal	bytedance.seedance2p5.imageToVideo	POST	metered	1000 tokens	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	bytedance.seedance2p5.imageToVideo	POST	metered	1000 tokens		https://fal.ai/models/bytedance/seedance-2.5/image-to-video	2026-11-27
 fal	bytedance.seedance2p5.referenceToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.textToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.us.draft.complete	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	bytedance.seedance2p5.us.imageToVideo	POST	metered	1000 tokens	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	bytedance.seedance2p5.us.imageToVideo	POST	metered	1000 tokens		https://fal.ai/models/bytedance/seedance-2.5/us/image-to-video	2026-11-27
 fal	bytedance.seedance2p5.us.referenceToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedance2p5.us.textToVideo	POST	metered	1000 tokens		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	bytedance.seedream.v5.flash.edit	POST	metered	images		https://api.fal.ai/v1/models/pricing	2026-11-04
@@ -649,7 +649,7 @@ fal	kling.v4.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pri
 fal	kling.v4.referenceToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.textToImage	POST	metered	units	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	kling.v4.textToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
-fal	kling.v4.videoToVideo.edit	POST	metered	seconds	fal dynamic list: priced after the call from x-fal-billable-units	https://api.fal.ai/v1/models/pricing	2026-11-04
+fal	kling.v4.videoToVideo.edit	POST	metered	seconds		https://fal.ai/models/kling/v4/video-to-video/edit	2026-11-27
 fal	klingVideo.o3.pro.imageToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	klingVideo.o3.pro.referenceToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04
 fal	klingVideo.o3.pro.textToVideo	POST	metered	seconds		https://api.fal.ai/v1/models/pricing	2026-11-04

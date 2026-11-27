@@ -107,14 +107,15 @@ describe("Bytedance Seedance 2.5 draft completion", () => {
       expect(valid({ draft_id })).toBe(true);
     expect(valid({ draft_id: "x".repeat(8193) })).toBe(false);
   });
-  it("defaults resolution to the literal 1080p and codec to auto", () => {
+  it("defaults resolution to 1080p and codec to auto", () => {
     expect(schema.parse(payload)).toEqual({
       draft_id: payload.draft_id,
       resolution: "1080p",
       codec: "auto",
     });
     expect(valid({ resolution: "1080p" })).toBe(true);
-    for (const resolution of ["720p", "4k", null])
+    expect(valid({ resolution: "4k" })).toBe(true);
+    for (const resolution of ["720p", "8k", null])
       expect(valid({ resolution })).toBe(false);
   });
   it("takes the three codecs and nothing else", () => {
@@ -129,7 +130,7 @@ describe("Bytedance Seedance 2.5 draft completion", () => {
 });
 
 describe("Bytedance Seedance 2.5 draft completion pricing", () => {
-  // A completion is always 1080p and keeps the draft's duration and aspect
+  // A completion defaults to 1080p and keeps the draft's duration and aspect
   // ratio, which arrive as costHints (ac-j3d6ki.3): 1920 x 1080 x 121 / 1024
   // tokens for a 5 s 16:9 draft. The rate is the billed 1080p $0.0234116
   // (0.0214 x 1.094): the recorded 1:1 4 s completion (ac-qstko3) billed

@@ -118,7 +118,11 @@ describe("Kling 4 text-to-video contract", () => {
     expect(accepts({ duration: 30 })).toBe(true);
     expect(accepts({ duration: 31 })).toBe(false);
     expect(accepts({ aspect_ratio: "21:9" })).toBe(true);
-    expect(accepts({ aspect_ratio: "4:3" })).toBe(false);
+    // Refused in the 2026-10-23 probes; the queue OpenAPI re-read on
+    // 2026-11-27 lists 4:3 and 3:4.
+    expect(accepts({ aspect_ratio: "4:3" })).toBe(true);
+    expect(accepts({ aspect_ratio: "3:4" })).toBe(true);
+    expect(accepts({ aspect_ratio: "2:3" })).toBe(false);
     expect(accepts({ resolution: "480p" })).toBe(false);
     expect(accepts({ multi_prompt: [] })).toBe(false);
     expect(accepts({ multi_prompt: [{ prompt: "" }] })).toBe(false);

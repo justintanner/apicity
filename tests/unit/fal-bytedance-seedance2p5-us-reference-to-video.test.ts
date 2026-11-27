@@ -154,8 +154,8 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
       expect(valid({ end_user_id })).toBe(true);
     expect(valid({ end_user_id: 1 })).toBe(false);
   });
-  it("takes the three task types", () => {
-    for (const task of ["reference", "editing", "extension"])
+  it("takes the four task types", () => {
+    for (const task of ["auto", "reference", "editing", "extension"])
       expect(valid({ task })).toBe(true);
     for (const task of ["bogus", "Reference"])
       expect(valid({ task })).toBe(false);

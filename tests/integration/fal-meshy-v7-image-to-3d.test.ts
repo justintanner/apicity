@@ -119,10 +119,16 @@ describe("fal meshy v7 image-to-3d integration", () => {
   });
 
   it("should reject a texture_prompt over the documented length", () => {
+    // Upstream documents a maximum of 800 characters (re-read 2026-11-27).
     const provider = createFal({ apiKey: "fal-test-key" });
+    const at = provider.run.meshy.v7.imageTo3d.schema.safeParse({
+      image_url: "https://example.com/person.png",
+      texture_prompt: "a".repeat(800),
+    });
+    expect(at.success).toBe(true);
     const v = provider.run.meshy.v7.imageTo3d.schema.safeParse({
       image_url: "https://example.com/person.png",
-      texture_prompt: "a".repeat(601),
+      texture_prompt: "a".repeat(801),
     });
     expect(v.success).toBe(false);
   });

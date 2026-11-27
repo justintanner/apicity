@@ -151,13 +151,14 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    // Fal documents num_images/max_images as integers in [1, 6]:
+    // Fal documents num_images in [1, 6] and max_images in [1, 15] (queue
+    // OpenAPI re-read 2026-11-27):
     // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
-    it("accepts counts at the documented max 6", () => {
+    it("accepts counts at the documented maxima", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
         num_images: 6,
-        max_images: 6,
+        max_images: 15,
       });
       expect(result.success).toBe(true);
     });
@@ -184,10 +185,10 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("rejects max_images over 6", () => {
+    it("rejects max_images over 15", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        max_images: 7,
+        max_images: 16,
       });
       expect(result.success).toBe(false);
       expect(
@@ -273,14 +274,15 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    // Fal documents num_images/max_images as integers in [1, 6]:
+    // Fal documents num_images in [1, 6] and max_images in [1, 15] (queue
+    // OpenAPI re-read 2026-11-27):
     // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
-    it("accepts counts at the documented max 6", () => {
+    it("accepts counts at the documented maxima", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
         num_images: 6,
-        max_images: 6,
+        max_images: 15,
       });
       expect(result.success).toBe(true);
     });
@@ -297,11 +299,11 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("rejects max_images over 6", () => {
+    it("rejects max_images over 15", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
-        max_images: 7,
+        max_images: 16,
       });
       expect(result.success).toBe(false);
       expect(

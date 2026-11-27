@@ -97,7 +97,8 @@ describe("Kie Seedream 5.5 text-to-image request contract", () => {
   it("requires aspect_ratio, takes the eight documented ratios, and has no auto", () => {
     for (const aspect_ratio of ASPECT_RATIOS) {
       expect(
-        parseInput({ prompt: "A red balloon", aspect_ratio }).success,
+        parseInput({ prompt: "A red balloon", aspect_ratio, size: "3K" })
+          .success,
         aspect_ratio
       ).toBe(true);
     }
@@ -177,7 +178,7 @@ describe("Kie Seedream 5.5 text-to-image model id", () => {
     expect(descriptor.fields.aspect_ratio.required).toBe(true);
     expect(descriptor.fields.aspect_ratio.enum).toEqual([...ASPECT_RATIOS]);
     expect(descriptor.fields.aspect_ratio.default).toBeUndefined();
-    expect(descriptor.fields.size.enum).toEqual(["1K", "1.5K", "2K"]);
+    expect(descriptor.fields.size.enum).toEqual(["1K", "1.5K", "2K", "3K"]);
     expect(descriptor.fields.size.default).toBe("2K");
     expect(descriptor.fields.output_format.default).toBe("png");
     expect(descriptor.fields.background.default).toBe("auto");

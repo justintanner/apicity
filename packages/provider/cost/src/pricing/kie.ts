@@ -3703,12 +3703,13 @@ export const kie: Record<string, ModelPricing> = {
   // billed 5.04 = 3.6 + 1.44 at submission (task
   // 837dc178693fcc0b79511e0e2c44da89; evidence in
   // tests/fixtures/kie-pricing-evidence/seedream-5-5-image-to-image-2026-11-12.json).
+  // The 2026-11-27 feed adds 3K at 14.2 credits per output image.
   "seedream/5-5-image-to-image": tieredImagePage(
     "size",
-    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315 },
+    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315, "3K": 0.071 },
     "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
     "2K",
-    "2026-11-12",
+    "2026-11-27",
     seedream55InputImageExtra
   ),
 
@@ -3719,12 +3720,13 @@ export const kie: Record<string, ModelPricing> = {
   // 2K, and a recorded 1K generation billed 3.6 at submission (task
   // d4232162cc61d531f375fd036fca4cda; evidence in
   // tests/fixtures/kie-pricing-evidence/seedream-5-5-text-to-image-2026-11-12.json).
+  // The 2026-11-27 feed adds 3K at 14.2 credits per output image.
   "seedream/5-5-text-to-image": tieredImagePage(
     "size",
-    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315 },
+    { "1K": 0.018, "1.5K": 0.018, "2K": 0.0315, "3K": 0.071 },
     "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
     "2K",
-    "2026-11-12"
+    "2026-11-27"
   ),
 
   // Seedream 5.5 layer decomposition bills each returned image by size, the

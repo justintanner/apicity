@@ -4374,7 +4374,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: Seedream55SizeSchema.options,
         default: "2K",
         description:
-          "Output resolution tier (default 2K); sets the price: 1K and 1.5K cost less than 2K",
+          "Output resolution tier (default 2K). At 3K, supply a fixed aspect_ratio.",
       },
       output_format: {
         type: "string",
@@ -4419,8 +4419,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         enum: Seedream55SizeSchema.options,
         default: "2K",
-        description:
-          "Output resolution tier (default 2K); sets the price: 1K and 1.5K cost less than 2K",
+        description: "Output resolution tier (default 2K)",
       },
       output_format: {
         type: "string",

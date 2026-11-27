@@ -121,6 +121,19 @@ describe("Kie Seedream 5.5 image-to-image request contract", () => {
     }
   });
 
+  it("requires a fixed aspect ratio for a 3K edit", () => {
+    const input = { ...DOCUMENTED_REQUEST.input, size: "3K" };
+    expect(parseInput(input).success).toBe(true);
+    for (const aspect_ratio of ["auto", undefined]) {
+      expect(
+        issueAt(parseInput({ ...input, aspect_ratio }), [
+          "input",
+          "aspect_ratio",
+        ])
+      ).toBe(true);
+    }
+  });
+
   it("rejects values outside the documented enums", () => {
     for (const [field, value] of [
       ["size", "4K"],
@@ -190,7 +203,7 @@ describe("Kie Seedream 5.5 model ids", () => {
     expect(descriptor.fields.prompt.required).toBe(true);
     expect(descriptor.fields.image_urls.required).toBe(true);
     expect(descriptor.fields.image_urls.maxItems).toBe(10);
-    expect(descriptor.fields.size.enum).toEqual(["1K", "1.5K", "2K"]);
+    expect(descriptor.fields.size.enum).toEqual(["1K", "1.5K", "2K", "3K"]);
     expect(descriptor.fields.size.default).toBe("2K");
     expect(descriptor.fields.aspect_ratio.default).toBe("auto");
   });
@@ -214,6 +227,6 @@ describe("Kie Seedream 5.5 public exports", () => {
     expectTypeOf<
       Seedream55ImageToImageRequest["model"]
     >().toEqualTypeOf<"seedream/5-5-image-to-image">();
-    expectTypeOf<Seedream55Size>().toEqualTypeOf<"1K" | "1.5K" | "2K">();
+    expectTypeOf<Seedream55Size>().toEqualTypeOf<"1K" | "1.5K" | "2K" | "3K">();
   });
 });

@@ -844,10 +844,10 @@ const edited = await kie.post.api.v1.jobs.createTask({
 console.log(generated.data?.taskId, edited.data?.taskId);
 ```
 
-Each output image bills by `size`: 3.6 credits ($0.018) at 1K and 1.5K,
-6.3 ($0.0315) at 2K, so a 1K text-to-image costs 3.6 credits. In
-image-to-image, every input image adds 1.44 credits ($0.0072), the first
-included, so a 1K edit of one image costs 5.04 credits.
+Each output image costs 3.6 credits ($0.018) at 1K or 1.5K, 6.3 credits
+($0.0315) at 2K, or 14.2 credits ($0.071) at 3K. Image-to-image adds
+1.44 credits ($0.0072) per input image. For a 3K edit, supply a fixed
+`aspect_ratio` such as `1:1`.
 
 Layer decomposition splits one `image_url` into a base image plus
 separated layers. `prompt` (up to 2,000 characters, with optional

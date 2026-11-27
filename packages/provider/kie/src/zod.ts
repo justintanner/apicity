@@ -5783,11 +5783,11 @@ export const SeedreamFlashLayerDecompositionRequestSchema = z.object({
   }),
 });
 
-// Seedream 5.5, from the docs OpenAPI read on 2026-11-12. The 5.5 models take
-// a `size` tier (1K | 1.5K | 2K, default 2K) that sets the price, png or jpeg
+// Seedream 5.5 generation and editing, from the OpenAPI read on 2026-11-27.
+// Both take a size tier (default 2K) that sets the price, png or jpeg
 // output, and a `background` whose `transparent` needs png. Each input image
 // bills on top of the output image.
-export const Seedream55SizeSchema = z.enum(["1K", "1.5K", "2K"]);
+export const Seedream55SizeSchema = z.enum(["1K", "1.5K", "2K", "3K"]);
 export const Seedream55OutputFormatSchema = z.enum(["png", "jpeg"]);
 export const Seedream55BackgroundSchema = z.enum([
   "auto",
@@ -5839,7 +5839,11 @@ export const Seedream55ImageToImageRequestSchema = z
       nsfw_checker: z.boolean().default(false),
     }),
   })
-  .superRefine(refineSeedream55Background);
+  .superRefine(refineSeedream55Background)
+  .refine(({ input }) => input.size !== "3K" || input.aspect_ratio !== "auto", {
+    message: "3K requires a fixed aspect_ratio",
+    path: ["input", "aspect_ratio"],
+  });
 
 // Docs: https://docs.kie.ai/market/seedream/5-5-text-to-image
 // Text-to-image requires `aspect_ratio` and has no `auto` value; the other

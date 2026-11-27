@@ -1820,10 +1820,10 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:22404713ba908b1389a4aae2fe118510442f9c63fbf6c360d1ec66f49362b879",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:a5df6824a940d805639726aea9aacf9f81d4da0a1ebfa2d8669724ef86590af7",
+      "packages/provider/kie/src/zod.ts": "sha256:1b78c343144e982e74ad2a7f0d80faca4355ec8e18baed5407a9967c52c19f54",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:54b5cee0da6150997412d0d506037eef80287b49b34ea44c1137f914651fb8c5",
       "packages/provider/kie/src/kie.ts": "sha256:f27bf9e158cec68a3387e1670d576d7b2373645cc3ac9bf2b7839c77a4885b51",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:1c580dd5fb019b07f33b571573b54441e2290bc67985fe77ed06b2f06e450a9f",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:13c5be1a0322dc8f2ce25990e6b688b8b23803b17ffcd5ab9837346302239707",
       "packages/provider/cost/src/slugs.ts": "sha256:fae127adfcdf4abd8eadd81f1e55d8a7e0ecb2d74817856ca55a6d5af971695b",
       "scripts/endpoint-docs.tsv": "sha256:23ed09d223204aeeac35cc450b12996e182ccf750db4204c115a4cca3952a349"
     }
@@ -29604,6 +29604,20 @@
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-text-to-image-2026-11-12.json: feed and models pricingDesc read 2026-11-12: 3.6/3.6/6.3 credits = 0.018/0.018/0.0315 USD per image at 1K/1.5K/2K",
         "rationale": "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates, the docs callback example (6.3 credits at the 2K default) matches them, and the billed recording confirms the 1K cell."
+      },
+      {
+        "key": "seedream/5-5-text-to-image",
+        "variant": "3K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-3k-2026-11-27.json: feed and model pricingDesc list 14.2 credits ($0.071) per 3K output image",
+        "rationale": "The 3K tier for Seedream 5.5 generation and editing postdates the frozen catalog. Both request schemas document the size."
+      },
+      {
+        "key": "seedream/5-5-image-to-image",
+        "variant": "3K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/seedream-5-5-3k-2026-11-27.json: feed and model pricingDesc list 14.2 credits ($0.071) per 3K output image",
+        "rationale": "The 3K tier for Seedream 5.5 generation and editing postdates the frozen catalog. Both request schemas document the size."
       },
       {
         "key": "seedream/5-5-layer-decomposition",

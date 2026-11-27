@@ -1,6 +1,6 @@
 {
   "name": "@apicity/nunchux",
-  "version": "0.31.1",
+  "version": "0.31.2",
   "description": "Nunchux AI media generation API provider.",
   "license": "MIT",
   "repository": {

@@ -73,6 +73,7 @@ pnpm run gen:endpoint-pricing-keys:check # Check endpoint pricing bindings for d
 pnpm run gen:kie-pricing-manifest # Regenerate the committed KIE pricing manifest
 pnpm run gen:kie-pricing-manifest:check # Check the KIE pricing manifest for drift
 pnpm run check:kie-feed-drift    # Compare PRICING.kie with a live pull of KIE's public price feed (free, no key; not in CI)
+pnpm run check:fal-schema-drift  # Compare fal request schemas with fal's live queue OpenAPI input schemas (free, no key; not in CI)
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
 pnpm run gen:shared:check        # Check shared provider copies for drift
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)

@@ -3549,8 +3549,8 @@ export const fal: Record<string, ModelPricing> = {
     unit: "images",
     units: imageCount,
     select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
-    rates: { low: 0.03, medium: 0.06, high: 0.22 },
-    source: source("ideogram/v4.5", "2026-10-05"),
+    rates: { low: 0.03, medium: 0.06, high: 0.1 },
+    source: source("ideogram/v4.5", "2026-11-27"),
   },
 
   "ideogram/v4.5/edit": {
@@ -3559,7 +3559,7 @@ export const fal: Record<string, ModelPricing> = {
     units: imageCount,
     select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
     rates: { very_low: 0.008, low: 0.03, medium: 0.06, high: 0.22 },
-    source: source("ideogram/v4.5/edit", "2026-10-05"),
+    source: source("ideogram/v4.5/edit", "2026-11-27"),
   },
 
   // Audio — Seed Speech bills $0.03 per 1,000 input characters. Store the

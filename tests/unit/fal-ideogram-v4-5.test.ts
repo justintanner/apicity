@@ -57,7 +57,7 @@ describe("Ideogram 4.5", () => {
     const cases: Array<[string, number]> = [
       ["low", 0.03],
       ["medium", 0.06],
-      ["high", 0.22],
+      ["high", 0.1],
     ];
     for (const [quality, usd] of cases) {
       expect(

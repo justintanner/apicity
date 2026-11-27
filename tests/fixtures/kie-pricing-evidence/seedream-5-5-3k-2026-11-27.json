@@ -1,0 +1,201 @@
+{
+  "capturedAt": "2026-11-27",
+  "source": "https://kie.ai/seedream-5-5",
+  "models": [
+    "seedream/5-5-text-to-image",
+    "seedream/5-5-image-to-image",
+    "seedream/5-5-layer-decomposition"
+  ],
+  "basis": "The public price feed, the three model pricing descriptions on the product page, and the documented request sizes agree. Text-to-image and image-to-image add 3K at 14.2 credits per output image. Layer decomposition offers up to 2K. Every input image for editing or layer decomposition costs 1.44 credits.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-11-27T06:44:00.517Z",
+    "rows": [
+      {
+        "modelDescription": "seedream 5.5, Image to image, 3K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "14.2",
+        "creditUnit": "per image",
+        "usdPrice": "0.071",
+        "falPrice": "0.079",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 3K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "14.2",
+        "creditUnit": "per image",
+        "usdPrice": "0.071",
+        "falPrice": "0.079",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, input image, Image to image / layer decomposition",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "1.44",
+        "creditUnit": "per image",
+        "usdPrice": "0.0072",
+        "falPrice": "0.008",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, layer-decomposition, 2K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "6.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.0315",
+        "falPrice": "0.035",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-layer-decomposition",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, layer-decomposition, 1.5K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-layer-decomposition",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, layer-decomposition, 1K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-layer-decomposition",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Image to image, 2K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "6.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.0315",
+        "falPrice": "0.035",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Image to image, 1.5K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Image to image, 1K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 2K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "6.3",
+        "creditUnit": "per image",
+        "usdPrice": "0.0315",
+        "falPrice": "0.035",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 1.5K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "seedream 5.5, Text to image, 1K",
+        "interfaceType": "image",
+        "provider": "ByteDance",
+        "creditPrice": "3.6",
+        "creditUnit": "per image",
+        "usdPrice": "0.018",
+        "falPrice": "0.02",
+        "discountRate": 10,
+        "anchor": "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
+        "discountPrice": false
+      }
+    ]
+  },
+  "productPage": {
+    "url": "https://kie.ai/seedream-5-5",
+    "models": [
+      {
+        "model": "seedream/5-5-text-to-image",
+        "pricingDesc": "1K and 1.5K images: 3.6 credits per image ($0.018); 2K images: 6.3 credits per image ($0.0315); 3K images: 14.2 credits per image ($0.071) — 10% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+      },
+      {
+        "model": "seedream/5-5-image-to-image",
+        "pricingDesc": "1K and 1.5K output images: 3.6 credits per image ($0.018); 2K output images: 6.3 credits per image ($0.0315); 3K output images: 14.2 credits per image ($0.071). Each input image is billed separately at 1.44 credits ($0.0072) — 10% below official pricing. Example: a 2K edit with 2 input images costs 6.3 + 2 × 1.44 = 9.18 credits ($0.0459).\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+      },
+      {
+        "model": "seedream/5-5-layer-decomposition",
+        "pricingDesc": "Layer decomposition is billed per output image, with each layer—including the base image—counted as one image: 3.6 credits per image ($0.018) at 1K / 1.5K, 6.3 credits per image ($0.0315) at 2K. The input image is billed separately at 1.44 credits ($0.0072) — 10% below official pricing. Example: 4 output images at 1K cost 1.44 + 4 × 3.6 = 15.84 credits ($0.0792).\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%."
+      }
+    ]
+  },
+  "docs": [
+    {
+      "model": "seedream/5-5-text-to-image",
+      "url": "https://docs.kie.ai/market/seedream/5-5-text-to-image.md",
+      "sha256": "9e9cdfeb99fd870491c4a14ae8abcad79fd1befa419181c20afa9a65ceb30db6",
+      "sizes": ["1K", "1.5K", "2K", "3K"],
+      "defaultSize": "2K"
+    },
+    {
+      "model": "seedream/5-5-image-to-image",
+      "url": "https://docs.kie.ai/market/seedream/5-5-image-to-image.md",
+      "sha256": "6b4d6a427fb3e78e17baf17b3c74c2859ee2e46c4e94af62cccace41fa4e645f",
+      "sizes": ["1K", "1.5K", "2K", "3K"],
+      "defaultSize": "2K",
+      "aspectRatioAt3K": "A fixed aspect ratio is required. Omitting aspect_ratio or choosing auto returns 422."
+    },
+    {
+      "model": "seedream/5-5-layer-decomposition",
+      "url": "https://docs.kie.ai/market/seedream/5-5-layer-decomposition.md",
+      "sha256": "daa5a1824d097a48d8cb68e57e85e0ad91a98b04d9b9c46c26713454022cf336",
+      "sizes": ["auto", "1K", "1.5K", "2K"],
+      "defaultSize": "auto"
+    }
+  ]
+}

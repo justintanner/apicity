@@ -3,6 +3,7 @@ import { computeEstimate, PRICING } from "@apicity/cost";
 import evidence from "../fixtures/kie-pricing-evidence/seedream-5-5-image-to-image-2026-11-12.json";
 import textEvidence from "../fixtures/kie-pricing-evidence/seedream-5-5-text-to-image-2026-11-12.json";
 import layerEvidence from "../fixtures/kie-pricing-evidence/seedream-5-5-layer-decomposition-2026-11-12.json";
+import currentEvidence from "../fixtures/kie-pricing-evidence/seedream-5-5-3k-2026-11-27.json";
 
 // KIE bills Seedream 5.5 image-to-image per output image by size, plus every
 // input image, the first included (feed and models API read 2026-11-12).
@@ -13,22 +14,29 @@ const IMAGE = "https://example.com/cat.jpg";
 const estimate = (input: Record<string, unknown>) =>
   computeEstimate({ provider: "kie", payload: { model: MODEL, input } });
 
-const inputRow = evidence.feed.rows.find((row) =>
+const inputRow = currentEvidence.feed.rows.find((row) =>
   row.modelDescription.includes("input image")
 )!;
 
 describe("kie Seedream 5.5 image-to-image pricing", () => {
   it.each(
-    evidence.feed.rows.filter((row) => !row.modelDescription.includes("input"))
+    currentEvidence.feed.rows.filter((row) =>
+      row.modelDescription.includes(", Image to image,")
+    )
   )("prices $modelDescription plus one input image", (row) => {
     const size = row.modelDescription.split(", ").at(-1)!;
-    const result = estimate({ prompt: "x", image_urls: [IMAGE], size });
+    const result = estimate({
+      prompt: "Make it blue",
+      image_urls: [IMAGE],
+      aspect_ratio: "1:1",
+      size,
+    });
     expect(result.usd).toBeCloseTo(
       (Number(row.creditPrice) + Number(inputRow.creditPrice)) * CREDIT,
       12
     );
     expect(result.warnings).toEqual([]);
-    expect(result.rateAsOf).toBe("2026-11-12");
+    expect(result.rateAsOf).toBe(currentEvidence.capturedAt);
   });
 
   it("bills every input image, the first included", () => {
@@ -59,7 +67,7 @@ describe("kie Seedream 5.5 image-to-image pricing", () => {
   it("cites the feed anchor and fails closed without input images", () => {
     expect(PRICING.kie[MODEL].source).toEqual({
       url: "https://kie.ai/seedream-5-5?model=seedream%2F5-5-image-to-image",
-      asOf: "2026-11-12",
+      asOf: currentEvidence.capturedAt,
     });
     const result = estimate({ prompt: "x", size: "1K" });
     expect(result.warnings.join(" ")).toContain(MODEL);
@@ -74,13 +82,17 @@ const textEstimate = (input: Record<string, unknown>) =>
   computeEstimate({ provider: "kie", payload: { model: TEXT_MODEL, input } });
 
 describe("kie Seedream 5.5 text-to-image pricing", () => {
-  it.each(textEvidence.feed.rows)("prices $modelDescription", (row) => {
+  it.each(
+    currentEvidence.feed.rows.filter((row) =>
+      row.modelDescription.includes(", Text to image,")
+    )
+  )("prices $modelDescription", (row) => {
     const size = row.modelDescription.split(", ").at(-1)!;
     const result = textEstimate({ prompt: "x", aspect_ratio: "1:1", size });
     expect(result.usd).toBeCloseTo(Number(row.creditPrice) * CREDIT, 12);
     expect(result.usd).toBeCloseTo(Number(row.usdPrice), 12);
     expect(result.warnings).toEqual([]);
-    expect(result.rateAsOf).toBe("2026-11-12");
+    expect(result.rateAsOf).toBe(currentEvidence.capturedAt);
   });
 
   it("matches the docs callback receipt at the 2K default", () => {
@@ -102,7 +114,7 @@ describe("kie Seedream 5.5 text-to-image pricing", () => {
   it("cites the feed anchor and prices an unknown size as unsupported", () => {
     expect(PRICING.kie[TEXT_MODEL].source).toEqual({
       url: "https://kie.ai/seedream-5-5?model=seedream%2F5-5-text-to-image",
-      asOf: "2026-11-12",
+      asOf: currentEvidence.capturedAt,
     });
     const result = textEstimate({
       prompt: "x",

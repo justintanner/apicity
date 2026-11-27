@@ -841,6 +841,7 @@ describe("KIE feed drift", () => {
       row("seedream 5.5, Image to image, 1K", "3.6", "0.018"),
       row("seedream 5.5, Image to image, 1.5K", "3.6", "0.018"),
       row("seedream 5.5, Image to image, 2K", "6.3", "0.0315"),
+      row("seedream 5.5, Image to image, 3K", "14.2", "0.071"),
     ];
     const inputRow = (creditPrice: string, usdPrice: string) =>
       row(
@@ -865,8 +866,8 @@ describe("KIE feed drift", () => {
       };
       const result = await write([...sizes, inputRow("1.44", "0.0072")]);
       expect(result.differ).toEqual([]);
-      expect(result.same).toBe(4);
-      expect(result.compared).toBe(4);
+      expect(result.same).toBe(5);
+      expect(result.compared).toBe(5);
 
       const moved = await write([...sizes, inputRow("2", "0.01")]);
       expect(moved.differ).toEqual([

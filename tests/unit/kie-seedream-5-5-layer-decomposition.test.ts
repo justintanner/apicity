@@ -120,6 +120,7 @@ describe("Kie Seedream 5.5 layer decomposition request contract", () => {
 
   it("rejects values outside the documented enums and non-boolean flags", () => {
     for (const [field, value] of [
+      ["size", "3K"],
       ["size", "4K"],
       ["output_format", "webp"],
       ["text_recognition", "true"],

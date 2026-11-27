@@ -699,7 +699,7 @@ function selectorValues(raw, key, inventories) {
   if (resolution) candidates.resolution = resolution[1].toLowerCase();
   const duration = text.match(/(?:^|[-,\s])(\d+(?:\.\d+)?)s(?:$|[-,\s])/i);
   if (duration) candidates.duration = Number(duration[1]);
-  const size = text.match(/(?:^|[-,\s])(1k|1\.5k|2k|4k|8k)(?:$|[-,\s])/i);
+  const size = text.match(/(?:^|[-,\s])(1k|1\.5k|2k|3k|4k|8k)(?:$|[-,\s])/i);
   if (size) candidates.size = size[1];
   const modelFields = inventories.descriptorFields[key];
   applySelectorRules({

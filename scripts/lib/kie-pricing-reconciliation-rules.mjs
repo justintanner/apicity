@@ -243,6 +243,18 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Seedream 5.5 was added after the frozen September catalog; the dated feed capture supplies the rates, the docs callback example (6.3 credits at the 2K default) matches them, and the billed recording confirms the 1K cell.",
   })),
 
+  ...["seedream/5-5-text-to-image", "seedream/5-5-image-to-image"].map(
+    (key) => ({
+      key,
+      variant: "3K",
+      status: "pricing-only",
+      provenance:
+        "tests/fixtures/kie-pricing-evidence/seedream-5-5-3k-2026-11-27.json: feed and model pricingDesc list 14.2 credits ($0.071) per 3K output image",
+      rationale:
+        "The 3K tier for Seedream 5.5 generation and editing postdates the frozen catalog. Both request schemas document the size.",
+    })
+  ),
+
   ...["1K", "1.5K", "2K"].map((variant) => ({
     key: "seedream/5-5-layer-decomposition",
     variant,
@@ -1336,6 +1348,7 @@ const PAYLOAD_RULES = Object.freeze([
     matches: (key) => key === "seedream/5-5-image-to-image",
     apply: (input) => {
       input.image_urls = ["https://example.com/a.png"];
+      if (input.size === "3K") input.aspect_ratio = "1:1";
     },
   },
   {

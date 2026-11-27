@@ -61,6 +61,16 @@ import type { CostEstimate, CostHints } from "./types";
  * `FAL_ADMIN_API_KEY`, not the generation-scoped `FAL_API_KEY`.
  */
 
+// These endpoints acquired local rates on 2026-11-27. Callers with billed
+// units from a completed request can still resolve those units with fal.
+const previouslyDynamic = new Set([
+  "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/text-to-image",
+  "bytedance/seedance-2.5/image-to-video",
+  "bytedance/seedance-2.5/us/image-to-video",
+  "kling/v4/video-to-video/edit",
+]);
+
 /** The subset of fal's estimate response this module reads. */
 export interface FalEstimateLike {
   total_cost: number;
@@ -309,7 +319,10 @@ export async function resolveFalDynamicEstimate(
 ): Promise<CostEstimate> {
   const { hints, cache, keyFor } = options;
 
-  if (!isFalDynamicPricingEndpoint(endpoint)) {
+  if (
+    !isFalDynamicPricingEndpoint(endpoint) &&
+    !previouslyDynamic.has(endpoint)
+  ) {
     return computeEstimate({
       provider: "fal",
       endpoint,

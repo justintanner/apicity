@@ -44,7 +44,7 @@ const R2V_2P5 = [
 
 const RES_2P0 = ["480p", "720p", "1080p", "4k"];
 const RES_FAST = ["480p", "720p"];
-const RES_2P5 = ["480p", "720p", "1080p"];
+const RES_2P5 = ["480p", "720p", "1080p", "4k"];
 
 const NINE = [
   {
@@ -108,7 +108,7 @@ const NINE = [
     fields: T2V_2P5,
     required: ["prompt"],
     resolutions: RES_2P5,
-    offList: "4k",
+    offList: "8k",
   },
   {
     name: "2.5 image-to-video",
@@ -117,7 +117,7 @@ const NINE = [
     fields: I2V_2P5,
     required: ["image_url"],
     resolutions: RES_2P5,
-    offList: "4k",
+    offList: "8k",
   },
   {
     name: "2.5 reference-to-video",
@@ -126,7 +126,7 @@ const NINE = [
     fields: R2V_2P5,
     required: [],
     resolutions: RES_2P5,
-    offList: "4k",
+    offList: "8k",
   },
 ];
 

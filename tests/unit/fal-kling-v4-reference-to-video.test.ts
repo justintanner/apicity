@@ -98,6 +98,7 @@ describe("Kling 4 reference-to-video contract", () => {
       "image_urls",
       "video_urls",
       "elements",
+      "hdr",
       "resolution",
       "aspect_ratio",
     ]);
@@ -219,7 +220,7 @@ describe("Kling 4 reference-to-video contract", () => {
     ).toBeCloseTo(0.471, 10);
   });
 
-  it("warns instead of pricing reference videos and video elements", () => {
+  it("requires the total input duration for reference videos and video elements", () => {
     for (const extra of [
       { video_urls: ["https://example.com/v.mp4"] },
       { elements: [{ video_url: "https://example.com/v.mp4" }] },
@@ -231,7 +232,7 @@ describe("Kling 4 reference-to-video contract", () => {
       });
       expect(estimate.usd).toBe(0);
       expect(estimate.warnings).toHaveLength(1);
-      expect(estimate.warnings[0]).toContain("$0.094/s (720p)");
+      expect(estimate.warnings[0]).toContain("costHints.inputDurationSeconds");
     }
   });
 
@@ -239,7 +240,7 @@ describe("Kling 4 reference-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/kling/v4/reference-to-video",
-      asOf: "2026-10-23",
+      asOf: "2026-11-27",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "kling4"

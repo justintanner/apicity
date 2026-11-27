@@ -1,6 +1,7 @@
 // [width, height] by resolution and aspect ratio, copied from ByteDance's
 // table: one column for the 2.0 series (2.0, 2.0 Fast and 2.0 US), and one
-// for 2.5 (2.5 US and the draft completion too), which has no 4k.
+// for 2.5 (including US and draft completion). The 2.5 table covers
+// through 1080p; fal publishes a separate 4k rate without a pixel grid.
 export type SeedanceSizes = Readonly<
   Record<string, Readonly<Record<string, readonly [number, number]>>>
 >;

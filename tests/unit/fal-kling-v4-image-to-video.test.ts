@@ -100,6 +100,7 @@ describe("Kling 4 image-to-video contract", () => {
       "end_image_url",
       "multi_prompt",
       "duration",
+      "hdr",
       "resolution",
     ]);
     expect(
@@ -189,7 +190,7 @@ describe("Kling 4 image-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/kling/v4/image-to-video",
-      asOf: "2026-10-23",
+      asOf: "2026-11-27",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "kling4"

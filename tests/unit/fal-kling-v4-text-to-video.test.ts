@@ -99,6 +99,7 @@ describe("Kling 4 text-to-video contract", () => {
       "prompt",
       "multi_prompt",
       "duration",
+      "hdr",
       "resolution",
       "aspect_ratio",
     ]);
@@ -171,7 +172,7 @@ describe("Kling 4 text-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).not.toContain(endpoint);
     expect(falPricing[endpoint]?.source).toEqual({
       url: "https://fal.ai/models/kling/v4/text-to-video",
-      asOf: "2026-10-23",
+      asOf: "2026-11-27",
     });
     expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe(
       "kling4"

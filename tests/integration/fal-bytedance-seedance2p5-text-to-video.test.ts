@@ -63,7 +63,7 @@ describe("fal bytedance seedance2p5 text-to-video integration", () => {
     const result =
       provider.run.bytedance.seedance2p5.textToVideo.schema.safeParse({
         prompt: "a cat",
-        resolution: "4k",
+        resolution: "8k",
       });
     expect(result.success).toBe(false);
   });

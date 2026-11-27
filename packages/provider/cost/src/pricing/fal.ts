@@ -83,6 +83,7 @@ const grokEditAsOf = "2026-08-22";
 // Seedance 2.0, 2.0 Fast and 2.5: the fal cards were re-read, and ByteDance's
 // output-size table read, on this date (ac-j3d6ki.3).
 const seedanceAsOf = "2026-10-17";
+const resolutionRatesAsOf = "2026-11-27";
 
 const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
@@ -478,6 +479,61 @@ const klingV4HasVideoReference = (p: Record<string, unknown>): boolean =>
   (Array.isArray(p.elements) &&
     p.elements.some((element) => Boolean(asObject(element)?.video_url)));
 
+// Video references and edits bill at least twice the output length. The HDR
+// surcharge always counts output seconds alone, even when the input is longer.
+function klingV4Video(operation: string): ModelPricing {
+  const edit = operation === "video-to-video/edit";
+  const withVideo = (p: Record<string, unknown>) =>
+    edit || (operation === "reference-to-video" && klingV4HasVideoReference(p));
+  const outputSeconds = (p: Record<string, unknown>, hints?: CostHints) =>
+    edit
+      ? (asNumber(p.duration) ?? hintInputSeconds(hints))
+      : klingV4Seconds(p);
+  return {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p, hints) => {
+      const output = outputSeconds(p, hints);
+      if (!withVideo(p) || output === undefined) return output;
+      const input = hintInputSeconds(hints);
+      return input === undefined
+        ? undefined
+        : Math.max(input + output, 2 * output);
+    },
+    select: [
+      resolutionTier("1080p"),
+      {
+        name: "video input",
+        pick: (p) => (withVideo(p) ? "video" : undefined),
+      },
+    ],
+    rates: {
+      "720p": 0.157,
+      "1080p": 0.235,
+      "4k": 0.549,
+      "720p|video": 0.094,
+      "1080p|video": 0.141,
+      "4k|video": 0.329,
+    },
+    extra: (p, hints) => {
+      if (p.hdr !== true) return 0;
+      const output = outputSeconds(p, hints);
+      if (output === undefined || p.resolution === "720p") return undefined;
+      return output * (p.resolution === "4k" ? 0.078 : 0.047);
+    },
+    warn: (p, hints) => {
+      if (withVideo(p) && hintInputSeconds(hints) === undefined)
+        return [
+          "Kling bills the input plus output duration, at least twice the output. Provide costHints.inputDurationSeconds for the source or reference clips.",
+        ];
+      if (p.hdr === true && p.resolution === "720p")
+        return ["Kling publishes HDR rates only at 1080p and 4k."];
+      return [];
+    },
+    source: source(`kling/v4/${operation}`, resolutionRatesAsOf),
+  };
+}
+
 // wan edit-video's duration defaults to 0, meaning "match the source
 // video" — a length that is not in the payload, so it can only come from the
 // caller's cost-only hint channel.
@@ -659,12 +715,6 @@ const perSecondTiered = (
 // which prices at the billed 0.0214 x 1.094 rather than the card's rounded
 // "roughly $0.0234" (see the 2.5 entries).
 //
-// Four ids stay in FAL_DYNAMIC_PRICING_ENDPOINTS. 2.0 and 2.0 Fast
-// reference-to-video have no recording, and the one 2.0-series reference
-// recording (2.0 US) divides by 1000 where the card says 1024. 2.5 and 2.5 US
-// image-to-video follow the input image's aspect, for which ByteDance
-// publishes no sizing rule.
-
 const SEEDANCE_RATIOS = "21:9, 16:9, 4:3, 1:1, 3:4 or 9:16";
 
 interface SeedanceSpec {
@@ -675,9 +725,9 @@ interface SeedanceSpec {
   maxSeconds: number;
   // USD per token by resolution: the card's rate per 1000 tokens / 1000.
   rates: Record<string, number>;
-  // Text- and image-to-video omit it. A completed draft has no resolution,
-  // duration or aspect_ratio field of its own.
-  operation?: "reference" | "complete";
+  // A completed draft inherits duration and aspect ratio; adaptive image-to-
+  // video follows the input image and has no fixed size in the payload.
+  operation?: "reference" | "complete" | "adaptiveImage";
   // 2.5's draft flag renders a 480p preview whatever resolution says.
   draftFlag?: boolean;
   // 2.5 reference-to-video's task: with editing or extension, fal coerces
@@ -705,12 +755,13 @@ const own = <T>(record: Readonly<Record<string, T>>, key: string) =>
   Object.hasOwn(record, key) ? record[key] : undefined;
 
 // payload.resolution, defaulting to the documented "720p". 2.5's draft flag
-// forces 480p, and a completed draft is always 1080p.
+// forces 480p, and a completed draft defaults to 1080p.
 function seedanceResolution(
   spec: SeedanceSpec,
   p: Record<string, unknown>
 ): string | undefined {
-  if (spec.operation === "complete") return "1080p";
+  if (spec.operation === "complete")
+    return p.resolution === undefined ? "1080p" : asString(p.resolution);
   if (spec.draftFlag && p.draft === true) return "480p";
   return p.resolution === undefined ? "720p" : asString(p.resolution);
 }
@@ -737,14 +788,100 @@ function seedanceSeconds(
   return inRange(asNumber(hints?.durationSeconds));
 }
 
+// The 4K cards give both an approximate output-second price and a token
+// rate, but no 2.5-specific pixel grid. Use declared counts when available.
+const SEEDANCE_4K_TOKEN_RATE = 0.0094 / 1000;
+const SEEDANCE_4K_VIDEO_TOKEN_RATE = 0.0058 / 1000;
+const SEEDANCE_4K_TOKENS_PER_SECOND = 1.84 / SEEDANCE_4K_TOKEN_RATE;
+
+function seedance4kVideo(
+  spec: SeedanceSpec,
+  p: Record<string, unknown>,
+  hints?: CostHints
+) {
+  return spec.operation === "complete"
+    ? hintInputSeconds(hints) !== undefined ||
+        (hints?.videoInputTokens ?? 0) > 0
+    : spec.operation === "reference" &&
+        Array.isArray(p.video_urls) &&
+        p.video_urls.length > 0;
+}
+
+interface SeedanceTokenEstimate {
+  tokens?: number;
+  warning?: string;
+}
+
+function positiveTokenCount(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value > 0;
+}
+
+function seedance4kTokens(
+  spec: SeedanceSpec,
+  p: Record<string, unknown>,
+  hints?: CostHints
+): SeedanceTokenEstimate {
+  if (
+    spec.operation === "reference" &&
+    p.video_urls !== undefined &&
+    !Array.isArray(p.video_urls)
+  )
+    return {
+      warning:
+        "Provide video_urls as an array so the video-input rate can be selected.",
+    };
+  if (
+    spec.operation === "complete" &&
+    hints?.inputDurationSeconds !== undefined &&
+    hints.inputDurationSeconds !== 0 &&
+    hintInputSeconds(hints) === undefined
+  )
+    return {
+      warning:
+        "Pass a non-negative costHints.inputDurationSeconds for the draft's video input.",
+    };
+  const video = seedance4kVideo(spec, p, hints);
+  const output = hints?.videoOutputTokens;
+  const input = hints?.videoInputTokens;
+  if (output !== undefined || input !== undefined) {
+    if (
+      !positiveTokenCount(output) ||
+      (video && !positiveTokenCount(input)) ||
+      (!video && input !== undefined && input !== 0)
+    ) {
+      return {
+        warning:
+          "Pass a positive costHints.videoOutputTokens and, for a video reference, positive costHints.videoInputTokens.",
+      };
+    }
+    return { tokens: output + (input ?? 0) };
+  }
+  const seconds = seedanceSeconds(spec, p, hints);
+  if (seconds === undefined)
+    return {
+      warning:
+        "Pass a fixed duration or costHints.durationSeconds for the 4K video.",
+    };
+  const inputSeconds = video ? hintInputSeconds(hints) : 0;
+  if (inputSeconds === undefined || (video && inputSeconds < 4))
+    return {
+      warning:
+        "Pass costHints.inputDurationSeconds (at least 4 s) for the reference clips.",
+    };
+  return {
+    tokens: (seconds + inputSeconds) * SEEDANCE_4K_TOKENS_PER_SECOND,
+    warning:
+      "Estimated tokens from fal's approximate 4K price of $1.840 per output second. Actual dimensions and tokens can vary. Supply videoOutputTokens and, for video inputs, videoInputTokens in costHints to price the token count.",
+  };
+}
+
 // The billed tokens, or the reason the request does not fix them. units and
-// warn both read this, so a priced request carries no warning and every
-// unpriced one names its cause.
+// warn both read this so an approximation or missing billing input is explained.
 function falSeedanceTokens(
   spec: SeedanceSpec,
   p: Record<string, unknown>,
   hints?: CostHints
-): { tokens: number } | { warning: string } {
+): SeedanceTokenEstimate {
   const id = `fal '${spec.endpointId}'`;
   const resolution = seedanceResolution(spec, p);
   if (resolution === undefined || own(spec.rates, resolution) === undefined) {
@@ -762,6 +899,19 @@ function falSeedanceTokens(
         "extension fal coerces aspect_ratio (and, for editing, duration) to " +
         "auto, so the request does not fix the output size",
     };
+  }
+
+  if (resolution === "4k" && spec.sizes === SEEDANCE_2P5_SIZES) {
+    return seedance4kTokens(spec, p, hints);
+  }
+  if (spec.operation === "adaptiveImage") {
+    const tokens = hints?.videoOutputTokens;
+    return positiveTokenCount(tokens)
+      ? { tokens }
+      : {
+          warning:
+            "The output follows the input image. Supply costHints.videoOutputTokens or price billed units with fal.v1.models.pricing.estimate.",
+        };
   }
 
   const ratio =
@@ -885,13 +1035,24 @@ const seedance = (spec: SeedanceSpec): ModelPricing => ({
   unit: "tokens",
   units: (p, hints) => {
     const result = falSeedanceTokens(spec, p, hints);
-    return "tokens" in result ? result.tokens : undefined;
+    return result.tokens;
   },
   warn: (p, hints) => {
     const result = falSeedanceTokens(spec, p, hints);
-    return "warning" in result ? [result.warning] : [];
+    return result.warning ? [result.warning] : [];
   },
-  select: [{ name: "resolution", pick: (p) => seedanceResolution(spec, p) }],
+  select: [
+    { name: "resolution", pick: (p) => seedanceResolution(spec, p) },
+    {
+      name: "4k video input",
+      pick: (p, hints) =>
+        seedanceResolution(spec, p) === "4k" &&
+        spec.sizes === SEEDANCE_2P5_SIZES &&
+        seedance4kVideo(spec, p, hints)
+          ? "video"
+          : undefined,
+    },
+  ],
   rates: spec.rates,
   source: source(spec.endpointId, spec.asOf ?? seedanceAsOf),
 });
@@ -1364,12 +1525,16 @@ const gptImagePerImage = (
 //     the source resolution that picks the rate come from the source video,
 //     as with blackforestlabs/flux-video-upscale and
 //     topaz/upscale/video/precision above, so no rate is encoded.
-// FLUX 3 image generation/editing: official metadata bills megapixels, while the request
-// carries resolution tiers and can infer aspect ratio from a remote image.
-// The 2026-10-05 page publishes a 1K promotional example but no complete tier
-// grid or billable-dimension mapping. Use fal's pricing API; do not invent it.
-// https://fal.ai/models/blackforestlabs/flux-3/edit-image
-// https://fal.ai/models/blackforestlabs/flux-3/text-to-image
+// Both FLUX 3 image cards price one output by resolution alone. The
+// previously accepted 512sq has no published rate.
+const flux3Image = (endpointId: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: () => 1,
+  select: [resolutionTier("1k")],
+  rates: { "768sq": 0.041, "1k": 0.048, "1.5k": 0.07, "2k": 0.1, "4k": 0.607 },
+  source: source(endpointId, resolutionRatesAsOf),
+});
 
 // Gemini TTS bills spoken text only: single-speaker `prompt`, or each
 // dialogue turn's `text`. Style instructions and speaker aliases are
@@ -1487,22 +1652,19 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// Five Seedance ids stay dynamic. The priced endpoints bill output tokens that
+// Three Seedance ids stay dynamic. The priced endpoints bill output tokens that
 // an explicit request fixes (see seedanceTokens above; ac-j3d6ki.3).
 // - bytedance/seedance-2.0/reference-to-video and
 //   bytedance/seedance-2.0/fast/reference-to-video: no call is recorded, and
 //   the one 2.0-series reference recording (2.0 US) divided by 1000 where the
 //   card says 1024, so neither divisor is known.
-// - bytedance/seedance-2.5/image-to-video,
-//   bytedance/seedance-2.5/us/image-to-video and
-//   bytedance/seedance-2.5/flash/image-to-video: aspect_ratio is the const
+// - bytedance/seedance-2.5/flash/image-to-video: aspect_ratio is the const
 //   "auto", and the output follows the input image. cat1.jpg (686x667) gave
 //   648x630 at 97 frames and billed 38.671 units. ByteDance publishes no
 //   sizing rule for that adaptive ratio, so no request field fixes the size.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
-  "blackforestlabs/flux-3/edit-image",
   "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
@@ -1510,13 +1672,10 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/klein/edit-image/lora",
   "blackforestlabs/flux-3/klein/text-to-image",
   "blackforestlabs/flux-3/klein/text-to-image/lora",
-  "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedance-2.0/fast/reference-to-video",
   "bytedance/seedance-2.0/reference-to-video",
   "bytedance/seedance-2.5/flash/image-to-video",
-  "bytedance/seedance-2.5/image-to-video",
-  "bytedance/seedance-2.5/us/image-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",
   "bytedance/seedream/v5/pro/text-to-image",
@@ -1559,7 +1718,6 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-lite/edit",
   "kling/v4/image-to-image",
   "kling/v4/text-to-image",
-  "kling/v4/video-to-video/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "luma/agent/ray/v3.2/reframe",
@@ -1765,16 +1923,6 @@ export const FAL_DYNAMIC_BILLED_UNITS = {
   "fal-ai/heygen/v2/video-agent": {
     unit: "seconds of output video at $0.034",
     why: "the agent decides the output length; config.duration is only approximate",
-  },
-  // Card checked 2026-10-23: $0.094/s at 720p and $0.141/s at 1080p on the
-  // input plus output length, at least twice the output, while
-  // publicEndpointBilling and the pricing API list seconds at $0.157. Editing
-  // our 3.04 s Kling 4 clip at 720p returned 3.04 s and billed 3.6175 units
-  // ($0.568): the card's $0.094 on 6.042 s, a little under the two files'
-  // 6.08 s, counted in $0.157 units.
-  "kling/v4/video-to-video/edit": {
-    unit: "units at $0.157, with the card quoting $0.094 (720p) or $0.141 (1080p) per second of input plus output video, at least twice the output",
-    why: "the source video's length is billed and no request field states it",
   },
   // Card and pricing API read 2026-11-20: $0.063 per unit named "units".
   // The one 2K call, aspect auto, one cat1.jpg and no elements, returned a
@@ -2295,6 +2443,13 @@ const seedreamV55Edit = (): ModelPricing => ({
   source: source(SEEDREAM_V55_EDIT, SEEDREAM_V55_AS_OF),
 });
 
+const SEEDANCE_2P5_RATES = {
+  "480p": 0.0214 / 1000,
+  "720p": 0.0214 / 1000,
+  "1080p": 0.0234116 / 1000,
+  "4k": SEEDANCE_4K_TOKEN_RATE,
+};
+
 export const fal: Record<string, ModelPricing> = {
   // The recorded 100-step training run billed 100 units, confirmed as $0.43.
   // CostUnit has no steps member; each billed step counts as one generation.
@@ -2306,49 +2461,16 @@ export const fal: Record<string, ModelPricing> = {
     rates: { "": 0.0043 },
     source: source("blackforestlabs/flux-3/klein/base/trainer", "2026-10-28"),
   },
-  // Kling 4.0 reference-to-video: the card bills $0.157/s at 720p and $0.235/s
-  // at 1080p, like text-to-video, and the pricing API lists the 720p rate.
-  // The 3 s 720p recording with one reference image returned 3.04 s and
-  // billed 3 units ($0.471): the requested seconds.
-  // With reference videos or video elements the card switches to $0.094/s
-  // (720p) and $0.141/s (1080p) on the input plus output length, at least
-  // twice the output. That branch is unrecorded and the input length is not in
-  // the payload, so those payloads warn instead of pricing.
-  "kling/v4/reference-to-video": {
-    kind: "perUnit",
-    unit: "seconds",
-    units: (p) => (klingV4HasVideoReference(p) ? undefined : klingV4Seconds(p)),
-    warn: (p) =>
-      klingV4HasVideoReference(p)
-        ? [
-            "fal 'kling/v4/reference-to-video': reference videos and video elements bill $0.094/s (720p) or $0.141/s (1080p) on the input plus output length, at least twice the output; the input length is not in the payload, so this request is not priced",
-          ]
-        : [],
-    select: [resolutionTier("1080p")],
-    rates: { "720p": 0.157, "1080p": 0.235 },
-    source: source("kling/v4/reference-to-video", "2026-10-23"),
-  },
-  // Kling 4.0 image-to-video: the card bills $0.157/s at 720p and $0.235/s at
-  // 1080p, and the pricing API lists the 720p rate. The 3 s 720p recording
-  // returned 3.04 s (992x964, following the input's aspect) and billed 3 units
-  // ($0.471): the requested seconds.
-  "kling/v4/image-to-video": perSecondTiered(
-    "kling/v4/image-to-video",
-    [resolutionTier("1080p")],
-    { "720p": 0.157, "1080p": 0.235 },
-    klingV4Seconds,
-    "2026-10-23"
+  "blackforestlabs/flux-3/edit-image": flux3Image(
+    "blackforestlabs/flux-3/edit-image"
   ),
-  // Kling 4.0's card bills $0.157/s at 720p and $0.235/s at 1080p, and the
-  // pricing API lists the 720p rate. The 3 s 720p recording returned 3.04 s
-  // and billed 3 units ($0.471): the requested seconds.
-  "kling/v4/text-to-video": perSecondTiered(
-    "kling/v4/text-to-video",
-    [resolutionTier("1080p")],
-    { "720p": 0.157, "1080p": 0.235 },
-    klingV4Seconds,
-    "2026-10-23"
+  "blackforestlabs/flux-3/text-to-image": flux3Image(
+    "blackforestlabs/flux-3/text-to-image"
   ),
+  "kling/v4/reference-to-video": klingV4Video("reference-to-video"),
+  "kling/v4/image-to-video": klingV4Video("image-to-video"),
+  "kling/v4/text-to-video": klingV4Video("text-to-video"),
+  "kling/v4/video-to-video/edit": klingV4Video("video-to-video/edit"),
   // HeyGen Video, all three operations, one card (read 2026-11-04): the 50% promo
   // ended 2026-10-31, and list is $0.02/s at 480p and 768p and $0.06/s at 1080p and
   // 2K, which the pricing API confirms. The 5 s 480p recording billed exactly 5
@@ -3874,12 +3996,18 @@ export const fal: Record<string, ModelPricing> = {
     endpointId: "bytedance/seedance-2.5/text-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: {
-      "480p": 0.0214 / 1000,
-      "720p": 0.0214 / 1000,
-      "1080p": 0.0234116 / 1000,
-    },
+    rates: SEEDANCE_2P5_RATES,
     draftFlag: true,
+    asOf: resolutionRatesAsOf,
+  }),
+  "bytedance/seedance-2.5/image-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/image-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: SEEDANCE_2P5_RATES,
+    operation: "adaptiveImage",
+    draftFlag: true,
+    asOf: resolutionRatesAsOf,
   }),
   "bytedance/seedance-2.5/flash/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/flash/reference-to-video",
@@ -3895,14 +4023,11 @@ export const fal: Record<string, ModelPricing> = {
     endpointId: "bytedance/seedance-2.5/reference-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: {
-      "480p": 0.0214 / 1000,
-      "720p": 0.0214 / 1000,
-      "1080p": 0.0234116 / 1000,
-    },
+    rates: { ...SEEDANCE_2P5_RATES, "4k|video": SEEDANCE_4K_VIDEO_TOKEN_RATE },
     operation: "reference",
-    draftFlag: true,
     taskField: true,
+    draftFlag: true,
+    asOf: resolutionRatesAsOf,
   }),
   // US rates reconciled on 2026-11-07 (ac-89cvvz). One 480p 4 s US
   // text-to-video request billed 38.8 units at $0.0214 per 1000 tokens,
@@ -3916,29 +4041,30 @@ export const fal: Record<string, ModelPricing> = {
     endpointId: "bytedance/seedance-2.5/us/text-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: {
-      "480p": 0.0214 / 1000,
-      "720p": 0.0214 / 1000,
-      "1080p": 0.0234116 / 1000,
-    },
+    rates: SEEDANCE_2P5_RATES,
     draftFlag: true,
-    asOf: "2026-11-07",
+    asOf: resolutionRatesAsOf,
+  }),
+  "bytedance/seedance-2.5/us/image-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/us/image-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: SEEDANCE_2P5_RATES,
+    operation: "adaptiveImage",
+    draftFlag: true,
+    asOf: resolutionRatesAsOf,
   }),
   "bytedance/seedance-2.5/us/reference-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/reference-to-video",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: {
-      "480p": 0.0214 / 1000,
-      "720p": 0.0214 / 1000,
-      "1080p": 0.0234116 / 1000,
-    },
+    rates: { ...SEEDANCE_2P5_RATES, "4k|video": SEEDANCE_4K_VIDEO_TOKEN_RATE },
     operation: "reference",
-    draftFlag: true,
     taskField: true,
-    asOf: "2026-11-07",
+    draftFlag: true,
+    asOf: resolutionRatesAsOf,
   }),
-  // A completed 2.5 draft: always 1080p, at the billed $0.0234116 (above).
+  // A completed 2.5 draft defaults to 1080p, at the billed $0.0234116 (above).
   // It keeps the draft's duration, aspect ratio and inputs, which arrive as
   // costHints (durationSeconds, aspectRatio and, for a draft with video
   // inputs, inputDurationSeconds).
@@ -3946,8 +4072,13 @@ export const fal: Record<string, ModelPricing> = {
     endpointId: "bytedance/seedance-2.5/draft/complete",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: { "1080p": 0.0234116 / 1000 },
+    rates: {
+      "1080p": SEEDANCE_2P5_RATES["1080p"],
+      "4k": SEEDANCE_4K_TOKEN_RATE,
+      "4k|video": SEEDANCE_4K_VIDEO_TOKEN_RATE,
+    },
     operation: "complete",
+    asOf: resolutionRatesAsOf,
   }),
   // A completed 2.5 US draft uses the standard 1080p rate. The November
   // US base-rate receipt resolves the former 20% premium; the completion
@@ -3956,9 +4087,13 @@ export const fal: Record<string, ModelPricing> = {
     endpointId: "bytedance/seedance-2.5/us/draft/complete",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: { "1080p": 0.0234116 / 1000 },
+    rates: {
+      "1080p": SEEDANCE_2P5_RATES["1080p"],
+      "4k": SEEDANCE_4K_TOKEN_RATE,
+      "4k|video": SEEDANCE_4K_VIDEO_TOKEN_RATE,
+    },
     operation: "complete",
-    asOf: "2026-11-07",
+    asOf: resolutionRatesAsOf,
   }),
 
   // Wan 3.0 and Wan 3.0 Prime, cards read 2026-10-29. Base is

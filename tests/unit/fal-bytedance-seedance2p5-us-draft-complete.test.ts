@@ -115,13 +115,14 @@ describe("Bytedance Seedance 2.5 US draft completion", () => {
       expect(valid({ draft_id })).toBe(true);
     expect(valid({ draft_id: "x".repeat(8193) })).toBe(false);
   });
-  it("defaults resolution to the literal 1080p and codec to auto", () => {
+  it("defaults resolution to 1080p and codec to auto", () => {
     expect(schema.parse(payload)).toEqual({
       draft_id: payload.draft_id,
       resolution: "1080p",
       codec: "auto",
     });
-    for (const resolution of ["720p", "4k", null])
+    expect(valid({ resolution: "4k" })).toBe(true);
+    for (const resolution of ["720p", "8k", null])
       expect(valid({ resolution })).toBe(false);
     for (const codec of ["auto", "H264", "H265"])
       expect(valid({ codec })).toBe(true);

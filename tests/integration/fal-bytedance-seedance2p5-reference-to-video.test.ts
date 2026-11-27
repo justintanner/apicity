@@ -116,7 +116,7 @@ describe("fal bytedance seedance2p5 reference-to-video integration", () => {
     const result =
       provider.run.bytedance.seedance2p5.referenceToVideo.schema.safeParse({
         prompt: "a cat",
-        resolution: "4k",
+        resolution: "8k",
       });
     expect(result.success).toBe(false);
   });

@@ -650,9 +650,9 @@ export const FalSeedance2p5ReferenceToVideoRequestSchema =
   FalSeedance2p5TextToVideoRequestSchema.extend({
     prompt: z.string().nullable().optional(),
     task: z
-      .enum(["reference", "editing", "extension"])
+      .enum(["auto", "reference", "editing", "extension"])
       .describe(
-        "The type of video generation task. Reference uses the supplied media as guidance. Editing modifies a reference video and automatically coerces aspect_ratio and duration to auto. Extension continues a reference video and automatically coerces aspect_ratio to auto."
+        "The type of video generation task. Reference uses the supplied media as guidance. Editing modifies a reference video and automatically coerces aspect_ratio and duration to auto. Extension continues a reference video and automatically coerces aspect_ratio to auto. Auto leaves the task type unset so the model decides it from the prompt and references."
       )
       .optional(),
     image_urls: z.array(z.string()).max(30).optional(),
@@ -1023,7 +1023,8 @@ export const FalMeshyV7ImageTo3dRequestSchema = z.object({
   // is upstream's own "no specific pose" default.
   is_a_t_pose: z.boolean().optional(),
   pose_mode: z.enum(["a-pose", "t-pose", ""]).optional(),
-  texture_prompt: z.string().max(600).optional(),
+  // Upstream documents a maximum of 800 characters (re-read 2026-11-27).
+  texture_prompt: z.string().max(800).optional(),
   texture_image_url: z.string().optional(),
   enable_rigging: z.boolean().optional(),
   rigging_height_meters: z.number().positive().optional(),
@@ -1259,6 +1260,10 @@ export const FalNanoBananaProTextToImageRequestSchema = z.object({
       "3:4",
       "2:3",
       "9:16",
+      "4:1",
+      "1:4",
+      "8:1",
+      "1:8",
     ])
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
@@ -1294,6 +1299,10 @@ export const FalNanoBananaProEditRequestSchema = z.object({
       "3:4",
       "2:3",
       "9:16",
+      "4:1",
+      "1:4",
+      "8:1",
+      "1:8",
     ])
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
@@ -1338,10 +1347,14 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
   // documented only on the text-to-image surface, so it is absent here.
   // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  // Fal documents `num_images` and `max_images` as integers in [1, 6].
+  // Fal documents `num_images` as an integer in [1, 6] and `max_images`
+  // (images per generation in sequential mode) as an integer in [1, 15]
+  // (queue OpenAPI re-read 2026-11-27). Above 1, `max_images` turns
+  // sequential generation on, and input references plus outputs per
+  // generation cannot exceed 15.
   // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
   num_images: z.number().int().min(1).max(6).optional(),
-  max_images: z.number().int().min(1).max(6).optional(),
+  max_images: z.number().int().min(1).max(15).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -1360,10 +1373,14 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   // text-to-image surface only.
   // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
   return_byteplus_urls: z.boolean().optional(),
-  // Fal documents `num_images` and `max_images` as integers in [1, 6].
+  // Fal documents `num_images` as an integer in [1, 6] and `max_images`
+  // (images per generation in sequential mode) as an integer in [1, 15]
+  // (queue OpenAPI re-read 2026-11-27). Above 1, `max_images` turns
+  // sequential generation on, and input references plus outputs per
+  // generation cannot exceed 15.
   // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
   num_images: z.number().int().min(1).max(6).optional(),
-  max_images: z.number().int().min(1).max(6).optional(),
+  max_images: z.number().int().min(1).max(15).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -1400,9 +1417,10 @@ export const FalSeedreamV5ProLayerizeRequestSchema = z.object({
 // Bytedance Seedream v5 Pro (shared image_size)
 // ---------------------------------------------------------------------------
 
-// The Pro surface offers `auto_1K`/`auto_2K` where the Lite surface offers
-// `auto_2K`/`auto_3K`/`auto_4K`, so it carries its own union rather than
-// reusing FalSeedreamV5LiteImageSizeSchema.
+// The Pro surface offers `auto_1K`/`auto_1.5K`/`auto_2K` where the Lite
+// surface offers `auto_2K`/`auto_3K`/`auto_4K`, so it carries its own union
+// rather than reusing FalSeedreamV5LiteImageSizeSchema. Both Pro ids list
+// `auto_1.5K` (queue OpenAPI re-read 2026-11-27).
 // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
 // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
 const FalSeedreamV5ProImageSizeSchema = z.union([
@@ -1414,6 +1432,7 @@ const FalSeedreamV5ProImageSizeSchema = z.union([
     "landscape_4_3",
     "landscape_16_9",
     "auto_1K",
+    "auto_1.5K",
     "auto_2K",
   ]),
   z.object({ width: z.number(), height: z.number() }),
@@ -2735,7 +2754,9 @@ const FalWanV2p7ResolutionSchema = z.enum(["720p", "1080p"]);
 const FalWanV2p7AudioSettingSchema = z.enum(["auto", "origin"]);
 
 export const FalWanV2p7TextToImageRequestSchema = z.object({
-  prompt: z.string().min(1).max(500),
+  // The queue OpenAPI caps the prompt at 2000 characters on the base and pro
+  // ids, both served by this schema (re-read 2026-11-27).
+  prompt: z.string().min(1).max(2000),
   negative_prompt: z.string().max(500).optional(),
   image_size: FalWanV2p7ImageSizeSchema.optional(),
   max_images: z.number().int().min(1).max(5).optional(),
@@ -2748,7 +2769,9 @@ export const FalWanV2p7TextToImageRequestSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const FalWanV2p7EditRequestSchema = z.object({
-  prompt: z.string().min(1).max(500),
+  // The queue OpenAPI caps the prompt at 2000 characters on the base and pro
+  // ids, both served by this schema (re-read 2026-11-27).
+  prompt: z.string().min(1).max(2000),
   image_urls: z.array(z.string().url()).min(1).max(4),
   negative_prompt: z.string().max(500).optional(),
   image_size: FalWanV2p7ImageSizeSchema.optional(),
@@ -2876,8 +2899,11 @@ export const FalWanV2p7EditVideoRequestSchema = z.object({
 export const FalXaiGrokImagineImageRequestSchema = z.object({
   prompt: z.string(),
   num_images: z.number().int().min(1).max(4).optional(),
+  // Upstream default "1:1"; `auto` lets the provider choose (queue OpenAPI
+  // re-read 2026-11-27).
   aspect_ratio: z
     .enum([
+      "auto",
       "2:1",
       "20:9",
       "19.5:9",
@@ -2902,6 +2928,8 @@ export const FalXaiGrokImagineImageRequestSchema = z.object({
 // xAI Grok Imagine Image v2.0 text-to-image
 // ---------------------------------------------------------------------------
 
+// Shared by v2.0 text-to-image and edit; both queue OpenAPI documents list
+// 21:9 and 5:2 as well as `auto` (re-read 2026-11-27).
 const FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS = [
   "2:1",
   "20:9",
@@ -2916,20 +2944,23 @@ const FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS = [
   "9:19.5",
   "9:20",
   "1:2",
+  "21:9",
+  "5:2",
 ] as const;
 
 export const FalXaiGrokImagineImageV2p0TextToImageRequestSchema = z.object({
   prompt: z.string().min(1),
-  // Upstream default 1. The page publishes no ceiling, so mirror v1's 1-4.
-  num_images: z.number().int().min(1).max(4).optional(),
-  // Upstream default "1:1".
+  // Upstream default 1; the queue OpenAPI caps it at 10 (re-read 2026-11-27).
+  num_images: z.number().int().min(1).max(10).optional(),
+  // Upstream default "1:1"; `auto` lets the provider choose.
   aspect_ratio: z
-    .enum(FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS)
+    .enum(["auto", ...FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS])
     .optional(),
   // Upstream default "1k".
   resolution: z.enum(["1k", "2k"]).optional(),
-  // Upstream default "medium".
-  quality: z.enum(["low", "medium"]).optional(),
+  // Upstream default "medium". `auto` lets xAI choose; upstream says it
+  // currently uses `low` for generation.
+  quality: z.enum(["low", "medium", "auto"]).optional(),
   // Upstream default "jpeg".
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   sync_mode: z.boolean().optional(),
@@ -2941,16 +2972,17 @@ export const FalXaiGrokImagineImageV2p0TextToImageRequestSchema = z.object({
 
 export const FalXaiGrokImagineImageV2p0EditRequestSchema = z.object({
   prompt: z.string().min(1),
-  // Upstream default 1. The page publishes no ceiling, so mirror v1's 1-4.
-  num_images: z.number().int().min(1).max(4).optional(),
+  // Upstream default 1; the queue OpenAPI caps it at 10 (re-read 2026-11-27).
+  num_images: z.number().int().min(1).max(10).optional(),
   // Upstream default "auto".
   aspect_ratio: z
     .enum(["auto", ...FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS])
     .optional(),
   // Upstream default "1k".
   resolution: z.enum(["1k", "2k"]).optional(),
-  // Upstream default "medium".
-  quality: z.enum(["low", "medium"]).optional(),
+  // Upstream default "medium". `auto` lets xAI choose; upstream says it
+  // currently uses `medium` for editing.
+  quality: z.enum(["low", "medium", "auto"]).optional(),
   // Upstream default "jpeg".
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   sync_mode: z.boolean().optional(),
@@ -2988,7 +3020,9 @@ export const FalKlingVideoV3ProImageToVideoRequestSchema = z.object({
   end_image_url: z.string().optional(),
   duration: z.string().optional(),
   generate_audio: z.boolean().optional(),
-  shot_type: z.enum(["customize"]).optional(),
+  // `intelligent` lets the model determine the shot structure (queue OpenAPI
+  // re-read 2026-11-27).
+  shot_type: z.enum(["customize", "intelligent"]).optional(),
   negative_prompt: z.string().max(2500).optional(),
   cfg_scale: z.number().min(0).max(1).optional(),
   elements: z
@@ -3204,7 +3238,7 @@ export const FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema = z.object(
     duration: z.number().int().min(1).max(15).optional(),
     resolution: z.enum(["480p", "720p"]).optional(),
     aspect_ratio: z
-      .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+      .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "21:9", "5:2"])
       .optional(),
   }
 );
@@ -4661,7 +4695,7 @@ export const FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema = z.object({
   duration: z.number().int().min(1).max(15).default(6),
   resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
   aspect_ratio: z
-    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "21:9", "5:2"])
     .default("16:9"),
 });
 export type FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest = z.input<
@@ -4965,6 +4999,7 @@ export const FalIdeogramV4p5EditRequestSchema = z
           "landscape_4_3",
           "portrait_16_9",
           "landscape_16_9",
+          "provider_auto",
         ]),
         z
           .object({
@@ -4997,7 +5032,7 @@ export const FalIdeogramV4p5EditRequestSchema = z
       ])
       .default("auto")
       .describe(
-        "Only unmasked regular edits accept non-auto sizes. Custom dimensions must be multiples of 32, at least 256, with area <=4194304 and aspect ratio <=6:1."
+        "auto preserves source geometry, downscaled by the provider if needed. provider_auto lets Ideogram pick a supported size of about 2K from the sources and prompt. Only unmasked regular edits accept non-auto sizes. Custom dimensions must be multiples of 32, at least 256, with area <=4194304 and aspect ratio <=6:1."
       ),
     num_images: z.number().int().min(1).max(8).default(1),
     seed: z.number().int().nullable().optional(),
@@ -5046,6 +5081,7 @@ export const FalIdeogramV4p5RequestSchema = z
           height: z.number().int().gt(0).max(14142).default(512),
         }),
         z.enum([
+          "auto",
           "square_hd",
           "square",
           "portrait_4_3",
@@ -5104,7 +5140,7 @@ export const FalIdeogramV4p5RequestSchema = z
       )
       .default("square_hd")
       .describe(
-        "Output size. square is promoted to square_hd (1024x1024). 4:3 presets use 1152x864 or 864x1152; 16:9 presets use 1280x720 or 720x1280. Explicit dimensions must match a supported size: 1024x1024, 1024x3072, 1120x896, 1152x2944, 1152x864, 1248x3328, 1248x832, 1280x3072, 1280x720, 1280x800, 1296x3168, 1440x2560, 1440x2880, 1440x720, 1600x2560, 1664x2496, 1728x2304, 1792x2240, 2048x2048, 2240x1792, 2304x1728, 2496x1664, 2560x1440, 2560x1600, 2880x1440, 2944x1152, 3072x1024, 3072x1280, 3168x1296, 3328x1248, 720x1280, 720x1440, 800x1280, 832x1248, 864x1152, 896x1120"
+        "Output size. auto lets the model pick a size of about 2K from the prompt. square is promoted to square_hd (1024x1024). 4:3 presets use 1152x864 or 864x1152; 16:9 presets use 1280x720 or 720x1280. Explicit dimensions must match a supported size: 1024x1024, 1024x3072, 1120x896, 1152x2944, 1152x864, 1248x3328, 1248x832, 1280x3072, 1280x720, 1280x800, 1296x3168, 1440x2560, 1440x2880, 1440x720, 1600x2560, 1664x2496, 1728x2304, 1792x2240, 2048x2048, 2240x1792, 2304x1728, 2496x1664, 2560x1440, 2560x1600, 2880x1440, 2944x1152, 3072x1024, 3072x1280, 3168x1296, 3328x1248, 720x1280, 720x1440, 800x1280, 832x1248, 864x1152, 896x1120"
       ),
     quality: z
       .enum(["low", "medium", "high"])
@@ -5664,6 +5700,7 @@ export const FalBytedanceSeedreamV5FlashEditRequestSchema = z.object({
         "landscape_4_3",
         "landscape_16_9",
         "auto_1K",
+        "auto_1.5K",
         "auto_2K",
       ]),
     ])
@@ -5726,6 +5763,7 @@ export const FalBytedanceSeedreamV5FlashTextToImageRequestSchema = z.object({
         "landscape_4_3",
         "landscape_16_9",
         "auto_1K",
+        "auto_1.5K",
         "auto_2K",
       ]),
     ])
@@ -6076,11 +6114,11 @@ export const FalMeshyV7p1TextTo3dRequestSchema = z
       ),
     texture_prompt: z
       .string()
-      .max(600)
+      .max(800)
       .nullable()
       .optional()
       .describe(
-        "Additional text prompt to guide the texturing process (only used in 'full' mode)"
+        "Additional text prompt to guide the texturing process (only used in 'full' mode). Maximum 800 characters."
       ),
     texture_image_url: z
       .string()
@@ -6205,10 +6243,12 @@ export const FalMeshyV7p1ImageTo3dRequestSchema = z
       ),
     texture_prompt: z
       .string()
-      .max(600)
+      .max(800)
       .nullable()
       .optional()
-      .describe("Text prompt to guide the texturing process"),
+      .describe(
+        "Text prompt to guide the texturing process. Maximum 800 characters."
+      ),
     texture_image_url: z
       .string()
       .nullable()
@@ -6322,11 +6362,11 @@ export const FalMeshyV7p1MultiImageTo3dRequestSchema = z
       ),
     texture_prompt: z
       .string()
-      .max(600)
+      .max(800)
       .nullable()
       .optional()
       .describe(
-        "Text prompt to guide the texturing process. Requires should_texture to be true."
+        "Text prompt to guide the texturing process. Maximum 800 characters. Requires should_texture to be true."
       ),
     texture_image_url: z
       .string()
@@ -7412,7 +7452,7 @@ export const FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema = z.object({
     .default("720p")
     .describe("Resolution of the output video."),
   aspect_ratio: z
-    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "21:9", "5:2"])
     .default("16:9")
     .describe("Aspect ratio of the generated video."),
 });
@@ -15770,10 +15810,10 @@ export const FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema = z.object({
     .optional()
     .describe("The text prompt used to generate the video."),
   task: z
-    .enum(["reference", "editing", "extension"])
+    .enum(["auto", "reference", "editing", "extension"])
     .default("reference")
     .describe(
-      "The type of video generation task. Reference uses the supplied media as guidance. Editing modifies a reference video and automatically coerces aspect_ratio and duration to auto. Extension continues a reference video and automatically coerces aspect_ratio to auto."
+      "The type of video generation task. Reference uses the supplied media as guidance. Editing modifies a reference video and automatically coerces aspect_ratio and duration to auto. Extension continues a reference video and automatically coerces aspect_ratio to auto. Auto leaves the task type unset so the model decides it from the prompt and references."
     ),
   image_urls: z
     .array(z.string())
@@ -15958,11 +15998,11 @@ export const FalMeshyV6LiteRetextureRequestSchema = z
       ),
     text_style_prompt: z
       .string()
-      .max(600)
+      .max(800)
       .nullable()
       .optional()
       .describe(
-        "Describe your desired texture style using text. Maximum 600 characters. Required if image_style_url is not provided."
+        "Describe your desired texture style using text. Maximum 800 characters. Required if image_style_url is not provided."
       ),
     image_style_url: z
       .string()
@@ -18922,7 +18962,7 @@ export const FalKlingV4TextToVideoRequestSchema = z.object({
     .default("1080p")
     .describe("Output resolution."),
   aspect_ratio: z
-    .enum(["16:9", "9:16", "1:1", "21:9"])
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"])
     .default("16:9")
     .describe("Aspect ratio of the generated video."),
 });
@@ -19096,7 +19136,7 @@ export const FalKlingV4ReferenceToVideoRequestSchema = z.object({
     .default("1080p")
     .describe("Output resolution."),
   aspect_ratio: z
-    .enum(["auto", "16:9", "9:16", "1:1", "21:9"])
+    .enum(["auto", "16:9", "9:16", "1:1", "4:3", "3:4", "21:9"])
     .default("16:9")
     .describe(
       "Aspect ratio of the generated video. 'auto' adapts it to the references."

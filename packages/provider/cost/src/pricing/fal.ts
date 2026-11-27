@@ -2112,6 +2112,74 @@ export function falH3MaxSecondsFloor(
   };
 }
 
+// Seedream 5 Lite bills each returned image (card and publicEndpointBilling:
+// $0.035 per image, re-read 2026-11-27). num_images runs that many separate
+// generations. The queue OpenAPI says max_images (1-15) above 1 turns
+// sequential generation on unless sequential_image_generation is "disabled",
+// and each generation then returns up to max_images related images, as many
+// as the model decides. A sequential request is therefore priced at that cap,
+// an upper bound that never under-quotes, with a warning, unless
+// costHints.outputImages states the returned count (at most the cap). A
+// max_images that is not a positive integer, or a hint outside the cap, fails
+// closed. With max_images at its default of 1 the count is num_images, as
+// before.
+const SEEDREAM_V5_LITE_USD = 0.035;
+
+function seedreamV5LitePerGeneration(
+  p: Record<string, unknown>
+): number | undefined {
+  if (p.max_images === undefined) return 1;
+  const max = asNumber(p.max_images);
+  if (max === undefined || !Number.isInteger(max) || max < 1) return undefined;
+  if (p.sequential_image_generation === "disabled") return 1;
+  return max;
+}
+
+function seedreamV5LiteImages(
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined {
+  const perGeneration = seedreamV5LitePerGeneration(p);
+  if (perGeneration === undefined) return undefined;
+  const cap = imageCount(p) * perGeneration;
+  if (perGeneration === 1) return cap;
+  const count = hints?.outputImages;
+  if (count === undefined) return cap;
+  return Number.isInteger(count) && count > 0 && count <= cap
+    ? count
+    : undefined;
+}
+
+const seedreamV5Lite = (endpointId: string, on?: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: seedreamV5LiteImages,
+  warn: (p, hints) => {
+    const perGeneration = seedreamV5LitePerGeneration(p);
+    if (perGeneration === undefined) {
+      return [
+        `fal '${endpointId}': max_images must be a positive integer (1-15)`,
+      ];
+    }
+    if (perGeneration === 1) return [];
+    const cap = imageCount(p) * perGeneration;
+    if (hints?.outputImages === undefined) {
+      return [
+        `fal '${endpointId}': max_images ${perGeneration} turns sequential generation on, and each generation returns up to ${perGeneration} images, as many as the model decides; this estimate assumes ${cap}, an upper bound. Pass the returned count as costHints.outputImages.`,
+      ];
+    }
+    if (seedreamV5LiteImages(p, hints) === undefined) {
+      return [
+        `fal '${endpointId}': costHints.outputImages must be a positive integer no greater than ${cap} (num_images x max_images)`,
+      ];
+    }
+    return [];
+  },
+  select: [],
+  rates: { "": SEEDREAM_V5_LITE_USD },
+  source: source(endpointId, on),
+});
+
 // Seedream 5.5 edit, card re-read 2026-11-20. Each output is $0.03 at 1K or
 // 1.5K and $0.0405 at 2K, plus $0.012 for every input image on that output.
 // An omitted image_size is auto_2K. A custom size is $0.03 through 2,610,000
@@ -3462,14 +3530,13 @@ export const fal: Record<string, ModelPricing> = {
     NANO_BANANA_PRO_RATES
   ),
 
-  // Image — Seedream 5 Lite (flat per image at any supported size)
-  "fal-ai/bytedance/seedream/v5/lite/text-to-image": perImage(
-    "fal-ai/bytedance/seedream/v5/lite/text-to-image",
-    0.035
+  // Image — Seedream 5 Lite (flat per returned image at any supported size;
+  // sequential generation is priced at its max_images cap, see above)
+  "fal-ai/bytedance/seedream/v5/lite/text-to-image": seedreamV5Lite(
+    "fal-ai/bytedance/seedream/v5/lite/text-to-image"
   ),
-  "fal-ai/bytedance/seedream/v5/lite/edit": perImage(
+  "fal-ai/bytedance/seedream/v5/lite/edit": seedreamV5Lite(
     "fal-ai/bytedance/seedream/v5/lite/edit",
-    0.035,
     sweepAsOf
   ),
 

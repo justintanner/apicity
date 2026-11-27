@@ -138,13 +138,13 @@ describe("xAI Grok Imagine Video 1.5 text-to-video contract", () => {
       expect(schema.safeParse({ ...input, resolution }).success).toBe(false)
   );
 
-  it.each(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])(
+  it.each(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "21:9", "5:2"])(
     "accepts aspect ratio %s",
     (aspect_ratio) =>
       expect(schema.safeParse({ ...input, aspect_ratio }).success).toBe(true)
   );
 
-  it.each(["21:9", "auto", "16:10", "", null])(
+  it.each(["9:21", "auto", "16:10", "", null])(
     "rejects aspect ratio %s",
     (aspect_ratio) =>
       expect(schema.safeParse({ ...input, aspect_ratio }).success).toBe(false)

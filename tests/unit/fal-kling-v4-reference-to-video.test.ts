@@ -111,7 +111,11 @@ describe("Kling 4 reference-to-video contract", () => {
 
   it("restates the field rules fal's validator confirmed in free 422 probes", () => {
     expect(accepts({ aspect_ratio: "auto" })).toBe(true);
-    expect(accepts({ aspect_ratio: "4:3" })).toBe(false);
+    // Refused in the 2026-10-23 probes; the queue OpenAPI re-read on
+    // 2026-11-27 lists 4:3 and 3:4.
+    expect(accepts({ aspect_ratio: "4:3" })).toBe(true);
+    expect(accepts({ aspect_ratio: "3:4" })).toBe(true);
+    expect(accepts({ aspect_ratio: "2:3" })).toBe(false);
     expect(
       accepts({ image_urls: Array(11).fill("https://example.com/a.png") })
     ).toBe(false);

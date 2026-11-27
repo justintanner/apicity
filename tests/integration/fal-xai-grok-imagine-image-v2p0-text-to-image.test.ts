@@ -66,7 +66,7 @@ describe("fal xai grok-imagine-image v2.0 text-to-image integration", () => {
   });
 
   it("should enforce the image-count boundaries", () => {
-    for (const numImages of [1, 4]) {
+    for (const numImages of [1, 10]) {
       expect(
         FalXaiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
           prompt: "a cat",
@@ -74,7 +74,7 @@ describe("fal xai grok-imagine-image v2.0 text-to-image integration", () => {
         }).success
       ).toBe(true);
     }
-    for (const numImages of [0, 5]) {
+    for (const numImages of [0, 11]) {
       expect(
         FalXaiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
           prompt: "a cat",
@@ -99,6 +99,9 @@ describe("fal xai grok-imagine-image v2.0 text-to-image integration", () => {
       "9:19.5",
       "9:20",
       "1:2",
+      "21:9",
+      "5:2",
+      "auto",
     ] as const) {
       expect(
         FalXaiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
@@ -110,14 +113,14 @@ describe("fal xai grok-imagine-image v2.0 text-to-image integration", () => {
     expect(
       FalXaiGrokImagineImageV2p0TextToImageRequestSchema.safeParse({
         prompt: "a cat",
-        aspect_ratio: "auto",
+        aspect_ratio: "5:4",
       }).success
     ).toBe(false);
   });
 
   it.each([
     ["resolution", ["1k", "2k"], "4k"],
-    ["quality", ["low", "medium"], "high"],
+    ["quality", ["low", "medium", "auto"], "high"],
     ["output_format", ["jpeg", "png", "webp"], "gif"],
   ] as const)(
     "should enforce the published %s enum",

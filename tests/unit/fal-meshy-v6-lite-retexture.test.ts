@@ -144,9 +144,9 @@ describe("Meshy 6 Lite retexture", () => {
       true
     );
   });
-  it("bounds the text style prompt to 600 characters", () => {
-    expect(valid({ text_style_prompt: "a".repeat(600) })).toBe(true);
-    expect(valid({ text_style_prompt: "a".repeat(601) })).toBe(false);
+  it("bounds the text style prompt to 800 characters", () => {
+    expect(valid({ text_style_prompt: "a".repeat(800) })).toBe(true);
+    expect(valid({ text_style_prompt: "a".repeat(801) })).toBe(false);
     expect(valid({ text_style_prompt: 7 })).toBe(false);
     expect(valid({ image_style_url: 7 })).toBe(false);
   });
